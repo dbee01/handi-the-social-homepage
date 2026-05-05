@@ -1,0 +1,1 @@
+export default class{async fetch(){return fetch("https://mastodon.ie/api/v1/trends/statuses").then(r=>r.json())}}
