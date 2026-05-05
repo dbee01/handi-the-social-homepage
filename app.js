@@ -1,7 +1,22 @@
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js");
+}
+
+import initNews from "./modules/news/news.module.js";
+import initEnergy from "./modules/energy/energy.module.js";
+import initAI from "./modules/ai/ai.module.js";
+import initWeather from "./modules/weather/weather.module.js";
+import initMastodon from "./modules/mastodon/mastodon.module.js";
+
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("news").innerHTML = "📰 News working";
-  document.getElementById("mastodon").innerHTML = "🌐 Mastodon working";
-  document.getElementById("grid").innerHTML = "⚡ Energy working";
-  document.getElementById("weather").innerHTML = "⚡ Weather working";
-  document.getElementById("ai").innerHTML = "⚡ AI working";
+  initNews(document.getElementById("news"));
+  initEnergy(
+    document.getElementById("grid"),
+    document.getElementById("carbon-val"),
+    document.getElementById("carbon-msg")
+  );
+  initWeather(document.getElementById("weather"));
+  initMastodon(document.getElementById("mastodon"));
+  initAI(document.getElementById("aiBtn"));
 });
