@@ -1,1 +1,0 @@
-export default class{constructor(m,v){this.m=m;this.v=v}async init(){const d=await this.m.fetch();this.v.render(d.items.slice(0,5))}}
