@@ -1,0 +1,1 @@
+export default class{async fetch(){return fetch("https://api.open-meteo.com/v1/forecast?latitude=51.8985&longitude=-8.4756&current_weather=true").then(r=>r.json())}}
