@@ -1,5 +1,5 @@
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/service-worker.js");
+  navigator.serviceWorker.register("service-worker.js");
 }
 
 import initNews from "./modules/news/news.module.js";
