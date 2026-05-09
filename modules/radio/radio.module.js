@@ -1,7 +1,7 @@
 // modules/radio/radio.module.js
 
 // CONFIGURATION: Update this if you change the server port
-const PROXY_BASE_URL = 'http://localhost:3000/stream';
+const PROXY_BASE_URL ='http://localhost:3001/api/stream';
 
 export default async function initRadio(container) {
   if (!container) {
