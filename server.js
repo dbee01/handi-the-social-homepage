@@ -34,6 +34,28 @@ app.get('/api/energy', async (req, res) => {
   }
 });
 
+// --- ADD THIS BUS ROUTE ---
+app.get('/api/bus-realtime', async (req, res) => {
+  console.log('🚌 [SERVER] Bus request received');
+  try {
+    // REPLACE THIS URL with your actual Bus API endpoint
+    // Example: https://api.transport-for-ireland.ie/bus/realtime?stop_id=242081
+    const targetUrl = 'https://api.transport-for-ireland.ie/bus/realtime?stop_id=242081'; 
+    
+    const response = await axios.get(targetUrl, { 
+      timeout: 5000,
+      headers: { 'User-Agent': 'PleIE-BusTracker' }
+    });
+    
+    console.log('🚌 [SERVER] Bus data fetched successfully');
+    res.json(response.data);
+  } catch (error) {
+    console.error('🚌 [SERVER] Bus API Error:', error.message);
+    // Return a 500 error so the frontend knows to use mock data
+    res.status(500).json({ error: 'Failed to fetch bus data', details: error.message });
+  }
+});
+
 // mastodon links endpoint
 app.get('/api/mastodon', async (req, res) => {
   console.log('🔗 [SERVER] Mastodon Links request received');
@@ -82,4 +104,5 @@ app.listen(PORT, () => {
   console.log(`   📰 Test News: http://localhost:${PORT}/api/news`);
   console.log(`   ⚡ Test Energy: http://localhost:${PORT}/api/energy`);
   console.log(`   🐘 Test Mastodon: http://localhost:${PORT}/api/mastodon`);
+  console.log(`   🚌 Test Bus: http://localhost:${PORT}/api/bus-realtime`);
 });

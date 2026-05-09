@@ -43,8 +43,30 @@ export default async function initBus(container) {
   // Function to fetch real-time bus data via proxy
   async function fetchBusData() {
     try {
-        // use bus-server.js in root as a proxy to avoid CORS issues and hide API key
-        const response = await fetch('http://localhost:3002/api/bus-realtime');
+        // ADD YOUR API URL HERE (with CORS proxy if needed)
+        const corsProxies = [
+          'https://api.allorigins.win/raw?url=',
+          'https://cors-anywhere.herokuapp.com/',
+          'https://proxy.cors.sh/'
+        ];
+        const apiUrl = ''; // e.g. 'https://api.nationaltransport.ie/gtfsr/v2/gtfsr?format=json'
+        
+        if (!apiUrl) {
+          console.warn("⚠️ Bus API URL not set. Using mock data.");
+          return getMockBusData();
+        } else {
+          const proxyUrl = corsProxies[Math.floor(Math.random() * corsProxies.length)] + apiUrl;
+          const response = await fetch(proxyUrl);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          return data;
+        }
+          
+        // If you have direct CORS access, use this instead:
+        //
+        const response = await fetch('https://api.nationaltransport.ie/gtfsr/v2/gtfsr?format=json');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

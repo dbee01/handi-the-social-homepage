@@ -9,6 +9,7 @@ import initSpotify from "./modules/spotify/spotify.module.js";  // Add this
 import initEmergency from "./modules/emergency/emergency.module.js";  // Add this
 import initBus from "./modules/bus/bus.module.js"; 
 import initGallery from "./modules/gallery/gallery.module.js";  
+import initFriendlyPhone from "./modules/friendly-phone/friendly-phone.module.js";  // Add thi
 import initLayoutSystem from "./modules/ui/layout-system.js";
 
 // Global flag to track layout initialization
@@ -157,6 +158,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   } catch (error) {
     console.error("Error initializing Gallery module:", error);
+  }
+
+  // friendly phone initialization
+  try {
+    const phoneElement = document.getElementById("friendly-phone");
+    if (phoneElement) {    
+      initFriendlyPhone(phoneElement);
+      console.log("✅ Friendly Phone module initialized");
+    } else {
+      console.warn("⚠️ Friendly Phone element not found");
+    }
+  } catch (error) {
+    console.error("Error initializing Friendly Phone module:", error);
   }
 
   // Initialize Layout System (Packery + SortableJS + Pin System)

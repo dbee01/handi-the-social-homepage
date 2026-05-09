@@ -783,3 +783,44 @@ footer {
   border-color: var(--term-green);
   box-shadow: 0 0 5px var(--term-green);
 }
+
+/* Friendly Phone Module Styles */
+.friendly-phone-container {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.friendly-phone-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.friendly-phone-container::-webkit-scrollbar-track {
+  background: #000;
+}
+
+.friendly-phone-container::-webkit-scrollbar-thumb {
+  background: var(--term-green);
+  border-radius: 3px;
+}
+
+#contact-name:focus,
+#contact-phone:focus {
+  outline: none;
+  border-color: var(--term-green);
+  box-shadow: 0 0 5px var(--term-green);
+}
+
+.call-status {
+  transition: all 0.3s ease;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .friendly-phone-container {
+    max-height: 400px;
+  }
+  
+  .contact-card {
+    cursor: pointer;
+  }
+}
