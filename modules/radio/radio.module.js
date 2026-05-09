@@ -1,5 +1,8 @@
 // modules/radio/radio.module.js
 
+// CONFIGURATION: Update this if you change the server port
+const PROXY_BASE_URL = 'http://localhost:3000/stream';
+
 export default async function initRadio(container) {
   if (!container) {
     console.error("Radio Module: Container not found");
@@ -32,7 +35,7 @@ export default async function initRadio(container) {
     width: 100%;
   `;
 
-  // Verified Icecast URLs (Known to work with CORS and HTML5)
+  // Station List (Raw URLs)
   const stations = [
     { name: "RTÉ Radio 1", genre: "News & Talk", url: "https://icecast.rte.ie/radio1", icon: "📻" },
     { name: "RTÉ 2FM", genre: "Hit Music", url: "https://icecast.rte.ie/2fm", icon: "🎵" },
@@ -160,7 +163,6 @@ export default async function initRadio(container) {
   const audioPlayer = new Audio();
   audioPlayer.crossOrigin = "anonymous";
   let currentActiveCard = null;
-  let retryCount = 0;
 
   function playStation(station, cardElement) {
     // Reset previous active card
@@ -183,8 +185,14 @@ export default async function initRadio(container) {
     npText.innerHTML = `<span style="color: var(--term-cyan); font-weight: bold;">${station.name}</span> <span style="color: var(--term-dim);">(${station.genre})</span>`;
     equalizer.style.display = 'flex';
 
+    // Construct Proxy URL
+    // We encode the station URL so it can be passed as a query parameter
+    const proxyUrl = `${PROXY_BASE_URL}?url=${encodeURIComponent(station.url)}`;
+
+    console.log(`Loading stream via proxy: ${proxyUrl}`);
+
     // Load and Play
-    audioPlayer.src = station.url;
+    audioPlayer.src = proxyUrl;
     audioPlayer.load();
     
     const playPromise = audioPlayer.play();
@@ -192,30 +200,13 @@ export default async function initRadio(container) {
     if (playPromise !== undefined) {
       playPromise.then(() => {
         console.log(`✅ Playing: ${station.name}`);
-        retryCount = 0; // Reset retry counter on success
       }).catch(error => {
-        console.error("Playback failed, retrying...", error);
-        retryCount++;
-        if (retryCount < 2) {
-          setTimeout(() => {
-            audioPlayer.src = station.url;
-            audioPlayer.load();
-            audioPlayer.play().catch(e => {
-              console.error("Retry failed too.", e);
-              npText.innerHTML = `<span style="color: #ff4444;">Error: Stream unavailable</span>`;
-              equalizer.style.display = 'none';
-              currentActiveCard.classList.remove('active');
-              currentActiveCard.style.background = 'rgba(0, 0, 0, 0.5)';
-              currentActiveCard.style.borderColor = 'var(--panel-border)';
-            });
-          }, 1000);
-        } else {
-          npText.innerHTML = `<span style="color: #ff4444;">Error: Stream unavailable</span>`;
-          equalizer.style.display = 'none';
-          currentActiveCard.classList.remove('active');
-          currentActiveCard.style.background = 'rgba(0, 0, 0, 0.5)';
-          currentActiveCard.style.borderColor = 'var(--panel-border)';
-        }
+        console.error("Playback failed:", error);
+        npText.innerHTML = `<span style="color: #ff4444;">Error: Check if server.js is running</span>`;
+        equalizer.style.display = 'none';
+        currentActiveCard.classList.remove('active');
+        currentActiveCard.style.background = 'rgba(0, 0, 0, 0.5)';
+        currentActiveCard.style.borderColor = 'var(--panel-border)';
       });
     }
   }
@@ -223,15 +214,12 @@ export default async function initRadio(container) {
   // Handle Errors
   audioPlayer.addEventListener('error', (e) => {
     console.error("Audio Error:", e);
-    // Only update UI if we haven't already handled it in the promise catch
-    if (retryCount >= 2) {
-      document.getElementById('np-text').innerHTML = `<span style="color: #ff4444;">Stream Error</span>`;
-      document.getElementById('equalizer').style.display = 'none';
-      if (currentActiveCard) {
-        currentActiveCard.classList.remove('active');
-        currentActiveCard.style.background = 'rgba(0, 0, 0, 0.5)';
-        currentActiveCard.style.borderColor = 'var(--panel-border)';
-      }
+    document.getElementById('np-text').innerHTML = `<span style="color: #ff4444;">Stream Error</span>`;
+    document.getElementById('equalizer').style.display = 'none';
+    if (currentActiveCard) {
+      currentActiveCard.classList.remove('active');
+      currentActiveCard.style.background = 'rgba(0, 0, 0, 0.5)';
+      currentActiveCard.style.borderColor = 'var(--panel-border)';
     }
   });
 }
