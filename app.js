@@ -46,20 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
   } catch (error) {
     console.error("Error initializing local music player:", error);
   }
-  
-  // Initialize all modules with proper error handling
-  try {
-    const localPlayerElement = document.getElementById("local-player");
-    if (localPlayerElement) {
-      initNews(localPlayerElement);
-      console.log("✅ Local Player module initialized");
-    } else {
-      console.warn("⚠️ Local Player element not found");
-    }
-  } catch (error) {
-    console.error("Error initializing local player:", error);
-  }
-  
+
 // Initialize all modules with proper error handling
   try {
     const radioElement = document.getElementById("radio");
