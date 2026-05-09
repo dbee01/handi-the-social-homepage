@@ -825,14 +825,25 @@ footer {
   }
 }
 
+/* Add to your CSS */
+
 .mobile-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  width: 100% !important;
+  padding: 10px !important;
+  box-sizing: border-box !important;
 }
 
-.mobile-layout .grid-item {
-  width: 100% !important;
+.mobile-layout .grid-item,
+.mobile-layout .panel {
   position: static !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  left: auto !important;
+  top: auto !important;
   transform: none !important;
+  margin: 0 0 12px 0 !important;
+  box-sizing: border-box !important;
 }
