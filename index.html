@@ -120,16 +120,17 @@
     <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
   </div>
 
-  <!-- Local Music Player Module -->
+<!-- Local Music Player Module -->
 <div class="dashboard-item" id="local-player" data-order="12">
   <button class="pin-btn" title="Pin to top">
     <i class="fa-solid fa-thumbtack"></i>
   </button>
 
-  <div
-    id="music-player"
-    class="module-content"
-  ></div>
+  <!-- IMPORTANT:
+       app.js looks for #music-player and passes it to initLocalPlayer().
+       This must be a normal container div, not a button and not .pin-btn.
+  -->
+  <div id="music-player" class="module-content"></div>
 </div>
 
 </main>
