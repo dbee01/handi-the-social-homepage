@@ -825,14 +825,12 @@ footer {
   }
 }
 
-/* Local Music Player Container */
+/* Local Music Player */
 #local-player {
   width: 100%;
   box-sizing: border-box;
 }
 
-/* Content area inside the module */
-#local-player .module-content,
 #music-player {
   width: 100%;
   max-width: 100%;
@@ -841,13 +839,12 @@ footer {
   box-sizing: border-box;
 }
 
-/* Ensure all generated content stays inside the panel */
 #music-player * {
   box-sizing: border-box;
   max-width: 100%;
 }
 
-/* Mobile adjustments */
+/* Mobile */
 @media (max-width: 768px) {
   #local-player,
   #music-player {
