@@ -271,15 +271,6 @@ function initializeSearch() {
   }
 }
 
-function initResponsiveLayout() {
-  if (window.innerWidth <= 768) {
-    document.getElementById("grid").classList.add("mobile-layout");
-    return;
-  }
-
-  initLayoutSystem();
-}
-
 // Export for debugging
 window.appVersion = '1.0.0';
 window.appModules = {
