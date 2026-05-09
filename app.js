@@ -9,6 +9,7 @@ import initSpotify from "./modules/spotify/spotify.module.js";  // Add this
 import initEmergency from "./modules/emergency/emergency.module.js";  // Add this
 import initBus from "./modules/bus/bus.module.js"; 
 import initGallery from "./modules/gallery/gallery.module.js";  
+import initRadio from ".modules/radio/radio.module.js";
 import initFriendlyPhone from "./modules/friendly-phone/friendly-phone.module.js";  // Add thi
 import initLayoutSystem from "./modules/ui/layout-system.js";
 
@@ -29,6 +30,19 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("❌ SortableJS not loaded! Check script includes.");
   } else {
     console.log("✅ SortableJS loaded");
+  }
+
+// Initialize all modules with proper error handling
+  try {
+    const radioElement = document.getElementById("radio");
+    if (radioElement) {
+      initNews(radioElement);
+      console.log("✅ Radio module initialized");
+    } else {
+      console.warn("⚠️ Radio element not found");
+    }
+  } catch (error) {
+    console.error("Error initializing radio:", error);
   }
   
   // Initialize all modules with proper error handling
