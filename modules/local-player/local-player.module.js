@@ -188,19 +188,55 @@ folderSection.onclick = async () => {
 
   // --- EVENT LISTENERS ---
   
-  // Folder Selection
-  folderSection.onclick = async () => {
-    if ('showDirectoryPicker' in window) {
-      try {
-        const dirHandle = await window.showDirectoryPicker();
-        await scanFolder(dirHandle);
-      } catch (err) {
-        console.error("Folder selection cancelled or failed:", err);
-      }
-    } else {
-      alert("Your browser does not support the File System Access API. Please use Chrome, Edge, or Opera.");
+// Replace ONLY the folderSection.onclick handler in local-player.module.js
+// This uses the same browser-compatible file picker approach as Friendly Phone.
+
+folderSection.onclick = () => {
+  const input = document.createElement("input");
+
+  // Select multiple audio files
+  input.type = "file";
+  input.multiple = true;
+  input.accept = ".mp3,.wav,.ogg,.flac,.m4a,audio/*";
+
+  input.addEventListener("change", (event) => {
+    const files = Array.from(event.target.files || []);
+
+    if (!files.length) {
+      return;
     }
-  };
+
+    // Build playlist directly from selected files
+    playlist = files
+      .filter((file) => /\.(mp3|wav|ogg|flac|m4a)$/i.test(file.name))
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((file) => ({
+        name: file.name,
+        file: file,
+      }));
+
+    if (!playlist.length) {
+      alert("No supported audio files were selected.");
+      return;
+    }
+
+    // Update UI
+    renderPlaylist();
+    folderSection.style.display = "none";
+    controlsSection.style.display = "flex";
+
+    const status = document.getElementById("track-status");
+    if (status) {
+      status.textContent = `${playlist.length} tracks loaded`;
+    }
+
+    // Optionally start with first track
+    // playTrack(0);
+  });
+
+  // Open file picker
+  input.click();
+};
 
   // Button Actions
   btnPrev.onclick = () => playTrack(currentIndex - 1);
@@ -297,7 +333,6 @@ folderSection.onclick = async () => {
   }
 
 // Replace the file-loading part inside playTrack()
-
 async function playTrack(index) {
   if (index < 0 || index >= playlist.length) return;
 
@@ -308,17 +343,16 @@ async function playTrack(index) {
   renderPlaylist();
 
   try {
-    let file;
+    // Use the File object directly
+    const file = track.file;
 
-    // Chromium path (File System Access API)
-    if (track.handle) {
-      file = await track.handle.getFile();
+    if (!file) {
+      throw new Error("Track file not found.");
     }
-    // Firefox/Safari fallback
-    else if (track.file) {
-      file = track.file;
-    } else {
-      throw new Error("No file available for track.");
+
+    // Revoke previous object URL to avoid memory leaks
+    if (audioElement.src.startsWith("blob:")) {
+      URL.revokeObjectURL(audioElement.src);
     }
 
     const url = URL.createObjectURL(file);
