@@ -41,45 +41,61 @@
   </div>
 </header>
 
+<div class="dashboard-wrapper" style="flex: 1;">
 <!-- Main container for Packery -->
 <main id="dashboard-grid">
+
+  <!-- Gallery Module -->
+  <div class="dashboard-item" id="gallery" data-order="1">
+    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+  </div>
+
+  <!-- Emergency Module -->
+  <div class="dashboard-item" id="emergency" data-order="2">
+    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+  </div>
+  <!-- Bus Module -->
+  <div class="dashboard-item" id="bus" data-order="3">
+    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+  </div>
+
   <!-- 1. NEWS -->
-  <div class="dashboard-item" id="news" data-order="1">
+  <div class="dashboard-item" id="news" data-order="4">
     <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
     <div class="panel-title"><i class="fa-solid fa-newspaper"></i> News</div>
     <div class="news-container"></div>
   </div>
 
   <!-- 2. GRID -->
-  <div class="dashboard-item" id="grid" data-order="2">
+  <div class="dashboard-item" id="grid" data-order="5" style="display:none;">
     <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
     <div class="panel-title"><i class="fa-solid fa-charging-station"></i> Grid Status</div>
     <div class="val">-- MW</div>
   </div>
 
   <!-- 3. MASTODON -->
-  <div class="dashboard-item" id="mastodon" data-order="3">
+  <div class="dashboard-item" id="mastodon" data-order="6">
     <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
     <div class="panel-title"><i class="fa-brands fa-mastodon"></i> Mastodon Trending</div>
     <div class="mastodon-container"></div>
   </div>
 
   <!-- 4. CARBON VAL -->
-  <div class="dashboard-item" id="carbon-val" data-order="4">
+  <div class="dashboard-item" id="carbon-val" data-order="7" style="display:none;">
     <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
     <div class="panel-title"><i class="fa-solid fa-cloud"></i> Carbon Intensity</div>
     <div class="val">-- g/kWh</div>
   </div>
 
   <!-- 5. CARBON MSG -->
-  <div class="dashboard-item" id="carbon-msg" data-order="5">
+  <div class="dashboard-item" id="carbon-msg" data-order="8" style="display:none;">
     <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
     <div class="panel-title"><i class="fa-solid fa-leaf"></i> Green Tip</div>
     <div class="message">Waiting for data...</div>
   </div>
 
   <!-- 6. AI / LUMO -->
-  <div class="dashboard-item" id="aiBtn" data-order="6">
+  <div class="dashboard-item" id="aiBtn" data-order="9">
     <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
     <div class="panel-title" style="justify-content: center;"><i class="fa-solid fa-robot"></i> Ask Lumo</div>
     <div style="text-align: center; margin-top: 20px;">
@@ -87,7 +103,20 @@
       <p style="margin-top: 15px;">Click to ask about energy</p>
     </div>
   </div>
+
+  <!-- Add this inside #dashboard-grid -->
+  <div class="dashboard-item" id="radio" data-order="10">
+    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+  </div>
+
+  <!-- 8. SPOTIFY MODULE -->
+  <div class="dashboard-item" id="spotify" data-order="11">
+    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+  </div>
+  
+
 </main>
+</div>
 
 <footer>
   <div class="footer-content">

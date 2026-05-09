@@ -573,3 +573,213 @@ footer {
 .sortable-chosen {
   box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
 }
+
+/* Radio Module Styles */
+.radio-station {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.radio-station:hover {
+  transform: translateX(5px);
+}
+
+.radio-station:active {
+  transform: scale(0.98);
+}
+
+.now-playing {
+  animation: pulse 2s infinite;
+}
+
+/* Optional: Add a subtle animation for the radio icon */
+@keyframes radioPulse {
+  0%, 100% {
+    text-shadow: 0 0 5px var(--term-green);
+  }
+  50% {
+    text-shadow: 0 0 15px var(--term-green);
+  }
+}
+
+.fa-radio {
+  animation: radioPulse 2s infinite;
+}
+
+/* Fix footer positioning - Add these to your CSS */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* The wrapper should take remaining space */
+.dashboard-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Grid container - height will be set by JavaScript */
+#dashboard-grid {
+  position: relative;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: transparent;
+  min-height: 400px; /* Fallback minimum height */
+}
+
+/* Footer stays at bottom */
+footer {
+  margin-top: auto;
+  position: relative;
+  background: #000;
+  width: 100%;
+}
+
+/* Remove any absolute positioning that might affect layout */
+.dashboard-item {
+  position: absolute;
+}
+
+/* Ensure the grid has proper display */
+#dashboard-grid::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+/* Emergency Module Styles */
+.emergency-button {
+  animation: emergencyPulse 2s infinite;
+}
+
+.emergency-button:active {
+  transform: scale(0.95) !important;
+}
+
+#emergency-contact-name,
+#emergency-contact-phone {
+  font-family: var(--font-retro);
+  font-size: 0.85rem;
+}
+
+#emergency-contact-name:focus,
+#emergency-contact-phone:focus {
+  outline: none;
+  border-color: var(--term-green);
+  box-shadow: 0 0 5px var(--term-green);
+}
+
+.emergency-modal {
+  backdrop-filter: blur(5px);
+}
+
+.emergency-modal button:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+/* Bus Module Styles */
+.bus-container {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.bus-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.bus-container::-webkit-scrollbar-track {
+  background: #000;
+}
+
+.bus-container::-webkit-scrollbar-thumb {
+  background: var(--term-green);
+  border-radius: 3px;
+}
+
+@keyframes busPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.bus-loading i {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Gallery Module Styles */
+.gallery-container {
+  max-height: 650px;
+  overflow-y: auto;
+}
+
+.gallery-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.gallery-container::-webkit-scrollbar-track {
+  background: #000;
+}
+
+.gallery-container::-webkit-scrollbar-thumb {
+  background: var(--term-green);
+  border-radius: 3px;
+}
+
+.gallery-slide {
+  animation: fadeEffect 0.5s ease;
+}
+
+@keyframes fadeEffect {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.gallery-dot:hover {
+  transform: scale(1.2);
+  transition: transform 0.2s;
+}
+
+#galleryPrevBtn:hover,
+#galleryNextBtn:hover,
+#galleryPauseBtn:hover,
+#galleryApplySpeed:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s;
+  border-color: var(--term-green) !important;
+}
+
+#galleryPrevBtn:active,
+#galleryNextBtn:active,
+#galleryPauseBtn:active,
+#galleryApplySpeed:active {
+  transform: translateY(0);
+}
+
+#gallerySlideSpeed:focus {
+  outline: none;
+  border-color: var(--term-green);
+  box-shadow: 0 0 5px var(--term-green);
+}

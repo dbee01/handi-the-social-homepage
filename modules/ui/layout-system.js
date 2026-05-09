@@ -12,6 +12,28 @@ export default function initLayoutSystem() {
   let packery = null;
   let isDragging = false;
   
+  // Function to update grid height based on Packery items
+  function updateGridHeight() {
+    if (!packery) return;
+    
+    const items = packery.getItemElements();
+    if (items.length === 0) return;
+    
+    let maxBottom = 0;
+    
+    items.forEach(item => {
+      const rect = item.getBoundingClientRect();
+      const gridRect = grid.getBoundingClientRect();
+      const relativeBottom = rect.bottom - gridRect.top + 40; // Add padding
+      if (relativeBottom > maxBottom) maxBottom = relativeBottom;
+    });
+    
+    if (maxBottom > 0) {
+      grid.style.height = maxBottom + 'px';
+      console.log(`Grid height set to: ${maxBottom}px`);
+    }
+  }
+  
   // Initialize SortableJS for drag & drop
   if (typeof Sortable === 'undefined') {
     console.error("❌ SortableJS not loaded!");
@@ -31,7 +53,6 @@ export default function initLayoutSystem() {
     onStart: function() {
       isDragging = true;
       console.log("🖱️ Drag started");
-      // Disable Packery during drag
       if (packery) {
         packery.options.isResizeLayout = false;
       }
@@ -41,13 +62,12 @@ export default function initLayoutSystem() {
       console.log("🖱️ Drag ended");
       isDragging = false;
       
-      // Re-enable and update Packery
       if (packery) {
         packery.options.isResizeLayout = true;
-        // Force Packery to reload and relayout
         setTimeout(() => {
           packery.reloadItems();
           packery.layout();
+          setTimeout(() => updateGridHeight(), 100);
         }, 50);
       }
     }
@@ -71,22 +91,50 @@ export default function initLayoutSystem() {
     console.log("✅ Packery initialized");
     window.packeryInstance = packery;
     
-    // Layout after all images/content loads
+    // Update height after layout
+    packery.on('layoutComplete', () => {
+      updateGridHeight();
+    });
+    
+    // Initial layout and height update
     setTimeout(() => {
       packery.layout();
+      setTimeout(() => updateGridHeight(), 100);
     }, 100);
+    
+    // Update height on window resize
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (packery) {
+          packery.layout();
+          setTimeout(() => updateGridHeight(), 100);
+        }
+      }, 250);
+    });
+    
+    // Also update when images load
+    const images = grid.querySelectorAll('img');
+    images.forEach(img => {
+      if (img.complete) {
+        updateGridHeight();
+      } else {
+        img.addEventListener('load', () => updateGridHeight());
+      }
+    });
   };
   
   initPackery();
 
   // Initialize Pin System
-  initPinSystem(grid, packery);
+  initPinSystem(grid, packery, updateGridHeight);
   
   console.log("✅ Layout system initialized");
 }
 
 // Pin System
-function initPinSystem(grid, packery) {
+function initPinSystem(grid, packery, updateHeightCallback) {
   console.log("📌 Initializing pin system...");
   
   function setupPinButtons() {
@@ -144,6 +192,9 @@ function initPinSystem(grid, packery) {
     if (packery) {
       packery.reloadItems();
       packery.layout();
+      setTimeout(() => {
+        if (updateHeightCallback) updateHeightCallback();
+      }, 100);
     }
   }
   

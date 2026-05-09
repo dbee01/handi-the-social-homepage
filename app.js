@@ -4,6 +4,11 @@ import initEnergy from "./modules/energy/energy.module.js";
 import initAI from "./modules/ai/ai.module.js";
 import initWeather from "./modules/weather/weather.module.js";
 import initMastodon from "./modules/mastodon/mastodon.module.js";
+import initRadio from "./modules/radio/radio.module.js"; 
+import initSpotify from "./modules/spotify/spotify.module.js";  // Add this
+import initEmergency from "./modules/emergency/emergency.module.js";  // Add this
+import initBus from "./modules/bus/bus.module.js"; 
+import initGallery from "./modules/gallery/gallery.module.js";  
 import initLayoutSystem from "./modules/ui/layout-system.js";
 
 // Global flag to track layout initialization
@@ -89,6 +94,71 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("Error initializing AI:", error);
   }
   
+
+  try {
+    const radioElement = document.getElementById("radio");
+    if (radioElement) {    
+      initRadio(radioElement);
+      console.log("✅ Radio module initialized");
+    } else {
+      console.warn("⚠️ Radio element not found");
+    }
+  } catch (error) {
+    console.error("Error initializing Radio:", error);
+  }
+
+// spotify initialization
+  try {
+    const spotifyElement = document.getElementById("spotify");
+    if (spotifyElement) {    
+      initSpotify(spotifyElement);
+      console.log("✅ Spotify module initialized");
+    } else {
+      console.warn("⚠️ Spotify element not found");
+    }
+  } catch (error) {
+    console.error("Error initializing Spotify:", error);
+  } 
+
+  // emergency initialization
+  try {
+    const emergencyElement = document.getElementById("emergency");
+    if (emergencyElement) {    
+      initEmergency(emergencyElement);
+      console.log("✅ Emergency module initialized");
+    } else {
+      console.warn("⚠️ Emergency element not found");
+    }
+  } catch (error) {
+    console.error("Error initializing Emergency module:", error);
+  }
+
+// bus initialization
+  try {
+    const busElement = document.getElementById("bus");
+    if (busElement) {    
+      initBus(busElement);
+      console.log("✅ Bus module initialized");
+    } else {
+      console.warn("⚠️ Bus element not found");
+    }
+  } catch (error) {
+    console.error("Error initializing Bus module:", error);
+  }  
+
+// gallery initialization
+  try {
+    const galleryElement = document.getElementById("gallery");
+    if (galleryElement) {    
+      initGallery(galleryElement);
+      console.log("✅ Gallery module initialized");
+    } else {
+      console.warn("⚠️ Gallery element not found");
+    }
+  } catch (error) {
+    console.error("Error initializing Gallery module:", error);
+  }
+
   // Initialize Layout System (Packery + SortableJS + Pin System)
   // Give a small delay to ensure all content is rendered
   setTimeout(() => {
