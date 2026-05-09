@@ -29,22 +29,63 @@ export default async function initLocalPlayer(container) {
     width: 100%;
   `;
 
-  // 1. Folder Selection Area
-  const folderSection = document.createElement('div');
-  folderSection.style.cssText = `
-    text-align: center;
-    padding: 20px;
-    background: rgba(0,0,0,0.3);
-    border: 1px dashed var(--term-dim);
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: all 0.3s;
-  `;
-  folderSection.innerHTML = `
-    <i class="fa-solid fa-folder-open" style="font-size: 2rem; color: var(--term-cyan); margin-bottom: 10px;"></i>
-    <div style="color: var(--term-cyan); font-weight: bold;">Select Music Folder</div>
-    <div style="color: var(--term-dim); font-size: 0.8rem;">Click to browse local files</div>
-  `;
+// Replace your folderSection.onclick handler in local-player.module.js
+folderSection.onclick = async () => {
+  // Chromium browsers: use File System Access API
+  if ("showDirectoryPicker" in window) {
+    try {
+      const dirHandle = await window.showDirectoryPicker();
+      await scanFolder(dirHandle);
+    } catch (err) {
+      console.error("Folder selection cancelled or failed:", err);
+    }
+    return;
+  }
+
+  // Firefox / Safari fallback: use <input type="file" webkitdirectory>
+  const input = document.createElement("input");
+  input.type = "file";
+  input.multiple = true;
+  input.accept = ".mp3,.wav,.ogg,.flac,.m4a";
+  input.setAttribute("webkitdirectory", "");
+  input.setAttribute("directory", "");
+
+  input.addEventListener("change", async (event) => {
+    const files = Array.from(event.target.files || []);
+
+    if (!files.length) {
+      return;
+    }
+
+    // Build playlist from selected files
+    playlist = files
+      .filter((file) =>
+        /\.(mp3|wav|ogg|flac|m4a)$/i.test(file.name)
+      )
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((file) => ({
+        name: file.name,
+        file,
+      }));
+
+    if (!playlist.length) {
+      alert("No supported audio files found.");
+      return;
+    }
+
+    renderPlaylist();
+
+    folderSection.style.display = "none";
+    controlsSection.style.display = "flex";
+
+    const trackStatus = document.getElementById("track-status");
+    if (trackStatus) {
+      trackStatus.textContent = `${playlist.length} tracks found`;
+    }
+  });
+
+  input.click();
+};
 
   // 2. Player Controls & Display
   const controlsSection = document.createElement('div');
