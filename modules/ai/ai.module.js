@@ -1,6 +1,19 @@
-export default btn=>{
-btn.onclick=async()=>{
-try{
-const r=await fetch("http://localhost:11434/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"llama3",prompt:"Summarise Irish news"})});
-const d=await r.json();alert(d.response);
-}catch{alert("No local AI")}}}
+// modules/ai/ai.module.js
+
+export default function initAI(btn) {
+  if (!btn) {
+    console.error("AI Module: Button not found");
+    return;
+  }
+
+  // Preserve pin if it exists (though AI button usually just has text)
+  const pin = btn.querySelector('.pin-btn');
+  if (pin) {
+    // If the pin is inside the button, we don't clear it, just attach listener
+  }
+
+  btn.addEventListener('click', () => {
+    alert(`Lumo AI is initializing...
+(This is a placeholder for your AI integration)`);
+  });
+}

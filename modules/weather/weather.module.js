@@ -1,3 +1,4 @@
+// modules/weather/weather.module.js
 import M from "./weather.model.js";
 import V from "./weather.view.js";
 import C from "./weather.controller.js";

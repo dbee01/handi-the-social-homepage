@@ -1,1 +1,3 @@
-export default class{async fetch(){return fetch("https://www.smartgriddashboard.com/DashboardService.svc/data?area=ROI&region=ALL").then(r=>r.json())}}
+export default class{async fetch(){
+    return fetch("https://www.smartgriddashboard.com/DashboardService.svc/data?area=ROI&region=ALL").then(r=>r.json())}
+}

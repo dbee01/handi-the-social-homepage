@@ -1,36 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ple.ie</title>
-<link rel="stylesheet" href="styles/main.css">
-<link rel="manifest" href="manifest.json">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ple.ie</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="manifest" href="manifest.json">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
-<header>
-  <div class="logo">⚡ ple.ie</div>
-  <input type="text" placeholder="Search...">
-  <div id="weather"></div>
-</header>
+  <header>
+    <div class="brand">
+      <i class="fa-solid fa-bolt"></i>
+      <span>ple.ie</span>
+    </div>
 
-<main>
-  <section id="news" class="card"></section>
-  <section id="mastodon" class="card"></section>
-  <section id="grid" class="card"></section>
-  <section class="card">
-    <div id="carbon-val"></div>
-    <div id="carbon-msg"></div>
-  </section>
-</main>
+    <div class="search-wrapper">
+      <select class="search-engine-select" id="searchEngine">
+        <option value="google">Google</option>
+        <option value="duckduckgo">DuckDuckGo</option>
+        <option value="brave">Brave</option>
+        <option value="proton">Proton</option>
+      </select>
+      <input type="text" id="searchInput" placeholder="Search the network...">
+      <i class="fa-solid fa-arrow-right"></i>
+    </div>
 
-<footer>
-  Hosted in Dublin • Green Energy • Open Source
-</footer>
+    <div class="header-weather">
+      <i class="fa-solid fa-cloud-sun"></i>
+      <span id="weather">Loading...</span>
+    </div>
+  </header>
 
-<button id="aiBtn">AI</button>
+  <main>
+    <!-- 1. NEWS (Pin Button Added) -->
+    <div id="news">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      <div class="panel-title"><i class="fa-solid fa-newspaper"></i> News</div>
+    </div>
 
-<script type="module" src="app.js"></script>
+    <!-- 2. GRID (Pin Button Added) -->
+    <div id="grid">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      <div class="val">--</div>
+    </div>
+
+    <!-- 3. MASTODON (Pin Button Added) -->
+    <div id="mastodon">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      <div class="panel-title"><i class="fa-brands fa-mastodon"></i> Mastodon Trending</div>
+    </div>
+
+    <!-- 4. CARBON VAL (Pin Button Added) -->
+    <div id="carbon-val">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      --
+    </div>
+
+    <!-- 5. CARBON MSG (Pin Button Added) -->
+    <div id="carbon-msg">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      Waiting...
+    </div>
+
+    <!-- 6. AI / LUMO (Pin Button Added) -->
+    <div id="aiBtn">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      <i class="fa-solid fa-robot"></i> Ask Lumo
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <span><i class="fa-solid fa-location-dot"></i> Dublin</span>
+      <span><i class="fa-solid fa-leaf"></i> Green Energy</span>
+      <span><i class="fa-brands fa-github"></i> Open Source</span>
+    </div>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+  
+  <!-- Live Server Script -->
+  <script>
+    if ('WebSocket' in window) {
+      (function () {
+        function refreshCSS() {
+          var sheets = [].slice.call(document.getElementsByTagName("link"));
+          var head = document.getElementsByTagName("head")[0];
+          for (var i = 0; i < sheets.length; ++i) {
+            var elem = sheets[i];
+            var parent = elem.parentElement || head;
+            parent.removeChild(elem);
+            var rel = elem.rel;
+            if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+              var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+              elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+            }
+            parent.appendChild(elem);
+          }
+        }
+        var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+        var address = protocol + window.location.host + window.location.pathname + '/ws';
+        var socket = new WebSocket(address);
+        socket.onmessage = function (msg) {
+          if (msg.data == 'reload') window.location.reload();
+          else if (msg.data == 'refreshcss') refreshCSS();
+        };
+        if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+          console.log('Live reload enabled.');
+          sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+        }
+      })();
+    }
+  </script>
 </body>
 </html>
