@@ -10,7 +10,7 @@ import initEmergency from "./modules/emergency/emergency.module.js";  // Add thi
 import initBus from "./modules/bus/bus.module.js"; 
 import initGallery from "./modules/gallery/gallery.module.js";  
 import initRadio from "./modules/radio/radio.module.js";
-// import initLocalPlayer from "./modules/local-player/local-player.js";
+import initLocalPlayer from "./modules/local-player/local-player.js";
 import initFriendlyPhone from "./modules/friendly-phone/friendly-phone.module.js";  // Add thi
 import initLayoutSystem from "./modules/ui/layout-system.js";
 
