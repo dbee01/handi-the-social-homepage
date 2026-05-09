@@ -205,6 +205,16 @@
     
     console.log("🔍 Debug panel added to bottom-right corner");
   }, 1000);
+
+
+ function initResponsiveLayout() {
+  if (window.innerWidth <= 768) {
+    document.getElementById("grid").classList.add("mobile-layout");
+    return;
+  }
+
+  initLayoutSystem();
+ } 
 </script>
 </body>
 </html>
