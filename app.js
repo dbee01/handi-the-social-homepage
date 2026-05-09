@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   try {
     const musicElement = document.getElementById("music-player");
     if (musicElement) {
-      initMusicPlayer(musicElement);
+      initLocalPlayer(musicElement);
       console.log("✅ Local music player module initialized");
     } else {
       console.warn("⚠️ Local music player element not found");
