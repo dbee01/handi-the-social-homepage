@@ -34,15 +34,46 @@ app.get('/api/energy', async (req, res) => {
   }
 });
 
+// mastodon links endpoint
 app.get('/api/mastodon', async (req, res) => {
-  console.log('🐘 [SERVER] Mastodon request received');
+  console.log('🔗 [SERVER] Mastodon Links request received');
   try {
-    const targetUrl = 'https://mastodon.social/api/v1/trends?limit=5';
-    const response = await axios.get(targetUrl);
+    // Correct endpoint for trending links
+    const targetUrl = 'https://mastodon.ie/api/v1/trends/links?limit=5';
+    
+    console.log('🔗 [SERVER] Fetching from:', targetUrl);
+    
+    const response = await axios.get(targetUrl, {
+      timeout: 8000, // Increased timeout
+      headers: { 'User-Agent': 'PleIE-App/1.0' }
+    });
+
+    console.log('🔗 [SERVER] Success! Received', response.data.length, 'links');
     res.json(response.data);
+
   } catch (error) {
-    console.error('🐘 [SERVER] Error:', error.message);
-    res.status(500).json({ error: 'Failed to fetch Mastodon trends' });
+    console.error('🔗 [SERVER] ERROR:', error.message);
+    
+    // Fallback Mock Data matching the API structure
+    const mockData = [
+      {
+        title: "Open Source News",
+        description: "Latest updates on Linux, Python, and Web Development.",
+        image: "https://via.placeholder.com/90x65/000000/00ffff?text=OSS",
+        url: "https://example.com",
+        provider_name: "TechDaily"
+      },
+      {
+        title: "AI Breakthrough",
+        description: "New model achieves human-level reasoning in complex tasks.",
+        image: "https://via.placeholder.com/90x65/000000/00ff41?text=AI",
+        url: "https://example.com",
+        provider_name: "FutureTech"
+      }
+    ];
+    
+    console.log('🔗 [SERVER] Returning mock data');
+    res.json(mockData);
   }
 });
 

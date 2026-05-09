@@ -6,10 +6,16 @@
   <title>ple.ie</title>
   <link rel="stylesheet" href="styles/main.css">
   <link rel="manifest" href="manifest.json">
-  <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body>
+
+  <!-- PACKERY -->
+  <script src="https://unpkg.com/packery@2.1.2/dist/packery.pkgd.min.js"></script>
+  
+  <!-- SORTABLEJS (Use unpkg for reliability) -->
+  <script src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
+  
+  <!-- YOUR APP -->
+  <script type="module" src="app.js"></script>  <body>
 
   <header>
     <div class="brand">
@@ -34,42 +40,44 @@
     </div>
   </header>
 
-  <main>
-    <!-- 1. NEWS (Pin Button Added) -->
-    <div id="news">
+  <!-- Main container for Packery -->
+  <main id="dashboard-grid">
+    <!-- 1. NEWS -->
+    <div class="dashboard-item" id="news" data-order="1">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
       <div class="panel-title"><i class="fa-solid fa-newspaper"></i> News</div>
     </div>
 
-    <!-- 2. GRID (Pin Button Added) -->
-    <div id="grid">
+    <!-- 2. GRID -->
+    <div class="dashboard-item" id="grid" data-order="2">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
       <div class="val">--</div>
     </div>
 
-    <!-- 3. MASTODON (Pin Button Added) -->
-    <div id="mastodon">
+    <!-- 3. MASTODON -->
+    <div class="dashboard-item" id="mastodon" data-order="3">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
       <div class="panel-title"><i class="fa-brands fa-mastodon"></i> Mastodon Trending</div>
     </div>
 
-    <!-- 4. CARBON VAL (Pin Button Added) -->
-    <div id="carbon-val">
+    <!-- 4. CARBON VAL -->
+    <div class="dashboard-item" id="carbon-val" data-order="4">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
       --
     </div>
 
-    <!-- 5. CARBON MSG (Pin Button Added) -->
-    <div id="carbon-msg">
+    <!-- 5. CARBON MSG -->
+    <div class="dashboard-item" id="carbon-msg" data-order="5">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
       Waiting...
     </div>
 
-    <!-- 6. AI / LUMO (Pin Button Added) -->
-    <div id="aiBtn">
+    <!-- 6. AI / LUMO (Must be last) -->
+    <div class="dashboard-item" id="aiBtn" data-order="6">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
       <i class="fa-solid fa-robot"></i> Ask Lumo
     </div>
+
   </main>
 
   <footer>
@@ -79,8 +87,6 @@
       <span><i class="fa-brands fa-github"></i> Open Source</span>
     </div>
   </footer>
-
-  <script type="module" src="app.js"></script>
   
   <!-- Live Server Script -->
   <script>

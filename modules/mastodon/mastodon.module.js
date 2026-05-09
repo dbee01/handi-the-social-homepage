@@ -14,6 +14,7 @@ export default async function initMastodon(container) {
 
   try {
     const apiUrl = 'http://localhost:3001/api/mastodon';
+    console.log("Fetching Mastodon Links from:", apiUrl);
     
     const response = await fetch(apiUrl);
     
@@ -22,78 +23,65 @@ export default async function initMastodon(container) {
     }
 
     const data = await response.json();
-    const trends = Array.isArray(data) ? data : [];
+    console.log("Raw Link Data:", data);
 
-    if (trends.length === 0) {
-      const errorChunk = document.createElement('div');
-      errorChunk.className = 'story-chunk';
-      errorChunk.innerHTML = '<div class="story-content"><h3>No trends found</h3><p>Try again later.</p></div>';
-      container.appendChild(errorChunk);
+    const links = Array.isArray(data) ? data : [];
+
+    if (links.length === 0) {
+      container.innerHTML += '<div class="story-chunk"><div class="story-content"><h3>No links found</h3><p>API returned empty.</p></div></div>';
       return;
     }
 
-    trends.forEach((trend, index) => {
+    links.forEach((link, index) => {
       const chunk = document.createElement('div');
       chunk.className = 'story-chunk';
 
-      // 1. Extract Title (Account display name or username)
-      const title = trend.account?.display_name || trend.account?.username || `Trend #${index + 1}`;
+      // 1. Title (from link.title)
+      const title = link.title || "Untitled Link";
+
+      // 2. Provider Name (Optional subtitle)
+      const provider = link.provider_name || link.author_name || "";
+
+      // 3. Image (from link.image)
+      const imgUrl = link.image || `https://via.placeholder.com/90x65/000000/00ffff?text=${encodeURIComponent(title.substring(0, 3))}`;
+
+      // 4. Text Excerpt (from link.description)
+      // Remove URLs from description
+      let rawDesc = link.description || "No description available";
       
-      // 2. Process Content: Remove URLs and Extract Images
-      let cleanText = trend.content || "No content available";
-      let extractedImg = null;
-
-      // Create a temporary DOM element to parse the HTML content safely
+      // Strip HTML tags
       const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = cleanText;
-
-      // A. Extract Image
-      const imgTag = tempDiv.querySelector('img');
-      if (imgTag) {
-        extractedImg = imgTag.src;
-        // Remove the image from the text content so it doesn't appear twice
-        imgTag.remove();
-      }
-
-      // B. Remove URLs from text
-      // Regex matches http/https URLs and removes them
-      cleanText = tempDiv.textContent || "";
+      tempDiv.innerHTML = rawDesc;
+      let cleanText = tempDiv.textContent || "";
+      
+      // Remove URLs
       cleanText = cleanText.replace(/https?:\/\/[^\s]+/g, '').trim();
       
-      // Clean up extra whitespace caused by removing URLs
-      cleanText = cleanText.replace(/\s+/g, ' ').substring(0, 150); // Truncate if too long
+      // Clean whitespace and truncate
+      cleanText = cleanText.replace(/\s+/g, ' ').substring(0, 150);
 
-      // 3. Determine Thumbnail
-      const imgUrl = extractedImg || `https://via.placeholder.com/90x65/000000/00ffff?text=${encodeURIComponent(title.substring(0, 3))}`;
+      console.log(`Rendering Link ${index}: "${title}" | Img: ${imgUrl} | Text: ${cleanText}`);
 
       chunk.innerHTML = `
-        <img src="${imgUrl}" alt="${title}" class="story-thumb">
+        <img src="${imgUrl}" alt="${title}" class="story-thumb" onerror="this.src='https://via.placeholder.com/90x65/000000/00ff41?text=No+Img'">
         <div class="story-content">
           <h3>${title}</h3>
-          <p>${cleanText}</p>
+          ${provider ? `<small style="color: var(--term-cyan); font-size: 0.75rem; display: block; margin-bottom: 4px;">${provider}</small>` : ''}
+          <p>${cleanText || "No description"}</p>
         </div>
       `;
 
-      // Optional: Click to open original post
+      // Click to open the link
       chunk.style.cursor = 'pointer';
       chunk.onclick = () => {
-        if (trend.url) window.open(trend.url, '_blank');
+        if (link.url) window.open(link.url, '_blank');
       };
 
       container.appendChild(chunk);
     });
 
   } catch (error) {
-    console.error("Mastodon Module Error:", error);
-    
-    const errorChunk = document.createElement('div');
-    errorChunk.className = 'story-chunk';
-    errorChunk.innerHTML = `
-      <div class="story-content">
-        <h3 style="color: var(--term-red)">Connection Failed</h3>
-        <p>Unable to load Mastodon trends.</p>
-      </div>
-    `;
-    container.appendChild(errorChunk);
+    console.error("Mastodon Error:", error);
+    container.innerHTML += '<div class="story-chunk"><div class="story-content"><h3 style="color:red">Error</h3><p>' + error.message + '</p></div></div>';
   }
 }
