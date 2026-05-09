@@ -7,6 +7,52 @@ const PORT = 3001;
 
 app.use(cors());
 
+// Route: /stream?url=<encoded_radio_url>
+app.get('/stream', async (req, res) => {
+  const targetUrl = req.query.url;
+
+  if (!targetUrl) {
+    return res.status(400).send('Missing URL parameter');
+  }
+
+  try {
+    // Decode the URL
+    const decodedUrl = decodeURIComponent(targetUrl);
+
+    // Validate that it's an http/https URL to prevent SSRF attacks
+    if (!/^https?:\/\//.test(decodedUrl)) {
+      return res.status(400).send('Invalid URL scheme');
+    }
+
+    console.log(`Proxying: ${decodedUrl}`);
+
+    // Stream the audio data directly to the client
+    const response = await axios({
+      method: 'get',
+      url: decodedUrl,
+      responseType: 'stream',
+      headers: {
+        // Mimic a browser to avoid 403 Forbidden on some stations
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': '*/*',
+        'Connection': 'keep-alive'
+      }
+    });
+
+    // Set headers to tell the browser this is audio
+    res.setHeader('Content-Type', 'audio/mpeg');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Allow any origin
+    
+    // Pipe the stream directly to the response
+    response.data.pipe(res);
+
+  } catch (error) {
+    console.error('Proxy Error:', error.message);
+    res.status(500).send('Stream proxy failed');
+  }
+});
+
 app.get('/api/news', async (req, res) => {
   console.log('📰 [SERVER] News request received');
   try {
@@ -101,6 +147,8 @@ app.get('/api/mastodon', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`✅ [SERVER] Running on http://localhost:${PORT}`);
+  console.log(`✅ Radio Proxy Server running at http://localhost:${PORT}`);
+  console.log(`📡 Usage: http://localhost:${PORT}/stream?url=<encoded_station_url>`);
   console.log(`   📰 Test News: http://localhost:${PORT}/api/news`);
   console.log(`   ⚡ Test Energy: http://localhost:${PORT}/api/energy`);
   console.log(`   🐘 Test Mastodon: http://localhost:${PORT}/api/mastodon`);
