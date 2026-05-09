@@ -825,6 +825,39 @@ footer {
   }
 }
 
+/* Local Music Player Container */
+#local-player {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Content area inside the module */
+#local-player .module-content,
+#music-player {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Ensure all generated content stays inside the panel */
+#music-player * {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  #local-player,
+  #music-player {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}
+
 /* Add to your CSS */
 
 .mobile-layout {
