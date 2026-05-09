@@ -12,6 +12,7 @@ import initGallery from "./modules/gallery/gallery.module.js";
 import initRadio from "./modules/radio/radio.module.js";
 import initLocalPlayer from "./modules/local-player/local-player.js";
 import initFriendlyPhone from "./modules/friendly-phone/friendly-phone.module.js";  // Add thi
+import initMusicPlayer from './modules/music/local-player.module.js';
 import initLayoutSystem from "./modules/ui/layout-system.js";
 
 // Global flag to track layout initialization
@@ -31,6 +32,19 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("❌ SortableJS not loaded! Check script includes.");
   } else {
     console.log("✅ SortableJS loaded");
+  }
+  
+  // Initialize all modules with proper error handling
+  try {
+    const musicElement = document.getElementById("music-player");
+    if (musicElement) {
+      initMusicPlayer(musicElement);
+      console.log("✅ Local music player module initialized");
+    } else {
+      console.warn("⚠️ Local music player element not found");
+    }
+  } catch (error) {
+    console.error("Error initializing local music player:", error);
   }
   
   // Initialize all modules with proper error handling
@@ -71,6 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
   } catch (error) {
     console.error("Error initializing news:", error);
   }
+
+
   
   try {
     const gridElement = document.getElementById("grid");
