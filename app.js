@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
   try {
     const radioElement = document.getElementById("radio");
     if (radioElement) {
-      initNews(radioElement);
+      initRadio(radioElement);
       console.log("✅ Radio module initialized");
     } else {
       console.warn("⚠️ Radio element not found");
