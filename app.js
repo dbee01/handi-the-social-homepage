@@ -33,7 +33,18 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ SortableJS loaded");
   }
   
-  
+  // Initialize all modules with proper error handling
+  try {
+    const musicElement = document.getElementById("music-player");
+    if (musicElement) {
+      initLocalPlayer(musicElement);
+      console.log("✅ Local music player module initialized");
+    } else {
+      console.warn("⚠️ Local music player element not found");
+    }
+  } catch (error) {
+    console.error("Error initializing local music player:", error);
+  }
 
 // Initialize all modules with proper error handling
   try {
