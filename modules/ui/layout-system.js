@@ -1,76 +1,134 @@
 // modules/ui/layout-system.js
-import initPinSystem from './pin-system.js';
 
 export default function initLayoutSystem() {
   const grid = document.getElementById('dashboard-grid');
-  if (!grid) return;
-
-  // Debug: Log container dimensions
-  console.log("Grid Container Width:", grid.offsetWidth, "Height:", grid.offsetHeight);
-
-  // 1. Initialize Packery (Declare here so it's accessible in setTimeout)
-  const packery = new Packery(grid, {
-    itemSelector: '.dashboard-item',
-    gutter: 30,
-    columnWidth: 450,
-    percentPosition: false,
-    stagger: 30,
-    getSortData: {
-      order: '[data-order] parseInt',
-    },
-    initLayout: true,
-  });
-
-  // 2. Initialize SortableJS
-  const SortableLib = window.Sortable || (window.Sortable && window.Sortable.default);
-  
-  if (!SortableLib) {
-    console.error("SortableJS not loaded!");
+  if (!grid) {
+    console.error("❌ Dashboard grid not found!");
     return;
   }
 
-  const sortable = new SortableLib(grid, {
-    animation: 150,
+  console.log("🎯 Initializing layout system...");
+
+  let packery = null;
+  
+  // Initialize SortableJS for drag & drop
+  if (typeof Sortable === 'undefined') {
+    console.error("❌ SortableJS not loaded!");
+    return;
+  }
+
+  console.log("✅ SortableJS found, enabling drag & drop...");
+  
+  const sortable = new Sortable(grid, {
+    animation: 300,
     ghostClass: 'sortable-ghost',
     chosenClass: 'sortable-chosen',
     dragClass: 'sortable-drag',
     handle: '.dashboard-item',
-    filter: '.pin-btn',
-    onEnd: function (evt) {
-      // Ensure packery is available here too
-      if (packery) packery.layout();
+    onEnd: function() {
+      console.log("🖱️ Drag ended, relayouting...");
+      if (packery) {
+        packery.layout();
+      }
     }
   });
 
-  // 3. Initialize Pin System
-  initPinSystem(grid);
-
-  // 4. FORCE RE-LAYOUT AND HEIGHT CALCULATION
-  setTimeout(() => {
-    if (!packery) {
-      console.error("Packery instance not found in timeout!");
+  // Initialize Packery
+  const initPackery = () => {
+    if (typeof Packery === 'undefined') {
+      console.error("❌ Packery not loaded!");
       return;
     }
-
-    console.log("Re-calculating Packery layout...");
-    packery.layout();
     
-    // Calculate the bottom of the lowest item
-    const items = packery.getItemElements();
-    let maxBottom = 0;
-    
-    items.forEach(item => {
-      const top = parseFloat(item.style.top) || 0;
-      const height = item.offsetHeight;
-      const bottom = top + height;
-      if (bottom > maxBottom) maxBottom = bottom;
+    packery = new Packery(grid, {
+      itemSelector: '.dashboard-item',
+      gutter: 30,
+      columnWidth: 420,
+      transitionDuration: '0.2s'
     });
-
-    // Set the container height to the bottom of the lowest item + padding
-    // This ensures the footer sits right after the content
-    grid.style.height = (maxBottom + 40) + 'px';
     
-    console.log("Columns calculated:", packery.cols);
-    console.log("Container height set to:", grid.style.height);
-  }, 500); 
+    console.log("✅ Packery initialized");
+    window.packeryInstance = packery;
+  };
+  
+  initPackery();
+
+  // Initialize Pin System
+  initPinSystem(grid, packery);
+  
+  console.log("✅ Layout system initialized");
+}
+
+// Pin System
+function initPinSystem(grid, packery) {
+  console.log("📌 Initializing pin system...");
+  
+  function setupPinButtons() {
+    const allPins = grid.querySelectorAll('.pin-btn');
+    console.log(`📌 Found ${allPins.length} pin buttons`);
+    
+    allPins.forEach(btn => {
+      btn.removeEventListener('click', handlePinClick);
+      btn.addEventListener('click', handlePinClick);
+    });
+  }
+  
+  function handlePinClick(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    const btn = e.currentTarget;
+    const panel = btn.closest('.dashboard-item');
+    
+    if (!panel) return;
+    
+    const isPinned = btn.classList.contains('pinned');
+    
+    // Toggle pin state
+    if (isPinned) {
+      btn.classList.remove('pinned');
+      btn.title = "Pin to top";
+    } else {
+      btn.classList.add('pinned');
+      btn.title = "Unpin";
+    }
+    
+    // Reorder DOM based on pin states
+    const allItems = Array.from(grid.querySelectorAll('.dashboard-item'));
+    const pinnedItems = allItems.filter(item => {
+      const pinBtn = item.querySelector('.pin-btn');
+      return pinBtn && pinBtn.classList.contains('pinned');
+    });
+    const unpinnedItems = allItems.filter(item => {
+      const pinBtn = item.querySelector('.pin-btn');
+      return !pinBtn || !pinBtn.classList.contains('pinned');
+    });
+    
+    // New order: pinned first, then unpinned
+    const newOrder = [...pinnedItems, ...unpinnedItems];
+    
+    // Reorder DOM
+    newOrder.forEach(item => {
+      grid.appendChild(item);
+    });
+    
+    // Update Packery
+    if (packery) {
+      packery.reloadItems();
+      packery.layout();
+    }
+  }
+  
+  setupPinButtons();
+  
+  // Watch for dynamically added items
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.addedNodes.length) {
+        setupPinButtons();
+      }
+    });
+  });
+  
+  observer.observe(grid, { childList: true, subtree: true });
 }

@@ -11,115 +11,163 @@
   <!-- PACKERY -->
   <script src="https://unpkg.com/packery@2.1.2/dist/packery.pkgd.min.js"></script>
   
-  <!-- SORTABLEJS (Use unpkg for reliability) -->
+  <!-- SORTABLEJS -->
   <script src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
   
-  <!-- YOUR APP -->
-  <script type="module" src="app.js"></script>  <body>
+  <!-- YOUR APP - Load with defer to ensure DOM is ready -->
+  <script type="module" src="app.js" defer></script>
+</head>
+<body>
 
-  <header>
-    <div class="brand">
-      <i class="fa-solid fa-bolt"></i>
-      <span>ple.ie</span>
+<header>
+  <div class="brand">
+    <i class="fa-solid fa-bolt"></i>
+    <span>ple.ie</span>
+  </div>
+<div class="search-wrapper">
+  <select class="search-engine-select" id="searchEngine">
+    <option value="google">Google</option>
+    <option value="duckduckgo">DuckDuckGo</option>
+    <option value="brave">Brave</option>
+    <option value="proton">Proton</option>
+  </select>
+  <input type="text" id="searchInput" placeholder="Search the network...">
+  <i class="fa-solid fa-arrow-right" style="cursor: pointer;"></i>
+</div>
+
+<div class="header-weather">
+    <i class="fa-solid fa-cloud-sun"></i>
+    <span id="weather">Loading...</span>
+  </div>
+</header>
+
+<!-- Main container for Packery -->
+<main id="dashboard-grid">
+  <!-- 1. NEWS -->
+  <div class="dashboard-item" id="news" data-order="1">
+    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+    <div class="panel-title"><i class="fa-solid fa-newspaper"></i> News</div>
+    <div class="news-container"></div>
+  </div>
+
+  <!-- 2. GRID -->
+  <div class="dashboard-item" id="grid" data-order="2">
+    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+    <div class="panel-title"><i class="fa-solid fa-charging-station"></i> Grid Status</div>
+    <div class="val">-- MW</div>
+  </div>
+
+  <!-- 3. MASTODON -->
+  <div class="dashboard-item" id="mastodon" data-order="3">
+    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+    <div class="panel-title"><i class="fa-brands fa-mastodon"></i> Mastodon Trending</div>
+    <div class="mastodon-container"></div>
+  </div>
+
+  <!-- 4. CARBON VAL -->
+  <div class="dashboard-item" id="carbon-val" data-order="4">
+    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+    <div class="panel-title"><i class="fa-solid fa-cloud"></i> Carbon Intensity</div>
+    <div class="val">-- g/kWh</div>
+  </div>
+
+  <!-- 5. CARBON MSG -->
+  <div class="dashboard-item" id="carbon-msg" data-order="5">
+    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+    <div class="panel-title"><i class="fa-solid fa-leaf"></i> Green Tip</div>
+    <div class="message">Waiting for data...</div>
+  </div>
+
+  <!-- 6. AI / LUMO -->
+  <div class="dashboard-item" id="aiBtn" data-order="6">
+    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+    <div class="panel-title" style="justify-content: center;"><i class="fa-solid fa-robot"></i> Ask Lumo</div>
+    <div style="text-align: center; margin-top: 20px;">
+      <i class="fa-solid fa-microchip" style="font-size: 2rem; color: var(--term-green);"></i>
+      <p style="margin-top: 15px;">Click to ask about energy</p>
     </div>
+  </div>
+</main>
 
-    <div class="search-wrapper">
-      <select class="search-engine-select" id="searchEngine">
-        <option value="google">Google</option>
-        <option value="duckduckgo">DuckDuckGo</option>
-        <option value="brave">Brave</option>
-        <option value="proton">Proton</option>
-      </select>
-      <input type="text" id="searchInput" placeholder="Search the network...">
-      <i class="fa-solid fa-arrow-right"></i>
-    </div>
+<footer>
+  <div class="footer-content">
+    <span><i class="fa-solid fa-location-dot"></i> Dublin</span>
+    <span><i class="fa-solid fa-leaf"></i> Green Energy</span>
+    <span><i class="fa-brands fa-github"></i> Open Source</span>
+  </div>
+</footer>
 
-    <div class="header-weather">
-      <i class="fa-solid fa-cloud-sun"></i>
-      <span id="weather">Loading...</span>
-    </div>
-  </header>
+<script>
+  // Simple initialization checker
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM ready, checking for layout system...');
+    
+    // Give the module time to load
+    setTimeout(() => {
+      if (typeof window.layoutSystemInitialized === 'undefined') {
+        console.warn('Layout system not initialized yet, but modules should load soon...');
+      }
+    }, 500);
+  });
+</script>
 
-  <!-- Main container for Packery -->
-  <main id="dashboard-grid">
-    <!-- 1. NEWS -->
-    <div class="dashboard-item" id="news" data-order="1">
-      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-      <div class="panel-title"><i class="fa-solid fa-newspaper"></i> News</div>
-    </div>
-
-    <!-- 2. GRID -->
-    <div class="dashboard-item" id="grid" data-order="2">
-      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-      <div class="val">--</div>
-    </div>
-
-    <!-- 3. MASTODON -->
-    <div class="dashboard-item" id="mastodon" data-order="3">
-      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-      <div class="panel-title"><i class="fa-brands fa-mastodon"></i> Mastodon Trending</div>
-    </div>
-
-    <!-- 4. CARBON VAL -->
-    <div class="dashboard-item" id="carbon-val" data-order="4">
-      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-      --
-    </div>
-
-    <!-- 5. CARBON MSG -->
-    <div class="dashboard-item" id="carbon-msg" data-order="5">
-      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-      Waiting...
-    </div>
-
-    <!-- 6. AI / LUMO (Must be last) -->
-    <div class="dashboard-item" id="aiBtn" data-order="6">
-      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-      <i class="fa-solid fa-robot"></i> Ask Lumo
-    </div>
-
-  </main>
-
-  <footer>
-    <div class="footer-content">
-      <span><i class="fa-solid fa-location-dot"></i> Dublin</span>
-      <span><i class="fa-solid fa-leaf"></i> Green Energy</span>
-      <span><i class="fa-brands fa-github"></i> Open Source</span>
-    </div>
-  </footer>
-  
-  <!-- Live Server Script -->
-  <script>
-    if ('WebSocket' in window) {
-      (function () {
-        function refreshCSS() {
-          var sheets = [].slice.call(document.getElementsByTagName("link"));
-          var head = document.getElementsByTagName("head")[0];
-          for (var i = 0; i < sheets.length; ++i) {
-            var elem = sheets[i];
-            var parent = elem.parentElement || head;
-            parent.removeChild(elem);
-            var rel = elem.rel;
-            if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-              var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-              elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-            }
-            parent.appendChild(elem);
-          }
-        }
-        var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-        var address = protocol + window.location.host + window.location.pathname + '/ws';
-        var socket = new WebSocket(address);
-        socket.onmessage = function (msg) {
-          if (msg.data == 'reload') window.location.reload();
-          else if (msg.data == 'refreshcss') refreshCSS();
-        };
-        if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-          console.log('Live reload enabled.');
-          sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-        }
-      })();
+<!-- Debug script to verify functionality -->
+<script>
+  setTimeout(() => {
+    console.log("🔍 Debugging layout system...");
+    
+    const grid = document.getElementById('dashboard-grid');
+    const items = document.querySelectorAll('.dashboard-item');
+    const pins = document.querySelectorAll('.pin-btn');
+    
+    console.log(`Grid found: ${!!grid}`);
+    console.log(`Items found: ${items.length}`);
+    console.log(`Pin buttons found: ${pins.length}`);
+    
+    // Test functionality
+    if (pins.length > 0) {
+      console.log("✅ Pin buttons exist. Try clicking one!");
+      
+      // Add visual feedback for testing
+      pins.forEach((pin, i) => {
+        console.log(`Pin ${i} on item: ${pin.closest('.dashboard-item')?.id}`);
+      });
     }
-  </script>
+    
+    if (typeof Sortable !== 'undefined') {
+      console.log("✅ SortableJS is available");
+    } else {
+      console.error("❌ SortableJS is NOT available");
+    }
+    
+    if (typeof Packery !== 'undefined') {
+      console.log("✅ Packery is available");
+    } else {
+      console.error("❌ Packery is NOT available");
+    }
+    
+    // Add manual test buttons
+    const testDiv = document.createElement('div');
+    testDiv.style.cssText = 'position:fixed; bottom:10px; right:10px; z-index:9999; background:#000; color:#0f0; padding:10px; border:1px solid #0f0; font-size:12px; font-family:monospace;';
+    testDiv.innerHTML = `
+      <strong>Debug Panel</strong><br>
+      <button id="testPin">Test Pin First Item</button><br>
+      <button id="testDragMsg">Drag & Drop Active</button>
+    `;
+    document.body.appendChild(testDiv);
+    
+    document.getElementById('testPin')?.addEventListener('click', () => {
+      const firstPin = document.querySelector('.pin-btn');
+      if (firstPin) {
+        console.log("🔧 Testing pin click...");
+        firstPin.click();
+      } else {
+        console.error("No pin button found!");
+      }
+    });
+    
+    console.log("🔍 Debug panel added to bottom-right corner");
+  }, 1000);
+</script>
 </body>
 </html>

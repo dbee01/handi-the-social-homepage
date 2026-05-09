@@ -1,49 +1,91 @@
 // modules/ui/pin-system.js
 
-export default function initPinSystem(gridContainer) {
+export default function initPinSystem(gridContainer, packeryInstance) {
   if (!gridContainer) {
-    // Fallback if grid not passed (for backward compatibility)
-    gridContainer = document.querySelector('#dashboard-grid') || document.querySelector('main');
+    console.error("Pin System: Container not found");
+    return;
   }
-  if (!gridContainer) return;
 
-  const pins = gridContainer.querySelectorAll('.pin-btn');
+  function refreshPins() {
+    const pins = gridContainer.querySelectorAll('.pin-btn');
+    pins.forEach(btn => {
+      // Remove old listener to prevent duplicates
+      btn.removeEventListener('click', handlePinClick);
+      btn.addEventListener('click', handlePinClick);
+    });
+  }
 
-  pins.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
+  function handlePinClick(e) {
+    e.stopPropagation();
+    
+    const btn = e.currentTarget;
+    const panel = btn.closest('.dashboard-item');
+    if (!panel) return;
+
+    const isPinned = btn.classList.contains('pinned');
+    const allItems = Array.from(gridContainer.querySelectorAll('.dashboard-item'));
+
+    if (isPinned) {
+      // Unpin: move to end
+      btn.classList.remove('pinned');
+      btn.title = "Pin to top";
       
-      const panel = btn.closest('.dashboard-item');
-      if (!panel) return;
-
-      const isPinned = btn.classList.contains('pinned');
-
-      if (isPinned) {
-        // UNPIN: Move to end (natural flow)
+      // Move to end while preserving relative order of other items
+      const currentIndex = allItems.indexOf(panel);
+      if (currentIndex !== -1) {
+        // Remove from current position and append
+        gridContainer.removeChild(panel);
         gridContainer.appendChild(panel);
-        btn.classList.remove('pinned');
-        btn.title = "Pin to top";
-      } else {
-        // PIN: Move to beginning
-        // Prepend moves it to the first position in the DOM
-        // Packery will then re-layout, putting it in the top-left
-        gridContainer.prepend(panel);
-        btn.classList.add('pinned');
-        btn.title = "Unpin";
       }
+    } else {
+      // Pin: move to top
+      btn.classList.add('pinned');
+      btn.title = "Unpin";
+      
+      // Move to beginning
+      const currentIndex = allItems.indexOf(panel);
+      if (currentIndex !== -1) {
+        gridContainer.removeChild(panel);
+        gridContainer.insertBefore(panel, allItems[0]);
+      }
+    }
 
-      // Trigger Packery to re-layout immediately
-      // We need to find the packery instance. 
-      // Since we can't easily access it here without global scope, 
-      // we'll rely on the fact that DOM changes trigger Packery if configured,
-      // OR we can manually trigger a layout if we stored the instance.
+    // Force multiple layouts to ensure Packery recalculates correctly
+    if (packeryInstance && packeryInstance.layout) {
+      // First layout
+      packeryInstance.layout();
       
-      // Simple workaround: Dispatch a custom event or just let the next interaction trigger it.
-      // For immediate effect, we can try to re-init or just rely on the drag-stop event.
-      // However, to be safe, let's assume the user might drag it immediately.
-      // If you want instant reflow, you'd need to pass the packery instance here.
+      // Second layout after DOM settles
+      setTimeout(() => {
+        if (packeryInstance && packeryInstance.layout) {
+          packeryInstance.layout();
+        }
+      }, 50);
       
-      console.log(`Panel ${panel.id} is now ${isPinned ? 'unpinned' : 'pinned'}`);
+      // Third layout for any lingering issues
+      setTimeout(() => {
+        if (packeryInstance && packeryInstance.layout) {
+          packeryInstance.layout();
+        }
+      }, 150);
+    }
+  }
+
+  // Initial setup
+  refreshPins();
+
+  // Watch for dynamically added items (if any)
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.addedNodes.length) {
+        refreshPins();
+      }
     });
   });
+
+  observer.observe(gridContainer, { childList: true, subtree: true });
+
+  return {
+    refresh: refreshPins
+  };
 }
