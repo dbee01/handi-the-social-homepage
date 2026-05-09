@@ -10,6 +10,7 @@ import initEmergency from "./modules/emergency/emergency.module.js";  // Add thi
 import initBus from "./modules/bus/bus.module.js"; 
 import initGallery from "./modules/gallery/gallery.module.js";  
 import initRadio from "./modules/radio/radio.module.js";
+import initLocalPlayer from "./modules/local-player/local-player.js";
 import initFriendlyPhone from "./modules/friendly-phone/friendly-phone.module.js";  // Add thi
 import initLayoutSystem from "./modules/ui/layout-system.js";
 
@@ -31,7 +32,20 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     console.log("✅ SortableJS loaded");
   }
-
+  
+  // Initialize all modules with proper error handling
+  try {
+    const localPlayerElement = document.getElementById("local-player");
+    if (localPlayerElement) {
+      initNews(localPlayerElement);
+      console.log("✅ Local Player module initialized");
+    } else {
+      console.warn("⚠️ Local Player element not found");
+    }
+  } catch (error) {
+    console.error("Error initializing local player:", error);
+  }
+  
 // Initialize all modules with proper error handling
   try {
     const radioElement = document.getElementById("radio");
