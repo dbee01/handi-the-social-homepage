@@ -123,19 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
   } catch (error) {
     console.error("Error initializing AI:", error);
   }
-  
-
-  try {
-    const radioElement = document.getElementById("radio");
-    if (radioElement) {    
-      initRadio(radioElement);
-      console.log("✅ Radio module initialized");
-    } else {
-      console.warn("⚠️ Radio element not found");
-    }
-  } catch (error) {
-    console.error("Error initializing Radio:", error);
-  }
 
 // spotify initialization
   try {
