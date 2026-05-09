@@ -4,7 +4,6 @@ import initEnergy from "./modules/energy/energy.module.js";
 import initAI from "./modules/ai/ai.module.js";
 import initWeather from "./modules/weather/weather.module.js";
 import initMastodon from "./modules/mastodon/mastodon.module.js";
-import initRadio from "./modules/radio/radio.module.js"; 
 import initSpotify from "./modules/spotify/spotify.module.js";  // Add this
 import initEmergency from "./modules/emergency/emergency.module.js";  // Add this
 import initBus from "./modules/bus/bus.module.js"; 
