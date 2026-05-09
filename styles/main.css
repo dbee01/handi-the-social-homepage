@@ -548,3 +548,28 @@ footer {
 .text-cyan {
   color: var(--term-cyan);
 }
+
+/* Make sure dashboard items have proper cursor for dragging */
+.dashboard-item {
+  cursor: grab;
+}
+
+.dashboard-item:active {
+  cursor: grabbing;
+}
+
+/* SortableJS drag visual feedback */
+.sortable-ghost {
+  opacity: 0.4;
+  background: rgba(0, 255, 65, 0.2);
+  border: 2px dashed var(--term-green);
+}
+
+.sortable-drag {
+  opacity: 0.8;
+  cursor: grabbing !important;
+}
+
+.sortable-chosen {
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+}

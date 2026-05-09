@@ -10,6 +10,7 @@ export default function initLayoutSystem() {
   console.log("🎯 Initializing layout system...");
 
   let packery = null;
+  let isDragging = false;
   
   // Initialize SortableJS for drag & drop
   if (typeof Sortable === 'undefined') {
@@ -25,10 +26,29 @@ export default function initLayoutSystem() {
     chosenClass: 'sortable-chosen',
     dragClass: 'sortable-drag',
     handle: '.dashboard-item',
-    onEnd: function() {
-      console.log("🖱️ Drag ended, relayouting...");
+    disabled: false,
+    
+    onStart: function() {
+      isDragging = true;
+      console.log("🖱️ Drag started");
+      // Disable Packery during drag
       if (packery) {
-        packery.layout();
+        packery.options.isResizeLayout = false;
+      }
+    },
+    
+    onEnd: function() {
+      console.log("🖱️ Drag ended");
+      isDragging = false;
+      
+      // Re-enable and update Packery
+      if (packery) {
+        packery.options.isResizeLayout = true;
+        // Force Packery to reload and relayout
+        setTimeout(() => {
+          packery.reloadItems();
+          packery.layout();
+        }, 50);
       }
     }
   });
@@ -44,11 +64,17 @@ export default function initLayoutSystem() {
       itemSelector: '.dashboard-item',
       gutter: 30,
       columnWidth: 420,
-      transitionDuration: '0.2s'
+      transitionDuration: '0.2s',
+      resize: true
     });
     
     console.log("✅ Packery initialized");
     window.packeryInstance = packery;
+    
+    // Layout after all images/content loads
+    setTimeout(() => {
+      packery.layout();
+    }, 100);
   };
   
   initPackery();
@@ -83,6 +109,8 @@ function initPinSystem(grid, packery) {
     if (!panel) return;
     
     const isPinned = btn.classList.contains('pinned');
+    
+    console.log(`📌 Pin clicked, isPinned: ${isPinned}`);
     
     // Toggle pin state
     if (isPinned) {
