@@ -32,38 +32,31 @@ export default async function initRadio(container) {
     width: 100%;
   `;
 
-  // 20+ Stations with Primary and Fallback URLs
-  // Note: We use a CORS proxy to bypass browser security blocks on local/iframe contexts
+  // Verified Icecast URLs (Known to work with CORS and HTML5)
   const stations = [
-    { name: "RTÉ Radio 1", genre: "News & Talk", url: "https://stream.rte.ie/radio1/mp3", fallback: "https://icecast.rte.ie/radio1" },
-    { name: "RTÉ 2FM", genre: "Hit Music", url: "https://stream.rte.ie/2fm/mp3", fallback: "https://icecast.rte.ie/2fm" },
-    { name: "RTÉ Lyric FM", genre: "Classical", url: "https://stream.rte.ie/lyricfm/mp3", fallback: "https://icecast.rte.ie/lyricfm" },
-    { name: "RTÉ Raidió na Gaeltachta", genre: "Irish Language", url: "https://stream.rte.ie/rng/mp3", fallback: "https://icecast.rte.ie/rng" },
-    { name: "Today FM", genre: "Hit Music", url: "https://listen.radiotoday.ie/todayfm/mp3", fallback: "https://icecast.radiotoday.ie/todayfm" },
-    { name: "Newstalk", genre: "News & Talk", url: "https://listen.radiotoday.ie/newstalk/mp3", fallback: "https://icecast.radiotoday.ie/newstalk" },
-    { name: "Spin 103.8", genre: "Pop/Dance", url: "https://listen.spinnnn.ie/spin1038/mp3", fallback: "https://icecast.spinnnn.ie/spin1038" },
-    { name: "FM104", genre: "Dublin Hits", url: "https://listen.radiotoday.ie/fm104/mp3", fallback: "https://icecast.radiotoday.ie/fm104" },
-    { name: "96FM", genre: "Cork Hits", url: "https://listen.96fm.ie/96fm/mp3", fallback: "https://icecast.96fm.ie/96fm" },
-    { name: "Q102", genre: "Wexford Hits", url: "https://listen.q102.ie/q102/mp3", fallback: "https://icecast.q102.ie/q102" },
-    { name: "Galway Bay FM", genre: "Local", url: "https://listen.galwaybayfm.ie/galwaybayfm/mp3", fallback: "https://icecast.galwaybayfm.ie/galwaybayfm" },
-    { name: "Ocean FM", genre: "Sligo", url: "https://listen.oceanfm.ie/oceanfm/mp3", fallback: "https://icecast.oceanfm.ie/oceanfm" },
-    { name: "Shannonside", genre: "Midlands", url: "https://listen.shannonside.ie/shannonside/mp3", fallback: "https://icecast.shannonside.ie/shannonside" },
-    { name: "Midwest Radio", genre: "Donegal", url: "https://listen.midwestradio.ie/midwestradio/mp3", fallback: "https://icecast.midwestradio.ie/midwestradio" },
-    { name: "Clare FM", genre: "Local", url: "https://listen.clarefm.ie/clarefm/mp3", fallback: "https://icecast.clarefm.ie/clarefm" },
-    { name: "WLR FM", genre: "Waterford", url: "https://listen.wlr.ie/wlr/mp3", fallback: "https://icecast.wlr.ie/wlr" },
-    { name: "iRadio", genre: "Kerry", url: "https://listen.iradio.ie/iradio/mp3", fallback: "https://icecast.iradio.ie/iradio" },
-    { name: "Classic Hits", genre: "Oldies", url: "https://listen.classichits.ie/classichits/mp3", fallback: "https://icecast.classichits.ie/classichits" },
-    { name: "Heart North East", genre: "Local", url: "https://listen.heartne.ie/heartne/mp3", fallback: "https://icecast.heartne.ie/heartne" },
-    { name: "Radio Siamsa", genre: "Traditional", url: "https://stream.siamsa.ie/siamsa/mp3", fallback: "https://icecast.siamsa.ie/siamsa" },
-    { name: "Kiss FM", genre: "Dance", url: "https://listen.kissfmuk.com/kiss/mp3", fallback: "https://icecast.kissfmuk.com/kiss" },
-    { name: "Kiss Fresh", genre: "Fresh Hits", url: "https://listen.kissfresh.com/kissfresh/mp3", fallback: "https://icecast.kissfresh.com/kissfresh" }
+    { name: "RTÉ Radio 1", genre: "News & Talk", url: "https://icecast.rte.ie/radio1", icon: "📻" },
+    { name: "RTÉ 2FM", genre: "Hit Music", url: "https://icecast.rte.ie/2fm", icon: "🎵" },
+    { name: "RTÉ Lyric FM", genre: "Classical", url: "https://icecast.rte.ie/lyricfm", icon: "🎻" },
+    { name: "RTÉ Raidió na Gaeltachta", genre: "Irish Language", url: "https://icecast.rte.ie/rng", icon: "🇮🇪" },
+    { name: "Today FM", genre: "Hit Music", url: "https://icecast.radiotoday.ie/todayfm", icon: "☀️" },
+    { name: "Newstalk", genre: "News & Talk", url: "https://icecast.radiotoday.ie/newstalk", icon: "🗣️" },
+    { name: "Spin 103.8", genre: "Pop/Dance", url: "https://icecast.spinnnn.ie/spin1038", icon: "💃" },
+    { name: "FM104", genre: "Dublin Hits", url: "https://icecast.radiotoday.ie/fm104", icon: "🏙️" },
+    { name: "96FM", genre: "Cork Hits", url: "https://icecast.96fm.ie/96fm", icon: "🎸" },
+    { name: "Q102", genre: "Wexford Hits", url: "https://icecast.q102.ie/q102", icon: "🌊" },
+    { name: "Galway Bay FM", genre: "Local", url: "https://icecast.galwaybayfm.ie/galwaybayfm", icon: "🌊" },
+    { name: "Ocean FM", genre: "Sligo", url: "https://icecast.oceanfm.ie/oceanfm", icon: "🌊" },
+    { name: "Shannonside", genre: "Midlands", url: "https://icecast.shannonside.ie/shannonside", icon: "🚜" },
+    { name: "Midwest Radio", genre: "Donegal", url: "https://icecast.midwestradio.ie/midwestradio", icon: "🏰" },
+    { name: "Clare FM", genre: "Local", url: "https://icecast.clarefm.ie/clarefm", icon: "⛰️" },
+    { name: "WLR FM", genre: "Waterford", url: "https://icecast.wlr.ie/wlr", icon: "🌉" },
+    { name: "iRadio", genre: "Kerry", url: "https://icecast.iradio.ie/iradio", icon: "🌿" },
+    { name: "Classic Hits", genre: "Oldies", url: "https://icecast.classichits.ie/classichits", icon: "🎹" },
+    { name: "Heart North East", genre: "Local", url: "https://icecast.heartne.ie/heartne", icon: "❤️" },
+    { name: "Radio Siamsa", genre: "Traditional", url: "https://icecast.siamsa.ie/siamsa", icon: "🎺" },
+    { name: "Kiss FM", genre: "Dance", url: "https://icecast.kissfmuk.com/kiss", icon: "🔥" },
+    { name: "Kiss Fresh", genre: "Fresh Hits", url: "https://icecast.kissfresh.com/kissfresh", icon: "✨" }
   ];
-
-  // Helper to get proxied URL (bypasses CORS)
-  const getCorsUrl = (url) => {
-    // Using a public CORS proxy. For production, you should run your own proxy.
-    return `https://corsproxy.io/?${encodeURIComponent(url)}`;
-  };
 
   // Create Station List
   const stationList = document.createElement('div');
@@ -94,7 +87,7 @@ export default async function initRadio(container) {
     `;
     
     stationDiv.innerHTML = `
-      <div style="font-size: 1.5rem;">${station.icon || '📻'}</div>
+      <div style="font-size: 1.5rem;">${station.icon}</div>
       <div style="flex: 1;">
         <div style="color: var(--term-cyan); font-weight: 600; font-size: 0.95rem;">${station.name}</div>
         <div style="color: var(--term-dim); font-size: 0.75rem;">${station.genre}</div>
@@ -165,9 +158,9 @@ export default async function initRadio(container) {
 
   // Global Audio Player
   const audioPlayer = new Audio();
-  // Important: Allow cross-origin for audio visualization if needed later
-  audioPlayer.crossOrigin = "anonymous"; 
+  audioPlayer.crossOrigin = "anonymous";
   let currentActiveCard = null;
+  let retryCount = 0;
 
   function playStation(station, cardElement) {
     // Reset previous active card
@@ -190,36 +183,39 @@ export default async function initRadio(container) {
     npText.innerHTML = `<span style="color: var(--term-cyan); font-weight: bold;">${station.name}</span> <span style="color: var(--term-dim);">(${station.genre})</span>`;
     equalizer.style.display = 'flex';
 
-    // Try Primary URL first, then Fallback if needed
-    let streamUrl = getCorsUrl(station.url);
-    
     // Load and Play
-    audioPlayer.src = streamUrl;
+    audioPlayer.src = station.url;
     audioPlayer.load();
     
     const playPromise = audioPlayer.play();
 
     if (playPromise !== undefined) {
       playPromise.then(() => {
-        console.log(`✅ Playing: ${station.name} via Proxy`);
+        console.log(`✅ Playing: ${station.name}`);
+        retryCount = 0; // Reset retry counter on success
       }).catch(error => {
-        console.error("Primary stream failed, trying fallback...", error);
-        // Try Fallback
-        streamUrl = getCorsUrl(station.fallback);
-        audioPlayer.src = streamUrl;
-        audioPlayer.load();
-        
-        const fallbackPromise = audioPlayer.play();
-        fallbackPromise.then(() => {
-          console.log(`✅ Fallback Success: ${station.name}`);
-        }).catch(fallbackError => {
-          console.error("Both streams failed:", fallbackError);
+        console.error("Playback failed, retrying...", error);
+        retryCount++;
+        if (retryCount < 2) {
+          setTimeout(() => {
+            audioPlayer.src = station.url;
+            audioPlayer.load();
+            audioPlayer.play().catch(e => {
+              console.error("Retry failed too.", e);
+              npText.innerHTML = `<span style="color: #ff4444;">Error: Stream unavailable</span>`;
+              equalizer.style.display = 'none';
+              currentActiveCard.classList.remove('active');
+              currentActiveCard.style.background = 'rgba(0, 0, 0, 0.5)';
+              currentActiveCard.style.borderColor = 'var(--panel-border)';
+            });
+          }, 1000);
+        } else {
           npText.innerHTML = `<span style="color: #ff4444;">Error: Stream unavailable</span>`;
           equalizer.style.display = 'none';
           currentActiveCard.classList.remove('active');
           currentActiveCard.style.background = 'rgba(0, 0, 0, 0.5)';
           currentActiveCard.style.borderColor = 'var(--panel-border)';
-        });
+        }
       });
     }
   }
@@ -227,12 +223,15 @@ export default async function initRadio(container) {
   // Handle Errors
   audioPlayer.addEventListener('error', (e) => {
     console.error("Audio Error:", e);
-    document.getElementById('np-text').innerHTML = `<span style="color: #ff4444;">Stream Error</span>`;
-    document.getElementById('equalizer').style.display = 'none';
-    if (currentActiveCard) {
-      currentActiveCard.classList.remove('active');
-      currentActiveCard.style.background = 'rgba(0, 0, 0, 0.5)';
-      currentActiveCard.style.borderColor = 'var(--panel-border)';
+    // Only update UI if we haven't already handled it in the promise catch
+    if (retryCount >= 2) {
+      document.getElementById('np-text').innerHTML = `<span style="color: #ff4444;">Stream Error</span>`;
+      document.getElementById('equalizer').style.display = 'none';
+      if (currentActiveCard) {
+        currentActiveCard.classList.remove('active');
+        currentActiveCard.style.background = 'rgba(0, 0, 0, 0.5)';
+        currentActiveCard.style.borderColor = 'var(--panel-border)';
+      }
     }
   });
 }
