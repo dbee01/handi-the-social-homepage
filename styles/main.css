@@ -824,3 +824,15 @@ footer {
     cursor: pointer;
   }
 }
+
+.mobile-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobile-layout .grid-item {
+  width: 100% !important;
+  position: static !important;
+  transform: none !important;
+}
