@@ -296,28 +296,42 @@ folderSection.onclick = async () => {
     });
   }
 
-  async function playTrack(index) {
-    if (index < 0 || index >= playlist.length) return;
-    
-    currentIndex = index;
-    const track = playlist[index];
-    
-    // Update UI
-    document.getElementById('track-title').textContent = track.name;
-    renderPlaylist(); // Re-render to highlight current
-    
-    try {
-      const file = await track.handle.getFile();
-      const url = URL.createObjectURL(file);
-      
-      audioElement.src = url;
-      audioElement.load();
-      await audioElement.play();
-    } catch (err) {
-      console.error("Error playing file:", err);
-      document.getElementById('track-status').textContent = "Error loading file";
+// Replace the file-loading part inside playTrack()
+
+async function playTrack(index) {
+  if (index < 0 || index >= playlist.length) return;
+
+  currentIndex = index;
+  const track = playlist[index];
+
+  document.getElementById("track-title").textContent = track.name;
+  renderPlaylist();
+
+  try {
+    let file;
+
+    // Chromium path (File System Access API)
+    if (track.handle) {
+      file = await track.handle.getFile();
     }
+    // Firefox/Safari fallback
+    else if (track.file) {
+      file = track.file;
+    } else {
+      throw new Error("No file available for track.");
+    }
+
+    const url = URL.createObjectURL(file);
+
+    audioElement.src = url;
+    audioElement.load();
+    await audioElement.play();
+  } catch (err) {
+    console.error("Error playing file:", err);
+    document.getElementById("track-status").textContent =
+      "Error loading file";
   }
+}
 
   function togglePlayPause() {
     if (playlist.length === 0) return;
