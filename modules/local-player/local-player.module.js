@@ -1,6 +1,6 @@
 // modules/music/local-player.module.js
 
-export default async function initMusicPlayer(container) {
+export default async function initLocalPlayer(container) {
   if (!container) {
     console.error("Music Player: Container not found");
     return;
