@@ -155,7 +155,7 @@ export default async function initLocalPlayer(container) {
   // Panel Title
   const panelTitle = document.createElement("div");
   panelTitle.className = "panel-title";
-  panelTitle.innerHTML = '<i class="fa-solid fa-music"></i> Music Player new';
+  panelTitle.innerHTML = '<i class="fa-solid fa-music"></i> Music Player';
   container.appendChild(panelTitle);
 
   const playerContainer = document.createElement("div");
@@ -596,4 +596,4 @@ export default async function initLocalPlayer(container) {
       audioCtx.close();
     }
   });
-}
+                }
