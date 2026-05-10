@@ -122,32 +122,41 @@ export default async function initGallery(container) {
 
   container.appendChild(galleryContainer);
 
-  // Lightbox HTML (hidden initially)
+  // Lightbox HTML (true fullscreen version)
   const lightboxHTML = `
-    <div id="galleryLightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; backdrop-filter: blur(10px);">
-      <button id="lightboxClose" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 2rem; cursor: pointer; z-index: 10001; padding: 10px; width: 60px; height: 60px; border-radius: 30px; background: rgba(0,0,0,0.5);">
-        <i class="fa-solid fa-times"></i>
-      </button>
-      <button id="lightboxPrev" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); background: none; border: none; color: white; font-size: 3rem; cursor: pointer; z-index: 10001; padding: 20px; background: rgba(0,0,0,0.5); border-radius: 40px;">
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-      <button id="lightboxNext" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: none; border: none; color: white; font-size: 3rem; cursor: pointer; z-index: 10001; padding: 20px; background: rgba(0,0,0,0.5); border-radius: 40px;">
-        <i class="fa-solid fa-chevron-right"></i>
-      </button>
-      <div id="lightboxContent" style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
-        <img id="lightboxImage" style="max-width: 90%; max-height: 85%; object-fit: contain; border-radius: 8px; box-shadow: 0 0 30px rgba(0,0,0,0.5);">
-      </div>
-      <div id="lightboxCaption" style="position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; color: white; padding: 15px; background: rgba(0,0,0,0.7); margin: 0 20px; border-radius: 8px; font-size: 1rem;">
-        <span id="lightboxTitle"></span>
-        <span id="lightboxCounter" style="margin-left: 10px; color: var(--term-green);"></span>
-      </div>
-      <div id="lightboxControls" style="position: absolute; bottom: 100px; left: 0; right: 0; text-align: center; display: flex; gap: 20px; justify-content: center;">
-        <button id="lightboxPlayPause" style="background: rgba(0,0,0,0.7); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem;">
-          <i class="fa-solid fa-play"></i> Resume Slideshow
-        </button>
-        <button id="lightboxDownload" style="background: rgba(0,0,0,0.7); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem;">
-          <i class="fa-solid fa-download"></i> Download
-        </button>
+    <div id="galleryLightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000;">
+      <div id="lightboxInner" style="display: flex; flex-direction: column; width: 100%; height: 100%;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); padding: 20px; z-index: 10001; display: flex; justify-content: space-between; align-items: center;">
+          <div id="lightboxTitle" style="color: white; font-size: 1rem; text-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>
+          <div>
+            <button id="lightboxFullscreenToggle" style="background: rgba(0,0,0,0.5); border: none; color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; margin-right: 10px;">
+              <i class="fa-solid fa-expand"></i> Fullscreen
+            </button>
+            <button id="lightboxClose" style="background: rgba(0,0,0,0.5); border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 8px 15px; border-radius: 8px;">
+              <i class="fa-solid fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div id="lightboxContent" style="flex: 1; display: flex; justify-content: center; align-items: center; position: relative;">
+          <img id="lightboxImage" style="max-width: 90%; max-height: 85%; object-fit: contain; cursor: pointer;">
+          <button id="lightboxPrev" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 3rem; cursor: pointer; padding: 20px; border-radius: 40px;">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button id="lightboxNext" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 3rem; cursor: pointer; padding: 20px; border-radius: 40px;">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 20px; text-align: center;">
+          <div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 10px;">
+            <button id="lightboxPlayPause" style="background: rgba(0,0,0,0.7); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem;">
+              <i class="fa-solid fa-play"></i> Resume Slideshow
+            </button>
+            <button id="lightboxDownload" style="background: rgba(0,0,0,0.7); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem;">
+              <i class="fa-solid fa-download"></i> Download
+            </button>
+          </div>
+          <div id="lightboxCounter" style="color: var(--term-green); font-size: 0.9rem;"></div>
+        </div>
       </div>
     </div>
   `;
@@ -165,6 +174,8 @@ export default async function initGallery(container) {
   const lightboxClose = document.getElementById('lightboxClose');
   const lightboxPlayPause = document.getElementById('lightboxPlayPause');
   const lightboxDownload = document.getElementById('lightboxDownload');
+  const lightboxFullscreenToggle = document.getElementById('lightboxFullscreenToggle');
+  const lightboxInner = document.getElementById('lightboxInner');
   
   // Wake Lock variables
   let wakeLock = null;
@@ -194,8 +205,61 @@ export default async function initGallery(container) {
   let images = [];
   let isPaused = false;
   let SLIDE_INTERVAL = 3000;
-  let currentImageObjects = []; // Store original File objects for download
+  let currentImageObjects = [];
+  let isFullscreen = false;
   const SUPPORTED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+
+  // ========== TRUE FULLSCREEN API ==========
+  async function toggleFullscreen(element) {
+    if (!isFullscreen) {
+      // Enter fullscreen
+      try {
+        if (element.requestFullscreen) {
+          await element.requestFullscreen();
+        } else if (element.webkitRequestFullscreen) {
+          await element.webkitRequestFullscreen();
+        } else if (element.msRequestFullscreen) {
+          await element.msRequestFullscreen();
+        }
+        isFullscreen = true;
+        lightboxFullscreenToggle.innerHTML = '<i class="fa-solid fa-compress"></i> Exit';
+      } catch (err) {
+        console.error('Fullscreen error:', err);
+      }
+    } else {
+      // Exit fullscreen
+      try {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          await document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          await document.msExitFullscreen();
+        }
+        isFullscreen = false;
+        lightboxFullscreenToggle.innerHTML = '<i class="fa-solid fa-expand"></i> Fullscreen';
+      } catch (err) {
+        console.error('Exit fullscreen error:', err);
+      }
+    }
+  }
+  
+  // Listen for fullscreen change events
+  document.addEventListener('fullscreenchange', updateFullscreenButton);
+  document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+  document.addEventListener('msfullscreenchange', updateFullscreenButton);
+  
+  function updateFullscreenButton() {
+    const isCurrentlyFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+    isFullscreen = !!isCurrentlyFullscreen;
+    if (lightboxFullscreenToggle) {
+      if (isFullscreen) {
+        lightboxFullscreenToggle.innerHTML = '<i class="fa-solid fa-compress"></i> Exit';
+      } else {
+        lightboxFullscreenToggle.innerHTML = '<i class="fa-solid fa-expand"></i> Fullscreen';
+      }
+    }
+  }
 
   // ========== WAKE LOCK FUNCTIONS ==========
   async function requestWakeLock() {
@@ -256,27 +320,6 @@ export default async function initGallery(container) {
     if (wakeLockSupported) {
       console.log('Screen Wake Lock API supported');
       document.addEventListener('visibilitychange', handleVisibilityChange);
-      
-      // Request wake lock when slideshow starts/resumes
-      const originalStartSlideshow = startSlideshow;
-      startSlideshow = function() {
-        if (wakeLockEnabled && document.visibilityState === 'visible') {
-          requestWakeLock();
-        }
-        originalStartSlideshow();
-      };
-      
-      // Release wake lock when slideshow pauses
-      const originalToggleSlideshow = toggleSlideshow;
-      toggleSlideshow = function() {
-        if (!isPaused && wakeLockEnabled) {
-          releaseWakeLock();
-        } else if (isPaused && wakeLockEnabled) {
-          requestWakeLock();
-        }
-        originalToggleSlideshow();
-      };
-      
       wakeLockBtn.onclick = toggleWakeLock;
     } else {
       console.log('Screen Wake Lock API not supported - screen may sleep');
@@ -296,7 +339,6 @@ export default async function initGallery(container) {
     currentImageObjects = imageFiles;
     
     imageFiles.forEach((file, index) => {
-      // Create slide
       const slide = document.createElement('div');
       slide.className = 'gallery-slide';
       slide.style.cssText = `
@@ -318,13 +360,11 @@ export default async function initGallery(container) {
         cursor: pointer;
       `;
       
-      // Add click to open lightbox
       img.onclick = () => openLightbox(index);
       
       slide.appendChild(img);
       container.appendChild(slide);
       
-      // Create dot
       const dot = document.createElement('span');
       dot.className = 'gallery-dot';
       dot.style.cssText = `
@@ -378,7 +418,6 @@ export default async function initGallery(container) {
     slideIndex = (slideIndex + 1) % slides.length;
     updateSlideDisplay();
     
-    // If lightbox is open, update it
     if (lightbox && lightbox.style.display === 'flex') {
       updateLightboxImage(slideIndex);
     }
@@ -396,7 +435,6 @@ export default async function initGallery(container) {
     slideIndex = (slideIndex - 1 + slides.length) % slides.length;
     updateSlideDisplay();
     
-    // If lightbox is open, update it
     if (lightbox && lightbox.style.display === 'flex') {
       updateLightboxImage(slideIndex);
     }
@@ -421,15 +459,15 @@ export default async function initGallery(container) {
       if (slideshowInterval) clearTimeout(slideshowInterval);
       btn.innerHTML = '<i class="fa-solid fa-play"></i> Resume';
       btn.style.color = 'var(--term-amber)';
-      // Release wake lock when paused
       if (wakeLockEnabled) releaseWakeLock();
     } else {
       btn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
       btn.style.color = 'var(--term-green)';
       startSlideshow();
-      // Request wake lock when resuming
       if (wakeLockEnabled && document.visibilityState === 'visible') requestWakeLock();
     }
+    
+    updateLightboxPlayPauseButton();
   }
 
   function updateSpeed() {
@@ -449,7 +487,6 @@ export default async function initGallery(container) {
   function openLightbox(index) {
     if (!images.length) return;
     
-    // Pause main slideshow
     if (slideshowInterval) {
       clearTimeout(slideshowInterval);
     }
@@ -457,15 +494,14 @@ export default async function initGallery(container) {
     slideIndex = index;
     updateLightboxImage(slideIndex);
     lightbox.style.display = 'flex';
-    
-    // Update play/pause button in lightbox
     updateLightboxPlayPauseButton();
-    
-    // Prevent body scrolling
     document.body.style.overflow = 'hidden';
     
-    // Keep screen on while lightbox is open if wake lock is enabled
     if (wakeLockEnabled) requestWakeLock();
+    
+    // Automatically enter fullscreen when opening lightbox (optional)
+    // Uncomment the next line if you want auto-fullscreen
+    // setTimeout(() => toggleFullscreen(lightbox), 100);
   }
   
   function updateLightboxImage(index) {
@@ -475,9 +511,8 @@ export default async function initGallery(container) {
     const imageUrl = URL.createObjectURL(imageFile);
     lightboxImage.src = imageUrl;
     lightboxTitle.textContent = imageFile.name;
-    lightboxCounter.textContent = `(${index + 1}/${images.length})`;
+    lightboxCounter.textContent = `${index + 1} / ${images.length}`;
     
-    // Clean up old URL
     lightboxImage.onload = () => {
       URL.revokeObjectURL(imageUrl);
     };
@@ -487,14 +522,17 @@ export default async function initGallery(container) {
     lightbox.style.display = 'none';
     document.body.style.overflow = '';
     
-    // Resume main slideshow if not paused
     if (!isPaused && images.length > 0) {
       startSlideshow();
     }
     
-    // Release wake lock if it was kept for lightbox but slideshow is paused
     if (wakeLockEnabled && isPaused) {
       releaseWakeLock();
+    }
+    
+    // Exit fullscreen if it was active
+    if (isFullscreen) {
+      toggleFullscreen(lightbox);
     }
   }
   
@@ -508,7 +546,6 @@ export default async function initGallery(container) {
   
   function toggleLightboxSlideshow() {
     toggleSlideshow();
-    updateLightboxPlayPauseButton();
   }
   
   function downloadCurrentImage() {
@@ -523,42 +560,18 @@ export default async function initGallery(container) {
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
     
-    // Show temporary feedback
     const originalText = lightboxDownload.innerHTML;
     lightboxDownload.innerHTML = '<i class="fa-solid fa-check"></i> Downloaded!';
     setTimeout(() => {
       lightboxDownload.innerHTML = originalText;
     }, 2000);
   }
-  
-  // ========== KEYBOARD NAVIGATION ==========
-  function handleLightboxKeys(e) {
-    if (lightbox.style.display !== 'flex') return;
-    
-    switch(e.key) {
-      case 'Escape':
-        closeLightbox();
-        break;
-      case 'ArrowLeft':
-        prevSlide();
-        break;
-      case 'ArrowRight':
-        nextSlide();
-        break;
-      case ' ':
-      case 'Space':
-        e.preventDefault();
-        toggleLightboxSlideshow();
-        break;
-    }
-  }
 
-  // ========== FOLDER SELECTION ==========
+  // ========== HANDLE FOLDER SELECTION ==========
   function handleFolderSelect(event) {
     const files = event.target.files;
     const allFiles = Array.from(files);
     
-    // Track extension counts
     const extensionCounts = {
       '.jpg': 0,
       '.jpeg': 0,
@@ -568,7 +581,6 @@ export default async function initGallery(container) {
       'other': 0
     };
     
-    // Filter by supported extensions
     const imageFiles = allFiles.filter(file => {
       const fileName = file.name.toLowerCase();
       const fileExtension = '.' + fileName.split('.').pop();
@@ -595,7 +607,6 @@ export default async function initGallery(container) {
     images = imageFiles;
     document.getElementById('galleryStatus').innerHTML = `✅ Loaded ${imageCount} images from ${totalFiles} files`;
     
-    // Show extension breakdown
     let statsText = '';
     SUPPORTED_EXTENSIONS.forEach(ext => {
       if (extensionCounts[ext] > 0) {
@@ -607,7 +618,6 @@ export default async function initGallery(container) {
     }
     document.getElementById('galleryStats').innerHTML = statsText;
     
-    // Reset and start slideshow
     slideIndex = 0;
     isPaused = false;
     const pauseBtn = document.getElementById('galleryPauseBtn');
@@ -622,6 +632,33 @@ export default async function initGallery(container) {
     startSlideshow();
   }
 
+  // ========== KEYBOARD NAVIGATION ==========
+  function handleLightboxKeys(e) {
+    if (lightbox.style.display !== 'flex') return;
+    
+    switch(e.key) {
+      case 'Escape':
+        closeLightbox();
+        break;
+      case 'ArrowLeft':
+        prevSlide();
+        break;
+      case 'ArrowRight':
+        nextSlide();
+        break;
+      case ' ':
+      case 'Space':
+        e.preventDefault();
+        toggleLightboxSlideshow();
+        break;
+      case 'f':
+      case 'F':
+        e.preventDefault();
+        toggleFullscreen(lightbox);
+        break;
+    }
+  }
+
   // ========== EVENT LISTENERS ==========
   document.getElementById('galleryFolderInput').addEventListener('change', handleFolderSelect);
   document.getElementById('galleryPrevBtn').addEventListener('click', () => prevSlide());
@@ -634,29 +671,25 @@ export default async function initGallery(container) {
     }
   });
   
-  // Lightbox event listeners
   lightboxClose.addEventListener('click', closeLightbox);
   lightboxPrev.addEventListener('click', () => prevSlide());
   lightboxNext.addEventListener('click', () => nextSlide());
   lightboxPlayPause.addEventListener('click', toggleLightboxSlideshow);
   lightboxDownload.addEventListener('click', downloadCurrentImage);
+  lightboxFullscreenToggle.addEventListener('click', () => toggleFullscreen(lightbox));
   
-  // Close lightbox when clicking background
+  lightboxImage.addEventListener('click', () => toggleFullscreen(lightbox));
+  
   lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) {
+    if (e.target === lightbox || e.target === lightboxInner) {
       closeLightbox();
     }
   });
 
-  // Global keyboard handler
   const keyHandler = (e) => {
-    // Check if gallery is visible
     if (!container.isConnected) return;
-    
-    // Handle lightbox keys first
     handleLightboxKeys(e);
     
-    // Only handle gallery keys if lightbox is closed
     if (lightbox.style.display !== 'flex') {
       if (e.key === 'ArrowRight') {
         e.preventDefault();
@@ -693,37 +726,20 @@ export default async function initGallery(container) {
   
   document.addEventListener('keydown', keyHandler);
   
-  // Initialize wake lock
   initWakeLock();
   
-  // Cleanup on module removal
+  // Cleanup
   return () => {
     document.removeEventListener('keydown', keyHandler);
     if (slideshowInterval) clearTimeout(slideshowInterval);
-    
-    // Clean up wake lock
     releaseWakeLock();
     document.removeEventListener('visibilitychange', handleVisibilityChange);
-    
-    // Remove lightbox from DOM
-    if (lightbox) {
-      lightbox.remove();
-    }
-    
-    // Revoke all object URLs
+    if (lightbox) lightbox.remove();
     if (images) {
       images.forEach(image => {
         if (image.src) URL.revokeObjectURL(image.src);
       });
     }
-    
-    // Revoke any object URLs from currentImageObjects
-    if (currentImageObjects) {
-      currentImageObjects.forEach(obj => {
-        if (obj.src) URL.revokeObjectURL(obj.src);
-      });
-    }
-    
     console.log('Gallery module cleaned up');
   };
-}
+      }
