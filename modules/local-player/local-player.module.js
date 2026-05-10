@@ -1,4 +1,3 @@
-
 // modules/local-player/local-player.module.js
 
 // --- IndexedDB Configuration ---
@@ -11,11 +10,17 @@ async function initDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-    request.onerror = (event) => reject('DB Error: ' + event.target.error);
+    request.onerror = (event) => {
+      console.error("DB Open Error:", event.target.error);
+      reject('DB Error: ' + event.target.error);
+    };
     
     request.onupgradeneeded = (event) => {
       const database = event.target.result;
       if (!database.objectStoreNames.contains(STORE_NAME)) {
+        // We store the file object directly. 
+        // Note: Some browsers strip properties from File objects in IDB.
+        // We store { name, type, size, lastModified, data (Blob) } to be safe.
         database.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
       }
     };
@@ -32,17 +37,26 @@ async function saveTracksToDB(tracks) {
     const transaction = db.transaction([STORE_NAME], 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
     
-    // Clear existing tracks first for a clean "folder replace"
     const clearReq = store.clear();
     clearReq.onsuccess = () => {
       let addedCount = 0;
       tracks.forEach(track => {
-        const addReq = store.add(track);
+        // Ensure we are storing a clean object with the Blob
+        const trackObj = {
+          name: track.name,
+          type: track.type,
+          size: track.size,
+          lastModified: track.lastModified,
+          data: track // Storing the File/Blob object directly
+        };
+        
+        const addReq = store.add(trackObj);
         addReq.onsuccess = () => addedCount++;
+        addReq.onerror = (e) => console.error("Add error for", track.name, e.target.error);
       });
       
       transaction.oncomplete = () => resolve(addedCount);
-      transaction.onerror = () => reject(transaction.error);
+      transaction.onerror = (e) => reject(e.target.error);
     };
   });
 }
@@ -53,7 +67,12 @@ async function loadTracksFromDB() {
     const store = transaction.objectStore(STORE_NAME);
     const request = store.getAll();
 
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => {
+      const tracks = request.result;
+      // Filter out any corrupted entries where data might be missing
+      const validTracks = tracks.filter(t => t && t.data);
+      resolve(validTracks);
+    };
     request.onerror = () => reject(request.error);
   });
 }
@@ -76,16 +95,15 @@ export default async function initLocalPlayer(container) {
     return;
   }
 
-  // Initialize DB first
+  // Initialize DB
   try {
     await initDB();
   } catch (err) {
     console.error("Failed to initialize IndexedDB:", err);
-    container.innerHTML = '<div style="color:red">Storage initialization failed.</div>';
+    container.innerHTML = '<div style="color:red">Storage initialization failed. Check console.</div>';
     return;
   }
 
-  // Preserve pin button if it exists
   const parentPanel = container.closest(".dashboard-item, .grid-item, .panel");
   const pinBtn = parentPanel?.querySelector(":scope > .pin-btn") || null;
 
@@ -94,10 +112,9 @@ export default async function initLocalPlayer(container) {
   // Panel Title
   const panelTitle = document.createElement("div");
   panelTitle.className = "panel-title";
-  panelTitle.innerHTML = '<i class="fa-solid fa-music"></i> Local Music Player (Persistent)';
+  panelTitle.innerHTML = '<i class="fa-solid fa-music"></i> Local Music Player';
   container.appendChild(panelTitle);
 
-  // Main Container
   const playerContainer = document.createElement("div");
   playerContainer.className = "music-player-container";
   playerContainer.style.cssText = `
@@ -127,7 +144,7 @@ export default async function initLocalPlayer(container) {
       Select Music Folder
     </div>
     <div style="color: var(--term-dim); font-size: 0.8rem;">
-      Uses File System Access API (Chrome/Edge) or Standard Picker
+      Click to load or reload library
     </div>
   `;
 
@@ -139,7 +156,6 @@ export default async function initLocalPlayer(container) {
     gap: 15px;
   `;
 
-  // Track Info
   const trackInfo = document.createElement("div");
   trackInfo.style.cssText = `
     text-align: center;
@@ -170,7 +186,7 @@ export default async function initLocalPlayer(container) {
     font-size: 0.8rem;
     margin-top: 5px;
   `;
-  trackStatus.textContent = "Loading library...";
+  trackStatus.textContent = "Initializing...";
 
   trackInfo.append(trackTitle, trackStatus);
 
@@ -198,7 +214,6 @@ export default async function initLocalPlayer(container) {
     bars.push(bar);
   }
 
-  // Controls Row
   const controlsRow = document.createElement("div");
   controlsRow.style.cssText = `
     display: flex;
@@ -211,15 +226,12 @@ export default async function initLocalPlayer(container) {
   const btnPlayPause = createControlBtn("fa-play", "Play/Pause", true);
   const btnNext = createControlBtn("fa-forward-step", "Next");
   const btnShuffle = createControlBtn("fa-shuffle", "Shuffle");
-  
-  // New: Clear Library Button
   const btnClear = createControlBtn("fa-trash-can", "Clear Library", false);
   btnClear.style.fontSize = "1rem";
   btnClear.style.color = "var(--term-red)";
 
   controlsRow.append(btnPrev, btnPlayPause, btnNext, btnShuffle, btnClear);
 
-  // Playlist Section
   const playlistSection = document.createElement("div");
   playlistSection.style.cssText = `
     max-height: 200px;
@@ -249,22 +261,25 @@ export default async function initLocalPlayer(container) {
   let source = null;
   let animationFrame = null;
 
-  // ===== INITIALIZATION: CHECK DB =====
+  // ===== INITIALIZATION =====
   async function loadLibrary() {
     try {
+      trackStatus.textContent = "Checking storage...";
       const storedTracks = await loadTracksFromDB();
+      
       if (storedTracks && storedTracks.length > 0) {
         playlist = storedTracks;
         folderSection.style.display = "none";
         controlsSection.style.display = "flex";
-        trackStatus.textContent = `${playlist.length} tracks loaded from storage`;
+        trackStatus.textContent = `${playlist.length} tracks loaded`;
         renderPlaylist();
+        console.log("Library loaded successfully:", playlist.length, "tracks");
       } else {
         trackStatus.textContent = "Select a folder to load music";
       }
     } catch (e) {
       console.error("Error loading library:", e);
-      trackStatus.textContent = "Error loading library";
+      trackStatus.textContent = "Storage error. Select folder.";
     }
   }
 
@@ -275,28 +290,25 @@ export default async function initLocalPlayer(container) {
     try {
       let files = [];
 
-      // Try File System Access API (Chrome/Edge/Opera)
+      // Try File System Access API
       if ('showDirectoryPicker' in window) {
         try {
           const dirHandle = await window.showDirectoryPicker();
-          const dirEntries = [];
-          
           for await (const entry of dirHandle.values()) {
             if (entry.kind === 'file') {
               const file = await entry.getFile();
               if (/\.mp3|\.wav|\.ogg|\.flac|\.m4a$/i.test(file.name)) {
-                dirEntries.push(file);
+                files.push(file);
               }
             }
           }
-          files = dirEntries;
         } catch (err) {
-          console.log("User cancelled directory picker or not supported, falling back.");
-          throw err; // Trigger fallback
+          console.log("Dir picker cancelled or failed, trying standard input.");
+          throw err; 
         }
       }
 
-      // Fallback: Standard Input
+      // Fallback
       if (files.length === 0) {
         const input = document.createElement("input");
         input.type = "file";
@@ -314,40 +326,29 @@ export default async function initLocalPlayer(container) {
 
       if (!files.length) return;
 
-      trackStatus.textContent = "Processing files...";
+      trackStatus.textContent = "Saving to IndexedDB... (This may take a moment)";
       
-      // Convert files to DB-ready objects (read as ArrayBuffer)
-      const tracksToAdd = await Promise.all(files.map(async (file) => {
-        const arrayBuffer = await file.arrayBuffer();
-        return {
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          data: arrayBuffer, // Store binary data
-          timestamp: Date.now()
-        };
-      }));
+      // Sort files
+      files.sort((a, b) => a.name.localeCompare(b.name));
 
-      // Save to IndexedDB
-      await saveTracksToDB(tracksToAdd);
+      // Save directly to DB
+      await saveTracksToDB(files);
       
-      // Update State
-      playlist = tracksToAdd;
+      playlist = files;
       
       folderSection.style.display = "none";
       controlsSection.style.display = "flex";
-      trackStatus.textContent = `${playlist.length} tracks saved to storage`;
+      trackStatus.textContent = `${playlist.length} tracks saved`;
       renderPlaylist();
 
     } catch (error) {
       console.error("Error selecting files:", error);
-      trackStatus.textContent = "Error selecting files";
+      trackStatus.textContent = "Error: " + error.message;
     }
   };
 
-  // Clear Library Handler
   btnClear.onclick = async () => {
-    if (!confirm("Are you sure you want to delete all stored music?")) return;
+    if (!confirm("Delete all stored music?")) return;
     try {
       await deleteAllTracks();
       playlist = [];
@@ -357,15 +358,15 @@ export default async function initLocalPlayer(container) {
       folderSection.style.display = "block";
       controlsSection.style.display = "none";
       trackTitle.textContent = "No track selected";
-      trackStatus.textContent = "Library cleared. Select a folder.";
+      trackStatus.textContent = "Library cleared";
       renderPlaylist();
     } catch (e) {
-      console.error("Error clearing library:", e);
-      trackStatus.textContent = "Error clearing library";
+      console.error("Error clearing:", e);
+      trackStatus.textContent = "Error clearing";
     }
   };
 
-  // ===== CONTROL EVENTS =====
+  // ===== CONTROLS =====
   btnPrev.onclick = () => {
     if (!playlist.length) return;
     playTrack((currentIndex - 1 + playlist.length) % playlist.length);
@@ -383,7 +384,10 @@ export default async function initLocalPlayer(container) {
       return;
     }
     if (audioElement.paused) {
-      audioElement.play().catch(e => console.error("Play error:", e));
+      audioElement.play().catch(e => {
+        console.error("Play failed:", e);
+        trackStatus.textContent = "Playback error: " + e.message;
+      });
     } else {
       audioElement.pause();
     }
@@ -412,14 +416,21 @@ export default async function initLocalPlayer(container) {
   audioElement.addEventListener("ended", () => {
     if (!playlist.length) return;
     if (isShuffle) {
-      const next = Math.floor(Math.random() * playlist.length);
-      playTrack(next);
+      playTrack(Math.floor(Math.random() * playlist.length));
     } else {
       playTrack((currentIndex + 1) % playlist.length);
     }
   });
 
-  // ===== FUNCTIONS =====
+  audioElement.addEventListener("error", (e) => {
+    console.error("Audio Element Error:", e.target.error);
+    trackStatus.textContent = "Playback unavailable: " + (e.target.error ? e.target.error.message : "Unknown error");
+    isPlaying = false;
+    updatePlayButton();
+    stopVisualizer();
+  });
+
+  // ===== PLAYBACK LOGIC =====
   async function playTrack(index) {
     if (index < 0 || index >= playlist.length) return;
 
@@ -430,19 +441,40 @@ export default async function initLocalPlayer(container) {
     renderPlaylist();
 
     try {
-      // Create a Blob from the ArrayBuffer stored in IndexedDB
-      const blob = new Blob([track.data], { type: track.type || 'audio/mpeg' });
-      const url = URL.createObjectURL(blob);
+      // Clean up old URL
+      if (audioElement.src && audioElement.src.startsWith("blob:")) {
+        URL.revokeObjectURL(audioElement.src);
+      }
+
+      // Create Blob from the stored File/Blob object
+      // If track.data is a File/Blob, we can use it directly.
+      // If it was stored as ArrayBuffer, we need to reconstruct.
+      let blob;
       
+      if (track.data instanceof Blob || track.data instanceof File) {
+        blob = track.data;
+      } else if (track.data instanceof ArrayBuffer) {
+        // Fallback for ArrayBuffer storage
+        blob = new Blob([track.data], { type: track.type });
+      } else {
+        throw new Error("Invalid data format in storage");
+      }
+
+      const url = URL.createObjectURL(blob);
       audioElement.src = url;
       audioElement.load();
+      
+      // Attempt play
       await audioElement.play();
+      
     } catch (error) {
-      console.error("Error playing track:", error);
-      trackStatus.textContent = "Playback error";
+      console.error("Detailed Play Error:", error);
+      trackStatus.textContent = "Playback unavailable: " + error.message;
     }
   }
 
+  // ... (renderPlaylist, updatePlayButton, createControlBtn, startVisualizer, stopVisualizer remain the same) ...
+  
   function renderPlaylist() {
     playlistSection.innerHTML = "";
     if (!playlist.length) {
