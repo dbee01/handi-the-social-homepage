@@ -46,7 +46,7 @@ function initResponsiveLayout() {
   if (!grid) return;
 
   // MOBILE / TABLET
-  if (window.innerWidth <= 768) {
+  if (window.innerWidth <= 800) {
     console.log("📱 Mobile layout enabled");
 
     // Destroy existing Packery instance
