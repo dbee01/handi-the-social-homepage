@@ -112,7 +112,7 @@ export default async function initLocalPlayer(container) {
   // Panel Title
   const panelTitle = document.createElement("div");
   panelTitle.className = "panel-title";
-  panelTitle.innerHTML = '<i class="fa-solid fa-music"></i> Local Music Player';
+  panelTitle.innerHTML = '<i class="fa-solid fa-music"></i> Music Player';
   container.appendChild(panelTitle);
 
   const playerContainer = document.createElement("div");
