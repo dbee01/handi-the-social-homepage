@@ -2,7 +2,7 @@
 
 // --- IndexedDB Configuration ---
 const DB_NAME = 'MusicLibrary';
-const DB_VERSION = 1;
+const DB_VERSION = 3;
 const STORE_NAME = 'tracks';
 let db = null;
 
@@ -17,12 +17,13 @@ async function initDB() {
     
     request.onupgradeneeded = (event) => {
       const database = event.target.result;
-      if (!database.objectStoreNames.contains(STORE_NAME)) {
-        // We store the file object directly. 
-        // Note: Some browsers strip properties from File objects in IDB.
-        // We store { name, type, size, lastModified, data (Blob) } to be safe.
-        database.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+      
+      if (database.objectStoreNames.contains(STORE_NAME)) {
+        database.deleteObjectStore(STORE_NAME);
       }
+      
+      database.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+      console.log("Database created/upgraded to version", DB_VERSION);
     };
 
     request.onsuccess = (event) => {
@@ -32,32 +33,65 @@ async function initDB() {
   });
 }
 
+function readFileAsArrayBuffer(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsArrayBuffer(file);
+  });
+}
+
 async function saveTracksToDB(tracks) {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([STORE_NAME], 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
     
-    const clearReq = store.clear();
-    clearReq.onsuccess = () => {
-      let addedCount = 0;
-      tracks.forEach(track => {
-        // Ensure we are storing a clean object with the Blob
-        const trackObj = {
-          name: track.name,
-          type: track.type,
-          size: track.size,
-          lastModified: track.lastModified,
-          data: track // Storing the File/Blob object directly
-        };
-        
-        const addReq = store.add(trackObj);
-        addReq.onsuccess = () => addedCount++;
-        addReq.onerror = (e) => console.error("Add error for", track.name, e.target.error);
-      });
+    store.clear().onsuccess = () => {
+      let completed = 0;
       
-      transaction.oncomplete = () => resolve(addedCount);
-      transaction.onerror = (e) => reject(e.target.error);
+      tracks.forEach(async (track, idx) => {
+        try {
+          const arrayBuffer = await readFileAsArrayBuffer(track);
+          
+          let mimeType = track.type;
+          if (!mimeType || mimeType === '') {
+            const ext = track.name.split('.').pop().toLowerCase();
+            const mimeMap = {
+              'mp3': 'audio/mpeg',
+              'wav': 'audio/wav',
+              'ogg': 'audio/ogg',
+              'flac': 'audio/flac',
+              'm4a': 'audio/mp4'
+            };
+            mimeType = mimeMap[ext] || 'audio/mpeg';
+          }
+          
+          const trackObj = {
+            name: track.name,
+            type: mimeType,
+            size: track.size,
+            lastModified: track.lastModified || Date.now(),
+            data: arrayBuffer
+          };
+          
+          store.add(trackObj);
+          completed++;
+          
+          if (completed === tracks.length) {
+            transaction.oncomplete = () => resolve(completed);
+          }
+        } catch (err) {
+          console.error("Error saving:", track.name, err);
+          completed++;
+          if (completed === tracks.length) {
+            transaction.oncomplete = () => resolve(completed);
+          }
+        }
+      });
     };
+    
+    transaction.onerror = () => reject(transaction.error);
   });
 }
 
@@ -69,8 +103,22 @@ async function loadTracksFromDB() {
 
     request.onsuccess = () => {
       const tracks = request.result;
-      // Filter out any corrupted entries where data might be missing
-      const validTracks = tracks.filter(t => t && t.data);
+      const validTracks = [];
+      
+      for (const track of tracks) {
+        if (track && track.data && track.data.byteLength > 0) {
+          const blob = new Blob([track.data], { type: track.type || 'audio/mpeg' });
+          validTracks.push({
+            id: track.id,
+            name: track.name,
+            type: track.type,
+            size: track.size,
+            lastModified: track.lastModified,
+            blob: blob
+          });
+        }
+      }
+      
       resolve(validTracks);
     };
     request.onerror = () => reject(request.error);
@@ -88,14 +136,12 @@ async function deleteAllTracks() {
 }
 
 // --- Main Module ---
-
 export default async function initLocalPlayer(container) {
   if (!container) {
     console.error("Music Player: Container not found");
     return;
   }
 
-  // Initialize DB
   try {
     await initDB();
   } catch (err) {
@@ -103,9 +149,6 @@ export default async function initLocalPlayer(container) {
     container.innerHTML = '<div style="color:red">Storage initialization failed. Check console.</div>';
     return;
   }
-
-  const parentPanel = container.closest(".dashboard-item, .grid-item, .panel");
-  const pinBtn = parentPanel?.querySelector(":scope > .pin-btn") || null;
 
   container.innerHTML = "";
 
@@ -138,23 +181,14 @@ export default async function initLocalPlayer(container) {
     transition: all 0.3s;
   `;
   folderSection.innerHTML = `
-    <i class="fa-solid fa-folder-open"
-       style="font-size: 2rem; color: var(--term-cyan); margin-bottom: 10px;"></i>
-    <div style="color: var(--term-cyan); font-weight: bold;">
-      Select Music Folder
-    </div>
-    <div style="color: var(--term-dim); font-size: 0.8rem;">
-      Click to load or reload library
-    </div>
+    <i class="fa-solid fa-folder-open" style="font-size: 2rem; color: var(--term-cyan); margin-bottom: 10px;"></i>
+    <div style="color: var(--term-cyan); font-weight: bold;">Select Music Folder</div>
+    <div style="color: var(--term-dim); font-size: 0.8rem;">Click to load or reload library</div>
   `;
 
   // Controls Section
   const controlsSection = document.createElement("div");
-  controlsSection.style.cssText = `
-    display: none;
-    flex-direction: column;
-    gap: 15px;
-  `;
+  controlsSection.style.cssText = `display: none; flex-direction: column; gap: 15px;`;
 
   const trackInfo = document.createElement("div");
   trackInfo.style.cssText = `
@@ -181,53 +215,31 @@ export default async function initLocalPlayer(container) {
   trackTitle.textContent = "No track selected";
 
   const trackStatus = document.createElement("div");
-  trackStatus.style.cssText = `
-    color: var(--term-dim);
-    font-size: 0.8rem;
-    margin-top: 5px;
-  `;
+  trackStatus.style.cssText = `color: var(--term-dim); font-size: 0.8rem; margin-top: 5px;`;
   trackStatus.textContent = "Initializing...";
 
   trackInfo.append(trackTitle, trackStatus);
 
   // Visualizer
   const visualizer = document.createElement("div");
-  visualizer.style.cssText = `
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 2px;
-    height: 40px;
-    margin: 10px 0;
-  `;
+  visualizer.style.cssText = `display: flex; justify-content: center; align-items: flex-end; gap: 2px; height: 40px; margin: 10px 0;`;
 
   const bars = [];
   for (let i = 0; i < 20; i++) {
     const bar = document.createElement("div");
-    bar.style.cssText = `
-      width: 4px;
-      background: var(--term-green);
-      height: 5px;
-      transition: height 0.1s ease;
-    `;
+    bar.style.cssText = `width: 4px; background: var(--term-green); height: 5px; transition: height 0.1s ease;`;
     visualizer.appendChild(bar);
     bars.push(bar);
   }
 
   const controlsRow = document.createElement("div");
-  controlsRow.style.cssText = `
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-  `;
+  controlsRow.style.cssText = `display: flex; justify-content: center; align-items: center; gap: 20px;`;
 
   const btnPrev = createControlBtn("fa-backward-step", "Previous");
   const btnPlayPause = createControlBtn("fa-play", "Play/Pause", true);
   const btnNext = createControlBtn("fa-forward-step", "Next");
   const btnShuffle = createControlBtn("fa-shuffle", "Shuffle");
   const btnClear = createControlBtn("fa-trash-can", "Clear Library", false);
-  btnClear.style.fontSize = "1rem";
   btnClear.style.color = "var(--term-red)";
 
   controlsRow.append(btnPrev, btnPlayPause, btnNext, btnShuffle, btnClear);
@@ -252,6 +264,7 @@ export default async function initLocalPlayer(container) {
   let currentIndex = -1;
   let isPlaying = false;
   let isShuffle = false;
+  let currentBlobUrl = null;
 
   const audioElement = new Audio();
   audioElement.preload = "auto";
@@ -261,10 +274,10 @@ export default async function initLocalPlayer(container) {
   let source = null;
   let animationFrame = null;
 
-  // ===== INITIALIZATION =====
+  // ===== LOAD LIBRARY =====
   async function loadLibrary() {
     try {
-      trackStatus.textContent = "Checking storage...";
+      trackStatus.textContent = "Loading library...";
       const storedTracks = await loadTracksFromDB();
       
       if (storedTracks && storedTracks.length > 0) {
@@ -273,7 +286,7 @@ export default async function initLocalPlayer(container) {
         controlsSection.style.display = "flex";
         trackStatus.textContent = `${playlist.length} tracks loaded`;
         renderPlaylist();
-        console.log("Library loaded successfully:", playlist.length, "tracks");
+        console.log("Loaded", playlist.length, "tracks");
       } else {
         trackStatus.textContent = "Select a folder to load music";
       }
@@ -285,12 +298,11 @@ export default async function initLocalPlayer(container) {
 
   loadLibrary();
 
-  // ===== FILE PICKER LOGIC =====
+  // ===== FILE PICKER =====
   folderSection.onclick = async () => {
     try {
       let files = [];
 
-      // Try File System Access API
       if ('showDirectoryPicker' in window) {
         try {
           const dirHandle = await window.showDirectoryPicker();
@@ -303,12 +315,10 @@ export default async function initLocalPlayer(container) {
             }
           }
         } catch (err) {
-          console.log("Dir picker cancelled or failed, trying standard input.");
-          throw err; 
+          console.log("Dir picker failed, using file picker");
         }
       }
 
-      // Fallback
       if (files.length === 0) {
         const input = document.createElement("input");
         input.type = "file";
@@ -316,8 +326,8 @@ export default async function initLocalPlayer(container) {
         input.accept = ".mp3,.wav,.ogg,.flac,.m4a,audio/*";
         
         await new Promise(resolve => {
-          input.onchange = async (e) => {
-            files = Array.from(e.target.files || []);
+          input.onchange = () => {
+            files = Array.from(input.files || []);
             resolve();
           };
           input.click();
@@ -326,15 +336,12 @@ export default async function initLocalPlayer(container) {
 
       if (!files.length) return;
 
-      trackStatus.textContent = "Saving to IndexedDB... (This may take a moment)";
-      
-      // Sort files
+      trackStatus.textContent = `Saving ${files.length} tracks...`;
       files.sort((a, b) => a.name.localeCompare(b.name));
-
-      // Save directly to DB
+      
       await saveTracksToDB(files);
       
-      playlist = files;
+      playlist = await loadTracksFromDB();
       
       folderSection.style.display = "none";
       controlsSection.style.display = "flex";
@@ -347,14 +354,22 @@ export default async function initLocalPlayer(container) {
     }
   };
 
+  // ===== CLEAR LIBRARY =====
   btnClear.onclick = async () => {
     if (!confirm("Delete all stored music?")) return;
     try {
       await deleteAllTracks();
       playlist = [];
       currentIndex = -1;
+      
+      if (currentBlobUrl) {
+        URL.revokeObjectURL(currentBlobUrl);
+        currentBlobUrl = null;
+      }
+      
       audioElement.pause();
       audioElement.src = "";
+      
       folderSection.style.display = "block";
       controlsSection.style.display = "none";
       trackTitle.textContent = "No track selected";
@@ -381,9 +396,7 @@ export default async function initLocalPlayer(container) {
     if (!playlist.length) return;
     if (currentIndex === -1) {
       playTrack(0);
-      return;
-    }
-    if (audioElement.paused) {
+    } else if (audioElement.paused) {
       audioElement.play().catch(e => {
         console.error("Play failed:", e);
         trackStatus.textContent = "Playback error: " + e.message;
@@ -423,14 +436,14 @@ export default async function initLocalPlayer(container) {
   });
 
   audioElement.addEventListener("error", (e) => {
-    console.error("Audio Element Error:", e.target.error);
-    trackStatus.textContent = "Playback unavailable: " + (e.target.error ? e.target.error.message : "Unknown error");
+    console.error("Audio Error:", audioElement.error);
+    trackStatus.textContent = "Playback unavailable: Invalid data format in storage";
     isPlaying = false;
     updatePlayButton();
     stopVisualizer();
   });
 
-  // ===== PLAYBACK LOGIC =====
+  // ===== PLAY TRACK =====
   async function playTrack(index) {
     if (index < 0 || index >= playlist.length) return;
 
@@ -441,40 +454,29 @@ export default async function initLocalPlayer(container) {
     renderPlaylist();
 
     try {
-      // Clean up old URL
-      if (audioElement.src && audioElement.src.startsWith("blob:")) {
-        URL.revokeObjectURL(audioElement.src);
+      if (currentBlobUrl) {
+        URL.revokeObjectURL(currentBlobUrl);
+        currentBlobUrl = null;
       }
 
-      // Create Blob from the stored File/Blob object
-      // If track.data is a File/Blob, we can use it directly.
-      // If it was stored as ArrayBuffer, we need to reconstruct.
-      let blob;
+      const blob = track.blob;
       
-      if (track.data instanceof Blob || track.data instanceof File) {
-        blob = track.data;
-      } else if (track.data instanceof ArrayBuffer) {
-        // Fallback for ArrayBuffer storage
-        blob = new Blob([track.data], { type: track.type });
-      } else {
-        throw new Error("Invalid data format in storage");
+      if (!blob || !(blob instanceof Blob) || blob.size === 0) {
+        throw new Error("Invalid blob data");
       }
 
-      const url = URL.createObjectURL(blob);
-      audioElement.src = url;
-      audioElement.load();
+      currentBlobUrl = URL.createObjectURL(blob);
+      audioElement.src = currentBlobUrl;
       
-      // Attempt play
       await audioElement.play();
       
     } catch (error) {
-      console.error("Detailed Play Error:", error);
-      trackStatus.textContent = "Playback unavailable: " + error.message;
+      console.error("Play error:", error);
+      trackStatus.textContent = "Playback unavailable: Invalid data format in storage";
     }
   }
 
-  // ... (renderPlaylist, updatePlayButton, createControlBtn, startVisualizer, stopVisualizer remain the same) ...
-  
+  // ===== RENDER PLAYLIST =====
   function renderPlaylist() {
     playlistSection.innerHTML = "";
     if (!playlist.length) {
@@ -485,7 +487,7 @@ export default async function initLocalPlayer(container) {
     playlist.forEach((track, index) => {
       const item = document.createElement("div");
       item.style.cssText = `
-        padding: 8px 10px;
+        padding: 12px 10px;
         cursor: pointer;
         border-radius: 4px;
         display: flex;
@@ -494,15 +496,26 @@ export default async function initLocalPlayer(container) {
         font-size: 0.9rem;
         color: ${index === currentIndex ? "var(--term-green)" : "var(--term-cyan)"};
         background: ${index === currentIndex ? "rgba(0,255,65,0.1)" : "transparent"};
+        touch-action: manipulation;
       `;
 
       item.innerHTML = `
         <i class="fa-solid fa-music" style="font-size:0.8rem;opacity:0.7;"></i>
-        <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${track.name}</span>
+        <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(track.name)}</span>
       `;
 
       item.onclick = () => playTrack(index);
       playlistSection.appendChild(item);
+    });
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
     });
   }
 
@@ -517,13 +530,14 @@ export default async function initLocalPlayer(container) {
       background: none;
       border: none;
       color: ${isMain ? "var(--term-green)" : "var(--term-cyan)"};
-      font-size: ${isMain ? "1.5rem" : "1.2rem"};
+      font-size: ${isMain ? "2rem" : "1.5rem"};
       cursor: pointer;
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
+      touch-action: manipulation;
     `;
     btn.innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
     btn.title = title;
@@ -544,13 +558,16 @@ export default async function initLocalPlayer(container) {
         return;
       }
     }
-    if (audioCtx.state === "suspended") audioCtx.resume();
+    
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
 
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
     function animate() {
-      if (!isPlaying) return;
+      if (!isPlaying || !analyser) return;
       animationFrame = requestAnimationFrame(animate);
       analyser.getByteFrequencyData(dataArray);
       bars.forEach((bar, i) => {
@@ -569,4 +586,14 @@ export default async function initLocalPlayer(container) {
     }
     bars.forEach((bar) => { bar.style.height = "5px"; });
   }
+
+  // Cleanup
+  window.addEventListener('beforeunload', () => {
+    if (currentBlobUrl) {
+      URL.revokeObjectURL(currentBlobUrl);
+    }
+    if (audioCtx) {
+      audioCtx.close();
+    }
+  });
 }
