@@ -1,4 +1,4 @@
-// app.js
+// app.js - FIXED VERSION
 
 import initNews from "./modules/news/news.module.js";
 import initEnergy from "./modules/energy/energy.module.js";
@@ -29,27 +29,34 @@ function safeInit(name, elementId, initFn, ...args) {
       return;
     }
 
-    initFn(element, ...args);
-    console.log(`✅ ${name} module initialized`);
+    // For modules that need the inner .module-content container
+    if (elementId === "local-player") {
+      const innerContainer = element.querySelector('.module-content');
+      if (innerContainer) {
+        initFn(innerContainer, ...args);
+        console.log(`✅ ${name} module initialized`);
+      } else {
+        console.warn(`⚠️ ${name} .module-content not found`);
+      }
+    } else {
+      initFn(element, ...args);
+      console.log(`✅ ${name} module initialized`);
+    }
   } catch (error) {
     console.error(`Error initializing ${name}:`, error);
   }
 }
 
 /**
- * Responsive layout:
- * - Mobile/tablet (<=768px): disable Packery and use a simple vertical stack.
- * - Desktop: enable Packery layout system.
+ * Responsive layout
  */
 function initResponsiveLayout() {
-  const grid = document.getElementById("grid");
+  const grid = document.getElementById("dashboard-grid");
   if (!grid) return;
 
-  // MOBILE / TABLET
   if (window.innerWidth <= 800) {
     console.log("📱 Mobile layout enabled");
 
-    // Destroy existing Packery instance
     if (window.packeryInstance) {
       try {
         window.packeryInstance.destroy();
@@ -59,23 +66,15 @@ function initResponsiveLayout() {
       window.packeryInstance = null;
     }
 
-    // Remove Packery inline styles from grid
     grid.removeAttribute("style");
     grid.classList.add("mobile-layout");
 
-    // Reset every panel/grid item
-    const items = grid.querySelectorAll(".grid-item, .panel");
-
+    const items = grid.querySelectorAll(".dashboard-item");
     items.forEach((item) => {
       item.removeAttribute("style");
-
       item.style.position = "static";
       item.style.width = "100%";
       item.style.maxWidth = "100%";
-      item.style.left = "auto";
-      item.style.top = "auto";
-      item.style.right = "auto";
-      item.style.transform = "none";
       item.style.margin = "0 0 12px 0";
       item.style.boxSizing = "border-box";
     });
@@ -84,9 +83,7 @@ function initResponsiveLayout() {
     return;
   }
 
-  // DESKTOP
   console.log("🖥️ Desktop layout enabled");
-
   grid.classList.remove("mobile-layout");
 
   try {
@@ -138,18 +135,13 @@ function initializeSearch() {
     searchInput.value = "";
   }
 
-  // Enter key
   searchInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
       performSearch();
     }
   });
 
-  // Search icon click
-  const searchIcon = document.querySelector(
-    ".search-wrapper i.fa-arrow-right"
-  );
-
+  const searchIcon = document.querySelector(".search-wrapper i.fa-arrow-right");
   if (searchIcon) {
     searchIcon.addEventListener("click", performSearch);
   }
@@ -161,40 +153,10 @@ function initializeSearch() {
 document.addEventListener("DOMContentLoaded", () => {
   console.log("🚀 App initializing...");
 
-  // Dependency checks
-  if (typeof Packery === "undefined") {
-    console.warn("⚠️ Packery not loaded");
-  } else {
-    console.log("✅ Packery loaded");
-  }
-
-  if (typeof Sortable === "undefined") {
-    console.warn("⚠️ SortableJS not loaded");
-  } else {
-    console.log("✅ SortableJS loaded");
-  }
-
-  // Initialize modules
-  safeInit("Local Music Player", "music-player", initLocalPlayer);
+  // Initialize modules - FIXED: Use 'local-player' not 'music-player'
+  safeInit("Local Music Player", "local-player", initLocalPlayer);
   safeInit("Radio", "radio", initRadio);
   safeInit("News", "news", initNews);
-
-  // Energy module needs additional elements
-  try {
-    const gridElement = document.getElementById("grid");
-    const carbonValElement = document.getElementById("carbon-val");
-    const carbonMsgElement = document.getElementById("carbon-msg");
-
-    if (gridElement && carbonValElement && carbonMsgElement) {
-      initEnergy(gridElement, carbonValElement, carbonMsgElement);
-      console.log("✅ Energy module initialized");
-    } else {
-      console.warn("⚠️ Energy elements not found");
-    }
-  } catch (error) {
-    console.error("Error initializing Energy:", error);
-  }
-
   safeInit("Weather", "weather", initWeather);
   safeInit("Mastodon", "mastodon", initMastodon);
   safeInit("AI", "aiBtn", initAI);
@@ -207,18 +169,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize search
   initializeSearch();
 
-  // Initialize responsive layout after content has rendered
+  // Initialize responsive layout
   setTimeout(initResponsiveLayout, 300);
 
-  // Reinitialize layout on resize
   let resizeTimeout;
-
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(initResponsiveLayout, 250);
   });
 
-  // Reinitialize layout on device rotation
   window.addEventListener("orientationchange", () => {
     setTimeout(initResponsiveLayout, 300);
   });
@@ -226,21 +185,4 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("🎉 App initialization complete");
 });
 
-// Export for debugging
 window.appVersion = "1.0.0";
-
-window.appModules = {
-  news: initNews,
-  energy: initEnergy,
-  ai: initAI,
-  weather: initWeather,
-  mastodon: initMastodon,
-  radio: initRadio,
-  spotify: initSpotify,
-  emergency: initEmergency,
-  bus: initBus,
-  gallery: initGallery,
-  localPlayer: initLocalPlayer,
-  friendlyPhone: initFriendlyPhone,
-  layout: initLayoutSystem,
-};
