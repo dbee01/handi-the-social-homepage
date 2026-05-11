@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ple.ie</title>
   <link rel="stylesheet" href="styles/main.css">
   <link rel="manifest" href="manifest.json">
@@ -17,25 +17,7 @@
   <script type="module" src="app.js" defer></script>
 
   <style>
-    /* Disable native pull-to-refresh in Vivaldi/Chrome */
-    body {
-      overscroll-behavior-y: none;
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    
-    /* Main wrapper to enable scrolling without pull-to-refresh */
-    .scrollable-content {
-      height: 100%;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: none;
-    }
-    
-    /* Refresh Warning Modal Styles */
+    /* Simple Refresh Modal */
     .refresh-modal {
       display: none;
       position: fixed;
@@ -43,696 +25,348 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.95);
-      backdrop-filter: blur(20px);
+      background: rgba(0, 0, 0, 0.9);
       z-index: 20000;
       justify-content: center;
       align-items: center;
-      font-family: monospace;
-      animation: fadeIn 0.2s ease-out;
     }
     
     .refresh-modal.active {
       display: flex;
     }
     
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    
     .refresh-modal-content {
-      background: var(--panel-bg, #1a1a2e);
-      border: 2px solid var(--term-amber, #ffaa00);
-      border-radius: 20px;
-      padding: 30px;
-      max-width: 500px;
-      width: 90%;
+      background: #1a1a2e;
+      border: 2px solid #ffaa00;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 350px;
+      width: 85%;
       text-align: center;
-      box-shadow: 0 0 50px rgba(255, 170, 0, 0.3);
-      animation: slideUp 0.3s ease-out;
-    }
-    
-    @keyframes slideUp {
-      from {
-        transform: translateY(50px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
     }
     
     .refresh-modal-icon {
-      font-size: 4rem;
-      color: var(--term-amber, #ffaa00);
-      margin-bottom: 20px;
+      font-size: 3rem;
+      color: #ffaa00;
+      margin-bottom: 15px;
     }
     
     .refresh-modal-title {
-      font-size: 1.8rem;
-      color: var(--term-amber, #ffaa00);
-      margin-bottom: 15px;
+      font-size: 1.3rem;
+      color: #ffaa00;
+      margin-bottom: 10px;
       font-weight: bold;
     }
     
-    .refresh-modal-message {
-      color: var(--term-white, #fff);
-      margin-bottom: 15px;
-      line-height: 1.5;
-      font-size: 1.1rem;
-    }
-    
     .refresh-modal-warning {
-      background: rgba(255, 68, 68, 0.15);
-      border-left: 3px solid var(--term-red, #ff4444);
-      padding: 15px;
-      margin: 20px 0;
-      color: var(--term-red, #ff4444);
-      font-size: 0.9rem;
+      background: rgba(255, 68, 68, 0.1);
+      border-left: 3px solid #ff4444;
+      padding: 10px;
+      margin: 15px 0;
+      color: #ff8888;
+      font-size: 0.8rem;
       text-align: left;
-      border-radius: 8px;
     }
     
     .refresh-modal-buttons {
       display: flex;
-      gap: 15px;
+      gap: 10px;
       justify-content: center;
-      margin-top: 20px;
+      margin-top: 15px;
     }
     
     .refresh-modal-btn {
-      padding: 12px 30px;
+      padding: 10px 20px;
       border: none;
-      border-radius: 10px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
-      transition: all 0.2s;
       font-family: monospace;
-      font-size: 1rem;
     }
     
     .refresh-modal-btn.primary {
-      background: var(--term-green, #00ff41);
+      background: #00ff41;
       color: #000;
     }
     
-    .refresh-modal-btn.primary:hover {
-      background: var(--term-green-light, #00ff66);
-      transform: scale(1.05);
-    }
-    
     .refresh-modal-btn.danger {
-      background: rgba(255, 68, 68, 0.9);
+      background: #ff4444;
       color: #fff;
-      border: 1px solid var(--term-red, #ff4444);
-    }
-    
-    .refresh-modal-btn.danger:hover {
-      background: var(--term-red, #ff4444);
-      transform: scale(1.05);
     }
     
     .refresh-modal-checkbox {
-      margin: 15px 0;
+      margin: 10px 0;
       text-align: left;
       display: flex;
       align-items: center;
-      gap: 10px;
-      color: var(--term-dim, #888);
-      font-size: 0.85rem;
+      gap: 8px;
+      color: #888;
+      font-size: 0.75rem;
     }
     
-    .refresh-modal-checkbox input {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      accent-color: var(--term-green, #00ff41);
-    }
-    
-    /* Toast notification */
-    .refresh-toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.9);
-      color: var(--term-green, #00ff41);
-      padding: 12px 24px;
-      border-radius: 50px;
-      z-index: 20001;
-      font-family: monospace;
-      font-size: 0.9rem;
-      white-space: nowrap;
-      border: 1px solid var(--term-green, #00ff41);
-      animation: toastSlideUp 0.3s ease-out;
-      pointer-events: none;
-    }
-    
-    @keyframes toastSlideUp {
-      from {
-        transform: translateX(-50%) translateY(100px);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-      }
-    }
-    
-    /* Pin button mobile optimization */
+    /* Pin button styles */
     .pin-btn {
       touch-action: manipulation;
       cursor: pointer;
-      min-width: 44px;
-      min-height: 44px;
+      min-width: 40px;
+      min-height: 40px;
       transition: all 0.2s;
     }
     
     .pin-btn:active {
       transform: scale(0.95);
     }
-    
-    /* Mobile-friendly tap targets */
-    @media (max-width: 768px) {
-      button, .pin-btn, .gallery-controls button, .refresh-modal-btn {
-        min-height: 48px;
-        min-width: 48px;
-      }
-    }
-    
-    /* Custom pull-to-refresh indicator */
-    .pull-indicator {
-      position: fixed;
-      top: -60px;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background: linear-gradient(135deg, var(--term-amber), var(--term-red));
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-size: 14px;
-      z-index: 19999;
-      transition: top 0.2s ease;
-      font-family: monospace;
-    }
-    
-    .pull-indicator.visible {
-      top: 0;
-    }
   </style>
 </head>
 <body>
 
-<div class="scrollable-content">
-  <header>
-    <div class="brand">
-      <i class="fa-solid fa-bolt"></i>
-      <span>ple.ie</span>
-    </div>
-    <div class="search-wrapper">
-      <select class="search-engine-select" id="searchEngine">
-        <option value="google">Google</option>
-        <option value="duckduckgo">DuckDuckGo</option>
-        <option value="brave">Brave</option>
-        <option value="proton">Proton</option>
-      </select>
-      <input type="text" id="searchInput" placeholder="Search the network...">
-      <i class="fa-solid fa-arrow-right" style="cursor: pointer;"></i>
-    </div>
-    <div class="header-weather">
-      <i class="fa-solid fa-cloud-sun"></i>
-      <span id="weather">Loading...</span>
-    </div>
-  </header>
-
-  <div class="dashboard-wrapper" style="flex: 1;">
-    <!-- Main container for Packery -->
-    <main id="dashboard-grid">
-
-      <!-- Gallery Module -->
-      <div class="dashboard-item" id="gallery" data-order="1">
-        <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-      </div>
-
-      <!-- Emergency Module -->
-      <div class="dashboard-item" id="emergency" data-order="2">
-        <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-      </div>
-      
-      <!-- Bus Module -->
-      <div class="dashboard-item" id="bus" data-order="3">
-        <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-      </div>
-
-      <!-- Friendly Phone Module -->
-      <div class="dashboard-item" id="friendly-phone" data-order="11">
-        <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-      </div>
-      
-      <!-- Local Music Player Module -->
-      <div class="dashboard-item" id="local-player" data-order="12">
-        <button class="pin-btn" title="Pin to top">
-          <i class="fa-solid fa-thumbtack"></i>
-        </button>
-        <div id="music-player" class="module-content"></div>
-      </div>
-
-    </main>
+<header>
+  <div class="brand">
+    <i class="fa-solid fa-bolt"></i>
+    <span>ple.ie</span>
   </div>
+  <div class="search-wrapper">
+    <select class="search-engine-select" id="searchEngine">
+      <option value="google">Google</option>
+      <option value="duckduckgo">DuckDuckGo</option>
+      <option value="brave">Brave</option>
+      <option value="proton">Proton</option>
+    </select>
+    <input type="text" id="searchInput" placeholder="Search the network...">
+    <i class="fa-solid fa-arrow-right" style="cursor: pointer;"></i>
+  </div>
+  <div class="header-weather">
+    <i class="fa-solid fa-cloud-sun"></i>
+    <span id="weather">Loading...</span>
+  </div>
+</header>
 
-  <footer>
-    <div class="footer-content">
-      <span><i class="fa-solid fa-location-dot"></i> Dublin</span>
-      <span><i class="fa-solid fa-leaf"></i> Green Energy</span>
-      <span><i class="fa-brands fa-github"></i> Open Source</span>
+<div class="dashboard-wrapper" style="flex: 1;">
+  <main id="dashboard-grid">
+
+    <!-- Gallery Module -->
+    <div class="dashboard-item" id="gallery" data-order="1">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
     </div>
-  </footer>
+
+    <!-- Emergency Module -->
+    <div class="dashboard-item" id="emergency" data-order="2">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+    </div>
+    
+    <!-- Bus Module -->
+    <div class="dashboard-item" id="bus" data-order="3">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+    </div>
+
+    <!-- Friendly Phone Module -->
+    <div class="dashboard-item" id="friendly-phone" data-order="11">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+    </div>
+    
+    <!-- Local Music Player Module -->
+    <div class="dashboard-item" id="local-player" data-order="12">
+      <button class="pin-btn" title="Pin to top">
+        <i class="fa-solid fa-thumbtack"></i>
+      </button>
+      <div id="music-player" class="module-content"></div>
+    </div>
+
+  </main>
 </div>
 
-<!-- Pull indicator -->
-<div id="pullIndicator" class="pull-indicator">
-  <i class="fa-solid fa-arrow-down"></i>
-  <span>Pull to refresh</span>
-  <i class="fa-solid fa-arrow-down"></i>
-</div>
+<footer>
+  <div class="footer-content">
+    <span><i class="fa-solid fa-location-dot"></i> Dublin</span>
+    <span><i class="fa-solid fa-leaf"></i> Green Energy</span>
+    <span><i class="fa-brands fa-github"></i> Open Source</span>
+  </div>
+</footer>
 
-<!-- Refresh Warning Modal HTML -->
-<div id="refreshWarningModal" class="refresh-modal">
+<!-- Simple Refresh Modal -->
+<div id="refreshModal" class="refresh-modal">
   <div class="refresh-modal-content">
     <div class="refresh-modal-icon">
       <i class="fa-solid fa-triangle-exclamation"></i>
     </div>
-    <div class="refresh-modal-title">
-      ⚠️ Refresh Detected ⚠️
-    </div>
-    <div class="refresh-modal-message">
-      Are you sure you want to refresh the page?
-    </div>
+    <div class="refresh-modal-title">Refresh Page?</div>
     <div class="refresh-modal-warning">
-      <i class="fa-solid fa-database"></i> <strong>You will lose:</strong><br><br>
-      • All playing audio/video<br>
-      • Current slideshow position<br>
-      • Unsaved changes<br>
-      • Active downloads
+      <i class="fa-solid fa-database"></i> Playing media will stop<br>
+      <i class="fa-solid fa-image"></i> Slideshow position will reset
     </div>
     <div class="refresh-modal-checkbox">
-      <input type="checkbox" id="dontShowRefreshWarning">
-      <label for="dontShowRefreshWarning">Don't show this warning again this session</label>
+      <input type="checkbox" id="dontShowAgain">
+      <label>Don't show again this session</label>
     </div>
     <div class="refresh-modal-buttons">
-      <button id="refreshStayBtn" class="refresh-modal-btn primary">
-        <i class="fa-solid fa-check"></i> Stay on Page
-      </button>
-      <button id="refreshLeaveBtn" class="refresh-modal-btn danger">
-        <i class="fa-solid fa-rotate-right"></i> Refresh Anyway
-      </button>
+      <button id="stayBtn" class="refresh-modal-btn primary">Stay</button>
+      <button id="refreshBtn" class="refresh-modal-btn danger">Refresh</button>
     </div>
   </div>
 </div>
 
 <script>
-  // ========== VIVALDI-SPECIFIC REFRESH WARNING SYSTEM ==========
-  (function() {
-    console.log('🛡️ Initializing Vivaldi refresh protection system...');
-    
-    let warningEnabled = true;
-    let userConfirmedRefresh = false;
-    let touchStartY = 0;
-    let isPulling = false;
-    let pullThreshold = 80;
-    
-    const modal = document.getElementById('refreshWarningModal');
-    const stayBtn = document.getElementById('refreshStayBtn');
-    const leaveBtn = document.getElementById('refreshLeaveBtn');
-    const dontShowCheckbox = document.getElementById('dontShowRefreshWarning');
-    const pullIndicator = document.getElementById('pullIndicator');
-    const scrollableContent = document.querySelector('.scrollable-content');
-    
-    // Disable native pull-to-refresh in Vivaldi
-    if (scrollableContent) {
-      scrollableContent.addEventListener('touchstart', preventPullToRefresh, { passive: false });
-      scrollableContent.addEventListener('touchmove', handleTouchMove, { passive: false });
-      scrollableContent.addEventListener('touchend', handleTouchEnd);
+// ========== SIMPLE REFRESH WARNING (Works on all browsers) ==========
+(function() {
+  let warningsEnabled = true;
+  let confirmedRefresh = false;
+  
+  const modal = document.getElementById('refreshModal');
+  const stayBtn = document.getElementById('stayBtn');
+  const refreshBtn = document.getElementById('refreshBtn');
+  const dontShowCheckbox = document.getElementById('dontShowAgain');
+  
+  // Load preference
+  if (sessionStorage.getItem('refreshWarningsOff') === 'true') {
+    warningsEnabled = false;
+  }
+  
+  function showModal(callback) {
+    if (!warningsEnabled || confirmedRefresh) {
+      if (callback) callback();
+      return;
     }
     
-    // Also prevent on body
-    document.body.addEventListener('touchstart', preventPullToRefresh, { passive: false });
-    
-    function preventPullToRefresh(e) {
-      const scrollTop = scrollableContent ? scrollableContent.scrollTop : window.pageYOffset;
-      if (scrollTop === 0 && e.touches) {
-        // Allow the event but we'll track it
-      }
+    modal.classList.add('active');
+    window.pendingRefresh = callback;
+  }
+  
+  function hideModal() {
+    modal.classList.remove('active');
+    window.pendingRefresh = null;
+  }
+  
+  stayBtn.onclick = () => {
+    hideModal();
+  };
+  
+  refreshBtn.onclick = () => {
+    if (dontShowCheckbox.checked) {
+      warningsEnabled = false;
+      sessionStorage.setItem('refreshWarningsOff', 'true');
     }
+    hideModal();
+    confirmedRefresh = true;
     
-    function handleTouchMove(e) {
-      const scrollTop = scrollableContent ? scrollableContent.scrollTop : window.pageYOffset;
-      const touchY = e.touches[0].clientY;
-      const pullDistance = touchY - touchStartY;
-      
-      // Detect pull-to-refresh when at top and pulling down
-      if (scrollTop === 0 && pullDistance > 10 && !isPulling) {
-        isPulling = true;
-        
-        // Show pull indicator
-        if (pullIndicator) {
-          pullIndicator.classList.add('visible');
-          pullIndicator.style.top = `${Math.min(pullDistance - 20, 60)}px`;
-        }
-        
-        // If pulled beyond threshold, show modal
-        if (pullDistance > pullThreshold && warningEnabled && !userConfirmedRefresh) {
-          e.preventDefault();
-          showRefreshWarning(() => {
-            userConfirmedRefresh = true;
-            window.location.reload();
-          });
-          isPulling = false;
-          if (pullIndicator) pullIndicator.classList.remove('visible');
-        }
-      }
-    }
-    
-    function handleTouchEnd() {
-      isPulling = false;
-      if (pullIndicator) pullIndicator.classList.remove('visible');
-      touchStartY = 0;
-    }
-    
-    // Show toast notification
-    function showToast(message, isWarning = false) {
-      const toast = document.createElement('div');
-      toast.className = 'refresh-toast';
-      toast.innerHTML = `<i class="fa-solid ${isWarning ? 'fa-exclamation-triangle' : 'fa-shield-alt'}"></i> ${message}`;
-      toast.style.background = isWarning ? 'rgba(255, 68, 68, 0.9)' : 'rgba(0, 0, 0, 0.9)';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2500);
-    }
-    
-    // Show warning modal
-    function showRefreshWarning(refreshCallback) {
-      if (!warningEnabled) {
-        if (refreshCallback) refreshCallback();
-        return;
-      }
-      
-      if (modal && !modal.classList.contains('active')) {
-        modal.classList.add('active');
-        showToast('⛔ Refresh blocked - confirm to continue', true);
-        console.log('⚠️ Refresh warning shown');
-        
-        // Store callback
-        window.pendingRefresh = refreshCallback;
-      }
-    }
-    
-    // Hide modal
-    function hideModal() {
-      if (modal) {
-        modal.classList.remove('active');
-      }
-      window.pendingRefresh = null;
-    }
-    
-    // Handle stay
-    function handleStay() {
-      hideModal();
-      showToast('✅ Refresh cancelled - staying on page');
-      console.log('User cancelled refresh');
-    }
-    
-    // Handle leave/refresh
-    function handleLeave() {
-      if (dontShowCheckbox && dontShowCheckbox.checked) {
-        warningEnabled = false;
-        sessionStorage.setItem('refreshWarningDisabled', 'true');
-        showToast('🔕 Refresh warnings disabled for this session');
-      }
-      
-      hideModal();
-      userConfirmedRefresh = true;
-      showToast('🔄 Refreshing page...');
-      console.log('User confirmed refresh');
-      
-      if (window.pendingRefresh) {
-        window.pendingRefresh();
-      } else {
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
-      }
-    }
-    
-    // Add event listeners
-    if (stayBtn) stayBtn.addEventListener('click', handleStay);
-    if (leaveBtn) leaveBtn.addEventListener('click', handleLeave);
-    
-    // Close modal on ESC
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modal?.classList.contains('active')) {
-        handleStay();
-      }
-    });
-    
-    // Close modal on background click
-    if (modal) {
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) handleStay();
-      });
-    }
-    
-    // Check session storage
-    if (sessionStorage.getItem('refreshWarningDisabled') === 'true') {
-      warningEnabled = false;
-      console.log('⚠️ Refresh warnings disabled for this session');
-    }
-    
-    // ========== INTERCEPT KEYBOARD REFRESH ==========
-    document.addEventListener('keydown', (event) => {
-      const isRefresh = (event.key === 'F5') ||
-                       (event.key === 'r' && (event.ctrlKey || event.metaKey)) ||
-                       (event.key === 'R' && (event.ctrlKey || event.metaKey));
-      
-      if (isRefresh && warningEnabled && !userConfirmedRefresh) {
-        event.preventDefault();
-        event.stopPropagation();
-        console.log('🔑 Keyboard refresh detected');
-        showRefreshWarning(() => {
-          userConfirmedRefresh = true;
-          window.location.reload();
-        });
-        return false;
-      }
-    });
-    
-    // ========== INTERCEPT BROWSER REFRESH BUTTON ==========
-    window.addEventListener('beforeunload', (event) => {
-      if (warningEnabled && !userConfirmedRefresh) {
-        console.log('🔄 Browser refresh/close detected');
-        
-        // Show our modal
-        setTimeout(() => {
-          if (!userConfirmedRefresh) {
-            showRefreshWarning(() => {
-              userConfirmedRefresh = true;
-              window.location.reload();
-            });
-          }
-        }, 10);
-        
-        // Required for beforeunload to work
-        event.preventDefault();
-        event.returnValue = 'You have unsaved changes. Are you sure?';
-        return event.returnValue;
-      }
-    });
-    
-    // ========== OVERRIDE LOCATION.RELOAD ==========
-    const originalReload = window.location.reload;
-    window.location.reload = function(forceReload) {
-      console.log('🔄 Programmatic reload detected');
-      if (warningEnabled && !userConfirmedRefresh) {
-        showRefreshWarning(() => {
-          userConfirmedRefresh = true;
-          originalReload.call(window.location, forceReload);
-        });
-      } else {
-        originalReload.call(window.location, forceReload);
-      }
-    };
-    
-    // ========== CONSOLE COMMANDS ==========
-    window.testRefreshWarning = function() {
-      console.log('🧪 Testing refresh warning...');
-      showRefreshWarning(() => {
-        window.location.reload();
-      });
-    };
-    
-    window.enableRefreshWarnings = function() {
-      warningEnabled = true;
-      sessionStorage.removeItem('refreshWarningDisabled');
-      showToast('🛡️ Refresh warnings ENABLED');
-      console.log('Refresh warnings enabled');
-    };
-    
-    window.disableRefreshWarnings = function() {
-      warningEnabled = false;
-      sessionStorage.setItem('refreshWarningDisabled', 'true');
-      showToast('⚠️ Refresh warnings DISABLED');
-      console.log('Refresh warnings disabled');
-    };
-    
-    console.log('✅ Vivaldi refresh protection active!');
-    console.log('💡 Commands: testRefreshWarning(), enableRefreshWarnings(), disableRefreshWarnings()');
-  })();
-</script>
-
-<script>
-  // ========== PIN FEATURE - ENABLED BY DEFAULT ==========
-  (function() {
-    console.log('📌 Initializing pin feature...');
-    
-    function movePinnedToTop(grid) {
-      const items = Array.from(document.querySelectorAll('.dashboard-item'));
-      const pinnedItems = items.filter(item => item.classList.contains('pinned'));
-      const unpinnedItems = items.filter(item => !item.classList.contains('pinned'));
-      
-      pinnedItems.forEach(item => grid.appendChild(item));
-      unpinnedItems.forEach(item => grid.appendChild(item));
-      
-      const pinnedOrder = pinnedItems.map(item => item.id);
-      localStorage.setItem('pinnedItems', JSON.stringify(pinnedOrder));
-      
-      console.log(`📌 Moved ${pinnedItems.length} pinned items to top`);
-    }
-    
-    function loadPinnedState() {
-      const savedPins = localStorage.getItem('pinnedItems');
-      if (savedPins) {
-        const pinnedIds = JSON.parse(savedPins);
-        pinnedIds.forEach(id => {
-          const item = document.getElementById(id);
-          if (item) {
-            item.classList.add('pinned');
-            const pinBtn = item.querySelector('.pin-btn');
-            if (pinBtn) {
-              pinBtn.style.color = 'var(--term-green)';
-              pinBtn.style.transform = 'rotate(45deg)';
-            }
-          }
-        });
-        console.log('📌 Loaded pinned state:', pinnedIds);
-      }
-    }
-    
-    function showToast(message) {
-      const toast = document.createElement('div');
-      toast.className = 'refresh-toast';
-      toast.innerHTML = `<i class="fa-solid fa-thumbtack"></i> ${message}`;
-      toast.style.background = 'rgba(0, 0, 0, 0.9)';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    }
-    
-    function initPinButtons() {
-      const pinButtons = document.querySelectorAll('.pin-btn');
-      
-      pinButtons.forEach(btn => {
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
-        
-        newBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const dashboardItem = newBtn.closest('.dashboard-item');
-          if (!dashboardItem) return;
-          
-          if (dashboardItem.classList.contains('pinned')) {
-            dashboardItem.classList.remove('pinned');
-            newBtn.style.color = '';
-            newBtn.style.transform = '';
-            showToast(`📌 Unpinned ${dashboardItem.id}`);
-          } else {
-            dashboardItem.classList.add('pinned');
-            newBtn.style.color = 'var(--term-green)';
-            newBtn.style.transform = 'rotate(45deg)';
-            showToast(`📌 Pinned ${dashboardItem.id} to top`);
-          }
-          
-          const grid = document.getElementById('dashboard-grid');
-          if (grid) {
-            movePinnedToTop(grid);
-            if (window.pckry) {
-              window.pckry.reloadItems();
-              window.pckry.layout();
-            }
-          }
-        });
-        
-        newBtn.addEventListener('touchstart', () => {
-          newBtn.style.transform = 'scale(0.95)';
-        });
-        newBtn.addEventListener('touchend', () => {
-          if (!newBtn.closest('.dashboard-item')?.classList.contains('pinned')) {
-            newBtn.style.transform = '';
-          }
-        });
-      });
-      
-      console.log(`✅ Initialized ${pinButtons.length} pin buttons`);
-    }
-    
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        loadPinnedState();
-        initPinButtons();
-        setTimeout(() => {
-          const grid = document.getElementById('dashboard-grid');
-          if (grid) movePinnedToTop(grid);
-        }, 500);
-      });
+    if (window.pendingRefresh) {
+      window.pendingRefresh();
     } else {
-      loadPinnedState();
-      initPinButtons();
-      setTimeout(() => {
-        const grid = document.getElementById('dashboard-grid');
-        if (grid) movePinnedToTop(grid);
-      }, 500);
+      location.reload();
     }
-    
-    console.log('✅ Pin feature active - click any 📌 to pin modules to top!');
-  })();
-</script>
-
-<script>
-  // Simple initialization checker
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM ready, checking for layout system...');
-    setTimeout(() => {
-      if (typeof window.layoutSystemInitialized === 'undefined') {
-        console.warn('Layout system not initialized yet, but modules should load soon...');
-      }
-    }, 500);
+  };
+  
+  modal.onclick = (e) => {
+    if (e.target === modal) hideModal();
+  };
+  
+  // Catch keyboard refresh
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'F5' || (e.ctrlKey && e.key === 'r') || (e.metaKey && e.key === 'r')) {
+      e.preventDefault();
+      showModal(() => location.reload());
+    }
   });
-</script>
+  
+  // Catch browser refresh button
+  window.addEventListener('beforeunload', (e) => {
+    if (warningsEnabled && !confirmedRefresh) {
+      e.preventDefault();
+      e.returnValue = '';
+      showModal(() => location.reload());
+      return e.returnValue;
+    }
+  });
+  
+  // Override reload
+  const originalReload = location.reload;
+  location.reload = function() {
+    if (warningsEnabled && !confirmedRefresh) {
+      showModal(() => originalReload.call(location));
+    } else {
+      originalReload.call(location);
+    }
+  };
+  
+  // Console helpers
+  window.disableRefreshWarnings = () => {
+    warningsEnabled = false;
+    sessionStorage.setItem('refreshWarningsOff', 'true');
+  };
+  window.enableRefreshWarnings = () => {
+    warningsEnabled = true;
+    sessionStorage.removeItem('refreshWarningsOff');
+  };
+  
+  console.log('✅ Refresh protection active');
+})();
 
-<script>
-  setTimeout(() => {
-    console.log("🔍 Debugging...");
-    console.log(`Grid: ${!!document.getElementById('dashboard-grid')}`);
-    console.log(`Items: ${document.querySelectorAll('.dashboard-item').length}`);
-    console.log(`Pin buttons: ${document.querySelectorAll('.pin-btn').length}`);
-    console.log("✅ Vivaldi-specific fixes applied:");
-    console.log("   • Native pull-to-refresh disabled");
-    console.log("   • Custom pull indicator added");
-    console.log("   • Keyboard shortcuts intercepted");
-    console.log("   • Pin feature enabled");
-  }, 1000);
+// ========== PIN FEATURE ==========
+(function() {
+  function savePins() {
+    const pinned = Array.from(document.querySelectorAll('.dashboard-item.pinned')).map(i => i.id);
+    localStorage.setItem('pinnedItems', JSON.stringify(pinned));
+  }
+  
+  function loadPins() {
+    const saved = localStorage.getItem('pinnedItems');
+    if (saved) {
+      JSON.parse(saved).forEach(id => {
+        const item = document.getElementById(id);
+        if (item) {
+          item.classList.add('pinned');
+          const btn = item.querySelector('.pin-btn');
+          if (btn) {
+            btn.style.color = '#00ff41';
+            btn.style.transform = 'rotate(45deg)';
+          }
+        }
+      });
+    }
+  }
+  
+  function movePinsToTop() {
+    const grid = document.getElementById('dashboard-grid');
+    const items = Array.from(grid.children);
+    const pinned = items.filter(i => i.classList.contains('pinned'));
+    const unpinned = items.filter(i => !i.classList.contains('pinned'));
+    pinned.forEach(i => grid.appendChild(i));
+    unpinned.forEach(i => grid.appendChild(i));
+  }
+  
+  function initPins() {
+    document.querySelectorAll('.pin-btn').forEach(btn => {
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      
+      newBtn.onclick = (e) => {
+        e.stopPropagation();
+        const item = newBtn.closest('.dashboard-item');
+        if (item.classList.contains('pinned')) {
+          item.classList.remove('pinned');
+          newBtn.style.color = '';
+          newBtn.style.transform = '';
+        } else {
+          item.classList.add('pinned');
+          newBtn.style.color = '#00ff41';
+          newBtn.style.transform = 'rotate(45deg)';
+        }
+        movePinsToTop();
+        savePins();
+        
+        if (window.pckry) {
+          window.pckry.reloadItems();
+          window.pckry.layout();
+        }
+      };
+    });
+  }
+  
+  loadPins();
+  initPins();
+  setTimeout(movePinsToTop, 100);
+  
+  console.log('✅ Pin feature active');
+})();
 </script>
 
 </body>
