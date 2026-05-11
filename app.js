@@ -182,3 +182,39 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.appVersion = "1.0.0";
+
+// Add this to the end of your app.js
+
+// Store module init functions globally
+window.modules = {
+  localPlayer: initLocalPlayer,
+  gallery: initGallery,
+  emergency: initEmergency,
+  bus: initBus,
+  friendlyPhone: initFriendlyPhone,
+  radio: initRadio,
+  news: initNews,
+  mastodon: initMastodon
+};
+
+// Listen for settings changes and refresh modules
+window.addEventListener('settingsChanged', (event) => {
+  console.log('Settings changed, refreshing modules...', event.detail);
+  
+  // Get all visible modules and reinitialize them
+  const moduleIds = ['local-player', 'gallery', 'emergency', 'bus', 'friendly-phone', 'radio', 'news', 'mastodon'];
+  
+  moduleIds.forEach(moduleId => {
+    const dashboardItem = document.getElementById(moduleId);
+    if (dashboardItem && dashboardItem.classList.contains('visible')) {
+      const container = dashboardItem.querySelector('.module-content');
+      const moduleName = moduleId.replace('-', '');
+      const initFunction = window.modules[moduleId === 'local-player' ? 'localPlayer' : moduleId];
+      
+      if (container && initFunction) {
+        console.log(`Refreshing: ${moduleId}`);
+        initFunction(container);
+      }
+    }
+  });
+});
