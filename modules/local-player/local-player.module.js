@@ -1,112 +1,140 @@
 // modules/local-player/local-player.module.js
 
 export default async function initLocalPlayer(container) {
-  console.log("=== MUSIC PLAYER INITIALIZING ===");
+  console.log("🔊 MUSIC PLAYER LOADING...");
   
   if (!container) {
-    console.error("Music Player: Container not found");
+    console.error("No container!");
     return;
   }
 
-  // FORCE container to be visible
+  // Make container visible
   container.style.display = "block";
-  container.style.minHeight = "350px";
-  container.style.backgroundColor = "#0d0d1a";
-  container.style.borderRadius = "12px";
+  container.style.backgroundColor = "#0a0a15";
+  container.style.border = "2px solid #00ff41";
+  container.style.borderRadius = "10px";
   container.style.padding = "0";
-  container.style.margin = "10px 0";
+  container.style.margin = "10px";
+  container.style.minHeight = "300px";
   
-  // Clear everything
+  // Clear and add content
   container.innerHTML = "";
   
-  // Add PIN button preservation if needed
-  const parentItem = container.closest('.dashboard-item');
-  let existingPinBtn = null;
-  if (parentItem) {
-    existingPinBtn = parentItem.querySelector('.pin-btn');
-  }
-  
-  // ========== BUILD MUSIC PLAYER UI ==========
-  
-  // Panel Title
-  const panelTitle = document.createElement("div");
-  panelTitle.style.cssText = `
+  // Title bar
+  const title = document.createElement("div");
+  title.style.cssText = `
+    background: #1a1a2e;
     padding: 12px 15px;
-    background: linear-gradient(135deg, #1a1a2e, #0d0d1a);
     border-bottom: 2px solid #00ff41;
-    border-radius: 12px 12px 0 0;
-    font-size: 1.1rem;
-    font-weight: bold;
     color: #00ff41;
+    font-weight: bold;
     font-family: monospace;
   `;
-  panelTitle.innerHTML = '<i class="fa-solid fa-music"></i> Local Music Player';
-  container.appendChild(panelTitle);
+  title.innerHTML = '<i class="fa-solid fa-music"></i> Local Music Player';
+  container.appendChild(title);
   
-  // Content Area
-  const contentArea = document.createElement("div");
-  contentArea.style.cssText = `
-    padding: 20px;
-    background: rgba(0,0,0,0.3);
-    min-height: 280px;
-    border-radius: 0 0 12px 12px;
+  // Content area
+  const content = document.createElement("div");
+  content.style.cssText = `
+    padding: 30px 20px;
+    text-align: center;
+    color: #ccc;
+    font-family: monospace;
   `;
   
-  // Check for music in settings
-  let hasMusic = false;
-  let musicCount = 0;
+  // Check what's in localStorage
+  let settings = null;
+  let musicFiles = [];
   
   try {
     const saved = localStorage.getItem('pleie_settings');
+    console.log("Raw settings from localStorage:", saved);
+    
     if (saved) {
-      const settings = JSON.parse(saved);
+      settings = JSON.parse(saved);
+      console.log("Parsed settings:", settings);
+      
       if (settings.musicPlayer && settings.musicPlayer.musicFiles) {
-        musicCount = settings.musicPlayer.musicFiles.length;
-        hasMusic = musicCount > 0;
+        musicFiles = settings.musicPlayer.musicFiles;
+        console.log("Found music files:", musicFiles.length);
+      } else {
+        console.log("No musicPlayer.musicFiles found");
       }
+    } else {
+      console.log("No pleie_settings found in localStorage");
     }
   } catch(e) {
     console.error("Error reading settings:", e);
   }
   
-  if (hasMusic) {
-    // Show music player controls
-    contentArea.innerHTML = `
-      <div style="text-align: center; padding: 20px;">
-        <i class="fa-solid fa-check-circle" style="font-size: 48px; color: #00ff41;"></i>
-        <h3 style="color: #00ff41; margin: 15px 0;">${musicCount} Tracks Loaded</h3>
-        <p style="color: #888;">Music files found! Click play to start.</p>
-        <div style="margin: 20px 0;">
-          <button id="test-play-btn" style="background: #00ff41; color: #000; border: none; padding: 10px 30px; border-radius: 25px; font-weight: bold; cursor: pointer;">
-            <i class="fa-solid fa-play"></i> PLAY MUSIC
-          </button>
-        </div>
-        <p style="color: #666; font-size: 12px;">Full player controls will appear here</p>
+  // Build content based on what we found
+  if (musicFiles.length > 0) {
+    content.innerHTML = `
+      <div style="color: #00ff41; font-size: 48px; margin-bottom: 15px;">
+        <i class="fa-solid fa-check-circle"></i>
+      </div>
+      <div style="font-size: 18px; color: #00ff41; margin-bottom: 10px;">
+        ${musicFiles.length} Track${musicFiles.length !== 1 ? 's' : ''} Loaded!
+      </div>
+      <div style="color: #888; font-size: 12px; margin-bottom: 20px;">
+        ${musicFiles.map(f => f.name).slice(0, 3).join(', ')}${musicFiles.length > 3 ? '...' : ''}
+      </div>
+      <div style="margin-top: 20px;">
+        <button id="debug-play-btn" style="background: #00ff41; color: #000; border: none; padding: 10px 25px; border-radius: 20px; font-weight: bold; cursor: pointer;">
+          <i class="fa-solid fa-play"></i> Play First Track
+        </button>
       </div>
     `;
   } else {
-    // Show setup message
-    contentArea.innerHTML = `
-      <div style="text-align: center; padding: 40px 20px;">
-        <i class="fa-solid fa-music" style="font-size: 64px; color: #666;"></i>
-        <h3 style="color: #00ff41; margin: 20px 0;">Music Player</h3>
-        <div style="background: rgba(255,170,0,0.1); border-left: 3px solid #ffaa00; padding: 15px; margin: 20px 0; text-align: left;">
-          <i class="fa-solid fa-gear" style="color: #ffaa00;"></i>
-          <strong style="color: #ffaa00;"> No music loaded</strong>
-          <p style="color: #888; margin-top: 10px; font-size: 14px;">
-            Click the <strong style="color: #00ff41;">gear icon</strong> in the bottom-right corner,<br>
-            go to <strong style="color: #00ff41;">Music Player</strong> section, and select your music folder.
-          </p>
-        </div>
-        <p style="color: #666; font-size: 12px; margin-top: 20px;">
-          <i class="fa-solid fa-info-circle"></i> Supports MP3, WAV, OGG, FLAC, M4A
-        </p>
+    content.innerHTML = `
+      <div style="color: #ffaa00; font-size: 48px; margin-bottom: 15px;">
+        <i class="fa-solid fa-circle-exclamation"></i>
+      </div>
+      <div style="font-size: 18px; color: #ffaa00; margin-bottom: 10px;">
+        No Music Loaded
+      </div>
+      <div style="color: #888; font-size: 14px; max-width: 300px; margin: 0 auto;">
+        <p>Click the <strong style="color: #00ff41;">⚙️ Gear Icon</strong> in the bottom-right corner</p>
+        <p>Go to <strong style="color: #00ff41;">Music Player</strong> section</p>
+        <p>Click <strong style="color: #00ff41;">Select Music Folder</strong> and choose your folder</p>
+        <p>Then click <strong style="color: #00ff41;">Save All Settings</strong></p>
+      </div>
+      <div style="margin-top: 20px; padding: 10px; background: #1a1a2e; border-radius: 8px; font-size: 11px; color: #666;">
+        <i class="fa-solid fa-database"></i> localStorage check: ${saved ? 'Settings found' : 'No settings'}
       </div>
     `;
   }
   
-  container.appendChild(contentArea);
+  container.appendChild(content);
   
-  console.log("=== MUSIC PLAYER RENDERED ===");
-  console.log("Has music:", hasMusic, "Count:", musicCount);
+  // Add debug button handler
+  setTimeout(() => {
+    const playBtn = document.getElementById('debug-play-btn');
+    if (playBtn && musicFiles.length > 0) {
+      playBtn.onclick = () => {
+        const firstFile = musicFiles[0];
+        console.log("Playing:", firstFile.name);
+        
+        // Convert base64 back to blob
+        const byteCharacters = atob(firstFile.data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: firstFile.type });
+        const url = URL.createObjectURL(blob);
+        
+        const audio = new Audio(url);
+        audio.play().catch(e => console.error("Play error:", e));
+        
+        playBtn.innerHTML = '<i class="fa-solid fa-headphones"></i> Playing...';
+        setTimeout(() => {
+          playBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play First Track';
+        }, 3000);
+      };
+    }
+  }, 100);
+  
+  console.log("✅ Music Player rendered");
 }
