@@ -105,6 +105,8 @@ export default async function initFriendlyPhone(container) {
         contacts = [];
       }
       renderContacts();
+    } else {
+      renderContacts();
     }
   }
 
@@ -146,7 +148,7 @@ export default async function initFriendlyPhone(container) {
           background: #000;
         ">
           ${contact.photo ? 
-            `<img src="${contact.photo}" alt="${contact.name}" style="width: 100%; height: 100%; object-fit: cover;">` :
+            `<img src="${contact.photo}" alt="${escapeHtml(contact.name)}" style="width: 100%; height: 100%; object-fit: cover;">` :
             `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1a1a1a, #0a0a0a);">
               <i class="fa-solid fa-user" style="font-size: 2rem; color: var(--term-dim);"></i>
              </div>`
