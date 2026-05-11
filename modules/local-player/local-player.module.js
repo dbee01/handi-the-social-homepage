@@ -1,30 +1,38 @@
 // modules/local-player/local-player.module.js
 
 export default async function initLocalPlayer(container) {
-  console.log("🎵 initLocalPlayer called");
-  console.log("Container element:", container);
-  console.log("Container ID:", container?.id);
+  console.log("🎵 MUSIC PLAYER INIT - Container:", container);
   
-  if (!container) return;
+  if (!container) {
+    console.error("No container provided!");
+    return;
+  }
   
-  // DON'T clear the container completely - just add content
-  // But first, add a red border so we can SEE it
-  container.style.border = "3px solid #ff0000";
-  container.style.minHeight = "200px";
-  container.style.backgroundColor = "#0a0a15";
-  container.style.padding = "15px";
-  container.style.display = "block";
+  // Make the parent dashboard-item visible
+  const parentItem = container.closest('.dashboard-item');
+  if (parentItem) {
+    parentItem.style.display = 'block';
+  }
   
-  // Add simple content that will definitely show
+  // Make container visible
+  container.style.display = 'block';
+  container.style.minHeight = '250px';
+  container.style.backgroundColor = '#0a0a15';
+  container.style.borderRadius = '8px';
+  container.style.padding = '15px';
+  
+  // Clear and add content
   container.innerHTML = `
-    <div style="color: #00ff41; font-family: monospace; text-align: center; padding: 20px;">
-      <h2 style="color: #00ff41;">🎵 MUSIC PLAYER</h2>
-      <p style="color: #fff;">Module is loaded and working!</p>
-      <p style="color: #ffaa00; margin-top: 10px;">
-        ⚙️ Configure in Settings (gear icon bottom-right)
-      </p>
+    <div style="text-align: center; padding: 30px 20px;">
+      <i class="fa-solid fa-music" style="font-size: 48px; color: #00ff41; margin-bottom: 15px; display: block;"></i>
+      <div style="color: #00ff41; font-size: 18px; font-weight: bold; margin-bottom: 10px;">Music Player</div>
+      <div style="color: #888; font-size: 14px; line-height: 1.6;">
+        Click the <strong style="color: #ffaa00;">⚙️ Gear Icon</strong> (bottom-right)<br>
+        Go to <strong style="color: #00ff41;">Music Player</strong> section<br>
+        Select your music folder and save
+      </div>
     </div>
   `;
   
-  console.log("✅ Music Player content added");
+  console.log("✅ Music Player rendered");
 }
