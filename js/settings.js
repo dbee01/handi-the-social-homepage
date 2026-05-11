@@ -1,4 +1,4 @@
-// js/settings.js - Complete with page reload on save
+// js/settings.js
 
 (function() {
   console.log('⚙️ Initializing Settings...');
@@ -189,14 +189,14 @@
         renderPhoneContacts();
       }
     } else {
-      // First time - set defaults and save
-      saveSettings();
+      // First time - save defaults
+      saveSettingsOnly();
       updateModuleVisibility();
     }
   }
 
-  // Save all settings to localStorage - WITH PAGE RELOAD
-  function saveSettings() {
+  // Save only without closing modal or reloading
+  function saveSettingsOnly() {
     const settings = {
       enabledModules: enabledModules,
       gallery: {
@@ -225,17 +225,19 @@
     };
     
     localStorage.setItem('pleie_settings', JSON.stringify(settings));
+    return settings;
+  }
+
+  // Save settings and refresh modules
+  function saveAndRefresh() {
+    const settings = saveSettingsOnly();
     
-    // Show success message
-    showToast('✅ Settings saved! Page will reload...');
+    // Dispatch event for modules to refresh
+    const event = new CustomEvent('settingsChanged', { detail: settings });
+    window.dispatchEvent(event);
     
-    // Close modal first
+    showToast('✅ Settings saved!');
     closeModal();
-    
-    // OPTION 3: RELOAD THE PAGE AFTER 1 SECOND - GUARANTEED TO WORK
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
   }
 
   // Modal controls
@@ -393,7 +395,7 @@
   if (closeBtn) closeBtn.onclick = closeModal;
   
   const saveBtn = document.getElementById('saveSettingsBtn');
-  if (saveBtn) saveBtn.onclick = saveSettings;
+  if (saveBtn) saveBtn.onclick = saveAndRefresh;
   
   const modal = document.getElementById('settingsModal');
   if (modal) {
@@ -569,6 +571,6 @@
     };
   }
 
-  console.log('✅ Settings ready - Page will reload when settings are saved');
+  console.log('✅ Settings ready - Modules will refresh when settings are saved');
   console.log('💡 Click the gear icon to configure modules');
 })();
