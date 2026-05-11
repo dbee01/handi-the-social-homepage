@@ -30,26 +30,22 @@ export default async function initGallery(container) {
     overflow-y: auto;
   `;
 
-  // Folder selector section
-  const folderSelector = document.createElement('div');
-  folderSelector.className = 'gallery-folder-selector';
-  folderSelector.style.cssText = `
+  // Status display (no folder selector)
+  const statusDisplay = document.createElement('div');
+  statusDisplay.className = 'gallery-status';
+  statusDisplay.style.cssText = `
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius);
     padding: 15px;
     text-align: center;
+    color: var(--term-dim);
   `;
-  
-  folderSelector.innerHTML = `
-    <input type="file" id="galleryFolderInput" webkitdirectory directory multiple style="display: none;">
-    <label for="galleryFolderInput" style="display: inline-block; padding: 10px 20px; background: var(--term-green); color: #000; border-radius: var(--radius); cursor: pointer; font-weight: bold;">
-      <i class="fa-solid fa-folder-open"></i> Select Image Folder
-    </label>
-    <div id="galleryStatus" style="margin-top: 10px; color: var(--term-dim); font-size: 0.85rem;">Select a folder to begin</div>
-    <div id="galleryStats" style="margin-top: 5px; font-size: 0.75rem; color: var(--term-dim);"></div>
+  statusDisplay.innerHTML = `
+    <i class="fa-solid fa-info-circle"></i>
+    <span id="galleryStatusMsg">Configure gallery in Settings (gear icon)</span>
   `;
-  galleryContainer.appendChild(folderSelector);
+  galleryContainer.appendChild(statusDisplay);
 
   // Speed control section
   const speedControl = document.createElement('div');
@@ -96,6 +92,15 @@ export default async function initGallery(container) {
     </button>
   `;
   galleryContainer.appendChild(controls);
+
+  // Wake lock button container
+  const wakeLockContainer = document.createElement('div');
+  wakeLockContainer.style.cssText = `
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+  `;
+  galleryContainer.appendChild(wakeLockContainer);
 
   // Slides container
   const slidesContainer = document.createElement('div');
@@ -196,9 +201,7 @@ export default async function initGallery(container) {
     transition: all 0.2s;
   `;
   wakeLockBtn.innerHTML = '<i class="fa-solid fa-bed"></i> Keep Screen On';
-  
-  // Add wake lock button to controls
-  controls.appendChild(wakeLockBtn);
+  wakeLockContainer.appendChild(wakeLockBtn);
   
   // Gallery state
   let slideIndex = 0;
@@ -209,10 +212,72 @@ export default async function initGallery(container) {
   let isFullscreen = false;
   const SUPPORTED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
 
+  // Load settings from localStorage
+  function loadGallerySettings() {
+    const saved = localStorage.getItem('pleie_settings');
+    if (saved) {
+      const settings = JSON.parse(saved);
+      if (settings.gallery) {
+        SLIDE_INTERVAL = settings.gallery.speed || 3000;
+        const speedInput = document.getElementById('gallerySlideSpeed');
+        if (speedInput) speedInput.value = SLIDE_INTERVAL;
+        
+        // Auto-start setting
+        const autoStart = settings.gallery.autoStart !== false;
+        if (autoStart && images.length > 0 && !isPaused && !slideshowInterval) {
+          startSlideshow();
+        }
+      }
+    }
+  }
+
+  // Save speed to settings
+  function saveSpeedToSettings() {
+    const saved = localStorage.getItem('pleie_settings');
+    if (saved) {
+      const settings = JSON.parse(saved);
+      if (!settings.gallery) settings.gallery = {};
+      settings.gallery.speed = SLIDE_INTERVAL;
+      localStorage.setItem('pleie_settings', JSON.stringify(settings));
+    }
+  }
+
+  // Load images from Settings (called by external event)
+  function loadImagesFromSettings(imageFiles) {
+    if (!imageFiles || imageFiles.length === 0) {
+      const statusMsg = document.getElementById('galleryStatusMsg');
+      if (statusMsg) {
+        statusMsg.innerHTML = '<i class="fa-solid fa-folder-open"></i> No images loaded. Configure in Settings (gear icon)';
+        statusMsg.style.color = 'var(--term-dim)';
+      }
+      return;
+    }
+    
+    const statusMsg = document.getElementById('galleryStatusMsg');
+    if (statusMsg) {
+      statusMsg.innerHTML = `<i class="fa-solid fa-check-circle"></i> Loaded ${imageFiles.length} images`;
+      statusMsg.style.color = 'var(--term-green)';
+    }
+    
+    images = imageFiles;
+    slideIndex = 0;
+    isPaused = false;
+    const pauseBtn = document.getElementById('galleryPauseBtn');
+    if (pauseBtn) {
+      pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+      pauseBtn.style.color = 'var(--term-green)';
+    }
+    
+    if (slideshowInterval) clearTimeout(slideshowInterval);
+    createSlidesAndDots(images);
+    updateSlideDisplay();
+    
+    loadGallerySettings();
+  }
+
   // ========== TRUE FULLSCREEN API ==========
   async function toggleFullscreen(element) {
     if (!isFullscreen) {
-      // Enter fullscreen
       try {
         if (element.requestFullscreen) {
           await element.requestFullscreen();
@@ -227,7 +292,6 @@ export default async function initGallery(container) {
         console.error('Fullscreen error:', err);
       }
     } else {
-      // Exit fullscreen
       try {
         if (document.exitFullscreen) {
           await document.exitFullscreen();
@@ -244,7 +308,6 @@ export default async function initGallery(container) {
     }
   }
   
-  // Listen for fullscreen change events
   document.addEventListener('fullscreenchange', updateFullscreenButton);
   document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
   document.addEventListener('msfullscreenchange', updateFullscreenButton);
@@ -388,7 +451,7 @@ export default async function initGallery(container) {
       dots.appendChild(dot);
     });
     
-    console.log(`Created ${imageFiles.length} slides and ${imageFiles.length} dots`);
+    console.log(`Created ${imageFiles.length} slides`);
   }
 
   function updateSlideDisplay() {
@@ -474,6 +537,7 @@ export default async function initGallery(container) {
     const newSpeed = parseInt(document.getElementById('gallerySlideSpeed').value);
     if (newSpeed >= 500 && newSpeed <= 10000) {
       SLIDE_INTERVAL = newSpeed;
+      saveSpeedToSettings();
       console.log(`Slide speed updated to ${SLIDE_INTERVAL}ms`);
       
       if (!isPaused && slideshowInterval) {
@@ -498,10 +562,6 @@ export default async function initGallery(container) {
     document.body.style.overflow = 'hidden';
     
     if (wakeLockEnabled) requestWakeLock();
-    
-    // Automatically enter fullscreen when opening lightbox (optional)
-    // Uncomment the next line if you want auto-fullscreen
-    // setTimeout(() => toggleFullscreen(lightbox), 100);
   }
   
   function updateLightboxImage(index) {
@@ -530,7 +590,6 @@ export default async function initGallery(container) {
       releaseWakeLock();
     }
     
-    // Exit fullscreen if it was active
     if (isFullscreen) {
       toggleFullscreen(lightbox);
     }
@@ -567,71 +626,6 @@ export default async function initGallery(container) {
     }, 2000);
   }
 
-  // ========== HANDLE FOLDER SELECTION ==========
-  function handleFolderSelect(event) {
-    const files = event.target.files;
-    const allFiles = Array.from(files);
-    
-    const extensionCounts = {
-      '.jpg': 0,
-      '.jpeg': 0,
-      '.png': 0,
-      '.gif': 0,
-      '.webp': 0,
-      'other': 0
-    };
-    
-    const imageFiles = allFiles.filter(file => {
-      const fileName = file.name.toLowerCase();
-      const fileExtension = '.' + fileName.split('.').pop();
-      
-      if (SUPPORTED_EXTENSIONS.includes(fileExtension)) {
-        extensionCounts[fileExtension]++;
-        return true;
-      } else {
-        extensionCounts['other']++;
-        return false;
-      }
-    });
-    
-    const totalFiles = allFiles.length;
-    const imageCount = imageFiles.length;
-    const skippedCount = totalFiles - imageCount;
-    
-    if (imageCount === 0) {
-      document.getElementById('galleryStatus').innerHTML = '❌ No supported images found (.jpg, .jpeg, .png, .gif, .webp)';
-      document.getElementById('galleryStats').innerHTML = '';
-      return;
-    }
-    
-    images = imageFiles;
-    document.getElementById('galleryStatus').innerHTML = `✅ Loaded ${imageCount} images from ${totalFiles} files`;
-    
-    let statsText = '';
-    SUPPORTED_EXTENSIONS.forEach(ext => {
-      if (extensionCounts[ext] > 0) {
-        statsText += `${ext.toUpperCase()}(${extensionCounts[ext]}) `;
-      }
-    });
-    if (skippedCount > 0) {
-      statsText += `| Skipped ${skippedCount} unsupported files`;
-    }
-    document.getElementById('galleryStats').innerHTML = statsText;
-    
-    slideIndex = 0;
-    isPaused = false;
-    const pauseBtn = document.getElementById('galleryPauseBtn');
-    if (pauseBtn) {
-      pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
-      pauseBtn.style.color = 'var(--term-green)';
-    }
-    
-    if (slideshowInterval) clearTimeout(slideshowInterval);
-    createSlidesAndDots(images);
-    updateSlideDisplay();
-    startSlideshow();
-  }
-
   // ========== KEYBOARD NAVIGATION ==========
   function handleLightboxKeys(e) {
     if (lightbox.style.display !== 'flex') return;
@@ -660,7 +654,6 @@ export default async function initGallery(container) {
   }
 
   // ========== EVENT LISTENERS ==========
-  document.getElementById('galleryFolderInput').addEventListener('change', handleFolderSelect);
   document.getElementById('galleryPrevBtn').addEventListener('click', () => prevSlide());
   document.getElementById('galleryNextBtn').addEventListener('click', () => nextSlide());
   document.getElementById('galleryPauseBtn').addEventListener('click', () => toggleSlideshow());
@@ -686,6 +679,14 @@ export default async function initGallery(container) {
     }
   });
 
+  // Listen for settings changes from Settings page
+  window.addEventListener('settingsChanged', (event) => {
+    if (event.detail && event.detail.gallery && event.detail.gallery.images) {
+      loadImagesFromSettings(event.detail.gallery.images);
+    }
+    loadGallerySettings();
+  });
+
   const keyHandler = (e) => {
     if (!container.isConnected) return;
     handleLightboxKeys(e);
@@ -704,6 +705,7 @@ export default async function initGallery(container) {
         e.preventDefault();
         SLIDE_INTERVAL = Math.max(500, SLIDE_INTERVAL - 200);
         document.getElementById('gallerySlideSpeed').value = SLIDE_INTERVAL;
+        saveSpeedToSettings();
         if (!isPaused && slideshowInterval) {
           clearTimeout(slideshowInterval);
           startSlideshow();
@@ -712,6 +714,7 @@ export default async function initGallery(container) {
         e.preventDefault();
         SLIDE_INTERVAL = Math.min(10000, SLIDE_INTERVAL + 200);
         document.getElementById('gallerySlideSpeed').value = SLIDE_INTERVAL;
+        saveSpeedToSettings();
         if (!isPaused && slideshowInterval) {
           clearTimeout(slideshowInterval);
           startSlideshow();
@@ -727,6 +730,16 @@ export default async function initGallery(container) {
   document.addEventListener('keydown', keyHandler);
   
   initWakeLock();
+  loadGallerySettings();
+  
+  // Try to load images from existing settings on init
+  const saved = localStorage.getItem('pleie_settings');
+  if (saved) {
+    const settings = JSON.parse(saved);
+    if (settings.gallery && settings.gallery.images) {
+      loadImagesFromSettings(settings.gallery.images);
+    }
+  }
   
   // Cleanup
   return () => {
@@ -742,4 +755,4 @@ export default async function initGallery(container) {
     }
     console.log('Gallery module cleaned up');
   };
-      }
+}
