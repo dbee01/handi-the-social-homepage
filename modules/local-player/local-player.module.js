@@ -32,32 +32,38 @@ export default async function initLocalPlayer(container) {
     box-sizing: border-box;
   `;
 
-  // Info Section (replaces folder selector)
+  // Info Section (shows when no music loaded)
   const infoSection = document.createElement("div");
+  infoSection.id = "music-player-info-section";
   infoSection.style.cssText = `
     text-align: center;
-    padding: 20px;
+    padding: 30px 20px;
     background: rgba(0,0,0,0.3);
     border: 1px dashed var(--term-dim);
     border-radius: var(--radius);
     transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
   `;
   infoSection.innerHTML = `
     <i class="fa-solid fa-music"
-       style="font-size: 2rem; color: var(--term-cyan); margin-bottom: 10px;"></i>
-    <div style="color: var(--term-cyan); font-weight: bold;">
+       style="font-size: 3rem; color: var(--term-cyan);"></i>
+    <div style="color: var(--term-cyan); font-weight: bold; font-size: 1.1rem;">
       Music Player
     </div>
-    <div style="color: var(--term-dim); font-size: 0.8rem; margin-top: 5px;">
+    <div style="color: var(--term-dim); font-size: 0.9rem;">
       <i class="fa-solid fa-gear"></i> Configure in Settings (gear icon)
     </div>
-    <div id="music-player-status" style="color: var(--term-dim); font-size: 0.8rem; margin-top: 10px;">
+    <div id="music-player-status" style="color: var(--term-amber); font-size: 0.85rem; margin-top: 5px;">
       No music loaded
     </div>
   `;
 
-  // Controls Section
+  // Controls Section (hidden until music loaded)
   const controlsSection = document.createElement("div");
+  controlsSection.id = "music-player-controls-section";
   controlsSection.style.cssText = `
     display: none;
     flex-direction: column;
@@ -95,7 +101,7 @@ export default async function initLocalPlayer(container) {
     font-size: 0.8rem;
     margin-top: 5px;
   `;
-  trackStatus.textContent = "Configure music in Settings";
+  trackStatus.textContent = "Ready to play";
 
   trackInfo.append(trackTitle, trackStatus);
 
@@ -122,6 +128,45 @@ export default async function initLocalPlayer(container) {
     visualizer.appendChild(bar);
     bars.push(bar);
   }
+
+  // Volume Control Section
+  const volumeSection = document.createElement("div");
+  volumeSection.style.cssText = `
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+  `;
+  
+  const volumeLabel = document.createElement("label");
+  volumeLabel.style.cssText = `color: var(--term-dim); font-size: 0.9rem;`;
+  volumeLabel.innerHTML = '<i class="fa-solid fa-volume-up"></i> Volume:';
+  
+  const volumeSlider = document.createElement("input");
+  volumeSlider.type = "range";
+  volumeSlider.min = "0";
+  volumeSlider.max = "100";
+  volumeSlider.value = "100";
+  volumeSlider.step = "1";
+  volumeSlider.style.cssText = `
+    width: 150px;
+    height: 5px;
+    -webkit-appearance: none;
+    background: var(--term-dim);
+    border-radius: 5px;
+    outline: none;
+  `;
+  
+  const volumeValue = document.createElement("span");
+  volumeValue.style.cssText = `color: var(--term-green); font-size: 0.9rem; min-width: 45px;`;
+  volumeValue.textContent = "100%";
+  
+  volumeSection.append(volumeLabel, volumeSlider, volumeValue);
 
   // Controls Row
   const controlsRow = document.createElement("div");
@@ -164,6 +209,7 @@ export default async function initLocalPlayer(container) {
   controlsSection.append(
     trackInfo,
     visualizer,
+    volumeSection,
     controlsRow,
     playlistSection
   );
@@ -176,7 +222,7 @@ export default async function initLocalPlayer(container) {
   let currentIndex = -1;
   let isPlaying = false;
   let isShuffle = false;
-  let musicFolderFiles = [];
+  let currentVolume = 100;
 
   const audioElement = new Audio();
   audioElement.preload = "auto";
@@ -186,48 +232,85 @@ export default async function initLocalPlayer(container) {
   let source = null;
   let animationFrame = null;
 
-  // ===== LOAD MUSIC FROM SETTINGS =====
-  function loadMusicFromSettings() {
+  // ===== VOLUME CONTROL =====
+  function updateVolume(value) {
+    const volumePercent = parseInt(value);
+    currentVolume = volumePercent;
+    const volumeNormalized = volumePercent / 100;
+    audioElement.volume = Math.min(1.0, volumeNormalized);
+    
+    // Update slider background
+    const percentage = volumePercent;
+    volumeSlider.style.background = `linear-gradient(to right, var(--term-green) 0%, var(--term-green) ${percentage}%, var(--term-dim) ${percentage}%, var(--term-dim) 100%)`;
+    
+    volumeValue.textContent = `${volumePercent}%`;
+    
+    // Save to settings
+    saveVolumeToSettings(volumePercent);
+  }
+  
+  volumeSlider.addEventListener("input", (e) => {
+    updateVolume(e.target.value);
+  });
+  
+  function saveVolumeToSettings(volume) {
     const saved = localStorage.getItem('pleie_settings');
     if (saved) {
       const settings = JSON.parse(saved);
-      if (settings.musicPlayer && settings.musicPlayer.musicFiles) {
+      if (!settings.musicPlayer) settings.musicPlayer = {};
+      settings.musicPlayer.defaultVolume = volume;
+      localStorage.setItem('pleie_settings', JSON.stringify(settings));
+    }
+  }
+
+  // ===== LOAD MUSIC FROM SETTINGS =====
+  function loadMusicFromSettings() {
+    const saved = localStorage.getItem('pleie_settings');
+    const statusMsg = document.getElementById('music-player-status');
+    
+    if (saved) {
+      const settings = JSON.parse(saved);
+      if (settings.musicPlayer && settings.musicPlayer.musicFiles && settings.musicPlayer.musicFiles.length > 0) {
         musicFolderFiles = settings.musicPlayer.musicFiles;
-        const statusMsg = document.getElementById('music-player-status');
         
-        if (musicFolderFiles.length > 0) {
-          // Convert stored data to File objects
-          playlist = musicFolderFiles.map(fileData => ({
-            name: fileData.name,
-            file: new File([fileData.data], fileData.name, { type: fileData.type })
-          }));
-          
-          if (statusMsg) {
-            statusMsg.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${playlist.length} tracks loaded`;
-            statusMsg.style.color = 'var(--term-green)';
-          }
-          
-          // Show controls, hide info section
-          infoSection.style.display = "none";
-          controlsSection.style.display = "flex";
-          trackStatus.textContent = `${playlist.length} tracks loaded`;
-          renderPlaylist();
-          
-          // Apply saved volume and shuffle
-          if (settings.musicPlayer.defaultVolume) {
-            audioElement.volume = settings.musicPlayer.defaultVolume / 100;
-          }
-          if (settings.musicPlayer.defaultShuffle) {
-            isShuffle = settings.musicPlayer.defaultShuffle;
-            btnShuffle.style.color = isShuffle ? "var(--term-green)" : "var(--term-cyan)";
-          }
-        } else {
-          if (statusMsg) {
-            statusMsg.innerHTML = '<i class="fa-solid fa-gear"></i> No music loaded. Configure in Settings';
-            statusMsg.style.color = 'var(--term-dim)';
-          }
+        // Convert stored data to File objects
+        playlist = musicFolderFiles.map(fileData => ({
+          name: fileData.name,
+          file: new File([fileData.data], fileData.name, { type: fileData.type })
+        }));
+        
+        if (statusMsg) {
+          statusMsg.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${playlist.length} tracks loaded - Ready to play!`;
+          statusMsg.style.color = 'var(--term-green)';
         }
+        
+        // Show controls, hide info section
+        infoSection.style.display = "none";
+        controlsSection.style.display = "flex";
+        trackStatus.textContent = `${playlist.length} tracks loaded`;
+        renderPlaylist();
+        
+        // Apply saved volume and shuffle
+        if (settings.musicPlayer.defaultVolume) {
+          currentVolume = settings.musicPlayer.defaultVolume;
+          volumeSlider.value = currentVolume;
+          updateVolume(currentVolume);
+        }
+        if (settings.musicPlayer.defaultShuffle) {
+          isShuffle = settings.musicPlayer.defaultShuffle;
+          btnShuffle.style.color = isShuffle ? "var(--term-green)" : "var(--term-cyan)";
+        }
+        
+        return;
       }
+    }
+    
+    // No music loaded - show info section
+    infoSection.style.display = "flex";
+    controlsSection.style.display = "none";
+    if (statusMsg) {
+      statusMsg.innerHTML = '<i class="fa-solid fa-gear"></i> No music loaded. Click the gear icon to configure';
+      statusMsg.style.color = 'var(--term-amber)';
     }
   }
 
@@ -265,6 +348,15 @@ export default async function initLocalPlayer(container) {
     btnShuffle.style.color = isShuffle
       ? "var(--term-green)"
       : "var(--term-cyan)";
+    
+    // Save to settings
+    const saved = localStorage.getItem('pleie_settings');
+    if (saved) {
+      const settings = JSON.parse(saved);
+      if (!settings.musicPlayer) settings.musicPlayer = {};
+      settings.musicPlayer.defaultShuffle = isShuffle;
+      localStorage.setItem('pleie_settings', JSON.stringify(settings));
+    }
   };
 
   // ===== AUDIO EVENTS =====
@@ -296,7 +388,7 @@ export default async function initLocalPlayer(container) {
 
   audioElement.addEventListener("error", (e) => {
     console.error("Audio error:", e);
-    trackStatus.textContent = "Playback error";
+    trackStatus.textContent = "Playback error - file may be corrupted";
   });
 
   // ===== FUNCTIONS =====
@@ -323,12 +415,17 @@ export default async function initLocalPlayer(container) {
       await audioElement.play();
     } catch (error) {
       console.error("Error playing track:", error);
-      trackStatus.textContent = "Playback error";
+      trackStatus.textContent = "Playback error - unsupported format";
     }
   }
 
   function renderPlaylist() {
     playlistSection.innerHTML = "";
+
+    if (playlist.length === 0) {
+      playlistSection.innerHTML = '<div style="padding:10px;color:var(--term-dim);text-align:center;">Playlist empty</div>';
+      return;
+    }
 
     playlist.forEach((track, index) => {
       const item = document.createElement("div");
