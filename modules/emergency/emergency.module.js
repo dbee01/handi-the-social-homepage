@@ -31,10 +31,10 @@ export default async function initEmergency(container) {
     text-align: center;
   `;
 
-  // Add contact list setup section
-  const contactSection = document.createElement('div');
-  contactSection.className = 'emergency-contacts';
-  contactSection.style.cssText = `
+  // Contact info display (read-only, from Settings)
+  const contactInfo = document.createElement('div');
+  contactInfo.className = 'emergency-contacts-info';
+  contactInfo.style.cssText = `
     width: 100%;
     padding: 15px;
     background: rgba(0, 0, 0, 0.3);
@@ -43,23 +43,19 @@ export default async function initEmergency(container) {
     margin-bottom: 10px;
   `;
 
-  contactSection.innerHTML = `
+  contactInfo.innerHTML = `
     <h3 style="color: var(--term-cyan); margin-bottom: 10px; font-size: 0.9rem;">
       <i class="fa-solid fa-address-book"></i> Emergency Contacts
     </h3>
     <div id="emergency-contacts-list" style="margin-bottom: 10px;">
-      <div style="color: var(--term-dim); font-size: 0.8rem;">No contacts saved</div>
+      <div style="color: var(--term-dim); font-size: 0.8rem;">No contacts configured</div>
     </div>
-    <div style="display: flex; gap: 10px; flex-direction: column;">
-      <input type="text" id="emergency-contact-name" placeholder="Contact Name" style="padding: 8px; background: #000; border: 1px solid var(--panel-border); color: var(--term-white); border-radius: var(--radius);">
-      <input type="tel" id="emergency-contact-phone" placeholder="Phone Number (with country code)" style="padding: 8px; background: #000; border: 1px solid var(--panel-border); color: var(--term-white); border-radius: var(--radius);">
-      <button id="add-emergency-contact" style="padding: 8px; background: var(--term-green); color: #000; border: none; border-radius: var(--radius); cursor: pointer; font-weight: bold;">
-        <i class="fa-solid fa-plus"></i> Add Contact
-      </button>
+    <div style="color: var(--term-dim); font-size: 0.7rem; text-align: center;">
+      <i class="fa-solid fa-gear"></i> Configure contacts in Settings (gear icon)
     </div>
   `;
 
-  emergencyContainer.appendChild(contactSection);
+  emergencyContainer.appendChild(contactInfo);
 
   // Emergency Button
   const emergencyButton = document.createElement('button');
@@ -120,50 +116,45 @@ export default async function initEmergency(container) {
 
   container.appendChild(emergencyContainer);
 
-  // Load contacts from localStorage
+  // Load contacts from Settings (global storage)
   let emergencyContacts = [];
 
   function loadContacts() {
-    const saved = localStorage.getItem('emergency_contacts');
+    const saved = localStorage.getItem('pleie_settings');
     if (saved) {
-      emergencyContacts = JSON.parse(saved);
+      const settings = JSON.parse(saved);
+      if (settings.emergency && settings.emergency.contacts) {
+        emergencyContacts = settings.emergency.contacts;
+      } else {
+        emergencyContacts = [];
+      }
       updateContactsList();
     }
   }
 
-  function saveContacts() {
-    localStorage.setItem('emergency_contacts', JSON.stringify(emergencyContacts));
-    updateContactsList();
-  }
-
   function updateContactsList() {
     const listDiv = document.getElementById('emergency-contacts-list');
+    if (!listDiv) return;
+    
     if (emergencyContacts.length === 0) {
-      listDiv.innerHTML = '<div style="color: var(--term-dim); font-size: 0.8rem;">No contacts saved</div>';
+      listDiv.innerHTML = '<div style="color: var(--term-dim); font-size: 0.8rem;">No contacts configured. Add in Settings.</div>';
       return;
     }
     
     listDiv.innerHTML = emergencyContacts.map((contact, index) => `
       <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px; margin-bottom: 5px; background: rgba(255,255,255,0.05); border-radius: var(--radius);">
-        <div style="text-align: left;">
-          <strong style="color: var(--term-cyan);">${contact.name}</strong><br>
-          <small style="color: var(--term-dim);">${contact.phone}</small>
+        <div style="text-align: left; display: flex; align-items: center; gap: 10px;">
+          <div class="contact-photo-small" style="width: 30px; height: 30px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            ${contact.photo ? `<img src="${contact.photo}" style="width:100%;height:100%;object-fit:cover;">` : '<i class="fa-solid fa-user" style="font-size:0.8rem; color:#666;"></i>'}
+          </div>
+          <div>
+            <strong style="color: var(--term-cyan);">${escapeHtml(contact.name)}</strong><br>
+            <small style="color: var(--term-dim);">${escapeHtml(contact.number)}</small>
+            ${contact.relation ? `<small style="color: var(--term-green);"> (${escapeHtml(contact.relation)})</small>` : ''}
+          </div>
         </div>
-        <button data-index="${index}" class="remove-contact" style="background: rgba(255,0,0,0.3); border: none; color: white; padding: 5px 10px; border-radius: var(--radius); cursor: pointer;">
-          <i class="fa-solid fa-trash"></i>
-        </button>
       </div>
     `).join('');
-    
-    // Add remove event listeners
-    document.querySelectorAll('.remove-contact').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const index = parseInt(btn.dataset.index);
-        emergencyContacts.splice(index, 1);
-        saveContacts();
-        updateStatus('Contact removed', 'info');
-      });
-    });
   }
 
   function updateStatus(message, type = 'info') {
@@ -184,7 +175,6 @@ export default async function initEmergency(container) {
   }
 
   function showLocationModal() {
-    // Create modal
     const modal = document.createElement('div');
     modal.className = 'emergency-modal';
     modal.style.cssText = `
@@ -218,7 +208,7 @@ export default async function initEmergency(container) {
       <h2 style="color: var(--term-red); margin-bottom: 20px;">Emergency Alert!</h2>
       <p style="margin-bottom: 20px; color: var(--term-white);">Share your location with emergency contacts?</p>
       <p style="margin-bottom: 20px; color: var(--term-dim); font-size: 0.9rem;">
-        <i class="fa-solid fa-phone"></i> ${emergencyContacts.length} contacts will be notified
+        <i class="fa-solid fa-phone"></i> ${emergencyContacts.length} contact(s) will be notified
       </p>
       <div style="display: flex; gap: 15px; justify-content: center;">
         <button id="modal-yes" style="padding: 10px 20px; background: var(--term-green); color: #000; border: none; border-radius: var(--radius); cursor: pointer; font-weight: bold;">
@@ -285,31 +275,28 @@ export default async function initEmergency(container) {
 
   async function sendEmergencySMS(lat, lng) {
     if (emergencyContacts.length === 0) {
-      updateStatus('No emergency contacts saved! Please add contacts first.', 'error');
+      updateStatus('No emergency contacts saved! Please add contacts in Settings first.', 'error');
       return;
     }
     
     updateStatus('Sending emergency alerts...', 'warning');
     
-    // Create OpenStreetMap short link
     const osmLink = `https://www.openstreetmap.org/search?query=${lat}%2C+${lng}&zoom=15#map=15/${lat}/${lng}`;
     const message = `🚨 EMERGENCY ALERT! 🚨\n\nCan you check on me please? I need assistance.\n\n📍 My location: ${osmLink}\n\n📅 Time: ${new Date().toLocaleString()}\n\nPlease respond if you receive this message.`;
     
-    // Send SMS to each contact using SMS API (via fetch)
     const results = [];
     
     for (const contact of emergencyContacts) {
       try {
-        // Using a free SMS API service (smsapi for demo - you can replace with your preferred service)
         const response = await fetch('https://textbelt.com/text', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            phone: contact.phone,
+            phone: contact.number,
             message: message,
-            key: 'textbelt' // Free API key (limited to 1 message per day for demo)
+            key: 'textbelt'
           })
         });
         
@@ -330,16 +317,13 @@ export default async function initEmergency(container) {
       }
     }
     
-    // Display results
     const successCount = results.filter(r => r.success).length;
     if (successCount > 0) {
       updateStatus(`✅ Emergency alerts sent to ${successCount}/${emergencyContacts.length} contacts`, 'success');
       
-      // Also log to console for debugging
       console.log('Emergency SMS sent:', results);
       console.log('Location link:', osmLink);
       
-      // Show detailed results
       setTimeout(() => {
         let details = results.map(r => `${r.contact}: ${r.success ? '✅' : '❌'} ${r.message}`).join('\n');
         alert(`Emergency Alerts Sent!\n\n${details}\n\nLocation: ${osmLink}`);
@@ -348,46 +332,36 @@ export default async function initEmergency(container) {
     } else {
       updateStatus('❌ Failed to send emergency alerts. Check contacts and try again.', 'error');
       
-      // Fallback: Copy to clipboard
       const fallbackMsg = `Unable to send SMS. Please manually contact your emergency contacts.\n\nMessage: ${message}`;
       await navigator.clipboard.writeText(fallbackMsg);
       alert('⚠️ SMS sending failed.\n\nEmergency message has been copied to clipboard.\nPlease paste and send to your contacts manually.');
     }
   }
-
-  // Add contact button handler
-  document.getElementById('add-emergency-contact')?.addEventListener('click', () => {
-    const nameInput = document.getElementById('emergency-contact-name');
-    const phoneInput = document.getElementById('emergency-contact-phone');
-    
-    const name = nameInput.value.trim();
-    const phone = phoneInput.value.trim();
-    
-    if (!name || !phone) {
-      updateStatus('Please enter both name and phone number', 'error');
-      return;
-    }
-    
-    if (!phone.match(/^[\+\d\s\-\(\)]{8,}$/)) {
-      updateStatus('Please enter a valid phone number', 'error');
-      return;
-    }
-    
-    emergencyContacts.push({ name, phone });
-    saveContacts();
-    nameInput.value = '';
-    phoneInput.value = '';
-    updateStatus(`✅ ${name} added to emergency contacts`, 'success');
-  });
   
   // Emergency button handler
   emergencyButton.addEventListener('click', () => {
     if (emergencyContacts.length === 0) {
-      updateStatus('⚠️ Please add at least one emergency contact first!', 'warning');
+      updateStatus('⚠️ Please add at least one emergency contact in Settings first!', 'warning');
       return;
     }
     showLocationModal();
   });
+  
+  // Listen for settings changes
+  window.addEventListener('settingsChanged', () => {
+    loadContacts();
+  });
+  
+  // Helper function
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
   
   // Load saved contacts
   loadContacts();
