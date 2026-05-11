@@ -187,9 +187,10 @@ header {
   flex-direction: column;
   transition: left 0.3s ease, top 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
   min-height: 180px;
-  width: 420px; /* Fixed width */
+  width: 420px !important; /* Fixed width */
   cursor: grab;
   z-index: 1;
+  box-sizing: border-box;
 }
 
 .dashboard-item:active {
@@ -549,31 +550,6 @@ footer {
   color: var(--term-cyan);
 }
 
-/* Make sure dashboard items have proper cursor for dragging */
-.dashboard-item {
-  cursor: grab;
-}
-
-.dashboard-item:active {
-  cursor: grabbing;
-}
-
-/* SortableJS drag visual feedback */
-.sortable-ghost {
-  opacity: 0.4;
-  background: rgba(0, 255, 65, 0.2);
-  border: 2px dashed var(--term-green);
-}
-
-.sortable-drag {
-  opacity: 0.8;
-  cursor: grabbing !important;
-}
-
-.sortable-chosen {
-  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
-}
-
 /* Radio Module Styles */
 .radio-station {
   cursor: pointer;
@@ -592,7 +568,6 @@ footer {
   animation: pulse 2s infinite;
 }
 
-/* Optional: Add a subtle animation for the radio icon */
 @keyframes radioPulse {
   0%, 100% {
     text-shadow: 0 0 5px var(--term-green);
@@ -606,51 +581,12 @@ footer {
   animation: radioPulse 2s infinite;
 }
 
-/* Fix footer positioning - Add these to your CSS */
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  margin: 0;
-}
-
 /* The wrapper should take remaining space */
 .dashboard-wrapper {
   flex: 1;
   display: flex;
   justify-content: center;
   width: 100%;
-}
-
-/* Grid container - height will be set by JavaScript */
-#dashboard-grid {
-  position: relative;
-  width: 100%;
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 2rem;
-  background: transparent;
-  min-height: 400px; /* Fallback minimum height */
-}
-
-/* Footer stays at bottom */
-footer {
-  margin-top: auto;
-  position: relative;
-  background: #000;
-  width: 100%;
-}
-
-/* Remove any absolute positioning that might affect layout */
-.dashboard-item {
-  position: absolute;
-}
-
-/* Ensure the grid has proper display */
-#dashboard-grid::after {
-  content: '';
-  display: table;
-  clear: both;
 }
 
 /* Emergency Module Styles */
@@ -825,8 +761,7 @@ footer {
   }
 }
 
-/* Local Music Player */
-/* Force Music Player to be single column width */
+/* Local Music Player - Force single column width */
 #local-player,
 .dashboard-item#local-player {
   width: 420px !important;
@@ -852,20 +787,24 @@ footer {
 }
 
 /* Fix the playlist container */
-#playlist-container {
+#local-player #playlist-container {
   max-height: 180px;
   overflow-y: auto;
   width: 100% !important;
 }
 
 /* Fix the playlist items */
-.playlist-item {
+#local-player .playlist-item {
   width: 100% !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
 }
 
-.playlist-item span {
+#local-player .playlist-item span {
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -874,12 +813,36 @@ footer {
 }
 
 /* Fix the canvas visualizer */
-#audio-visualizer {
+#local-player #audio-visualizer {
   width: 100% !important;
   display: block !important;
 }
 
-/* Mobile override */
+/* Volume slider */
+#local-player #volume-slider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  background: #333;
+  border-radius: 2px;
+}
+
+#local-player #volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--term-green);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Control buttons hover effects */
+#local-player .control-btn:hover {
+  transform: scale(1.1);
+  background: rgba(0, 255, 65, 0.1) !important;
+}
+
+/* Mobile override for music player */
 @media (max-width: 1024px) {
   #local-player,
   .dashboard-item#local-player {
@@ -897,8 +860,8 @@ footer {
     margin-bottom: 12px;
   }
 }
-/* Add to your CSS */
 
+/* Mobile Layout */
 .mobile-layout {
   display: flex !important;
   flex-direction: column !important;
@@ -909,7 +872,8 @@ footer {
 }
 
 .mobile-layout .grid-item,
-.mobile-layout .panel {
+.mobile-layout .panel,
+.mobile-layout .dashboard-item {
   position: static !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -918,4 +882,45 @@ footer {
   transform: none !important;
   margin: 0 0 12px 0 !important;
   box-sizing: border-box !important;
+}
+
+/* Floating Settings Button */
+.floating-settings {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: #00ff41;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.floating-settings:hover {
+  transform: rotate(90deg);
+  box-shadow: 0 5px 20px rgba(0, 255, 65, 0.4);
+}
+
+.floating-settings i {
+  font-size: 1.5rem;
+  color: #000;
+}
+
+/* Settings link in footer */
+.settings-link {
+  color: #00ff41 !important;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-link:hover {
+  color: #00ffff !important;
+  transform: scale(1.05);
 }
