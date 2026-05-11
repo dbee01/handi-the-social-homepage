@@ -13,13 +13,16 @@ export default async function initLocalPlayer(container) {
   if (parentItem) {
     parentItem.style.display = 'block';
   }
-  
-  // Make container visible
+  // Make container visible with proper width constraints
   container.style.display = 'block';
+  container.style.width = '100%';
+  container.style.maxWidth = '420px';
   container.style.minHeight = '450px';
   container.style.backgroundColor = '#0a0a15';
   container.style.borderRadius = '12px';
   container.style.padding = '15px';
+  container.style.margin = '0 auto';
+  container.style.boxSizing = 'border-box';
   
   // Load music files from localStorage
   let musicFiles = [];
@@ -237,6 +240,10 @@ export default async function initLocalPlayer(container) {
   `;
   
   container.innerHTML = html;
+  // Add this right after setting container.innerHTML = html;
+  container.style.width = '100%';
+  container.style.maxWidth = '420px';
+  container.style.margin = '0 auto';
   
   // Get DOM elements
   const playPauseBtn = document.getElementById('btn-playpause');
