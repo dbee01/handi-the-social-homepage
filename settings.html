@@ -256,7 +256,6 @@
       cursor: pointer;
     }
     
-    /* Remove the bottom save button */
     .save-settings {
       display: none;
     }
@@ -366,7 +365,7 @@
         <div id="galleryStorageInfo" class="storage-info"></div>
       </div>
     </div>
-
+    
     <!-- Bus Module -->
     <div class="module-section">
       <div class="module-header" data-module="bus">
@@ -404,7 +403,7 @@
         </div>
       </div>
     </div>
-
+    
     <!-- Music Player Module -->
     <div class="module-section">
       <div class="module-header" data-module="local-player">
@@ -553,89 +552,38 @@
     
     async function selectFolder(inputElement, type) {
       try {
-        if ('showDirectoryPicker' in window) {
-          const dirHandle = await window.showDirectoryPicker();
-          inputElement.value = dirHandle.name;
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.webkitdirectory = true;
+        input.multiple = true;
+        
+        input.onchange = async (e) => {
+          const fileList = Array.from(e.target.files);
+          const audioFiles = [];
+          const folderName = fileList[0]?.webkitRelativePath?.split('/')[0] || 'Music';
+          inputElement.value = folderName;
           
-          const files = [];
-          for await (const entry of dirHandle.values()) {
-            if (entry.kind === 'file') {
-              const ext = entry.name.toLowerCase().split('.').pop();
-              const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
-              const isAudio = ['mp3', 'wav', 'ogg', 'm4a', 'flac'].includes(ext);
-              
-              if ((type === 'gallery' && isImage) || (type === 'music' && isAudio)) {
-                const file = await entry.getFile();
-                const dataURL = await fileToDataURL(file);
-                files.push({
-                  name: file.name,
-                  type: file.type,
-                  data: dataURL,
-                  size: file.size,
-                  lastModified: file.lastModified
-                });
-              }
+          for (const file of fileList) {
+            const ext = file.name.toLowerCase().split('.').pop();
+            const isAudio = ['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac'].includes(ext);
+            
+            if (type === 'music' && isAudio) {
+              audioFiles.push(file);
             }
           }
           
-          if (type === 'gallery') {
-            await saveGalleryImages(files);
-            showToast(`✅ Saved ${files.length} images to gallery`);
-            await updateStorageInfo();
-          } else if (type === 'music') {
-            await saveMusicFiles(files);
-            showToast(`✅ Saved ${files.length} music files to player`);
+          if (type === 'music') {
+            await saveMusicFiles(audioFiles);
+            showToast(`✅ Saved ${audioFiles.length} music files`);
             await updateStorageInfo();
           }
-        } else {
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.webkitdirectory = true;
-          input.directory = true;
-          input.multiple = true;
-          input.onchange = async (e) => {
-            const files = Array.from(e.target.files);
-            const processedFiles = [];
-            
-            for (const file of files) {
-              const ext = file.name.toLowerCase().split('.').pop();
-              const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
-              const isAudio = ['mp3', 'wav', 'ogg', 'm4a', 'flac'].includes(ext);
-              
-              if ((type === 'gallery' && isImage) || (type === 'music' && isAudio)) {
-                const dataURL = await fileToDataURL(file);
-                processedFiles.push({
-                  name: file.name,
-                  type: file.type,
-                  data: dataURL,
-                  size: file.size,
-                  lastModified: file.lastModified
-                });
-              }
-            }
-            
-            if (type === 'gallery') {
-              await saveGalleryImages(processedFiles);
-              showToast(`✅ Saved ${processedFiles.length} images to gallery`);
-              await updateStorageInfo();
-            } else if (type === 'music') {
-              await saveMusicFiles(processedFiles);
-              showToast(`✅ Saved ${processedFiles.length} music files to player`);
-              await updateStorageInfo();
-            }
-            
-            if (files.length > 0) {
-              const folderName = files[0].webkitRelativePath.split('/')[0];
-              inputElement.value = folderName;
-            }
-          };
-          input.click();
-        }
+        };
+        
+        input.click();
       } catch (err) {
-        showToast('Folder selection cancelled', true);
+        showToast('Selection cancelled', true);
       }
-    }
-    
+    }    
     async function updateStorageInfo() {
       const info = await getStorageInfo();
       const galleryInfo = document.getElementById('galleryStorageInfo');
@@ -733,7 +681,7 @@
           if (autoStart) autoStart.value = saved.gallery.autoStart ? 'true' : 'false';
         }
         
-        // Load bus settings - UPDATED with new fields
+        // Load bus settings
         if (saved.bus) {
           const routeInput = document.getElementById('busRouteIds');
           if (routeInput) routeInput.value = saved.bus.routeIds || '';
@@ -741,8 +689,6 @@
           if (stopInput) stopInput.value = saved.bus.stopId || '';
           const intervalInput = document.getElementById('busRefreshInterval');
           if (intervalInput) intervalInput.value = saved.bus.refreshInterval || 60;
-          
-          // NEW FIELDS - add these
           const apiUrlInput = document.getElementById('busApiUrl');
           if (apiUrlInput) apiUrlInput.value = saved.bus.apiUrl || '';
           const apiKeyInput = document.getElementById('busApiKey');
@@ -778,7 +724,7 @@
         }
       }
     }
-
+    
     function saveAllSettings() {
       const settings = {
         enabledModules: enabledModules,
@@ -790,7 +736,6 @@
           routeIds: document.getElementById('busRouteIds')?.value || '',
           stopId: document.getElementById('busStopId')?.value || '',
           refreshInterval: parseInt(document.getElementById('busRefreshInterval')?.value) || 60,
-          // NEW FIELDS
           apiUrl: document.getElementById('busApiUrl')?.value || '',
           apiKey: document.getElementById('busApiKey')?.value || '',
           stopIds: document.getElementById('busStopIds')?.value || ''
@@ -816,7 +761,8 @@
       window.dispatchEvent(event);
       
       showToast('✅ Settings saved!');
-    }    
+    }
+    
     function showContactModal(type) {
       currentContactType = type;
       currentPhotoData = null;
