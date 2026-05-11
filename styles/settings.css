@@ -1,4 +1,4 @@
-/* Settings Modal Styles */
+/* Settings Panel Styles */
 .settings-icon {
   position: fixed;
   bottom: 20px;
@@ -273,8 +273,13 @@
   color: #666;
 }
 
-.dashboard-item.hidden-module {
-  display: none;
+/* Module visibility - hidden by default */
+.dashboard-item {
+  display: none !important;
+}
+
+.dashboard-item.visible {
+  display: block !important;
 }
 
 @media (max-width: 768px) {
