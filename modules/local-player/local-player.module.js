@@ -530,4 +530,4 @@ export default async function initLocalPlayer(container) {
   }
   
   console.log("✅ Music Player with Synthesizer ready -", musicFiles.length, "tracks");
-}
+                             }
