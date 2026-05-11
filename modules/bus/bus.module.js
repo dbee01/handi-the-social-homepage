@@ -15,7 +15,7 @@ export default async function initBus(container) {
   // Add panel title
   const panelTitle = document.createElement('div');
   panelTitle.className = 'panel-title';
-  panelTitle.innerHTML = '<i class="fa-solid fa-bus"></i> Real-Time Bus Tracker (Route 223)';
+  panelTitle.innerHTML = '<i class="fa-solid fa-bus"></i> Real-Time Bus Tracker';
   container.appendChild(panelTitle);
 
   // Create bus container
@@ -40,85 +40,69 @@ export default async function initBus(container) {
   busContainer.appendChild(loadingDiv);
   container.appendChild(busContainer);
 
-  // Function to fetch real-time bus data via proxy
-  async function fetchBusData() {
+  // Configuration - SET THESE VALUES in settings or directly here
+  let API_URL = ''; // Set this in settings or directly: 'https://api.nationaltransport.ie/gtfsr/v2/gtfsr?format=json'
+  let API_KEY = ''; // Set your API key here if needed
+  let ENABLED = false; // Set to true when API is configured
+
+  // Load settings from localStorage
+  function loadBusSettings() {
     try {
-        // ADD YOUR API URL HERE (with CORS proxy if needed)
-        const corsProxies = [
-          'https://api.allorigins.win/raw?url=',
-          'https://cors-anywhere.herokuapp.com/',
-          'https://proxy.cors.sh/'
-        ];
-        const apiUrl = ''; // e.g. 'https://api.nationaltransport.ie/gtfsr/v2/gtfsr?format=json'
-        
-        if (!apiUrl) {
-          console.warn("⚠️ Bus API URL not set. Using mock data.");
-          return getMockBusData();
-        } else {
-          const proxyUrl = corsProxies[Math.floor(Math.random() * corsProxies.length)] + apiUrl;
-          const response = await fetch(proxyUrl);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+      const saved = localStorage.getItem('pleie_settings');
+      if (saved) {
+        const settings = JSON.parse(saved);
+        if (settings.bus) {
+          API_URL = settings.bus.apiUrl || '';
+          API_KEY = settings.bus.apiKey || '';
+          if (API_URL && API_URL.trim() !== '') {
+            ENABLED = true;
           }
-          const data = await response.json();
-          return data;
         }
-          
-        // If you have direct CORS access, use this instead:
-        //
-        const response = await fetch('https://api.nationaltransport.ie/gtfsr/v2/gtfsr?format=json');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data;
-         
-    } catch (error) {
-      console.error('Bus API Error:', error);
-      return getMockBusData();
+      }
+    } catch(e) {
+      console.error("Error loading bus settings:", e);
     }
   }
 
-  // Mock data for demonstration (replace with real API call)
-  function getMockBusData() {
-    const now = new Date();
-    const currentMinute = now.getMinutes();
+  // Function to fetch real-time bus data
+  async function fetchBusData() {
+    if (!ENABLED || !API_URL) {
+      return { error: 'not_configured', message: 'Bus API not configured. Click Settings (gear icon) → Bus Module to configure.' };
+    }
     
-    // Generate realistic next bus times based on current time
-    const generateBusTime = (baseMinute) => {
-      const busTime = new Date();
-      busTime.setMinutes(baseMinute);
-      busTime.setSeconds(0);
-      if (busTime < now) {
-        busTime.setMinutes(baseMinute + 60);
+    try {
+      const headers = {};
+      if (API_KEY) {
+        headers['Ocp-Apim-Subscription-Key'] = API_KEY;
       }
-      return busTime;
-    };
+      
+      const response = await fetch(API_URL, { headers });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return processRealTimeData(data);
+      
+    } catch (error) {
+      console.error('Bus API Error:', error);
+      return { error: 'api_error', message: error.message };
+    }
+  }
+
+  // Process real-time GTFS-RT data
+  function processRealTimeData(data) {
+    if (!data || !data.entity) {
+      return { error: 'no_data', message: 'No bus data available' };
+    }
     
+    const stops = {}; // Will be populated from settings or API
+    
+    // This is a template - you'll need to configure which stops to show
+    // For now, return empty result
     return {
-      stops: [
-        {
-          name: "Rochestown Rise",
-          stopId: "242081",
-          direction: "City Centre",
-          buses: [
-            { scheduled: generateBusTime(currentMinute + 2), delay: 0, status: "On Time" },
-            { scheduled: generateBusTime(currentMinute + 17), delay: 120, status: "Delayed" },
-            { scheduled: generateBusTime(currentMinute + 32), delay: 0, status: "On Time" }
-          ]
-        },
-        {
-          name: "South Mall",
-          stopId: "242051",
-          direction: "Rochestown",
-          buses: [
-            { scheduled: generateBusTime(currentMinute + 5), delay: -60, status: "Early" },
-            { scheduled: generateBusTime(currentMinute + 22), delay: 0, status: "On Time" },
-            { scheduled: generateBusTime(currentMinute + 45), delay: 180, status: "Delayed" }
-          ]
-        }
-      ],
-      lastUpdated: new Date()
+      stops: [],
+      lastUpdated: new Date(),
+      needsConfiguration: true
     };
   }
 
@@ -138,52 +122,61 @@ export default async function initBus(container) {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
-  // Get status color
-  function getStatusColor(status, delay) {
-    if (delay > 60) return 'var(--term-red)';
-    if (delay < -60) return 'var(--term-amber)';
-    if (delay === 0) return 'var(--term-green)';
-    if (delay > 0) return 'var(--term-amber)';
-    return 'var(--term-cyan)';
-  }
-
-  // Get status icon
-  function getStatusIcon(status, delay) {
-    if (delay > 60) return '<i class="fa-solid fa-triangle-exclamation"></i>';
-    if (delay < -60) return '<i class="fa-solid fa-clock"></i>';
-    if (delay === 0) return '<i class="fa-solid fa-check-circle"></i>';
-    if (delay > 0) return '<i class="fa-solid fa-clock"></i>';
-    return '<i class="fa-solid fa-forward"></i>';
-  }
-
   // Render bus data
-  function renderBusData(data) {
+  function renderBusData(result) {
     busContainer.innerHTML = '';
     
-    if (!data || !data.stops) {
+    if (result.error === 'not_configured') {
+      busContainer.innerHTML = `
+        <div style="text-align: center; padding: 40px; color: var(--term-amber);">
+          <i class="fa-solid fa-gear"></i> ${result.message}
+          <div style="margin-top: 15px; font-size: 0.8rem;">
+            <button onclick="window.location.href='settings.html'" style="background: var(--term-green); color: #000; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+              <i class="fa-solid fa-sliders-h"></i> Go to Settings
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+    if (result.error === 'api_error') {
       busContainer.innerHTML = `
         <div style="text-align: center; padding: 40px; color: var(--term-red);">
-          <i class="fa-solid fa-exclamation-triangle"></i> Unable to fetch bus data
+          <i class="fa-solid fa-exclamation-triangle"></i> API Error: ${result.message}
+          <div style="margin-top: 10px; font-size: 0.8rem;">Check your API URL and key in Settings</div>
+        </div>
+      `;
+      return;
+    }
+    
+    if (!result.stops || result.stops.length === 0) {
+      busContainer.innerHTML = `
+        <div style="text-align: center; padding: 40px; color: var(--term-dim);">
+          <i class="fa-solid fa-bus"></i> No bus stops configured.
+          <div style="margin-top: 10px; font-size: 0.8rem;">Configure stops in Settings → Bus Module</div>
         </div>
       `;
       return;
     }
     
     // Last updated timestamp
-    const lastUpdated = document.createElement('div');
-    lastUpdated.style.cssText = `
-      font-size: 0.7rem;
-      color: var(--term-dim);
-      text-align: right;
-      margin-bottom: 10px;
-      padding: 5px;
-      border-bottom: 1px solid var(--panel-border);
-    `;
-    lastUpdated.innerHTML = `<i class="fa-solid fa-sync-alt"></i> Updated: ${data.lastUpdated.toLocaleTimeString()}`;
-    busContainer.appendChild(lastUpdated);
+    if (result.lastUpdated) {
+      const lastUpdated = document.createElement('div');
+      lastUpdated.style.cssText = `
+        font-size: 0.7rem;
+        color: var(--term-dim);
+        text-align: right;
+        margin-bottom: 10px;
+        padding: 5px;
+        border-bottom: 1px solid var(--panel-border);
+      `;
+      lastUpdated.innerHTML = `<i class="fa-solid fa-sync-alt"></i> Updated: ${result.lastUpdated.toLocaleTimeString()}`;
+      busContainer.appendChild(lastUpdated);
+    }
     
     // Display each stop
-    data.stops.forEach(stop => {
+    result.stops.forEach(stop => {
       const stopCard = document.createElement('div');
       stopCard.style.cssText = `
         background: rgba(0, 0, 0, 0.3);
@@ -218,47 +211,52 @@ export default async function initBus(container) {
         gap: 12px;
       `;
       
-      stop.buses.forEach((bus, index) => {
-        const busItem = document.createElement('div');
-        busItem.style.cssText = `
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 10px;
-          background: rgba(0, 0, 0, 0.5);
-          border-radius: var(--radius);
-          transition: transform 0.2s;
-        `;
-        
-        const timeRemaining = getTimeRemaining(bus.scheduled);
-        const statusColor = getStatusColor(bus.status, bus.delay);
-        const statusIcon = getStatusIcon(bus.status, bus.delay);
-        
-        // Highlight next bus
-        if (index === 0) {
-          busItem.style.border = `1px solid ${statusColor}`;
-          busItem.style.background = `rgba(0, 255, 65, 0.05)`;
-        }
-        
-        busItem.innerHTML = `
-          <div style="flex: 1;">
-            <div style="font-weight: bold; color: ${statusColor}; font-size: 1.1rem;">
-              ${timeRemaining}
-            </div>
-            <div style="font-size: 0.75rem; color: var(--term-dim);">
-              ${formatTime(bus.scheduled)}
-            </div>
-          </div>
-          <div style="text-align: right;">
-            <div style="color: ${statusColor}; font-size: 0.85rem;">
-              ${statusIcon} ${bus.status}
-            </div>
-            ${bus.delay !== 0 ? `<div style="font-size: 0.7rem; color: var(--term-dim);">${bus.delay > 0 ? '+' : ''}${Math.floor(bus.delay / 60)} min</div>` : ''}
+      if (!stop.buses || stop.buses.length === 0) {
+        busList.innerHTML = `
+          <div style="text-align: center; padding: 20px; color: var(--term-dim);">
+            <i class="fa-solid fa-clock"></i> No upcoming buses
           </div>
         `;
-        
-        busList.appendChild(busItem);
-      });
+      } else {
+        stop.buses.forEach((bus, index) => {
+          const busItem = document.createElement('div');
+          busItem.style.cssText = `
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: var(--radius);
+            transition: transform 0.2s;
+          `;
+          
+          const timeRemaining = getTimeRemaining(bus.scheduled);
+          const statusColor = bus.delay > 60 ? 'var(--term-red)' : (bus.delay < -60 ? 'var(--term-amber)' : 'var(--term-green)');
+          
+          if (index === 0) {
+            busItem.style.border = `1px solid ${statusColor}`;
+            busItem.style.background = `rgba(0, 255, 65, 0.05)`;
+          }
+          
+          busItem.innerHTML = `
+            <div style="flex: 1;">
+              <div style="font-weight: bold; color: ${statusColor}; font-size: 1.1rem;">
+                ${timeRemaining}
+              </div>
+              <div style="font-size: 0.75rem; color: var(--term-dim);">
+                ${formatTime(bus.scheduled)}
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div style="color: ${statusColor}; font-size: 0.85rem;">
+                ${bus.delay === 0 ? 'On Time' : (bus.delay > 0 ? `+${Math.floor(bus.delay / 60)} min` : `${Math.floor(bus.delay / 60)} min`)}
+              </div>
+            </div>
+          `;
+          
+          busList.appendChild(busItem);
+        });
+      }
       
       stopCard.appendChild(busList);
       busContainer.appendChild(stopCard);
@@ -298,13 +296,30 @@ export default async function initBus(container) {
     busContainer.appendChild(refreshBtn);
   }
   
-  // Initial load
+  // Load settings and fetch data
+  loadBusSettings();
   const initialData = await fetchBusData();
   renderBusData(initialData);
   
-  // Auto-refresh every 60 seconds
-  setInterval(async () => {
-    const newData = await fetchBusData();
-    renderBusData(newData);
-  }, 60000);
+  // Auto-refresh every 60 seconds (only if enabled)
+  let refreshInterval;
+  if (ENABLED) {
+    refreshInterval = setInterval(async () => {
+      const newData = await fetchBusData();
+      renderBusData(newData);
+    }, 60000);
+  }
+  
+  // Listen for settings changes
+  window.addEventListener('settingsChanged', () => {
+    loadBusSettings();
+    if (refreshInterval) clearInterval(refreshInterval);
+    if (ENABLED) {
+      refreshInterval = setInterval(async () => {
+        const newData = await fetchBusData();
+        renderBusData(newData);
+      }, 60000);
+    }
+    fetchBusData().then(renderBusData);
+  });
 }

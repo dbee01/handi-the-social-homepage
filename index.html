@@ -9,8 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://unpkg.com/packery@2.1.2/dist/packery.pkgd.min.js"></script>
   <script src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
-  <script type="module" src="app.js" defer></script>
-  <link rel="stylesheet" href="styles/settings.css">
+  <script type="module" src="app.js"></script>
 </head>
 <body>
 
@@ -37,44 +36,35 @@
 
 <div class="dashboard-wrapper">
   <main id="dashboard-grid">
-    <!-- ALL MODULES START HIDDEN - display: none -->
-    <!-- They will be shown by Settings when enabled -->
-    
+    <!-- Module items - initially hidden -->
     <div class="dashboard-item" id="gallery" data-module="gallery" style="display: none;">
       <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
       <div class="module-content"></div>
     </div>
-
     <div class="dashboard-item" id="emergency" data-module="emergency" style="display: none;">
       <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
       <div class="module-content"></div>
     </div>
-    
     <div class="dashboard-item" id="bus" data-module="bus" style="display: none;">
       <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
       <div class="module-content"></div>
     </div>
-
     <div class="dashboard-item" id="news" data-module="news" style="display: none;">
       <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
       <div class="module-content"></div>
     </div>
-
     <div class="dashboard-item" id="mastodon" data-module="mastodon" style="display: none;">
       <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
       <div class="module-content"></div>
     </div>
-
     <div class="dashboard-item" id="radio" data-module="radio" style="display: none;">
       <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
       <div class="module-content"></div>
     </div>
-
     <div class="dashboard-item" id="friendly-phone" data-module="friendly-phone" style="display: none;">
       <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
       <div class="module-content"></div>
     </div>
-    
     <div class="dashboard-item" id="local-player" data-module="local-player" style="display: none;">
       <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
       <div class="module-content"></div>
@@ -87,15 +77,44 @@
     <span><i class="fa-solid fa-location-dot"></i> Dublin</span>
     <span><i class="fa-solid fa-leaf"></i> Green Energy</span>
     <span><i class="fa-brands fa-github"></i> Open Source</span>
+    <span class="settings-link" onclick="window.location.href='settings.html'">
+      <i class="fa-solid fa-gear"></i> Settings
+    </span>
   </div>
 </footer>
 
-<div class="settings-icon" id="settingsIcon">
+<!-- Floating Settings Button -->
+<div class="floating-settings" onclick="window.location.href='settings.html'">
   <i class="fa-solid fa-gear"></i>
 </div>
 
-<script src="js/settings.js"></script>
 <script src="js/pins.js"></script>
-<script src="js/refresh-warning.js"></script>
+
+<script type="module">
+  import { loadSettings, getStorageInfo } from './js/storage.js';
+  
+  // Ensure modules are shown based on saved settings
+  (function() {
+    const settings = loadSettings();
+    if (settings && settings.enabledModules) {
+      Object.keys(settings.enabledModules).forEach(moduleId => {
+        const element = document.getElementById(moduleId);
+        if (element && settings.enabledModules[moduleId]) {
+          element.style.display = 'block';
+          element.classList.add('visible');
+        }
+      });
+    }
+  })();
+  
+  // Log storage info
+  async function logStorageInfo() {
+    const info = await getStorageInfo();
+    console.log(`📦 Storage: ${info.images} images, ${info.music} music files`);
+  }
+  logStorageInfo();
+</script>
+
 </body>
+</html>
 </html>

@@ -35,14 +35,22 @@
       border: 1px solid #1f1f1f;
       border-radius: 8px;
       margin-bottom: 20px;
+      gap: 15px;
+      flex-wrap: wrap;
     }
     
     .settings-header h1 {
       color: #00ff41;
       font-family: 'Courier New', monospace;
+      flex: 1;
     }
     
-    .back-btn {
+    .header-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .back-btn, .save-settings-top {
       background: #1f1f1f;
       border: 1px solid #00ff41;
       color: #00ff41;
@@ -51,11 +59,23 @@
       cursor: pointer;
       font-family: 'Courier New', monospace;
       transition: all 0.2s;
+      font-size: 0.9rem;
     }
     
-    .back-btn:hover {
+    .back-btn:hover, .save-settings-top:hover {
       background: #00ff41;
       color: #000;
+    }
+    
+    .save-settings-top {
+      background: #00ff41;
+      color: #000;
+      border-color: #00ff41;
+    }
+    
+    .save-settings-top:hover {
+      background: #00cc33;
+      transform: scale(1.02);
     }
     
     .module-section {
@@ -236,22 +256,9 @@
       cursor: pointer;
     }
     
+    /* Remove the bottom save button */
     .save-settings {
-      width: 100%;
-      padding: 15px;
-      background: #00ff41;
-      color: #000;
-      border: none;
-      border-radius: 4px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 20px;
-      font-family: 'Courier New', monospace;
-    }
-    
-    .save-settings:hover {
-      background: #00cc33;
+      display: none;
     }
     
     .range-value {
@@ -300,15 +307,32 @@
       color: #00ff41;
       text-align: center;
     }
+    
+    @media (max-width: 600px) {
+      .settings-header {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .header-buttons {
+        width: 100%;
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="settings-page">
     <div class="settings-header">
       <h1><i class="fa-solid fa-sliders-h"></i> Module Settings</h1>
-      <button class="back-btn" onclick="window.location.href='index.html'">
-        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-      </button>
+      <div class="header-buttons">
+        <button class="save-settings-top" id="saveSettingsTopBtn">
+          <i class="fa-solid fa-save"></i> Save Settings
+        </button>
+        <button class="back-btn" onclick="window.location.href='index.html'">
+          <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </button>
+      </div>
     </div>
     
     <!-- Gallery Module -->
@@ -342,7 +366,7 @@
         <div id="galleryStorageInfo" class="storage-info"></div>
       </div>
     </div>
-    
+
     <!-- Bus Module -->
     <div class="module-section">
       <div class="module-header" data-module="bus">
@@ -365,9 +389,22 @@
           <label><i class="fa-solid fa-clock"></i> Refresh Interval (seconds):</label>
           <input type="number" id="busRefreshInterval" min="30" max="300" value="60">
         </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-link"></i> API URL:</label>
+          <input type="text" id="busApiUrl" placeholder="https://api.nationaltransport.ie/gtfsr/v2/gtfsr?format=json">
+          <small style="color:#666; display:block; margin-top:5px;">Enter the real-time bus API endpoint</small>
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-key"></i> API Key (if required):</label>
+          <input type="text" id="busApiKey" placeholder="Your API key">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-map-marker-alt"></i> Stop IDs (comma-separated):</label>
+          <input type="text" id="busStopIds" placeholder="e.g., 242081, 242051">
+        </div>
       </div>
     </div>
-    
+
     <!-- Music Player Module -->
     <div class="module-section">
       <div class="module-header" data-module="local-player">
@@ -448,10 +485,6 @@
         </div>
       </div>
     </div>
-    
-    <button class="save-settings" id="saveSettingsBtn">
-      <i class="fa-solid fa-save"></i> Save All Settings
-    </button>
   </div>
   
   <!-- Add Contact Modal -->
@@ -700,7 +733,7 @@
           if (autoStart) autoStart.value = saved.gallery.autoStart ? 'true' : 'false';
         }
         
-        // Load bus settings
+        // Load bus settings - UPDATED with new fields
         if (saved.bus) {
           const routeInput = document.getElementById('busRouteIds');
           if (routeInput) routeInput.value = saved.bus.routeIds || '';
@@ -708,6 +741,14 @@
           if (stopInput) stopInput.value = saved.bus.stopId || '';
           const intervalInput = document.getElementById('busRefreshInterval');
           if (intervalInput) intervalInput.value = saved.bus.refreshInterval || 60;
+          
+          // NEW FIELDS - add these
+          const apiUrlInput = document.getElementById('busApiUrl');
+          if (apiUrlInput) apiUrlInput.value = saved.bus.apiUrl || '';
+          const apiKeyInput = document.getElementById('busApiKey');
+          if (apiKeyInput) apiKeyInput.value = saved.bus.apiKey || '';
+          const stopIdsInput = document.getElementById('busStopIds');
+          if (stopIdsInput) stopIdsInput.value = saved.bus.stopIds || '';
         }
         
         // Load music player settings
@@ -737,7 +778,7 @@
         }
       }
     }
-    
+
     function saveAllSettings() {
       const settings = {
         enabledModules: enabledModules,
@@ -748,7 +789,11 @@
         bus: {
           routeIds: document.getElementById('busRouteIds')?.value || '',
           stopId: document.getElementById('busStopId')?.value || '',
-          refreshInterval: parseInt(document.getElementById('busRefreshInterval')?.value) || 60
+          refreshInterval: parseInt(document.getElementById('busRefreshInterval')?.value) || 60,
+          // NEW FIELDS
+          apiUrl: document.getElementById('busApiUrl')?.value || '',
+          apiKey: document.getElementById('busApiKey')?.value || '',
+          stopIds: document.getElementById('busStopIds')?.value || ''
         },
         musicPlayer: {
           defaultVolume: parseInt(document.getElementById('defaultVolume')?.value) || 100,
@@ -771,8 +816,7 @@
       window.dispatchEvent(event);
       
       showToast('✅ Settings saved!');
-    }
-    
+    }    
     function showContactModal(type) {
       currentContactType = type;
       currentPhotoData = null;
@@ -843,7 +887,7 @@
     document.getElementById('selectMusicFolderBtn')?.addEventListener('click', () => selectFolder(document.getElementById('musicFolderPath'), 'music'));
     document.getElementById('addEmergencyContactBtn')?.addEventListener('click', () => showContactModal('emergency'));
     document.getElementById('addPhoneContactBtn')?.addEventListener('click', () => showContactModal('phone'));
-    document.getElementById('saveSettingsBtn')?.addEventListener('click', saveAllSettings);
+    document.getElementById('saveSettingsTopBtn')?.addEventListener('click', saveAllSettings);
     
     document.getElementById('saveContactBtn')?.addEventListener('click', saveContact);
     document.getElementById('cancelContactBtn')?.addEventListener('click', () => {

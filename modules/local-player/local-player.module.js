@@ -1,5 +1,8 @@
 // modules/local-player/local-player.module.js
 
+// TO (correct path - go up 2 levels from modules/local-player/ to root, then into js/)
+import { loadMusicFiles } from '../../js/storage.js';
+
 export default async function initLocalPlayer(container) {
   console.log("🎵 MUSIC PLAYER INIT - Container:", container);
   
@@ -13,41 +16,48 @@ export default async function initLocalPlayer(container) {
   if (parentItem) {
     parentItem.style.display = 'block';
   }
-  // Make container visible with proper width constraints
+  
+  // Make container visible
   container.style.display = 'block';
-  container.style.width = '100%';
-  container.style.maxWidth = '420px';
   container.style.minHeight = '450px';
   container.style.backgroundColor = '#0a0a15';
   container.style.borderRadius = '12px';
   container.style.padding = '15px';
+  container.style.width = '100%';
+  container.style.maxWidth = '420px';
   container.style.margin = '0 auto';
   container.style.boxSizing = 'border-box';
   
-  // Load music files from localStorage
+  // Load music files from IndexedDB
   let musicFiles = [];
   let settingsVolume = 70;
   let settingsShuffle = false;
   
   try {
-    const saved = localStorage.getItem('pleie_settings');
-    console.log("Loading music from localStorage:", saved ? "Found" : "Not found");
-    
-    if (saved) {
-      const settings = JSON.parse(saved);
-      if (settings.musicPlayer && settings.musicPlayer.musicFiles) {
-        musicFiles = settings.musicPlayer.musicFiles;
-        console.log(`Found ${musicFiles.length} music files`);
-      }
-      if (settings.musicPlayer && settings.musicPlayer.defaultVolume) {
-        settingsVolume = settings.musicPlayer.defaultVolume;
-      }
-      if (settings.musicPlayer && settings.musicPlayer.defaultShuffle) {
-        settingsShuffle = settings.musicPlayer.defaultShuffle;
-      }
+    console.log("Loading music from IndexedDB...");
+    const storedMusic = await loadMusicFiles();
+    if (storedMusic && storedMusic.length > 0) {
+      musicFiles = storedMusic;
+      console.log(`✅ Loaded ${musicFiles.length} music files from IndexedDB`);
+    } else {
+      console.log('No music files found in IndexedDB storage');
     }
   } catch(e) {
     console.error("Error loading music:", e);
+  }
+  
+  // Load settings from localStorage
+  try {
+    const saved = localStorage.getItem('pleie_settings');
+    if (saved) {
+      const settings = JSON.parse(saved);
+      if (settings.musicPlayer) {
+        settingsVolume = settings.musicPlayer.defaultVolume || 70;
+        settingsShuffle = settings.musicPlayer.defaultShuffle || false;
+      }
+    }
+  } catch(e) {
+    console.error("Error loading settings:", e);
   }
   
   // Audio Context for Visualizer
@@ -73,14 +83,14 @@ export default async function initLocalPlayer(container) {
         border: 1px solid #00ff41;
       ">
         <div id="current-track-title" style="color: #00ff41; font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-          ${musicFiles.length > 0 ? musicFiles[0].name : 'No track selected'}
+          ${musicFiles.length > 0 ? musicFiles[0].name : 'No tracks loaded'}
         </div>
         <div id="current-track-status" style="color: #888; font-size: 0.8rem;">
-          ${musicFiles.length > 0 ? 'Ready to play' : 'No music loaded. Click gear icon to add music'}
+          ${musicFiles.length > 0 ? 'Ready to play' : 'No music found. Click gear icon → Music Player → Select Folder → Save Settings'}
         </div>
       </div>
       
-      <!-- Visualizer / Synthesizer -->
+      <!-- Visualizer -->
       <div style="
         background: #000;
         border-radius: 12px;
@@ -215,7 +225,7 @@ export default async function initLocalPlayer(container) {
           ${musicFiles.length === 0 ? `
             <div style="padding: 30px; text-align: center; color: #666;">
               <i class="fa-solid fa-music"></i> No music loaded<br>
-              <span style="font-size: 11px;">Click the gear icon (bottom-right) → Music Player → Select Folder → Save</span>
+              <span style="font-size: 11px;">Click the gear icon → Music Player → Select Folder → Save Settings</span>
             </div>
           ` : musicFiles.map((file, i) => `
             <div class="playlist-item" data-index="${i}" style="
@@ -240,10 +250,6 @@ export default async function initLocalPlayer(container) {
   `;
   
   container.innerHTML = html;
-  // Add this right after setting container.innerHTML = html;
-  container.style.width = '100%';
-  container.style.maxWidth = '420px';
-  container.style.margin = '0 auto';
   
   // Get DOM elements
   const playPauseBtn = document.getElementById('btn-playpause');
@@ -255,7 +261,7 @@ export default async function initLocalPlayer(container) {
   const currentTrackTitle = document.getElementById('current-track-title');
   const currentTrackStatus = document.getElementById('current-track-status');
   const canvas = document.getElementById('audio-visualizer');
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas?.getContext('2d');
   
   // Set canvas size
   function resizeCanvas() {
@@ -275,12 +281,10 @@ export default async function initLocalPlayer(container) {
       if (currentAudio) {
         currentAudio.volume = currentVolume / 100;
       }
-      // Save volume to settings
       saveVolumeToSettings(currentVolume);
     });
   }
   
-  // Save volume to localStorage
   function saveVolumeToSettings(volume) {
     try {
       const saved = localStorage.getItem('pleie_settings');
@@ -295,7 +299,6 @@ export default async function initLocalPlayer(container) {
     }
   }
   
-  // Save shuffle to localStorage
   function saveShuffleToSettings(shuffle) {
     try {
       const saved = localStorage.getItem('pleie_settings');
@@ -334,7 +337,7 @@ export default async function initLocalPlayer(container) {
   }
   
   function startVisualizer() {
-    if (!analyser) return;
+    if (!analyser || !ctx) return;
     
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
@@ -347,24 +350,22 @@ export default async function initLocalPlayer(container) {
       
       analyser.getByteFrequencyData(dataArray);
       
-      if (ctx) {
-        ctx.fillStyle = '#0a0a0a';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      const barWidth = (canvas.width / bufferLength) * 2;
+      let x = 0;
+      
+      for (let i = 0; i < bufferLength; i++) {
+        const value = dataArray[i];
+        const percent = value / 255;
+        const height = canvas.height * percent;
         
-        const barWidth = (canvas.width / bufferLength) * 2;
-        let x = 0;
+        const hue = 90 + (percent * 30);
+        ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+        ctx.fillRect(x, canvas.height - height, barWidth - 1, height);
         
-        for (let i = 0; i < bufferLength; i++) {
-          const value = dataArray[i];
-          const percent = value / 255;
-          const height = canvas.height * percent;
-          
-          const hue = 90 + (percent * 30);
-          ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
-          ctx.fillRect(x, canvas.height - height, barWidth - 1, height);
-          
-          x += barWidth;
-        }
+        x += barWidth;
       }
       
       animationId = requestAnimationFrame(draw);
@@ -453,7 +454,11 @@ export default async function initLocalPlayer(container) {
     if (musicFiles.length === 0) return;
     let nextIndex;
     if (isShuffle) {
-      nextIndex = Math.floor(Math.random() * musicFiles.length);
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * musicFiles.length);
+      } while (newIndex === currentIndex && musicFiles.length > 1);
+      nextIndex = newIndex;
     } else {
       nextIndex = (currentIndex + 1) % musicFiles.length;
     }
@@ -519,13 +524,6 @@ export default async function initLocalPlayer(container) {
     });
   });
   
-  // If there are music files, pre-load the first one (but don't play)
-  if (musicFiles.length > 0) {
-    // Just load metadata without playing
-    currentTrackTitle.textContent = musicFiles[0].name;
-    currentTrackStatus.textContent = 'Ready to play';
-  }
-  
   function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/[&<>]/g, function(m) {
@@ -536,5 +534,16 @@ export default async function initLocalPlayer(container) {
     });
   }
   
-  console.log("✅ Music Player with Synthesizer ready -", musicFiles.length, "tracks");
-                             }
+  // Listen for settings changes
+  window.addEventListener('settingsChanged', async () => {
+    console.log('Settings changed, reloading music...');
+    const newMusic = await loadMusicFiles();
+    if (newMusic && newMusic.length > 0) {
+      musicFiles = newMusic;
+      // Reload UI with new files
+      initLocalPlayer(container);
+    }
+  });
+  
+  console.log(`✅ Music Player ready - ${musicFiles.length} tracks loaded`);
+}

@@ -1,5 +1,8 @@
 // modules/gallery/gallery.module.js
 
+// TO (correct path - go up 2 levels from modules/gallery/ to root, then into js/)
+import { loadGalleryImages } from '../../js/storage.js';
+
 export default async function initGallery(container) {
   if (!container) {
     console.error("Gallery Module: Container not found");
@@ -30,7 +33,7 @@ export default async function initGallery(container) {
     overflow-y: auto;
   `;
 
-  // Status display (no folder selector)
+  // Status display
   const statusDisplay = document.createElement('div');
   statusDisplay.className = 'gallery-status';
   statusDisplay.style.cssText = `
@@ -42,8 +45,8 @@ export default async function initGallery(container) {
     color: var(--term-dim);
   `;
   statusDisplay.innerHTML = `
-    <i class="fa-solid fa-info-circle"></i>
-    <span id="galleryStatusMsg">Configure gallery in Settings (gear icon)</span>
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <span id="galleryStatusMsg">Loading images from storage...</span>
   `;
   galleryContainer.appendChild(statusDisplay);
 
@@ -127,90 +130,61 @@ export default async function initGallery(container) {
 
   container.appendChild(galleryContainer);
 
-  // Lightbox HTML (true fullscreen version)
-  const lightboxHTML = `
-    <div id="galleryLightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000;">
-      <div id="lightboxInner" style="display: flex; flex-direction: column; width: 100%; height: 100%;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); padding: 20px; z-index: 10001; display: flex; justify-content: space-between; align-items: center;">
-          <div id="lightboxTitle" style="color: white; font-size: 1rem; text-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>
-          <div>
-            <button id="lightboxFullscreenToggle" style="background: rgba(0,0,0,0.5); border: none; color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; margin-right: 10px;">
-              <i class="fa-solid fa-expand"></i> Fullscreen
-            </button>
-            <button id="lightboxClose" style="background: rgba(0,0,0,0.5); border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 8px 15px; border-radius: 8px;">
-              <i class="fa-solid fa-times"></i>
-            </button>
-          </div>
-        </div>
-        <div id="lightboxContent" style="flex: 1; display: flex; justify-content: center; align-items: center; position: relative;">
-          <img id="lightboxImage" style="max-width: 90%; max-height: 85%; object-fit: contain; cursor: pointer;">
-          <button id="lightboxPrev" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 3rem; cursor: pointer; padding: 20px; border-radius: 40px;">
-            <i class="fa-solid fa-chevron-left"></i>
-          </button>
-          <button id="lightboxNext" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 3rem; cursor: pointer; padding: 20px; border-radius: 40px;">
-            <i class="fa-solid fa-chevron-right"></i>
-          </button>
-        </div>
-        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 20px; text-align: center;">
-          <div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 10px;">
-            <button id="lightboxPlayPause" style="background: rgba(0,0,0,0.7); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem;">
-              <i class="fa-solid fa-play"></i> Resume Slideshow
-            </button>
-            <button id="lightboxDownload" style="background: rgba(0,0,0,0.7); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem;">
-              <i class="fa-solid fa-download"></i> Download
-            </button>
-          </div>
-          <div id="lightboxCounter" style="color: var(--term-green); font-size: 0.9rem;"></div>
-        </div>
-      </div>
-    </div>
-  `;
-  
-  // Add lightbox to body
-  document.body.insertAdjacentHTML('beforeend', lightboxHTML);
-  
-  // Get lightbox elements
-  const lightbox = document.getElementById('galleryLightbox');
-  const lightboxImage = document.getElementById('lightboxImage');
-  const lightboxTitle = document.getElementById('lightboxTitle');
-  const lightboxCounter = document.getElementById('lightboxCounter');
-  const lightboxPrev = document.getElementById('lightboxPrev');
-  const lightboxNext = document.getElementById('lightboxNext');
-  const lightboxClose = document.getElementById('lightboxClose');
-  const lightboxPlayPause = document.getElementById('lightboxPlayPause');
-  const lightboxDownload = document.getElementById('lightboxDownload');
-  const lightboxFullscreenToggle = document.getElementById('lightboxFullscreenToggle');
-  const lightboxInner = document.getElementById('lightboxInner');
-  
-  // Wake Lock variables
-  let wakeLock = null;
-  let wakeLockSupported = false;
-  let wakeLockEnabled = false;
-  let slideshowInterval = null;
-  
-  // Create wake lock button
-  const wakeLockBtn = document.createElement('button');
-  wakeLockBtn.id = 'galleryWakeLockBtn';
-  wakeLockBtn.style.cssText = `
-    padding: 8px 16px;
-    background: var(--panel-bg);
-    border: 1px solid var(--panel-border);
-    color: var(--term-cyan);
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: all 0.2s;
-  `;
-  wakeLockBtn.innerHTML = '<i class="fa-solid fa-bed"></i> Keep Screen On';
-  wakeLockContainer.appendChild(wakeLockBtn);
-  
   // Gallery state
   let slideIndex = 0;
   let images = [];
   let isPaused = false;
+  let slideshowInterval = null;
   let SLIDE_INTERVAL = 3000;
-  let currentImageObjects = [];
-  let isFullscreen = false;
-  const SUPPORTED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+
+  // Load images from IndexedDB
+  async function loadImagesFromStorage() {
+    const statusMsg = document.getElementById('galleryStatusMsg');
+    try {
+      const storedImages = await loadGalleryImages();
+      
+      if (storedImages && storedImages.length > 0) {
+        images = storedImages.map(img => img.file);
+        
+        if (statusMsg) {
+          statusMsg.innerHTML = `<i class="fa-solid fa-check-circle"></i> Loaded ${images.length} images`;
+          statusMsg.style.color = 'var(--term-green)';
+        }
+        
+        // Reset slideshow state
+        slideIndex = 0;
+        isPaused = false;
+        const pauseBtn = document.getElementById('galleryPauseBtn');
+        if (pauseBtn) {
+          pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+          pauseBtn.style.color = 'var(--term-green)';
+        }
+        
+        if (slideshowInterval) clearTimeout(slideshowInterval);
+        createSlidesAndDots(images);
+        updateSlideDisplay();
+        
+        // Load speed from settings
+        loadGallerySettings();
+        
+        // Start slideshow if there are images
+        if (images.length > 0 && !isPaused) {
+          startSlideshow();
+        }
+      } else {
+        if (statusMsg) {
+          statusMsg.innerHTML = '<i class="fa-solid fa-folder-open"></i> No images found. Click gear icon → Gallery Module → Select Folder → Save Settings';
+          statusMsg.style.color = 'var(--term-dim)';
+        }
+      }
+    } catch (error) {
+      console.error('Error loading images:', error);
+      if (statusMsg) {
+        statusMsg.innerHTML = '<i class="fa-solid fa-exclamation-triangle"></i> Error loading images from storage';
+        statusMsg.style.color = 'var(--term-red)';
+      }
+    }
+  }
 
   // Load settings from localStorage
   function loadGallerySettings() {
@@ -221,12 +195,6 @@ export default async function initGallery(container) {
         SLIDE_INTERVAL = settings.gallery.speed || 3000;
         const speedInput = document.getElementById('gallerySlideSpeed');
         if (speedInput) speedInput.value = SLIDE_INTERVAL;
-        
-        // Auto-start setting
-        const autoStart = settings.gallery.autoStart !== false;
-        if (autoStart && images.length > 0 && !isPaused && !slideshowInterval) {
-          startSlideshow();
-        }
       }
     }
   }
@@ -242,164 +210,12 @@ export default async function initGallery(container) {
     }
   }
 
-  // Load images from Settings (called by external event)
-  function loadImagesFromSettings(imageFiles) {
-    if (!imageFiles || imageFiles.length === 0) {
-      const statusMsg = document.getElementById('galleryStatusMsg');
-      if (statusMsg) {
-        statusMsg.innerHTML = '<i class="fa-solid fa-folder-open"></i> No images loaded. Configure in Settings (gear icon)';
-        statusMsg.style.color = 'var(--term-dim)';
-      }
-      return;
-    }
-    
-    const statusMsg = document.getElementById('galleryStatusMsg');
-    if (statusMsg) {
-      statusMsg.innerHTML = `<i class="fa-solid fa-check-circle"></i> Loaded ${imageFiles.length} images`;
-      statusMsg.style.color = 'var(--term-green)';
-    }
-    
-    images = imageFiles;
-    slideIndex = 0;
-    isPaused = false;
-    const pauseBtn = document.getElementById('galleryPauseBtn');
-    if (pauseBtn) {
-      pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
-      pauseBtn.style.color = 'var(--term-green)';
-    }
-    
-    if (slideshowInterval) clearTimeout(slideshowInterval);
-    createSlidesAndDots(images);
-    updateSlideDisplay();
-    
-    loadGallerySettings();
-  }
-
-  // ========== TRUE FULLSCREEN API ==========
-  async function toggleFullscreen(element) {
-    if (!isFullscreen) {
-      try {
-        if (element.requestFullscreen) {
-          await element.requestFullscreen();
-        } else if (element.webkitRequestFullscreen) {
-          await element.webkitRequestFullscreen();
-        } else if (element.msRequestFullscreen) {
-          await element.msRequestFullscreen();
-        }
-        isFullscreen = true;
-        lightboxFullscreenToggle.innerHTML = '<i class="fa-solid fa-compress"></i> Exit';
-      } catch (err) {
-        console.error('Fullscreen error:', err);
-      }
-    } else {
-      try {
-        if (document.exitFullscreen) {
-          await document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-          await document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-          await document.msExitFullscreen();
-        }
-        isFullscreen = false;
-        lightboxFullscreenToggle.innerHTML = '<i class="fa-solid fa-expand"></i> Fullscreen';
-      } catch (err) {
-        console.error('Exit fullscreen error:', err);
-      }
-    }
-  }
-  
-  document.addEventListener('fullscreenchange', updateFullscreenButton);
-  document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
-  document.addEventListener('msfullscreenchange', updateFullscreenButton);
-  
-  function updateFullscreenButton() {
-    const isCurrentlyFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
-    isFullscreen = !!isCurrentlyFullscreen;
-    if (lightboxFullscreenToggle) {
-      if (isFullscreen) {
-        lightboxFullscreenToggle.innerHTML = '<i class="fa-solid fa-compress"></i> Exit';
-      } else {
-        lightboxFullscreenToggle.innerHTML = '<i class="fa-solid fa-expand"></i> Fullscreen';
-      }
-    }
-  }
-
-  // ========== WAKE LOCK FUNCTIONS ==========
-  async function requestWakeLock() {
-    if (!wakeLockSupported || !wakeLockEnabled) return;
-    
-    try {
-      wakeLock = await navigator.wakeLock.request('screen');
-      wakeLock.addEventListener('release', () => {
-        console.log('Wake lock released');
-      });
-      console.log('Wake lock active - screen will stay awake');
-    } catch (err) {
-      console.error('Wake lock failed:', err);
-    }
-  }
-
-  async function releaseWakeLock() {
-    if (wakeLock) {
-      try {
-        await wakeLock.release();
-        wakeLock = null;
-        console.log('Wake lock released');
-      } catch (err) {
-        console.error('Error releasing wake lock:', err);
-      }
-    }
-  }
-
-  function handleVisibilityChange() {
-    if (document.visibilityState === 'visible' && slideshowInterval && !isPaused && wakeLockEnabled) {
-      requestWakeLock();
-    } else if (document.visibilityState === 'hidden') {
-      releaseWakeLock();
-    }
-  }
-
-  function toggleWakeLock() {
-    wakeLockEnabled = !wakeLockEnabled;
-    
-    if (wakeLockEnabled) {
-      if (slideshowInterval && !isPaused && document.visibilityState === 'visible') {
-        requestWakeLock();
-      }
-      wakeLockBtn.innerHTML = '<i class="fa-solid fa-sun"></i> Screen On';
-      wakeLockBtn.style.color = 'var(--term-green)';
-      console.log('Wake lock enabled');
-    } else {
-      releaseWakeLock();
-      wakeLockBtn.innerHTML = '<i class="fa-solid fa-bed"></i> Keep Screen On';
-      wakeLockBtn.style.color = 'var(--term-cyan)';
-      console.log('Wake lock disabled');
-    }
-  }
-
-  function initWakeLock() {
-    wakeLockSupported = 'wakeLock' in navigator;
-    
-    if (wakeLockSupported) {
-      console.log('Screen Wake Lock API supported');
-      document.addEventListener('visibilitychange', handleVisibilityChange);
-      wakeLockBtn.onclick = toggleWakeLock;
-    } else {
-      console.log('Screen Wake Lock API not supported - screen may sleep');
-      wakeLockBtn.style.opacity = '0.5';
-      wakeLockBtn.disabled = true;
-      wakeLockBtn.title = 'Wake Lock not supported in this browser';
-    }
-  }
-
-  // ========== GALLERY FUNCTIONS ==========
   function createSlidesAndDots(imageFiles) {
     const container = slidesContainer;
     const dots = dotsContainer;
     
     container.innerHTML = '';
     dots.innerHTML = '';
-    currentImageObjects = imageFiles;
     
     imageFiles.forEach((file, index) => {
       const slide = document.createElement('div');
@@ -413,7 +229,8 @@ export default async function initGallery(container) {
       `;
       
       const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file);
+      img.src = url;
       img.alt = file.name;
       img.style.cssText = `
         width: 100%;
@@ -424,6 +241,7 @@ export default async function initGallery(container) {
       `;
       
       img.onclick = () => openLightbox(index);
+      img.onload = () => URL.revokeObjectURL(url);
       
       slide.appendChild(img);
       container.appendChild(slide);
@@ -522,15 +340,11 @@ export default async function initGallery(container) {
       if (slideshowInterval) clearTimeout(slideshowInterval);
       btn.innerHTML = '<i class="fa-solid fa-play"></i> Resume';
       btn.style.color = 'var(--term-amber)';
-      if (wakeLockEnabled) releaseWakeLock();
     } else {
       btn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
       btn.style.color = 'var(--term-green)';
       startSlideshow();
-      if (wakeLockEnabled && document.visibilityState === 'visible') requestWakeLock();
     }
-    
-    updateLightboxPlayPauseButton();
   }
 
   function updateSpeed() {
@@ -547,212 +361,125 @@ export default async function initGallery(container) {
     }
   }
 
-  // ========== LIGHTBOX FUNCTIONS ==========
+  // Lightbox functions
+  let lightbox = null;
+  
+  function createLightbox() {
+    const lightboxHTML = `
+      <div id="galleryLightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000;">
+        <div id="lightboxInner" style="display: flex; flex-direction: column; width: 100%; height: 100%;">
+          <div style="position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); padding: 20px; z-index: 10001; display: flex; justify-content: space-between; align-items: center;">
+            <div id="lightboxTitle" style="color: white; font-size: 1rem;"></div>
+            <div>
+              <button id="lightboxFullscreenToggle" style="background: rgba(0,0,0,0.5); border: none; color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; margin-right: 10px;">
+                <i class="fa-solid fa-expand"></i> Fullscreen
+              </button>
+              <button id="lightboxClose" style="background: rgba(0,0,0,0.5); border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 8px 15px; border-radius: 8px;">
+                <i class="fa-solid fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div id="lightboxContent" style="flex: 1; display: flex; justify-content: center; align-items: center; position: relative;">
+            <img id="lightboxImage" style="max-width: 90%; max-height: 85%; object-fit: contain; cursor: pointer;">
+            <button id="lightboxPrev" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 3rem; cursor: pointer; padding: 20px; border-radius: 40px;">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button id="lightboxNext" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 3rem; cursor: pointer; padding: 20px; border-radius: 40px;">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 20px; text-align: center;">
+            <div id="lightboxCounter" style="color: var(--term-green); font-size: 0.9rem;"></div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', lightboxHTML);
+    lightbox = document.getElementById('galleryLightbox');
+    
+    document.getElementById('lightboxClose')?.addEventListener('click', closeLightbox);
+    document.getElementById('lightboxPrev')?.addEventListener('click', () => prevSlide());
+    document.getElementById('lightboxNext')?.addEventListener('click', () => nextSlide());
+  }
+
   function openLightbox(index) {
-    if (!images.length) return;
+    if (!images.length || !lightbox) return;
     
-    if (slideshowInterval) {
-      clearTimeout(slideshowInterval);
-    }
-    
+    if (slideshowInterval) clearTimeout(slideshowInterval);
     slideIndex = index;
     updateLightboxImage(slideIndex);
     lightbox.style.display = 'flex';
-    updateLightboxPlayPauseButton();
     document.body.style.overflow = 'hidden';
-    
-    if (wakeLockEnabled) requestWakeLock();
   }
   
   function updateLightboxImage(index) {
-    if (!images[index]) return;
+    if (!images[index] || !lightbox) return;
     
     const imageFile = images[index];
     const imageUrl = URL.createObjectURL(imageFile);
-    lightboxImage.src = imageUrl;
-    lightboxTitle.textContent = imageFile.name;
-    lightboxCounter.textContent = `${index + 1} / ${images.length}`;
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxTitle = document.getElementById('lightboxTitle');
+    const lightboxCounter = document.getElementById('lightboxCounter');
     
-    lightboxImage.onload = () => {
-      URL.revokeObjectURL(imageUrl);
-    };
+    if (lightboxImage) lightboxImage.src = imageUrl;
+    if (lightboxTitle) lightboxTitle.textContent = imageFile.name;
+    if (lightboxCounter) lightboxCounter.textContent = `${index + 1} / ${images.length}`;
+    
+    lightboxImage.onload = () => URL.revokeObjectURL(imageUrl);
   }
   
   function closeLightbox() {
-    lightbox.style.display = 'none';
+    if (lightbox) lightbox.style.display = 'none';
     document.body.style.overflow = '';
-    
     if (!isPaused && images.length > 0) {
       startSlideshow();
     }
-    
-    if (wakeLockEnabled && isPaused) {
-      releaseWakeLock();
-    }
-    
-    if (isFullscreen) {
-      toggleFullscreen(lightbox);
-    }
-  }
-  
-  function updateLightboxPlayPauseButton() {
-    if (isPaused) {
-      lightboxPlayPause.innerHTML = '<i class="fa-solid fa-play"></i> Resume Slideshow';
-    } else {
-      lightboxPlayPause.innerHTML = '<i class="fa-solid fa-pause"></i> Pause Slideshow';
-    }
-  }
-  
-  function toggleLightboxSlideshow() {
-    toggleSlideshow();
-  }
-  
-  function downloadCurrentImage() {
-    if (!images[slideIndex]) return;
-    
-    const imageFile = images[slideIndex];
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(imageFile);
-    link.download = imageFile.name;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-    
-    const originalText = lightboxDownload.innerHTML;
-    lightboxDownload.innerHTML = '<i class="fa-solid fa-check"></i> Downloaded!';
-    setTimeout(() => {
-      lightboxDownload.innerHTML = originalText;
-    }, 2000);
   }
 
-  // ========== KEYBOARD NAVIGATION ==========
-  function handleLightboxKeys(e) {
-    if (lightbox.style.display !== 'flex') return;
-    
-    switch(e.key) {
-      case 'Escape':
-        closeLightbox();
-        break;
-      case 'ArrowLeft':
-        prevSlide();
-        break;
-      case 'ArrowRight':
-        nextSlide();
-        break;
-      case ' ':
-      case 'Space':
-        e.preventDefault();
-        toggleLightboxSlideshow();
-        break;
-      case 'f':
-      case 'F':
-        e.preventDefault();
-        toggleFullscreen(lightbox);
-        break;
-    }
-  }
-
-  // ========== EVENT LISTENERS ==========
-  document.getElementById('galleryPrevBtn').addEventListener('click', () => prevSlide());
-  document.getElementById('galleryNextBtn').addEventListener('click', () => nextSlide());
-  document.getElementById('galleryPauseBtn').addEventListener('click', () => toggleSlideshow());
-  document.getElementById('galleryApplySpeed').addEventListener('click', () => updateSpeed());
-  document.getElementById('galleryFullscreenBtn').addEventListener('click', () => {
+  // Event listeners
+  document.getElementById('galleryPrevBtn')?.addEventListener('click', () => prevSlide());
+  document.getElementById('galleryNextBtn')?.addEventListener('click', () => nextSlide());
+  document.getElementById('galleryPauseBtn')?.addEventListener('click', () => toggleSlideshow());
+  document.getElementById('galleryApplySpeed')?.addEventListener('click', () => updateSpeed());
+  document.getElementById('galleryFullscreenBtn')?.addEventListener('click', () => {
     if (images.length > 0) {
       openLightbox(slideIndex);
     }
   });
-  
-  lightboxClose.addEventListener('click', closeLightbox);
-  lightboxPrev.addEventListener('click', () => prevSlide());
-  lightboxNext.addEventListener('click', () => nextSlide());
-  lightboxPlayPause.addEventListener('click', toggleLightboxSlideshow);
-  lightboxDownload.addEventListener('click', downloadCurrentImage);
-  lightboxFullscreenToggle.addEventListener('click', () => toggleFullscreen(lightbox));
-  
-  lightboxImage.addEventListener('click', () => toggleFullscreen(lightbox));
-  
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox || e.target === lightboxInner) {
-      closeLightbox();
-    }
-  });
 
-  // Listen for settings changes from Settings page
-  window.addEventListener('settingsChanged', (event) => {
-    if (event.detail && event.detail.gallery && event.detail.gallery.images) {
-      loadImagesFromSettings(event.detail.gallery.images);
-    }
-    loadGallerySettings();
-  });
-
+  // Keyboard navigation
   const keyHandler = (e) => {
     if (!container.isConnected) return;
-    handleLightboxKeys(e);
     
-    if (lightbox.style.display !== 'flex') {
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        nextSlide();
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        prevSlide();
-      } else if (e.key === ' ') {
+    if (lightbox && lightbox.style.display === 'flex') {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'ArrowRight') nextSlide();
+    } else {
+      if (e.key === 'ArrowRight') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+      else if (e.key === ' ') {
         e.preventDefault();
         toggleSlideshow();
-      } else if (e.key === '+') {
-        e.preventDefault();
-        SLIDE_INTERVAL = Math.max(500, SLIDE_INTERVAL - 200);
-        document.getElementById('gallerySlideSpeed').value = SLIDE_INTERVAL;
-        saveSpeedToSettings();
-        if (!isPaused && slideshowInterval) {
-          clearTimeout(slideshowInterval);
-          startSlideshow();
-        }
-      } else if (e.key === '-') {
-        e.preventDefault();
-        SLIDE_INTERVAL = Math.min(10000, SLIDE_INTERVAL + 200);
-        document.getElementById('gallerySlideSpeed').value = SLIDE_INTERVAL;
-        saveSpeedToSettings();
-        if (!isPaused && slideshowInterval) {
-          clearTimeout(slideshowInterval);
-          startSlideshow();
-        }
-      } else if (e.key === 'f' || e.key === 'F') {
-        if (images.length > 0) {
-          openLightbox(slideIndex);
-        }
       }
     }
   };
   
   document.addEventListener('keydown', keyHandler);
   
-  initWakeLock();
-  loadGallerySettings();
+  // Create lightbox and load images
+  createLightbox();
+  await loadImagesFromStorage();
   
-  // Try to load images from existing settings on init
-  const saved = localStorage.getItem('pleie_settings');
-  if (saved) {
-    const settings = JSON.parse(saved);
-    if (settings.gallery && settings.gallery.images) {
-      loadImagesFromSettings(settings.gallery.images);
-    }
-  }
+  // Listen for settings changes
+  window.addEventListener('settingsChanged', () => {
+    loadImagesFromStorage();
+  });
   
   // Cleanup
   return () => {
     document.removeEventListener('keydown', keyHandler);
     if (slideshowInterval) clearTimeout(slideshowInterval);
-    releaseWakeLock();
-    document.removeEventListener('visibilitychange', handleVisibilityChange);
     if (lightbox) lightbox.remove();
-    if (images) {
-      images.forEach(image => {
-        if (image.src) URL.revokeObjectURL(image.src);
-      });
-    }
-    console.log('Gallery module cleaned up');
   };
 }

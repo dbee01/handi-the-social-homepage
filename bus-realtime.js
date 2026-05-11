@@ -140,7 +140,7 @@ export default async function initBus(container) {
         'https://proxy.cors.sh/'
       ];
       
-      const apiUrl = 'https://api.nationaltransport.ie/gtfsr/v2/gtfsr?format=json';
+      const apiUrl = 'https://api.nationaltransport.ie/gtfsr/v2/gtfsr?format=jso';
       const apiKey = '2410ec27541243aa967e1edc53275c95';
       
       let data = null;

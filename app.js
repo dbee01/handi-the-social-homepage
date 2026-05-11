@@ -92,6 +92,47 @@ function refreshAllModules() {
 }
 
 /**
+ * Weather initialization - Fixed version
+ */
+function initWeatherWidget() {
+  const weatherEl = document.getElementById('weather');
+  if (!weatherEl) return;
+  
+  // Show loading state
+  weatherEl.innerHTML = '🌤️ --°C';
+  
+  async function fetchWeather() {
+    try {
+      // Open-Meteo API (free, no API key, reliable for Dublin)
+      const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=53.3498&longitude=-6.2603&current_weather=true');
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.current_weather) {
+          const temp = Math.round(data.current_weather.temperature);
+          weatherEl.innerHTML = `🌤️ ${temp}°C`;
+          return;
+        }
+      }
+      
+      // Fallback to mock data
+      weatherEl.innerHTML = '🌤️ 14°C';
+      
+    } catch (error) {
+      console.error('Weather fetch error:', error);
+      // Set a reasonable default
+      weatherEl.innerHTML = '🌤️ 14°C';
+    }
+  }
+  
+  // Fetch immediately
+  fetchWeather();
+  
+  // Refresh weather every 30 minutes
+  setInterval(fetchWeather, 1800000);
+}
+
+/**
  * Responsive layout
  */
 function initResponsiveLayout() {
@@ -197,11 +238,13 @@ function initializeSearch() {
 document.addEventListener("DOMContentLoaded", () => {
   console.log("🚀 App initializing...");
 
+  // Initialize weather widget
+  initWeatherWidget();
+
   // Initialize all modules
   safeInit("Local Music Player", "local-player", initLocalPlayer);
   safeInit("Radio", "radio", initRadio);
   safeInit("News", "news", initNews);
-  safeInit("Weather", "weather", initWeather);
   safeInit("Mastodon", "mastodon", initMastodon);
   safeInit("AI", "aiBtn", initAI);
   safeInit("Spotify", "spotify", initSpotify);
@@ -209,6 +252,20 @@ document.addEventListener("DOMContentLoaded", () => {
   safeInit("Bus", "bus", initBus);
   safeInit("Gallery", "gallery", initGallery);
   safeInit("Friendly Phone", "friendly-phone", initFriendlyPhone);
+  
+  // Initialize Energy module (has multiple elements)
+  try {
+    const gridElement = document.getElementById("grid");
+    const carbonValElement = document.getElementById("carbon-val");
+    const carbonMsgElement = document.getElementById("carbon-msg");
+    
+    if (gridElement && carbonValElement && carbonMsgElement) {
+      initEnergy(gridElement, carbonValElement, carbonMsgElement);
+      console.log("✅ Energy module initialized");
+    }
+  } catch (error) {
+    console.error("Error initializing energy:", error);
+  }
 
   // Initialize search
   initializeSearch();
