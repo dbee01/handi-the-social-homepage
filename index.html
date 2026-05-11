@@ -16,7 +16,153 @@
   <!-- YOUR APP - Load with defer to ensure DOM is ready -->
   <script type="module" src="app.js" defer></script>
 
-
+  <style>
+    /* Refresh Warning Modal Styles */
+    .refresh-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 20000;
+      justify-content: center;
+      align-items: center;
+      font-family: monospace;
+    }
+    
+    .refresh-modal.active {
+      display: flex;
+    }
+    
+    .refresh-modal-content {
+      background: var(--panel-bg, #1a1a2e);
+      border: 2px solid var(--term-green, #00ff41);
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 50px rgba(0, 255, 65, 0.3);
+      animation: modalPulse 0.3s ease-out;
+    }
+    
+    @keyframes modalPulse {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    .refresh-modal-icon {
+      font-size: 4rem;
+      color: var(--term-amber, #ffaa00);
+      margin-bottom: 20px;
+    }
+    
+    .refresh-modal-title {
+      font-size: 1.5rem;
+      color: var(--term-amber, #ffaa00);
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    
+    .refresh-modal-message {
+      color: var(--term-dim, #888);
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+    
+    .refresh-modal-warning {
+      background: rgba(255, 100, 100, 0.2);
+      border-left: 3px solid var(--term-red, #ff4444);
+      padding: 10px;
+      margin: 15px 0;
+      color: var(--term-red, #ff4444);
+      font-size: 0.9rem;
+      text-align: left;
+    }
+    
+    .refresh-modal-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    
+    .refresh-modal-btn {
+      padding: 10px 25px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+      font-family: monospace;
+    }
+    
+    .refresh-modal-btn.primary {
+      background: var(--term-green, #00ff41);
+      color: #000;
+    }
+    
+    .refresh-modal-btn.primary:hover {
+      background: var(--term-green-light, #00ff66);
+      transform: scale(1.05);
+    }
+    
+    .refresh-modal-btn.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--term-white, #fff);
+      border: 1px solid var(--term-dim, #888);
+    }
+    
+    .refresh-modal-btn.secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+    
+    .refresh-modal-btn.danger {
+      background: var(--term-red, #ff4444);
+      color: #fff;
+    }
+    
+    .refresh-modal-btn.danger:hover {
+      background: #ff6666;
+      transform: scale(1.05);
+    }
+    
+    .refresh-modal-checkbox {
+      margin: 15px 0;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--term-dim, #888);
+      font-size: 0.85rem;
+    }
+    
+    .refresh-modal-checkbox input {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--term-green, #00ff41);
+    }
+    
+    /* Ensure lightbox and modal don't conflict */
+    #galleryLightbox {
+      z-index: 10000;
+    }
+    
+    .refresh-modal {
+      z-index: 20000;
+    }
+  </style>
 </head>
 <body>
 
@@ -25,17 +171,16 @@
     <i class="fa-solid fa-bolt"></i>
     <span>ple.ie</span>
   </div>
-<div class="search-wrapper">
-  <select class="search-engine-select" id="searchEngine">
-    <option value="google">Google</option>
-    <option value="duckduckgo">DuckDuckGo</option>
-    <option value="brave">Brave</option>
-    <option value="proton">Proton</option>
-  </select>
-  <input type="text" id="searchInput" placeholder="Search the network...">
-  <i class="fa-solid fa-arrow-right" style="cursor: pointer;"></i>
-</div>
-
+  <div class="search-wrapper">
+    <select class="search-engine-select" id="searchEngine">
+      <option value="google">Google</option>
+      <option value="duckduckgo">DuckDuckGo</option>
+      <option value="brave">Brave</option>
+      <option value="proton">Proton</option>
+    </select>
+    <input type="text" id="searchInput" placeholder="Search the network...">
+    <i class="fa-solid fa-arrow-right" style="cursor: pointer;"></i>
+  </div>
   <div class="header-weather">
     <i class="fa-solid fa-cloud-sun"></i>
     <span id="weather">Loading...</span>
@@ -43,97 +188,38 @@
 </header>
 
 <div class="dashboard-wrapper" style="flex: 1;">
-<!-- Main container for Packery -->
-<main id="dashboard-grid">
+  <!-- Main container for Packery -->
+  <main id="dashboard-grid">
 
-  <!-- Gallery Module -->
-  <div class="dashboard-item" id="gallery" data-order="1">
-    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-  </div>
-
-  <!-- Emergency Module -->
-  <div class="dashboard-item" id="emergency" data-order="2">
-    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-  </div>
-  <!-- Bus Module -->
-  <div class="dashboard-item" id="bus" data-order="3">
-    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-  </div>
-
-  <!-- Friendly Phone Module -->
-  <div class="dashboard-item" id="friendly-phone" data-order="11">
-    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-  </div>
-  
-  <!-- 1. NEWS 
-  <div class="dashboard-item" id="news" data-order="4">
-    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-    <div class="panel-title"><i class="fa-solid fa-newspaper"></i> News</div>
-    <div class="news-container"></div>
-  </div>
-
-  <!-- 2. GRID 
-  <div class="dashboard-item" id="grid" data-order="5" style="display:none;">
-    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-    <div class="panel-title"><i class="fa-solid fa-charging-station"></i> Grid Status</div>
-    <div class="val">-- MW</div>
-  </div>
-
-  <!-- 3. MASTODON 
-  <div class="dashboard-item" id="mastodon" data-order="6">
-    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-    <div class="panel-title"><i class="fa-brands fa-mastodon"></i> Mastodon Trending</div>
-    <div class="mastodon-container"></div>
-  </div>
-
-  <!-- 4. CARBON VAL 
-  <div class="dashboard-item" id="carbon-val" data-order="7" style="display:none;">
-    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-    <div class="panel-title"><i class="fa-solid fa-cloud"></i> Carbon Intensity</div>
-    <div class="val">-- g/kWh</div>
-  </div>
-
-  <!-- 5. CARBON MSG 
-  <div class="dashboard-item" id="carbon-msg" data-order="8" style="display:none;">
-    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-    <div class="panel-title"><i class="fa-solid fa-leaf"></i> Green Tip</div>
-    <div class="message">Waiting for data...</div>
-  </div>
-
-  <!-- 6. AI / LUMO 
-  <div class="dashboard-item" id="aiBtn" data-order="9">
-    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-    <div class="panel-title" style="justify-content: center;"><i class="fa-solid fa-robot"></i> Ask Lumo</div>
-    <div style="text-align: center; margin-top: 20px;">
-      <i class="fa-solid fa-microchip" style="font-size: 2rem; color: var(--term-green);"></i>
-      <p style="margin-top: 15px;">Click to ask about energy</p>
+    <!-- Gallery Module -->
+    <div class="dashboard-item" id="gallery" data-order="1">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
     </div>
-  </div>
 
-  <!-- Add this inside #dashboard-grid -->
-  <div class="dashboard-item" id="radio" data-order="10">
-    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-  </div>
+    <!-- Emergency Module -->
+    <div class="dashboard-item" id="emergency" data-order="2">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+    </div>
+    
+    <!-- Bus Module -->
+    <div class="dashboard-item" id="bus" data-order="3">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+    </div>
 
-  <!-- 8. SPOTIFY MODULE
-  <div class="dashboard-item" id="spotify" data-order="11">
-    <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-  </div>
+    <!-- Friendly Phone Module -->
+    <div class="dashboard-item" id="friendly-phone" data-order="11">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+    </div>
+    
+    <!-- Local Music Player Module -->
+    <div class="dashboard-item" id="local-player" data-order="12">
+      <button class="pin-btn" title="Pin to top">
+        <i class="fa-solid fa-thumbtack"></i>
+      </button>
+      <div id="music-player" class="module-content"></div>
+    </div>
 
-<!-- Local Music Player Module -->
-<div class="dashboard-item" id="local-player" data-order="12">
-  <button class="pin-btn" title="Pin to top">
-    <i class="fa-solid fa-thumbtack"></i>
-  </button>
-
-  <!-- IMPORTANT:
-       app.js looks for #music-player and passes it to initLocalPlayer().
-       This must be a normal container div, not a button and not .pin-btn.
-  -->
-  <div id="music-player" class="module-content"></div>
-</div>
-
-</main>
+  </main>
 </div>
 
 <footer>
@@ -143,6 +229,250 @@
     <span><i class="fa-brands fa-github"></i> Open Source</span>
   </div>
 </footer>
+
+<!-- Refresh Warning Modal HTML -->
+<div id="refreshWarningModal" class="refresh-modal">
+  <div class="refresh-modal-content">
+    <div class="refresh-modal-icon">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <div class="refresh-modal-title">
+      ⚠️ Refresh Warning ⚠️
+    </div>
+    <div class="refresh-modal-message">
+      Are you sure you want to refresh or leave this page?
+    </div>
+    <div class="refresh-modal-warning">
+      <i class="fa-solid fa-database"></i> <strong>Warning:</strong><br>
+      Refreshing the page will:<br>
+      • Stop all active audio/video playback<br>
+      • Reset the current slideshow position<br>
+      • Clear unsaved changes<br>
+      • Log you out of active sessions
+    </div>
+    <div class="refresh-modal-checkbox">
+      <input type="checkbox" id="dontShowRefreshWarning">
+      <label for="dontShowRefreshWarning">Don't show this warning again for this session</label>
+    </div>
+    <div class="refresh-modal-buttons">
+      <button id="refreshStayBtn" class="refresh-modal-btn primary">
+        <i class="fa-solid fa-check"></i> Stay on Page
+      </button>
+      <button id="refreshLeaveBtn" class="refresh-modal-btn danger">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Leave Anyway
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ========== PAGE REFRESH WARNING SYSTEM ==========
+  (function() {
+    let warningEnabled = true;
+    let pendingNavigation = null;
+    let pendingNavigationEvent = null;
+    
+    const modal = document.getElementById('refreshWarningModal');
+    const stayBtn = document.getElementById('refreshStayBtn');
+    const leaveBtn = document.getElementById('refreshLeaveBtn');
+    const dontShowCheckbox = document.getElementById('dontShowRefreshWarning');
+    
+    // Function to show modal
+    function showWarningModal(event, navigationCallback) {
+      if (!warningEnabled) {
+        if (navigationCallback) navigationCallback();
+        return;
+      }
+      
+      pendingNavigation = navigationCallback;
+      pendingNavigationEvent = event;
+      
+      if (modal) {
+        modal.classList.add('active');
+        
+        // Prevent default action
+        if (event) {
+          event.preventDefault();
+          if (event.type === 'beforeunload') {
+            // For beforeunload, we need to set returnValue
+            event.returnValue = 'Are you sure you want to leave?';
+          }
+        }
+      }
+    }
+    
+    // Hide modal function
+    function hideModal() {
+      if (modal) {
+        modal.classList.remove('active');
+      }
+      pendingNavigation = null;
+      pendingNavigationEvent = null;
+    }
+    
+    // Handle stay on page
+    function handleStay() {
+      hideModal();
+      console.log('User chose to stay on the page');
+    }
+    
+    // Handle leave/refresh
+    function handleLeave() {
+      // Check if user wants to disable warnings for session
+      if (dontShowCheckbox && dontShowCheckbox.checked) {
+        warningEnabled = false;
+        sessionStorage.setItem('refreshWarningDisabled', 'true');
+        console.log('Refresh warnings disabled for this session');
+      }
+      
+      hideModal();
+      
+      // Execute the pending navigation
+      if (pendingNavigation) {
+        pendingNavigation();
+      } else if (pendingNavigationEvent && pendingNavigationEvent.type === 'beforeunload') {
+        // For beforeunload, we need to allow the navigation
+        if (pendingNavigationEvent.target) {
+          window.location.reload();
+        }
+      }
+    }
+    
+    // Event listeners for modal buttons
+    if (stayBtn) stayBtn.addEventListener('click', handleStay);
+    if (leaveBtn) leaveBtn.addEventListener('click', handleLeave);
+    
+    // Check session storage for warning preference
+    const savedPreference = sessionStorage.getItem('refreshWarningDisabled');
+    if (savedPreference === 'true') {
+      warningEnabled = false;
+    }
+    
+    // Intercept beforeunload event (page refresh, close, navigation)
+    window.addEventListener('beforeunload', (event) => {
+      if (warningEnabled) {
+        // Check if there's important data that might be lost
+        const hasActiveAudio = document.querySelector('audio') && !document.querySelector('audio')?.paused;
+        const hasActiveVideo = document.querySelector('video') && !document.querySelector('video')?.paused;
+        const hasGallery = document.querySelector('#gallerySlidesContainer')?.children?.length > 0;
+        
+        if (hasActiveAudio || hasActiveVideo || hasGallery) {
+          event.preventDefault();
+          event.returnValue = 'You have active media playing. Are you sure you want to leave?';
+          return event.returnValue;
+        }
+      }
+    });
+    
+    // Intercept keyboard refresh (Ctrl+R, Cmd+R, F5)
+    document.addEventListener('keydown', (event) => {
+      // Check for refresh shortcuts
+      const isRefresh = (event.key === 'F5') || 
+                       (event.key === 'r' && (event.ctrlKey || event.metaKey)) ||
+                       (event.key === 'R' && (event.ctrlKey || event.metaKey));
+      
+      if (isRefresh && warningEnabled) {
+        event.preventDefault();
+        
+        // Show custom modal
+        showWarningModal(event, () => {
+          // User confirmed refresh
+          window.location.reload();
+        });
+      }
+      
+      // Also catch F5 specifically
+      if (event.key === 'F5' && warningEnabled) {
+        event.preventDefault();
+        showWarningModal(event, () => {
+          window.location.reload();
+        });
+      }
+    });
+    
+    // Intercept Ctrl+Shift+R (hard refresh)
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'r' && event.ctrlKey && event.shiftKey && warningEnabled) {
+        event.preventDefault();
+        showWarningModal(event, () => {
+          window.location.reload(true); // Force reload from server
+        });
+      }
+    });
+    
+    // Intercept right-click context menu refresh option
+    document.addEventListener('contextmenu', (event) => {
+      // Let the context menu show, but we can't easily intercept its refresh option
+      // This is a limitation - we'll rely on the beforeunload event for this
+    });
+    
+    // Add a manual refresh function that can be called from console if needed
+    window.safeRefresh = function(force = false) {
+      if (!force && warningEnabled) {
+        showWarningModal(null, () => {
+          window.location.reload();
+        });
+      } else {
+        window.location.reload();
+      }
+    };
+    
+    // Add a function to enable/disable warnings
+    window.setRefreshWarning = function(enabled) {
+      warningEnabled = enabled;
+      if (!enabled) {
+        sessionStorage.setItem('refreshWarningDisabled', 'true');
+      } else {
+        sessionStorage.removeItem('refreshWarningDisabled');
+      }
+      console.log(`Refresh warnings ${enabled ? 'enabled' : 'disabled'}`);
+    };
+    
+    // Detect browser refresh button (via performance navigation)
+    if (performance && performance.navigation) {
+      if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
+        console.log('Page was reloaded');
+        // Show a toast notification after reload
+        setTimeout(() => {
+          const toast = document.createElement('div');
+          toast.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--term-green, #00ff41);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 8px;
+            z-index: 20001;
+            font-family: monospace;
+            animation: slideIn 0.3s ease-out;
+          `;
+          toast.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Page was reloaded';
+          document.body.appendChild(toast);
+          setTimeout(() => toast.remove(), 3000);
+        }, 1000);
+      }
+    }
+    
+    // Close modal when clicking outside
+    if (modal) {
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+          handleStay();
+        }
+      });
+      
+      // Close with Escape key
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && modal.classList.contains('active')) {
+          handleStay();
+        }
+      });
+    }
+    
+    console.log('🛡️ Page refresh warning system initialized');
+  })();
+</script>
 
 <script>
   // Simple initialization checker
@@ -195,11 +525,13 @@
     
     // Add manual test buttons
     const testDiv = document.createElement('div');
-    testDiv.style.cssText = 'position:fixed; bottom:10px; right:10px; z-index:9999; background:#000; color:#0f0; padding:10px; border:1px solid #0f0; font-size:12px; font-family:monospace;';
+    testDiv.style.cssText = 'position:fixed; bottom:10px; right:10px; z-index:9999; background:#000; color:#0f0; padding:10px; border:1px solid #0f0; font-size:12px; font-family:monospace; border-radius:8px;';
     testDiv.innerHTML = `
       <strong>Debug Panel</strong><br>
-      <button id="testPin">Test Pin First Item</button><br>
-      <button id="testDragMsg">Drag & Drop Active</button>
+      <button id="testPin" style="margin:2px;">Test Pin</button><br>
+      <button id="testRefresh" style="margin:2px;">Test Refresh Warning</button><br>
+      <button id="testDisableWarning" style="margin:2px;">Disable Warnings</button>
+      <button id="testEnableWarning" style="margin:2px;">Enable Warnings</button>
     `;
     document.body.appendChild(testDiv);
     
@@ -213,10 +545,33 @@
       }
     });
     
-    console.log("🔍 Debug panel added to bottom-right corner");
+    document.getElementById('testRefresh')?.addEventListener('click', () => {
+      console.log("🔧 Testing refresh warning...");
+      window.safeRefresh();
+    });
+    
+    document.getElementById('testDisableWarning')?.addEventListener('click', () => {
+      window.setRefreshWarning(false);
+      const btn = document.getElementById('testDisableWarning');
+      if (btn) btn.style.background = '#ff4444';
+      setTimeout(() => {
+        if (btn) btn.style.background = '';
+      }, 500);
+    });
+    
+    document.getElementById('testEnableWarning')?.addEventListener('click', () => {
+      window.setRefreshWarning(true);
+      const btn = document.getElementById('testEnableWarning');
+      if (btn) btn.style.background = '#00ff41';
+      setTimeout(() => {
+        if (btn) btn.style.background = '';
+      }, 500);
+    });
+    
+    console.log("🔍 Debug panel added - refresh protection active!");
+    console.log("💡 Try pressing F5 or Ctrl+R - you'll get a warning modal!");
   }, 1000);
+</script>
 
-
- 
 </body>
 </html>
