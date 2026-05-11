@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ple.ie - Settings</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="styles/settings.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: #050505;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+    }
+    
+    .settings-page {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background: #0a0a0a;
+      border: 1px solid #1f1f1f;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .settings-header h1 {
+      color: #00ff41;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .back-btn {
+      background: #1f1f1f;
+      border: 1px solid #00ff41;
+      color: #00ff41;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      transition: all 0.2s;
+    }
+    
+    .back-btn:hover {
+      background: #00ff41;
+      color: #000;
+    }
+    
+    .module-section {
+      background: #0a0a0a;
+      border: 1px solid #1f1f1f;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      overflow: hidden;
+    }
+    
+    .module-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px 20px;
+      cursor: pointer;
+      background: #0f0f0f;
+      transition: background 0.2s;
+    }
+    
+    .module-header:hover {
+      background: #141414;
+    }
+    
+    .enable-toggle {
+      width: 50px;
+      height: 26px;
+      background: #333;
+      border-radius: 13px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .enable-toggle.active {
+      background: #00ff41;
+    }
+    
+    .toggle-slider {
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      transition: transform 0.3s;
+    }
+    
+    .enable-toggle.active .toggle-slider {
+      transform: translateX(24px);
+    }
+    
+    .module-header h3 {
+      flex: 1;
+      color: #00ffff;
+      font-size: 1.1rem;
+    }
+    
+    .module-header i.fa-chevron-down,
+    .module-header i.fa-chevron-up {
+      color: #666;
+    }
+    
+    .module-config {
+      display: none;
+      padding: 20px;
+      border-top: 1px solid #1f1f1f;
+    }
+    
+    .module-config.active {
+      display: block;
+    }
+    
+    .config-field {
+      margin-bottom: 15px;
+    }
+    
+    .config-field label {
+      display: block;
+      margin-bottom: 8px;
+      color: #00ff41;
+      font-size: 0.85rem;
+    }
+    
+    .config-field input,
+    .config-field select {
+      width: 100%;
+      padding: 10px;
+      background: #000;
+      border: 1px solid #1f1f1f;
+      color: #e0e0e0;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    
+    .config-field input:focus,
+    .config-field select:focus {
+      outline: none;
+      border-color: #00ff41;
+    }
+    
+    .select-folder-btn,
+    .add-contact-btn {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #1f1f1f;
+      border: 1px solid #00ff41;
+      color: #00ff41;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: monospace;
+    }
+    
+    .select-folder-btn:hover,
+    .add-contact-btn:hover {
+      background: #00ff41;
+      color: #000;
+    }
+    
+    .contact-list {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      border: 1px solid #1f1f1f;
+      border-radius: 4px;
+    }
+    
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-bottom: 1px solid #1f1f1f;
+    }
+    
+    .contact-item:last-child {
+      border-bottom: none;
+    }
+    
+    .contact-photo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #1f1f1f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    
+    .contact-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .contact-info {
+      flex: 1;
+    }
+    
+    .contact-info strong {
+      display: block;
+      color: #00ffff;
+    }
+    
+    .contact-info small {
+      color: #666;
+      font-size: 0.7rem;
+    }
+    
+    .contact-actions button {
+      background: rgba(255, 0, 0, 0.3);
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .save-settings {
+      width: 100%;
+      padding: 15px;
+      background: #00ff41;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .save-settings:hover {
+      background: #00cc33;
+    }
+    
+    .range-value {
+      display: inline-block;
+      margin-left: 10px;
+      color: #00ff41;
+    }
+    
+    .photo-preview {
+      width: 60px;
+      height: 60px;
+      background: #1f1f1f;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #00ff41;
+      color: #000;
+      padding: 12px 20px;
+      border-radius: 8px;
+      z-index: 1000;
+      font-family: monospace;
+    }
+    
+    .storage-info {
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(0, 255, 65, 0.1);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: #00ff41;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="settings-page">
+    <div class="settings-header">
+      <h1><i class="fa-solid fa-sliders-h"></i> Module Settings</h1>
+      <button class="back-btn" onclick="window.location.href='index.html'">
+        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+      </button>
+    </div>
+    
+    <!-- Gallery Module -->
+    <div class="module-section">
+      <div class="module-header" data-module="gallery">
+        <div class="enable-toggle" data-module="gallery">
+          <div class="toggle-slider"></div>
+        </div>
+        <h3><i class="fa-solid fa-images"></i> Gallery Module</h3>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="module-config">
+        <div class="config-field">
+          <label><i class="fa-solid fa-folder"></i> Image Folder</label>
+          <input type="text" id="galleryFolderPath" readonly placeholder="No folder selected">
+          <button class="select-folder-btn" id="selectGalleryFolderBtn">
+            <i class="fa-solid fa-folder-open"></i> Select Folder
+          </button>
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-clock"></i> Slideshow Speed (ms):</label>
+          <input type="number" id="gallerySpeed" min="500" max="10000" step="100" value="3000">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-play-circle"></i> Auto-start Slideshow:</label>
+          <select id="galleryAutoStart">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+        <div id="galleryStorageInfo" class="storage-info"></div>
+      </div>
+    </div>
+    
+    <!-- Bus Module -->
+    <div class="module-section">
+      <div class="module-header" data-module="bus">
+        <div class="enable-toggle" data-module="bus">
+          <div class="toggle-slider"></div>
+        </div>
+        <h3><i class="fa-solid fa-bus"></i> Bus Module</h3>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="module-config">
+        <div class="config-field">
+          <label><i class="fa-solid fa-route"></i> Route IDs (comma-separated):</label>
+          <input type="text" id="busRouteIds" placeholder="e.g., 223, 215, 208">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-map-marker-alt"></i> Stop ID:</label>
+          <input type="text" id="busStopId" placeholder="e.g., 242081">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-clock"></i> Refresh Interval (seconds):</label>
+          <input type="number" id="busRefreshInterval" min="30" max="300" value="60">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Music Player Module -->
+    <div class="module-section">
+      <div class="module-header" data-module="local-player">
+        <div class="enable-toggle" data-module="local-player">
+          <div class="toggle-slider"></div>
+        </div>
+        <h3><i class="fa-solid fa-music"></i> Music Player</h3>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="module-config">
+        <div class="config-field">
+          <label><i class="fa-solid fa-folder"></i> Music Folder (MP3, WAV, OGG, M4A, FLAC)</label>
+          <input type="text" id="musicFolderPath" readonly placeholder="No folder selected">
+          <button class="select-folder-btn" id="selectMusicFolderBtn">
+            <i class="fa-solid fa-folder-open"></i> Select Folder
+          </button>
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-volume-up"></i> Default Volume (%):</label>
+          <input type="range" id="defaultVolume" min="0" max="200" value="100">
+          <span id="volumeValue" class="range-value">100%</span>
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-shuffle"></i> Default Shuffle:</label>
+          <select id="defaultShuffle">
+            <option value="false">Off</option>
+            <option value="true">On</option>
+          </select>
+        </div>
+        <div id="musicStorageInfo" class="storage-info"></div>
+      </div>
+    </div>
+    
+    <!-- Emergency Module -->
+    <div class="module-section">
+      <div class="module-header" data-module="emergency">
+        <div class="enable-toggle" data-module="emergency">
+          <div class="toggle-slider"></div>
+        </div>
+        <h3><i class="fa-solid fa-triangle-exclamation"></i> Emergency Module</h3>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="module-config">
+        <div class="config-field">
+          <label><i class="fa-solid fa-phone"></i> Emergency Contacts</label>
+          <div id="emergencyContactsList" class="contact-list"></div>
+          <button class="add-contact-btn" id="addEmergencyContactBtn">
+            <i class="fa-solid fa-plus"></i> Add Emergency Contact
+          </button>
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-clock"></i> Check Interval (minutes):</label>
+          <input type="number" id="emergencyInterval" min="1" max="60" value="5">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Friendly Phone Module -->
+    <div class="module-section">
+      <div class="module-header" data-module="friendly-phone">
+        <div class="enable-toggle" data-module="friendly-phone">
+          <div class="toggle-slider"></div>
+        </div>
+        <h3><i class="fa-solid fa-phone"></i> Friendly Phone</h3>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="module-config">
+        <div class="config-field">
+          <label><i class="fa-solid fa-address-book"></i> Phone Contacts</label>
+          <div id="phoneContactsList" class="contact-list"></div>
+          <button class="add-contact-btn" id="addPhoneContactBtn">
+            <i class="fa-solid fa-plus"></i> Add Contact
+          </button>
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-clock"></i> Auto-dial Warning (seconds):</label>
+          <input type="number" id="autoDialDelay" min="5" max="30" value="10">
+        </div>
+      </div>
+    </div>
+    
+    <button class="save-settings" id="saveSettingsBtn">
+      <i class="fa-solid fa-save"></i> Save All Settings
+    </button>
+  </div>
+  
+  <!-- Add Contact Modal -->
+  <div id="addContactModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:200000;justify-content:center;align-items:center;">
+    <div style="background:#1a1a2e;border:2px solid #00ff41;border-radius:12px;padding:25px;max-width:400px;width:90%;">
+      <h3 style="color:#00ff41;margin-top:0;" id="contactModalTitle">Add Contact</h3>
+      <div class="config-field">
+        <label>Name (e.g., Mom, Dad, Sarah)</label>
+        <input type="text" id="contactName" placeholder="Enter contact name">
+      </div>
+      <div class="config-field">
+        <label>Phone Number (e.g., +353861234567)</label>
+        <input type="tel" id="contactNumber" placeholder="+353861234567">
+      </div>
+      <div class="config-field">
+        <label>Choose Photo</label>
+        <div class="photo-preview" id="photoPreview"><i class="fa-solid fa-camera"></i></div>
+        <input type="file" id="contactPhotoInput" accept="image/*" style="display:none;">
+        <small style="color:#888;">Click camera to add photo</small>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button id="cancelContactBtn" style="flex:1;background:#444;color:#fff;border:none;padding:10px;border-radius:6px;">Cancel</button>
+        <button id="saveContactBtn" style="flex:1;background:#00ff41;color:#000;border:none;padding:10px;border-radius:6px;font-weight:bold;">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { 
+      saveGalleryImages, 
+      saveMusicFiles, 
+      loadGalleryImages, 
+      loadMusicFiles,
+      fileToDataURL,
+      getStorageInfo,
+      saveSettings,
+      loadSettings
+    } from './js/storage.js';
+    
+    // Settings State
+    let enabledModules = {
+      gallery: true,
+      bus: true,
+      'local-player': true,
+      emergency: true,
+      'friendly-phone': true,
+      news: false,
+      mastodon: false,
+      radio: false
+    };
+    
+    let emergencyContacts = [];
+    let phoneContacts = [];
+    let currentContactType = null;
+    let currentPhotoData = null;
+    
+    function showToast(message, isError = false) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.style.background = isError ? '#ff4444' : '#00ff41';
+      toast.style.color = isError ? '#fff' : '#000';
+      toast.innerHTML = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+    
+    async function selectFolder(inputElement, type) {
+      try {
+        if ('showDirectoryPicker' in window) {
+          const dirHandle = await window.showDirectoryPicker();
+          inputElement.value = dirHandle.name;
+          
+          const files = [];
+          for await (const entry of dirHandle.values()) {
+            if (entry.kind === 'file') {
+              const ext = entry.name.toLowerCase().split('.').pop();
+              const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+              const isAudio = ['mp3', 'wav', 'ogg', 'm4a', 'flac'].includes(ext);
+              
+              if ((type === 'gallery' && isImage) || (type === 'music' && isAudio)) {
+                const file = await entry.getFile();
+                const dataURL = await fileToDataURL(file);
+                files.push({
+                  name: file.name,
+                  type: file.type,
+                  data: dataURL,
+                  size: file.size,
+                  lastModified: file.lastModified
+                });
+              }
+            }
+          }
+          
+          if (type === 'gallery') {
+            await saveGalleryImages(files);
+            showToast(`✅ Saved ${files.length} images to gallery`);
+            await updateStorageInfo();
+          } else if (type === 'music') {
+            await saveMusicFiles(files);
+            showToast(`✅ Saved ${files.length} music files to player`);
+            await updateStorageInfo();
+          }
+        } else {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.webkitdirectory = true;
+          input.directory = true;
+          input.multiple = true;
+          input.onchange = async (e) => {
+            const files = Array.from(e.target.files);
+            const processedFiles = [];
+            
+            for (const file of files) {
+              const ext = file.name.toLowerCase().split('.').pop();
+              const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+              const isAudio = ['mp3', 'wav', 'ogg', 'm4a', 'flac'].includes(ext);
+              
+              if ((type === 'gallery' && isImage) || (type === 'music' && isAudio)) {
+                const dataURL = await fileToDataURL(file);
+                processedFiles.push({
+                  name: file.name,
+                  type: file.type,
+                  data: dataURL,
+                  size: file.size,
+                  lastModified: file.lastModified
+                });
+              }
+            }
+            
+            if (type === 'gallery') {
+              await saveGalleryImages(processedFiles);
+              showToast(`✅ Saved ${processedFiles.length} images to gallery`);
+              await updateStorageInfo();
+            } else if (type === 'music') {
+              await saveMusicFiles(processedFiles);
+              showToast(`✅ Saved ${processedFiles.length} music files to player`);
+              await updateStorageInfo();
+            }
+            
+            if (files.length > 0) {
+              const folderName = files[0].webkitRelativePath.split('/')[0];
+              inputElement.value = folderName;
+            }
+          };
+          input.click();
+        }
+      } catch (err) {
+        showToast('Folder selection cancelled', true);
+      }
+    }
+    
+    async function updateStorageInfo() {
+      const info = await getStorageInfo();
+      const galleryInfo = document.getElementById('galleryStorageInfo');
+      const musicInfo = document.getElementById('musicStorageInfo');
+      
+      if (galleryInfo) {
+        galleryInfo.innerHTML = `<i class="fa-solid fa-database"></i> ${info.images} images stored in gallery`;
+      }
+      if (musicInfo) {
+        musicInfo.innerHTML = `<i class="fa-solid fa-database"></i> ${info.music} music files stored`;
+      }
+    }
+    
+    function renderEmergencyContacts() {
+      const container = document.getElementById('emergencyContactsList');
+      if (!container) return;
+      if (emergencyContacts.length === 0) {
+        container.innerHTML = '<div style="color:#666;text-align:center;padding:20px;">No contacts saved</div>';
+        return;
+      }
+      container.innerHTML = emergencyContacts.map((c, i) => `
+        <div class="contact-item">
+          <div class="contact-photo">${c.photo ? `<img src="${c.photo}">` : '<i class="fa-solid fa-user"></i>'}</div>
+          <div class="contact-info">
+            <strong>${escapeHtml(c.name)}</strong>
+            <small>${escapeHtml(c.number)}</small>
+            ${c.relation ? `<small style="color:#00ff41;">${escapeHtml(c.relation)}</small>` : ''}
+          </div>
+          <div class="contact-actions"><button onclick="window.removeEmergencyContact(${i})"><i class="fa-solid fa-trash"></i></button></div>
+        </div>
+      `).join('');
+    }
+    
+    function renderPhoneContacts() {
+      const container = document.getElementById('phoneContactsList');
+      if (!container) return;
+      if (phoneContacts.length === 0) {
+        container.innerHTML = '<div style="color:#666;text-align:center;padding:20px;">No contacts saved</div>';
+        return;
+      }
+      container.innerHTML = phoneContacts.map((c, i) => `
+        <div class="contact-item">
+          <div class="contact-photo">${c.photo ? `<img src="${c.photo}">` : '<i class="fa-solid fa-user"></i>'}</div>
+          <div class="contact-info"><strong>${escapeHtml(c.name)}</strong><small>${escapeHtml(c.number)}</small></div>
+          <div class="contact-actions"><button onclick="window.removePhoneContact(${i})"><i class="fa-solid fa-trash"></i></button></div>
+        </div>
+      `).join('');
+    }
+    
+    window.removeEmergencyContact = (i) => {
+      if (confirm('Remove this contact?')) {
+        emergencyContacts.splice(i, 1);
+        renderEmergencyContacts();
+        showToast('Contact removed');
+      }
+    };
+    
+    window.removePhoneContact = (i) => {
+      if (confirm('Remove this contact?')) {
+        phoneContacts.splice(i, 1);
+        renderPhoneContacts();
+        showToast('Contact removed');
+      }
+    };
+    
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+    
+    function loadSettingsFromStorage() {
+      const saved = loadSettings();
+      if (saved) {
+        if (saved.enabledModules) {
+          enabledModules = { ...enabledModules, ...saved.enabledModules };
+        }
+        
+        // Update toggle switches
+        Object.keys(enabledModules).forEach(moduleId => {
+          const toggle = document.querySelector(`.enable-toggle[data-module="${moduleId}"]`);
+          if (toggle) {
+            if (enabledModules[moduleId]) {
+              toggle.classList.add('active');
+            } else {
+              toggle.classList.remove('active');
+            }
+          }
+        });
+        
+        // Load gallery settings
+        if (saved.gallery) {
+          const speedInput = document.getElementById('gallerySpeed');
+          if (speedInput) speedInput.value = saved.gallery.speed || 3000;
+          const autoStart = document.getElementById('galleryAutoStart');
+          if (autoStart) autoStart.value = saved.gallery.autoStart ? 'true' : 'false';
+        }
+        
+        // Load bus settings
+        if (saved.bus) {
+          const routeInput = document.getElementById('busRouteIds');
+          if (routeInput) routeInput.value = saved.bus.routeIds || '';
+          const stopInput = document.getElementById('busStopId');
+          if (stopInput) stopInput.value = saved.bus.stopId || '';
+          const intervalInput = document.getElementById('busRefreshInterval');
+          if (intervalInput) intervalInput.value = saved.bus.refreshInterval || 60;
+        }
+        
+        // Load music player settings
+        if (saved.musicPlayer) {
+          const volumeInput = document.getElementById('defaultVolume');
+          if (volumeInput) volumeInput.value = saved.musicPlayer.defaultVolume || 100;
+          const volumeSpan = document.getElementById('volumeValue');
+          if (volumeSpan) volumeSpan.textContent = (saved.musicPlayer.defaultVolume || 100) + '%';
+          const shuffleSelect = document.getElementById('defaultShuffle');
+          if (shuffleSelect) shuffleSelect.value = saved.musicPlayer.defaultShuffle ? 'true' : 'false';
+        }
+        
+        // Load emergency settings
+        if (saved.emergency) {
+          emergencyContacts = saved.emergency.contacts || [];
+          const intervalInput = document.getElementById('emergencyInterval');
+          if (intervalInput) intervalInput.value = saved.emergency.interval || 5;
+          renderEmergencyContacts();
+        }
+        
+        // Load friendly phone settings
+        if (saved.friendlyPhone) {
+          phoneContacts = saved.friendlyPhone.contacts || [];
+          const delayInput = document.getElementById('autoDialDelay');
+          if (delayInput) delayInput.value = saved.friendlyPhone.autoDialDelay || 10;
+          renderPhoneContacts();
+        }
+      }
+    }
+    
+    function saveAll
