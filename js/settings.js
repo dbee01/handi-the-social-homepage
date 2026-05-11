@@ -565,3 +565,47 @@
   console.log('✅ Settings ready - Modules visible: Gallery, Bus, Music Player, Emergency, Friendly Phone');
   console.log('💡 Click the gear icon to configure modules');
 })();
+
+// In settings.js - make sure your saveSettings function looks like this:
+
+function saveSettings() {
+  const settings = {
+    enabledModules: enabledModules,
+    gallery: {
+      folderPath: document.getElementById('galleryFolderPath')?.value || '',
+      speed: parseInt(document.getElementById('gallerySpeed')?.value) || 3000,
+      autoStart: document.getElementById('galleryAutoStart')?.value === 'true'
+    },
+    bus: {
+      routeIds: document.getElementById('busRouteIds')?.value || '',
+      stopId: document.getElementById('busStopId')?.value || '',
+      refreshInterval: parseInt(document.getElementById('busRefreshInterval')?.value) || 60
+    },
+    musicPlayer: {
+      musicFolder: document.getElementById('musicFolderPath')?.value || '',
+      defaultVolume: parseInt(document.getElementById('defaultVolume')?.value) || 100,
+      defaultShuffle: document.getElementById('defaultShuffle')?.value === 'true',
+      musicFiles: window.musicFiles || []  // Make sure music files are saved
+    },
+    emergency: {
+      contacts: window.emergencyContacts,
+      interval: parseInt(document.getElementById('emergencyInterval')?.value) || 5
+    },
+    friendlyPhone: {
+      contacts: window.phoneContacts,
+      autoDialDelay: parseInt(document.getElementById('autoDialDelay')?.value) || 10
+    }
+  };
+  
+  localStorage.setItem('pleie_settings', JSON.stringify(settings));
+  
+  // DISPATCH THE EVENT - THIS IS KEY
+  if (typeof window.dispatchEvent === 'function') {
+    const event = new CustomEvent('settingsChanged', { detail: settings });
+    window.dispatchEvent(event);
+    console.log('✅ settingsChanged event dispatched');
+  }
+  
+  showToast('✅ Settings saved!');
+  closeModal();
+}
