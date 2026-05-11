@@ -1,0 +1,285 @@
+/* Settings Modal Styles */
+.settings-icon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: #00ff41;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+
+.settings-icon:hover {
+  transform: rotate(90deg);
+}
+
+.settings-icon i {
+  font-size: 1.5rem;
+  color: #000;
+}
+
+.settings-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 100000;
+  overflow-y: auto;
+}
+
+.settings-modal.active {
+  display: block;
+}
+
+.settings-modal-content {
+  max-width: 800px;
+  margin: 50px auto;
+  background: #1a1a2e;
+  border: 2px solid #00ff41;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #666;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.settings-header h2 {
+  color: #00ff41;
+  margin: 0;
+}
+
+.close-settings {
+  background: none;
+  border: none;
+  color: #ff4444;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.module-section {
+  margin-bottom: 20px;
+  border: 1px solid #666;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.module-header {
+  background: rgba(0, 255, 65, 0.1);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+}
+
+.enable-toggle {
+  width: 52px;
+  height: 28px;
+  background: #555;
+  border-radius: 34px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s;
+  flex-shrink: 0;
+}
+
+.enable-toggle.active {
+  background: #2196F3;
+}
+
+.enable-toggle .toggle-slider {
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  transition: transform 0.3s;
+}
+
+.enable-toggle.active .toggle-slider {
+  transform: translateX(24px);
+}
+
+.module-header h3 {
+  margin: 0;
+  flex: 1;
+  color: #00ff41;
+  font-size: 1rem;
+}
+
+.module-config {
+  padding: 15px;
+  display: none;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.module-config.active {
+  display: block;
+}
+
+.config-field {
+  margin-bottom: 15px;
+}
+
+.config-field label {
+  display: block;
+  margin-bottom: 5px;
+  color: #00ffff;
+  font-size: 0.85rem;
+}
+
+.config-field input,
+.config-field textarea,
+.config-field select {
+  width: 100%;
+  padding: 8px;
+  background: #000;
+  border: 1px solid #666;
+  color: #fff;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.config-field input[readonly] {
+  background: #111;
+  cursor: pointer;
+}
+
+.contact-list {
+  margin-top: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.contact-item {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.contact-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.contact-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.contact-photo i {
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.contact-info {
+  flex: 1;
+}
+
+.contact-info strong {
+  color: #00ff41;
+  display: block;
+}
+
+.contact-info small {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.contact-actions button {
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-contact-btn,
+.select-folder-btn {
+  background: #00ff41;
+  color: #000;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: bold;
+  width: 100%;
+}
+
+.save-settings {
+  background: linear-gradient(135deg, #2196F3, #00ff41);
+  color: #000;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.photo-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-preview i {
+  font-size: 2rem;
+  color: #666;
+}
+
+.dashboard-item.hidden-module {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .settings-modal-content {
+    margin: 20px;
+    padding: 15px;
+  }
+}
