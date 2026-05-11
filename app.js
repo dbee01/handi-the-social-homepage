@@ -1,4 +1,4 @@
-// app.js - FIXED VERSION (only need to change this one file)
+// app.js
 
 import initNews from "./modules/news/news.module.js";
 import initEnergy from "./modules/energy/energy.module.js";
@@ -14,10 +14,11 @@ import initLocalPlayer from "./modules/local-player/local-player.module.js";
 import initFriendlyPhone from "./modules/friendly-phone/friendly-phone.module.js";
 import initLayoutSystem from "./modules/ui/layout-system.js";
 
+// Global flag to track layout initialization
 window.layoutSystemInitialized = false;
 
 /**
- * Initialize a module safely - FIXED to pass the correct container
+ * Initialize a module safely - passes the correct .module-content container
  */
 function safeInit(name, moduleId, initFn, ...args) {
   try {
@@ -149,7 +150,7 @@ function initializeSearch() {
 document.addEventListener("DOMContentLoaded", () => {
   console.log("🚀 App initializing...");
 
-  // Initialize ALL modules using the same pattern
+  // Initialize all modules
   safeInit("Local Music Player", "local-player", initLocalPlayer);
   safeInit("Radio", "radio", initRadio);
   safeInit("News", "news", initNews);
@@ -182,70 +183,3 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.appVersion = "1.0.0";
-
-// Add to the END of app.js (after all imports and initializations)
-
-// Store module init functions globally
-window.moduleInits = {
-  localPlayer: initLocalPlayer,
-  gallery: initGallery,
-  emergency: initEmergency,
-  bus: initBus,
-  friendlyPhone: initFriendlyPhone,
-  radio: initRadio,
-  news: initNews,
-  mastodon: initMastodon
-};
-
-// Function to refresh a single module
-window.refreshModule = function(moduleId) {
-  const dashboardItem = document.getElementById(moduleId);
-  if (!dashboardItem) return;
-  
-  // Only refresh if visible
-  if (!dashboardItem.classList.contains('visible') && dashboardItem.style.display !== 'block') {
-    return;
-  }
-  
-  const container = dashboardItem.querySelector('.module-content');
-  if (!container) return;
-  
-  // Map moduleId to function name
-  const functionMap = {
-    'local-player': 'localPlayer',
-    'gallery': 'gallery',
-    'emergency': 'emergency',
-    'bus': 'bus',
-    'friendly-phone': 'friendlyPhone',
-    'radio': 'radio',
-    'news': 'news',
-    'mastodon': 'mastodon'
-  };
-  
-  const funcName = functionMap[moduleId];
-  const initFunc = window.moduleInits[funcName];
-  
-  if (initFunc) {
-    console.log(`Refreshing module: ${moduleId}`);
-    // Clear container
-    container.innerHTML = '';
-    // Re-initialize
-    initFunc(container);
-  }
-};
-
-// Listen for settings changes
-window.addEventListener('settingsChanged', (event) => {
-  console.log('🔄 Settings changed, refreshing modules...');
-  
-  // Refresh all modules
-  const moduleIds = ['local-player', 'gallery', 'emergency', 'bus', 'friendly-phone', 'radio', 'news', 'mastodon'];
-  
-  moduleIds.forEach(moduleId => {
-    setTimeout(() => {
-      window.refreshModule(moduleId);
-    }, 100);
-  });
-});
-
-console.log('✅ Module refresh system ready');
