@@ -183,46 +183,69 @@ document.addEventListener("DOMContentLoaded", () => {
 
 window.appVersion = "1.0.0";
 
-// In settings.js - make sure your saveSettings function looks like this:
+// Add to the END of app.js (after all imports and initializations)
 
-function saveSettings() {
-  const settings = {
-    enabledModules: enabledModules,
-    gallery: {
-      folderPath: document.getElementById('galleryFolderPath')?.value || '',
-      speed: parseInt(document.getElementById('gallerySpeed')?.value) || 3000,
-      autoStart: document.getElementById('galleryAutoStart')?.value === 'true'
-    },
-    bus: {
-      routeIds: document.getElementById('busRouteIds')?.value || '',
-      stopId: document.getElementById('busStopId')?.value || '',
-      refreshInterval: parseInt(document.getElementById('busRefreshInterval')?.value) || 60
-    },
-    musicPlayer: {
-      musicFolder: document.getElementById('musicFolderPath')?.value || '',
-      defaultVolume: parseInt(document.getElementById('defaultVolume')?.value) || 100,
-      defaultShuffle: document.getElementById('defaultShuffle')?.value === 'true',
-      musicFiles: window.musicFiles || []  // Make sure music files are saved
-    },
-    emergency: {
-      contacts: window.emergencyContacts,
-      interval: parseInt(document.getElementById('emergencyInterval')?.value) || 5
-    },
-    friendlyPhone: {
-      contacts: window.phoneContacts,
-      autoDialDelay: parseInt(document.getElementById('autoDialDelay')?.value) || 10
-    }
-  };
+// Store module init functions globally
+window.moduleInits = {
+  localPlayer: initLocalPlayer,
+  gallery: initGallery,
+  emergency: initEmergency,
+  bus: initBus,
+  friendlyPhone: initFriendlyPhone,
+  radio: initRadio,
+  news: initNews,
+  mastodon: initMastodon
+};
+
+// Function to refresh a single module
+window.refreshModule = function(moduleId) {
+  const dashboardItem = document.getElementById(moduleId);
+  if (!dashboardItem) return;
   
-  localStorage.setItem('pleie_settings', JSON.stringify(settings));
-  
-  // DISPATCH THE EVENT - THIS IS KEY
-  if (typeof window.dispatchEvent === 'function') {
-    const event = new CustomEvent('settingsChanged', { detail: settings });
-    window.dispatchEvent(event);
-    console.log('✅ settingsChanged event dispatched');
+  // Only refresh if visible
+  if (!dashboardItem.classList.contains('visible') && dashboardItem.style.display !== 'block') {
+    return;
   }
   
-  showToast('✅ Settings saved!');
-  closeModal();
-}
+  const container = dashboardItem.querySelector('.module-content');
+  if (!container) return;
+  
+  // Map moduleId to function name
+  const functionMap = {
+    'local-player': 'localPlayer',
+    'gallery': 'gallery',
+    'emergency': 'emergency',
+    'bus': 'bus',
+    'friendly-phone': 'friendlyPhone',
+    'radio': 'radio',
+    'news': 'news',
+    'mastodon': 'mastodon'
+  };
+  
+  const funcName = functionMap[moduleId];
+  const initFunc = window.moduleInits[funcName];
+  
+  if (initFunc) {
+    console.log(`Refreshing module: ${moduleId}`);
+    // Clear container
+    container.innerHTML = '';
+    // Re-initialize
+    initFunc(container);
+  }
+};
+
+// Listen for settings changes
+window.addEventListener('settingsChanged', (event) => {
+  console.log('🔄 Settings changed, refreshing modules...');
+  
+  // Refresh all modules
+  const moduleIds = ['local-player', 'gallery', 'emergency', 'bus', 'friendly-phone', 'radio', 'news', 'mastodon'];
+  
+  moduleIds.forEach(moduleId => {
+    setTimeout(() => {
+      window.refreshModule(moduleId);
+    }, 100);
+  });
+});
+
+console.log('✅ Module refresh system ready');
