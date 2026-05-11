@@ -14,34 +14,81 @@ import initLocalPlayer from "./modules/local-player/local-player.module.js";
 import initFriendlyPhone from "./modules/friendly-phone/friendly-phone.module.js";
 import initLayoutSystem from "./modules/ui/layout-system.js";
 
-// Global flag to track layout initialization
 window.layoutSystemInitialized = false;
 
+// Store module init functions for refresh
+const moduleInits = {
+  'local-player': initLocalPlayer,
+  'gallery': initGallery,
+  'emergency': initEmergency,
+  'bus': initBus,
+  'friendly-phone': initFriendlyPhone,
+  'radio': initRadio,
+  'news': initNews,
+  'mastodon': initMastodon
+};
+
 /**
- * Initialize a module safely - passes the correct .module-content container
+ * Initialize a module safely
  */
 function safeInit(name, moduleId, initFn, ...args) {
   try {
-    // Get the dashboard item
     const dashboardItem = document.getElementById(moduleId);
     if (!dashboardItem) {
       console.warn(`⚠️ ${name} element (#${moduleId}) not found`);
       return;
     }
     
-    // Find the module-content container inside
     const container = dashboardItem.querySelector('.module-content');
     if (!container) {
       console.warn(`⚠️ ${name} .module-content not found inside #${moduleId}`);
       return;
     }
     
-    // Initialize the module with the correct container
     initFn(container, ...args);
     console.log(`✅ ${name} module initialized`);
   } catch (error) {
     console.error(`Error initializing ${name}:`, error);
   }
+}
+
+/**
+ * Refresh a specific module
+ */
+function refreshModule(moduleId) {
+  const dashboardItem = document.getElementById(moduleId);
+  if (!dashboardItem) return;
+  
+  // Only refresh if visible
+  if (!dashboardItem.classList.contains('visible') && dashboardItem.style.display !== 'block') {
+    return;
+  }
+  
+  const container = dashboardItem.querySelector('.module-content');
+  if (!container) return;
+  
+  const initFn = moduleInits[moduleId];
+  if (initFn) {
+    console.log(`🔄 Refreshing module: ${moduleId}`);
+    // Clear container
+    container.innerHTML = '';
+    // Re-initialize
+    initFn(container);
+  }
+}
+
+/**
+ * Refresh all visible modules
+ */
+function refreshAllModules() {
+  console.log('🔄 Refreshing all visible modules...');
+  const moduleIds = ['local-player', 'gallery', 'emergency', 'bus', 'friendly-phone', 'radio', 'news', 'mastodon'];
+  
+  moduleIds.forEach(moduleId => {
+    setTimeout(() => {
+      refreshModule(moduleId);
+    }, 50);
+  });
 }
 
 /**
@@ -182,4 +229,11 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("🎉 App initialization complete");
 });
 
+// Listen for settings changes and refresh modules
+window.addEventListener('settingsChanged', (event) => {
+  console.log('📢 Settings changed, refreshing modules...');
+  refreshAllModules();
+});
+
 window.appVersion = "1.0.0";
+window.refreshAllModules = refreshAllModules;
