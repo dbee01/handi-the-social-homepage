@@ -157,6 +157,43 @@
       resize: vertical;
     }
     
+    /* Contact list styles */
+    .contact-list {
+      margin-top: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .contact-item {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 8px;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .contact-item button {
+      background: var(--term-red, #ff4444);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .add-contact-btn, .select-folder-btn {
+      background: var(--term-green, #00ff41);
+      color: #000;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    
     .save-settings {
       background: var(--term-green, #00ff41);
       color: #000;
@@ -275,8 +312,11 @@
       </div>
       <div class="module-config">
         <div class="config-field">
-          <label><i class="fa-solid fa-folder"></i> Default Image Folder Path:</label>
-          <input type="text" id="galleryFolderPath" placeholder="/images/gallery/">
+          <label><i class="fa-solid fa-folder"></i> Image Folder:</label>
+          <input type="text" id="galleryFolderPath" readonly placeholder="No folder selected" style="background: #111;">
+          <button class="select-folder-btn" id="selectGalleryFolder">
+            <i class="fa-solid fa-folder-open"></i> Select Image Folder
+          </button>
         </div>
         <div class="config-field">
           <label><i class="fa-solid fa-clock"></i> Slideshow Speed (ms):</label>
@@ -324,8 +364,11 @@
       </div>
       <div class="module-config">
         <div class="config-field">
-          <label><i class="fa-solid fa-folder"></i> Default Music Folder:</label>
-          <input type="text" id="musicFolder" placeholder="/music/">
+          <label><i class="fa-solid fa-folder"></i> Music Folder:</label>
+          <input type="text" id="musicFolderPath" readonly placeholder="No folder selected" style="background: #111;">
+          <button class="select-folder-btn" id="selectMusicFolder">
+            <i class="fa-solid fa-folder-open"></i> Select Music Folder
+          </button>
         </div>
         <div class="config-field">
           <label><i class="fa-solid fa-volume-up"></i> Default Volume (%):</label>
@@ -351,8 +394,11 @@
       </div>
       <div class="module-config">
         <div class="config-field">
-          <label><i class="fa-solid fa-api"></i> API Endpoint:</label>
-          <input type="text" id="emergencyApi" placeholder="https://api.example.com/emergency">
+          <label><i class="fa-solid fa-phone"></i> Emergency Contacts:</label>
+          <div id="emergencyContactsList" class="contact-list"></div>
+          <button class="add-contact-btn" id="addEmergencyContact">
+            <i class="fa-solid fa-plus"></i> Add Emergency Contact
+          </button>
         </div>
         <div class="config-field">
           <label><i class="fa-solid fa-clock"></i> Check Interval (minutes):</label>
@@ -370,8 +416,11 @@
       </div>
       <div class="module-config">
         <div class="config-field">
-          <label><i class="fa-solid fa-phone"></i> Emergency Numbers (JSON):</label>
-          <textarea id="emergencyNumbers" placeholder='[{"name":"Police","number":"999"},{"name":"Ambulance","number":"999"}]'></textarea>
+          <label><i class="fa-solid fa-address-book"></i> Phone Contacts:</label>
+          <div id="phoneContactsList" class="contact-list"></div>
+          <button class="add-contact-btn" id="addPhoneContact">
+            <i class="fa-solid fa-plus"></i> Add Phone Contact
+          </button>
         </div>
         <div class="config-field">
           <label><i class="fa-solid fa-clock"></i> Auto-dial Warning (seconds):</label>
@@ -390,6 +439,158 @@
 // ========== MODULE MANAGEMENT SYSTEM ==========
 (function() {
   console.log('⚙️ Initializing module management system...');
+  
+  // Global contacts storage
+  window.emergencyContacts = [];
+  window.phoneContacts = [];
+  
+  // Helper to show toast
+  function showToast(message, isError = false) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: ${isError ? '#ff4444' : '#00ff41'};
+      color: ${isError ? '#fff' : '#000'};
+      padding: 12px 20px;
+      border-radius: 8px;
+      z-index: 100001;
+      font-family: monospace;
+      animation: slideIn 0.3s ease-out;
+    `;
+    toast.innerHTML = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+  
+  // Render emergency contacts
+  function renderEmergencyContacts() {
+    const container = document.getElementById('emergencyContactsList');
+    if (!container) return;
+    
+    if (window.emergencyContacts.length === 0) {
+      container.innerHTML = '<div style="color: #666; text-align: center; padding: 10px;">No emergency contacts added</div>';
+      return;
+    }
+    
+    container.innerHTML = window.emergencyContacts.map((contact, index) => `
+      <div class="contact-item">
+        <div>
+          <strong>${escapeHtml(contact.name)}</strong><br>
+          <small style="color: #888;">${escapeHtml(contact.number)}</small>
+          ${contact.relation ? `<br><small style="color: #00ff41;">${escapeHtml(contact.relation)}</small>` : ''}
+        </div>
+        <button onclick="window.removeEmergencyContact(${index})">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    `).join('');
+  }
+  
+  // Render phone contacts
+  function renderPhoneContacts() {
+    const container = document.getElementById('phoneContactsList');
+    if (!container) return;
+    
+    if (window.phoneContacts.length === 0) {
+      container.innerHTML = '<div style="color: #666; text-align: center; padding: 10px;">No phone contacts added</div>';
+      return;
+    }
+    
+    container.innerHTML = window.phoneContacts.map((contact, index) => `
+      <div class="contact-item">
+        <div>
+          <strong>${escapeHtml(contact.name)}</strong><br>
+          <small style="color: #888;">${escapeHtml(contact.number)}</small>
+        </div>
+        <button onclick="window.removePhoneContact(${index})">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    `).join('');
+  }
+  
+  // Add emergency contact
+  window.addEmergencyContact = function() {
+    const name = prompt('Enter contact name:', '');
+    if (!name) return;
+    
+    const number = prompt('Enter phone number:', '');
+    if (!number) return;
+    
+    const relation = prompt('Enter relation (e.g., Family, Doctor, etc.):', '');
+    
+    window.emergencyContacts.push({ name, number, relation });
+    renderEmergencyContacts();
+    showToast(`✅ Added ${name} to emergency contacts`);
+  };
+  
+  // Add phone contact
+  window.addPhoneContact = function() {
+    const name = prompt('Enter contact name:', '');
+    if (!name) return;
+    
+    const number = prompt('Enter phone number:', '');
+    if (!number) return;
+    
+    window.phoneContacts.push({ name, number });
+    renderPhoneContacts();
+    showToast(`✅ Added ${name} to phone contacts`);
+  };
+  
+  // Remove emergency contact
+  window.removeEmergencyContact = function(index) {
+    const contact = window.emergencyContacts[index];
+    if (confirm(`Remove ${contact.name} from emergency contacts?`)) {
+      window.emergencyContacts.splice(index, 1);
+      renderEmergencyContacts();
+      showToast(`❌ Removed ${contact.name} from emergency contacts`);
+    }
+  };
+  
+  // Remove phone contact
+  window.removePhoneContact = function(index) {
+    const contact = window.phoneContacts[index];
+    if (confirm(`Remove ${contact.name} from phone contacts?`)) {
+      window.phoneContacts.splice(index, 1);
+      renderPhoneContacts();
+      showToast(`❌ Removed ${contact.name} from phone contacts`);
+    }
+  };
+  
+  // Folder selection helper
+  async function selectFolder(inputElement) {
+    try {
+      if ('showDirectoryPicker' in window) {
+        const dirHandle = await window.showDirectoryPicker();
+        inputElement.value = dirHandle.name;
+        return dirHandle;
+      } else {
+        // Fallback for browsers without directory picker
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.webkitdirectory = true;
+        input.directory = true;
+        
+        await new Promise((resolve) => {
+          input.onchange = () => {
+            if (input.files.length > 0) {
+              const path = input.files[0].webkitRelativePath.split('/')[0];
+              inputElement.value = path;
+            }
+            resolve();
+          };
+          input.click();
+        });
+        return null;
+      }
+    } catch (err) {
+      console.error('Folder selection cancelled or failed:', err);
+      showToast('Folder selection cancelled', true);
+      return null;
+    }
+  }
   
   // Load saved settings from localStorage
   function loadSettings() {
@@ -438,14 +639,13 @@
       
       // Music player settings
       if (settings.musicPlayer) {
-        if (document.getElementById('musicFolder')) 
-          document.getElementById('musicFolder').value = settings.musicPlayer.musicFolder || '';
+        if (document.getElementById('musicFolderPath')) 
+          document.getElementById('musicFolderPath').value = settings.musicPlayer.musicFolder || '';
         if (document.getElementById('defaultVolume')) 
           document.getElementById('defaultVolume').value = settings.musicPlayer.defaultVolume || 100;
         if (document.getElementById('defaultShuffle')) 
           document.getElementById('defaultShuffle').value = settings.musicPlayer.defaultShuffle ? 'true' : 'false';
         
-        // Update volume display
         const volumeSlider = document.getElementById('defaultVolume');
         const volumeValue = document.getElementById('volumeValue');
         if (volumeSlider && volumeValue) {
@@ -455,18 +655,18 @@
       
       // Emergency settings
       if (settings.emergency) {
-        if (document.getElementById('emergencyApi')) 
-          document.getElementById('emergencyApi').value = settings.emergency.api || '';
+        window.emergencyContacts = settings.emergency.contacts || [];
         if (document.getElementById('emergencyInterval')) 
           document.getElementById('emergencyInterval').value = settings.emergency.interval || 5;
+        renderEmergencyContacts();
       }
       
       // Friendly Phone settings
       if (settings.friendlyPhone) {
-        if (document.getElementById('emergencyNumbers')) 
-          document.getElementById('emergencyNumbers').value = settings.friendlyPhone.emergencyNumbers || '';
+        window.phoneContacts = settings.friendlyPhone.contacts || [];
         if (document.getElementById('autoDialDelay')) 
           document.getElementById('autoDialDelay').value = settings.friendlyPhone.autoDialDelay || 10;
+        renderPhoneContacts();
       }
     } else {
       // Default settings
@@ -501,12 +701,22 @@
       document.getElementById('defaultShuffle').value = 'false';
     
     // Default emergency settings
+    window.emergencyContacts = [
+      { name: "Emergency Services", number: "999", relation: "Emergency" },
+      { name: "Local Garda Station", number: "01 123 4567", relation: "Police" }
+    ];
     if (document.getElementById('emergencyInterval')) 
       document.getElementById('emergencyInterval').value = 5;
+    renderEmergencyContacts();
     
     // Default phone settings
+    window.phoneContacts = [
+      { name: "John Doe", number: "085 123 4567" },
+      { name: "Jane Smith", number: "087 765 4321" }
+    ];
     if (document.getElementById('autoDialDelay')) 
       document.getElementById('autoDialDelay').value = 10;
+    renderPhoneContacts();
   }
   
   // Save all settings
@@ -524,16 +734,16 @@
         refreshInterval: parseInt(document.getElementById('busRefreshInterval')?.value) || 60
       },
       musicPlayer: {
-        musicFolder: document.getElementById('musicFolder')?.value || '',
+        musicFolder: document.getElementById('musicFolderPath')?.value || '',
         defaultVolume: parseInt(document.getElementById('defaultVolume')?.value) || 100,
         defaultShuffle: document.getElementById('defaultShuffle')?.value === 'true'
       },
       emergency: {
-        api: document.getElementById('emergencyApi')?.value || '',
+        contacts: window.emergencyContacts,
         interval: parseInt(document.getElementById('emergencyInterval')?.value) || 5
       },
       friendlyPhone: {
-        emergencyNumbers: document.getElementById('emergencyNumbers')?.value || '',
+        contacts: window.phoneContacts,
         autoDialDelay: parseInt(document.getElementById('autoDialDelay')?.value) || 10
       }
     };
@@ -543,7 +753,6 @@
       const moduleId = checkbox.getAttribute('data-module');
       settings.modules[moduleId] = checkbox.checked;
       
-      // Toggle module visibility
       const moduleElement = document.getElementById(moduleId);
       if (moduleElement) {
         if (checkbox.checked) {
@@ -575,24 +784,15 @@
     }
   }
   
-  // Toast notification
-  function showToast(message) {
-    const toast = document.createElement('div');
-    toast.style.cssText = `
-      position: fixed;
-      bottom: 80px;
-      right: 20px;
-      background: var(--term-green, #00ff41);
-      color: #000;
-      padding: 12px 20px;
-      border-radius: 8px;
-      z-index: 100001;
-      font-family: monospace;
-      animation: slideIn 0.3s ease-out;
-    `;
-    toast.innerHTML = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+  // Escape HTML helper
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
   }
   
   // Settings modal controls
@@ -624,7 +824,6 @@
   // Expand/collapse module sections
   document.querySelectorAll('.module-header').forEach(header => {
     header.onclick = (e) => {
-      // Don't toggle if clicking checkbox
       if (e.target.type === 'checkbox') return;
       
       const config = header.nextElementSibling;
@@ -648,6 +847,26 @@
       volumeValue.textContent = volumeSlider.value + '%';
     };
   }
+  
+  // Folder selection buttons
+  document.getElementById('selectGalleryFolder')?.addEventListener('click', async () => {
+    const input = document.getElementById('galleryFolderPath');
+    await selectFolder(input);
+  });
+  
+  document.getElementById('selectMusicFolder')?.addEventListener('click', async () => {
+    const input = document.getElementById('musicFolderPath');
+    await selectFolder(input);
+  });
+  
+  // Add contact buttons
+  document.getElementById('addEmergencyContact')?.addEventListener('click', () => {
+    window.addEmergencyContact();
+  });
+  
+  document.getElementById('addPhoneContact')?.addEventListener('click', () => {
+    window.addPhoneContact();
+  });
   
   // Load settings on init
   loadSettings();
@@ -681,7 +900,6 @@
     warningsEnabled = false;
   }
   
-  // Simple modal for refresh warning
   function showRefreshWarning() {
     if (!warningsEnabled || confirmedRefresh) return;
     
@@ -740,7 +958,6 @@
     };
   }
   
-  // Intercept refresh attempts
   document.addEventListener('keydown', (e) => {
     if (e.key === 'F5' || (e.ctrlKey && e.key === 'r') || (e.metaKey && e.key === 'r')) {
       e.preventDefault();
@@ -819,7 +1036,6 @@
     });
   }
   
-  // Watch for module visibility changes
   window.addEventListener('settingsChanged', () => {
     setTimeout(() => {
       movePinsToTop();
