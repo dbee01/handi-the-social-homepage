@@ -17,8 +17,35 @@
   <script type="module" src="app.js" defer></script>
 
   <style>
-    /* Simple Refresh Modal */
-    .refresh-modal {
+    /* Settings Panel Styles */
+    .settings-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: var(--term-green, #00ff41);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 9999;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+    
+    .settings-icon:hover {
+      transform: rotate(90deg);
+    }
+    
+    .settings-icon i {
+      font-size: 1.5rem;
+      color: #000;
+    }
+    
+    /* Settings Modal */
+    .settings-modal {
       display: none;
       position: fixed;
       top: 0;
@@ -26,98 +53,138 @@
       width: 100%;
       height: 100%;
       background: rgba(0, 0, 0, 0.95);
-      z-index: 999999;
-      justify-content: center;
-      align-items: center;
+      z-index: 100000;
+      overflow-y: auto;
     }
     
-    .refresh-modal.active {
-      display: flex;
+    .settings-modal.active {
+      display: block;
     }
     
-    .refresh-modal-content {
+    .settings-modal-content {
+      max-width: 800px;
+      margin: 50px auto;
       background: #1a1a2e;
-      border: 2px solid #ffaa00;
+      border: 2px solid var(--term-green, #00ff41);
       border-radius: 12px;
-      padding: 25px;
-      max-width: 350px;
-      width: 85%;
-      text-align: center;
-      position: relative;
-      z-index: 999999;
+      padding: 20px;
     }
     
-    .refresh-modal-icon {
-      font-size: 3rem;
-      color: #ffaa00;
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--term-dim, #666);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .settings-header h2 {
+      color: var(--term-green, #00ff41);
+      margin: 0;
+    }
+    
+    .close-settings {
+      background: none;
+      border: none;
+      color: var(--term-red, #ff4444);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    .module-section {
+      margin-bottom: 30px;
+      border: 1px solid var(--term-dim, #666);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .module-header {
+      background: rgba(0, 255, 65, 0.1);
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+    }
+    
+    .module-header input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--term-green, #00ff41);
+    }
+    
+    .module-header h3 {
+      margin: 0;
+      flex: 1;
+      color: var(--term-green, #00ff41);
+    }
+    
+    .module-config {
+      padding: 15px;
+      display: none;
+      background: rgba(0, 0, 0, 0.3);
+    }
+    
+    .module-config.active {
+      display: block;
+    }
+    
+    .config-field {
       margin-bottom: 15px;
     }
     
-    .refresh-modal-title {
-      font-size: 1.3rem;
-      color: #ffaa00;
-      margin-bottom: 10px;
-      font-weight: bold;
+    .config-field label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--term-cyan, #00ffff);
+      font-size: 0.9rem;
     }
     
-    .refresh-modal-warning {
-      background: rgba(255, 68, 68, 0.1);
-      border-left: 3px solid #ff4444;
-      padding: 10px;
-      margin: 15px 0;
-      color: #ff8888;
-      font-size: 0.8rem;
-      text-align: left;
+    .config-field input, .config-field textarea, .config-field select {
+      width: 100%;
+      padding: 8px;
+      background: #000;
+      border: 1px solid var(--term-dim, #666);
+      color: var(--term-white, #fff);
+      border-radius: 4px;
+      font-family: monospace;
     }
     
-    .refresh-modal-buttons {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 15px;
+    .config-field textarea {
+      min-height: 80px;
+      resize: vertical;
     }
     
-    .refresh-modal-btn {
-      padding: 10px 20px;
+    .save-settings {
+      background: var(--term-green, #00ff41);
+      color: #000;
       border: none;
+      padding: 12px 30px;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
-      font-family: monospace;
       font-size: 1rem;
+      margin-top: 20px;
+      width: 100%;
     }
     
-    .refresh-modal-btn.primary {
-      background: #00ff41;
-      color: #000;
+    .save-settings:hover {
+      background: var(--term-green-light, #00ff66);
     }
     
-    .refresh-modal-btn.danger {
-      background: #ff4444;
-      color: #fff;
+    /* Module visibility */
+    .dashboard-item.hidden-module {
+      display: none;
     }
     
-    .refresh-modal-checkbox {
-      margin: 10px 0;
-      text-align: left;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #888;
-      font-size: 0.75rem;
-    }
-    
-    /* Pin button styles */
-    .pin-btn {
-      touch-action: manipulation;
-      cursor: pointer;
-      min-width: 40px;
-      min-height: 40px;
-      transition: all 0.2s;
-    }
-    
-    .pin-btn:active {
-      transform: scale(0.95);
+    /* Responsive */
+    @media (max-width: 768px) {
+      .settings-modal-content {
+        margin: 20px;
+        padding: 15px;
+      }
     }
   </style>
 </head>
@@ -148,27 +215,27 @@
   <main id="dashboard-grid">
 
     <!-- Gallery Module -->
-    <div class="dashboard-item" id="gallery" data-order="1">
+    <div class="dashboard-item" id="gallery" data-module="gallery" data-order="1">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
     </div>
 
     <!-- Emergency Module -->
-    <div class="dashboard-item" id="emergency" data-order="2">
+    <div class="dashboard-item" id="emergency" data-module="emergency" data-order="2">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
     </div>
     
     <!-- Bus Module -->
-    <div class="dashboard-item" id="bus" data-order="3">
+    <div class="dashboard-item" id="bus" data-module="bus" data-order="3">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
     </div>
 
     <!-- Friendly Phone Module -->
-    <div class="dashboard-item" id="friendly-phone" data-order="11">
+    <div class="dashboard-item" id="friendly-phone" data-module="friendly-phone" data-order="11">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
     </div>
     
     <!-- Local Music Player Module -->
-    <div class="dashboard-item" id="local-player" data-order="12">
+    <div class="dashboard-item" id="local-player" data-module="local-player" data-order="12">
       <button class="pin-btn" title="Pin to top">
         <i class="fa-solid fa-thumbtack"></i>
       </button>
@@ -186,204 +253,513 @@
   </div>
 </footer>
 
-<!-- Simple Refresh Modal -->
-<div id="refreshModal" class="refresh-modal">
-  <div class="refresh-modal-content">
-    <div class="refresh-modal-icon">
-      <i class="fa-solid fa-triangle-exclamation"></i>
+<!-- Settings Gear Icon -->
+<div class="settings-icon" id="settingsIcon">
+  <i class="fa-solid fa-gear"></i>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="settings-modal">
+  <div class="settings-modal-content">
+    <div class="settings-header">
+      <h2><i class="fa-solid fa-sliders-h"></i> Module Settings</h2>
+      <button class="close-settings" id="closeSettings">&times;</button>
     </div>
-    <div class="refresh-modal-title">⚠️ Refresh Page?</div>
-    <div class="refresh-modal-warning">
-      <i class="fa-solid fa-database"></i> Playing media will stop<br>
-      <i class="fa-solid fa-image"></i> Slideshow position will reset
+    
+    <!-- Gallery Module Settings -->
+    <div class="module-section">
+      <div class="module-header">
+        <input type="checkbox" id="toggleGallery" data-module="gallery">
+        <h3><i class="fa-solid fa-images"></i> Gallery Module</h3>
+        <i class="fa-solid fa-chevron-down" style="color: var(--term-green);"></i>
+      </div>
+      <div class="module-config">
+        <div class="config-field">
+          <label><i class="fa-solid fa-folder"></i> Default Image Folder Path:</label>
+          <input type="text" id="galleryFolderPath" placeholder="/images/gallery/">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-clock"></i> Slideshow Speed (ms):</label>
+          <input type="number" id="gallerySpeed" min="500" max="10000" step="100">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-check-circle"></i> Auto-start Slideshow:</label>
+          <select id="galleryAutoStart">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+      </div>
     </div>
-    <div class="refresh-modal-checkbox">
-      <input type="checkbox" id="dontShowAgain">
-      <label>Don't show again this session</label>
+    
+    <!-- Bus Module Settings -->
+    <div class="module-section">
+      <div class="module-header">
+        <input type="checkbox" id="toggleBus" data-module="bus">
+        <h3><i class="fa-solid fa-bus"></i> Bus Module</h3>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="module-config">
+        <div class="config-field">
+          <label><i class="fa-solid fa-route"></i> Route IDs (comma-separated):</label>
+          <input type="text" id="busRouteIds" placeholder="e.g., 15, 16, 40, 145">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-map-marker-alt"></i> Stop ID:</label>
+          <input type="text" id="busStopId" placeholder="e.g., 12345">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-clock"></i> Refresh Interval (seconds):</label>
+          <input type="number" id="busRefreshInterval" min="30" max="300" step="10">
+        </div>
+      </div>
     </div>
-    <div class="refresh-modal-buttons">
-      <button id="stayBtn" class="refresh-modal-btn primary">✓ Stay</button>
-      <button id="refreshBtn" class="refresh-modal-btn danger">⟳ Refresh</button>
+    
+    <!-- Music Player Settings -->
+    <div class="module-section">
+      <div class="module-header">
+        <input type="checkbox" id="toggleMusicPlayer" data-module="local-player">
+        <h3><i class="fa-solid fa-music"></i> Music Player</h3>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="module-config">
+        <div class="config-field">
+          <label><i class="fa-solid fa-folder"></i> Default Music Folder:</label>
+          <input type="text" id="musicFolder" placeholder="/music/">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-volume-up"></i> Default Volume (%):</label>
+          <input type="range" id="defaultVolume" min="0" max="200" step="1">
+          <span id="volumeValue" style="color: var(--term-green);">100%</span>
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-shuffle"></i> Default Shuffle:</label>
+          <select id="defaultShuffle">
+            <option value="false">Off</option>
+            <option value="true">On</option>
+          </select>
+        </div>
+      </div>
     </div>
+    
+    <!-- Emergency Module Settings -->
+    <div class="module-section">
+      <div class="module-header">
+        <input type="checkbox" id="toggleEmergency" data-module="emergency">
+        <h3><i class="fa-solid fa-triangle-exclamation"></i> Emergency Module</h3>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="module-config">
+        <div class="config-field">
+          <label><i class="fa-solid fa-api"></i> API Endpoint:</label>
+          <input type="text" id="emergencyApi" placeholder="https://api.example.com/emergency">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-clock"></i> Check Interval (minutes):</label>
+          <input type="number" id="emergencyInterval" min="1" max="60" step="1">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Friendly Phone Settings -->
+    <div class="module-section">
+      <div class="module-header">
+        <input type="checkbox" id="toggleFriendlyPhone" data-module="friendly-phone">
+        <h3><i class="fa-solid fa-phone"></i> Friendly Phone</h3>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="module-config">
+        <div class="config-field">
+          <label><i class="fa-solid fa-phone"></i> Emergency Numbers (JSON):</label>
+          <textarea id="emergencyNumbers" placeholder='[{"name":"Police","number":"999"},{"name":"Ambulance","number":"999"}]'></textarea>
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-clock"></i> Auto-dial Warning (seconds):</label>
+          <input type="number" id="autoDialDelay" min="5" max="30" step="1">
+        </div>
+      </div>
+    </div>
+    
+    <button class="save-settings" id="saveSettings">
+      <i class="fa-solid fa-save"></i> Save All Settings
+    </button>
   </div>
 </div>
 
 <script>
-// ========== VIVALDI-FRIENDLY REFRESH WARNING ==========
+// ========== MODULE MANAGEMENT SYSTEM ==========
 (function() {
-  console.log('🛡️ Initializing refresh protection...');
+  console.log('⚙️ Initializing module management system...');
   
+  // Load saved settings from localStorage
+  function loadSettings() {
+    const saved = localStorage.getItem('moduleSettings');
+    if (saved) {
+      const settings = JSON.parse(saved);
+      
+      // Module visibility
+      if (settings.modules) {
+        Object.keys(settings.modules).forEach(moduleId => {
+          const checkbox = document.querySelector(`[data-module="${moduleId}"]`);
+          if (checkbox) {
+            checkbox.checked = settings.modules[moduleId];
+          }
+          
+          const moduleElement = document.getElementById(moduleId);
+          if (moduleElement) {
+            if (settings.modules[moduleId]) {
+              moduleElement.classList.remove('hidden-module');
+            } else {
+              moduleElement.classList.add('hidden-module');
+            }
+          }
+        });
+      }
+      
+      // Gallery settings
+      if (settings.gallery) {
+        if (document.getElementById('galleryFolderPath')) 
+          document.getElementById('galleryFolderPath').value = settings.gallery.folderPath || '';
+        if (document.getElementById('gallerySpeed')) 
+          document.getElementById('gallerySpeed').value = settings.gallery.speed || 3000;
+        if (document.getElementById('galleryAutoStart')) 
+          document.getElementById('galleryAutoStart').value = settings.gallery.autoStart ? 'true' : 'false';
+      }
+      
+      // Bus settings
+      if (settings.bus) {
+        if (document.getElementById('busRouteIds')) 
+          document.getElementById('busRouteIds').value = settings.bus.routeIds || '';
+        if (document.getElementById('busStopId')) 
+          document.getElementById('busStopId').value = settings.bus.stopId || '';
+        if (document.getElementById('busRefreshInterval')) 
+          document.getElementById('busRefreshInterval').value = settings.bus.refreshInterval || 60;
+      }
+      
+      // Music player settings
+      if (settings.musicPlayer) {
+        if (document.getElementById('musicFolder')) 
+          document.getElementById('musicFolder').value = settings.musicPlayer.musicFolder || '';
+        if (document.getElementById('defaultVolume')) 
+          document.getElementById('defaultVolume').value = settings.musicPlayer.defaultVolume || 100;
+        if (document.getElementById('defaultShuffle')) 
+          document.getElementById('defaultShuffle').value = settings.musicPlayer.defaultShuffle ? 'true' : 'false';
+        
+        // Update volume display
+        const volumeSlider = document.getElementById('defaultVolume');
+        const volumeValue = document.getElementById('volumeValue');
+        if (volumeSlider && volumeValue) {
+          volumeValue.textContent = volumeSlider.value + '%';
+        }
+      }
+      
+      // Emergency settings
+      if (settings.emergency) {
+        if (document.getElementById('emergencyApi')) 
+          document.getElementById('emergencyApi').value = settings.emergency.api || '';
+        if (document.getElementById('emergencyInterval')) 
+          document.getElementById('emergencyInterval').value = settings.emergency.interval || 5;
+      }
+      
+      // Friendly Phone settings
+      if (settings.friendlyPhone) {
+        if (document.getElementById('emergencyNumbers')) 
+          document.getElementById('emergencyNumbers').value = settings.friendlyPhone.emergencyNumbers || '';
+        if (document.getElementById('autoDialDelay')) 
+          document.getElementById('autoDialDelay').value = settings.friendlyPhone.autoDialDelay || 10;
+      }
+    } else {
+      // Default settings
+      setDefaultSettings();
+    }
+  }
+  
+  function setDefaultSettings() {
+    // Default module visibility (all visible)
+    document.querySelectorAll('.dashboard-item').forEach(item => {
+      item.classList.remove('hidden-module');
+    });
+    
+    document.querySelectorAll('[data-module]').forEach(checkbox => {
+      checkbox.checked = true;
+    });
+    
+    // Default gallery settings
+    if (document.getElementById('gallerySpeed')) 
+      document.getElementById('gallerySpeed').value = 3000;
+    if (document.getElementById('galleryAutoStart')) 
+      document.getElementById('galleryAutoStart').value = 'true';
+    
+    // Default bus settings
+    if (document.getElementById('busRefreshInterval')) 
+      document.getElementById('busRefreshInterval').value = 60;
+    
+    // Default music settings
+    if (document.getElementById('defaultVolume')) 
+      document.getElementById('defaultVolume').value = 100;
+    if (document.getElementById('defaultShuffle')) 
+      document.getElementById('defaultShuffle').value = 'false';
+    
+    // Default emergency settings
+    if (document.getElementById('emergencyInterval')) 
+      document.getElementById('emergencyInterval').value = 5;
+    
+    // Default phone settings
+    if (document.getElementById('autoDialDelay')) 
+      document.getElementById('autoDialDelay').value = 10;
+  }
+  
+  // Save all settings
+  function saveSettings() {
+    const settings = {
+      modules: {},
+      gallery: {
+        folderPath: document.getElementById('galleryFolderPath')?.value || '',
+        speed: parseInt(document.getElementById('gallerySpeed')?.value) || 3000,
+        autoStart: document.getElementById('galleryAutoStart')?.value === 'true'
+      },
+      bus: {
+        routeIds: document.getElementById('busRouteIds')?.value || '',
+        stopId: document.getElementById('busStopId')?.value || '',
+        refreshInterval: parseInt(document.getElementById('busRefreshInterval')?.value) || 60
+      },
+      musicPlayer: {
+        musicFolder: document.getElementById('musicFolder')?.value || '',
+        defaultVolume: parseInt(document.getElementById('defaultVolume')?.value) || 100,
+        defaultShuffle: document.getElementById('defaultShuffle')?.value === 'true'
+      },
+      emergency: {
+        api: document.getElementById('emergencyApi')?.value || '',
+        interval: parseInt(document.getElementById('emergencyInterval')?.value) || 5
+      },
+      friendlyPhone: {
+        emergencyNumbers: document.getElementById('emergencyNumbers')?.value || '',
+        autoDialDelay: parseInt(document.getElementById('autoDialDelay')?.value) || 10
+      }
+    };
+    
+    // Save module visibility
+    document.querySelectorAll('[data-module]').forEach(checkbox => {
+      const moduleId = checkbox.getAttribute('data-module');
+      settings.modules[moduleId] = checkbox.checked;
+      
+      // Toggle module visibility
+      const moduleElement = document.getElementById(moduleId);
+      if (moduleElement) {
+        if (checkbox.checked) {
+          moduleElement.classList.remove('hidden-module');
+        } else {
+          moduleElement.classList.add('hidden-module');
+        }
+      }
+    });
+    
+    // Save to localStorage
+    localStorage.setItem('moduleSettings', JSON.stringify(settings));
+    
+    // Dispatch custom event for modules to react to settings changes
+    window.dispatchEvent(new CustomEvent('settingsChanged', { detail: settings }));
+    
+    showToast('✅ Settings saved successfully!');
+    console.log('Settings saved:', settings);
+    
+    // Close modal
+    closeSettingsModal();
+    
+    // Refresh layout
+    if (window.pckry) {
+      setTimeout(() => {
+        window.pckry.reloadItems();
+        window.pckry.layout();
+      }, 100);
+    }
+  }
+  
+  // Toast notification
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: var(--term-green, #00ff41);
+      color: #000;
+      padding: 12px 20px;
+      border-radius: 8px;
+      z-index: 100001;
+      font-family: monospace;
+      animation: slideIn 0.3s ease-out;
+    `;
+    toast.innerHTML = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+  
+  // Settings modal controls
+  const settingsIcon = document.getElementById('settingsIcon');
+  const settingsModal = document.getElementById('settingsModal');
+  const closeSettings = document.getElementById('closeSettings');
+  const saveSettingsBtn = document.getElementById('saveSettings');
+  
+  function openSettingsModal() {
+    settingsModal.classList.add('active');
+    loadSettings(); // Reload latest settings when opening
+  }
+  
+  function closeSettingsModal() {
+    settingsModal.classList.remove('active');
+  }
+  
+  settingsIcon.onclick = openSettingsModal;
+  closeSettings.onclick = closeSettingsModal;
+  saveSettingsBtn.onclick = saveSettings;
+  
+  // Close modal on click outside
+  settingsModal.onclick = (e) => {
+    if (e.target === settingsModal) {
+      closeSettingsModal();
+    }
+  };
+  
+  // Expand/collapse module sections
+  document.querySelectorAll('.module-header').forEach(header => {
+    header.onclick = (e) => {
+      // Don't toggle if clicking checkbox
+      if (e.target.type === 'checkbox') return;
+      
+      const config = header.nextElementSibling;
+      const icon = header.querySelector('.fa-chevron-down, .fa-chevron-up');
+      config.classList.toggle('active');
+      if (icon) {
+        if (config.classList.contains('active')) {
+          icon.className = 'fa-solid fa-chevron-up';
+        } else {
+          icon.className = 'fa-solid fa-chevron-down';
+        }
+      }
+    };
+  });
+  
+  // Volume slider display
+  const volumeSlider = document.getElementById('defaultVolume');
+  const volumeValue = document.getElementById('volumeValue');
+  if (volumeSlider && volumeValue) {
+    volumeSlider.oninput = () => {
+      volumeValue.textContent = volumeSlider.value + '%';
+    };
+  }
+  
+  // Load settings on init
+  loadSettings();
+  
+  // Add CSS animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from {
+        transform: translateX(100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  console.log('✅ Module management system ready');
+  console.log('💡 Click the gear icon bottom-right to configure modules');
+})();
+
+// ========== REFRESH WARNING (Simple) ==========
+(function() {
   let warningsEnabled = true;
-  let refreshRequested = false;
-  let modalVisible = false;
+  let confirmedRefresh = false;
   
-  // Check session storage
   if (sessionStorage.getItem('refreshWarningsOff') === 'true') {
     warningsEnabled = false;
-    console.log('⚠️ Warnings disabled for this session');
   }
   
-  const modal = document.getElementById('refreshModal');
-  const stayBtn = document.getElementById('stayBtn');
-  const refreshBtn = document.getElementById('refreshBtn');
-  const dontShowCheckbox = document.getElementById('dontShowAgain');
-  
-  // Hide modal function
-  function hideModal() {
-    if (modal) {
-      modal.classList.remove('active');
-      modalVisible = false;
-    }
+  // Simple modal for refresh warning
+  function showRefreshWarning() {
+    if (!warningsEnabled || confirmedRefresh) return;
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 200000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    `;
+    
+    modal.innerHTML = `
+      <div style="background: #1a1a2e; border: 2px solid #ffaa00; border-radius: 12px; padding: 25px; max-width: 350px; text-align: center;">
+        <div style="font-size: 3rem; color: #ffaa00; margin-bottom: 15px;">⚠️</div>
+        <div style="font-size: 1.3rem; color: #ffaa00; margin-bottom: 10px;">Refresh Page?</div>
+        <div style="background: rgba(255,68,68,0.1); border-left: 3px solid #ff4444; padding: 10px; margin: 15px 0; color: #ff8888; font-size: 0.8rem; text-align: left;">
+          <i class="fa-solid fa-database"></i> Playing media will stop<br>
+          <i class="fa-solid fa-image"></i> Slideshow position will reset
+        </div>
+        <div style="margin: 10px 0; text-align: left;">
+          <label style="color: #888;">
+            <input type="checkbox" id="dontWarnAgain"> Don't show again this session
+          </label>
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+          <button id="stayBtn" style="background: #00ff41; color: #000; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer;">Stay</button>
+          <button id="refreshBtn" style="background: #ff4444; color: #fff; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer;">Refresh</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    const stayBtn = modal.querySelector('#stayBtn');
+    const refreshBtn = modal.querySelector('#refreshBtn');
+    const dontWarnAgain = modal.querySelector('#dontWarnAgain');
+    
+    stayBtn.onclick = () => {
+      modal.remove();
+    };
+    
+    refreshBtn.onclick = () => {
+      if (dontWarnAgain.checked) {
+        warningsEnabled = false;
+        sessionStorage.setItem('refreshWarningsOff', 'true');
+      }
+      confirmedRefresh = true;
+      modal.remove();
+      window.location.reload();
+    };
   }
   
-  // Show modal function
-  function showModal(callback) {
-    if (!warningsEnabled || refreshRequested) {
-      if (callback) callback();
-      return;
-    }
-    
-    if (modal && !modalVisible) {
-      modal.classList.add('active');
-      modalVisible = true;
-      window.pendingRefresh = callback;
-      console.log('⚠️ Showing refresh warning modal');
-    }
-  }
-  
-  // Stay button - cancel refresh
-  stayBtn.onclick = () => {
-    console.log('✓ User cancelled refresh');
-    hideModal();
-    refreshRequested = false;
-    window.pendingRefresh = null;
-  };
-  
-  // Refresh button - proceed with refresh
-  refreshBtn.onclick = () => {
-    console.log('⟳ User confirmed refresh');
-    
-    if (dontShowCheckbox.checked) {
-      warningsEnabled = false;
-      sessionStorage.setItem('refreshWarningsOff', 'true');
-    }
-    
-    hideModal();
-    refreshRequested = true;
-    
-    // Execute the pending refresh
-    if (window.pendingRefresh) {
-      window.pendingRefresh();
-    } else {
-      // Force reload without warnings
-      window.location.href = window.location.href;
-    }
-  };
-  
-  // Click outside to close
-  modal.onclick = (e) => {
-    if (e.target === modal) {
-      hideModal();
-    }
-  };
-  
-  // ESC key to close
+  // Intercept refresh attempts
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modalVisible) {
-      hideModal();
-    }
-  });
-  
-  // ========== INTERCEPT F5 AND CTRL+R ==========
-  document.addEventListener('keydown', (e) => {
-    const isF5 = e.key === 'F5';
-    const isCtrlR = (e.ctrlKey || e.metaKey) && (e.key === 'r' || e.key === 'R');
-    
-    if ((isF5 || isCtrlR) && warningsEnabled && !refreshRequested) {
+    if (e.key === 'F5' || (e.ctrlKey && e.key === 'r') || (e.metaKey && e.key === 'r')) {
       e.preventDefault();
-      e.stopPropagation();
-      console.log('🔑 Keyboard refresh detected, showing modal');
-      showModal(() => {
-        window.location.reload();
-      });
-      return false;
+      showRefreshWarning();
     }
   });
-  
-  // ========== INTERCEPT BEFOREUNLOAD (Browser refresh button) ==========
-  let beforeUnloadTime = null;
   
   window.addEventListener('beforeunload', (e) => {
-    if (warningsEnabled && !refreshRequested && !modalVisible) {
-      beforeUnloadTime = Date.now();
-      console.log('🔄 Browser refresh detected');
-      
-      // Show modal with a slight delay
-      setTimeout(() => {
-        if (!refreshRequested) {
-          showModal(() => {
-            window.location.reload();
-          });
-        }
-      }, 10);
-      
-      // Required for Chrome/Vivaldi
+    if (warningsEnabled && !confirmedRefresh) {
       e.preventDefault();
       e.returnValue = '';
+      showRefreshWarning();
       return '';
     }
   });
-  
-  // ========== INTERCEPT LOCATION.RELOAD ==========
-  const originalReload = window.location.reload;
-  window.location.reload = function(forceReload) {
-    console.log('🔄 Programmatic reload detected');
-    if (warningsEnabled && !refreshRequested && !modalVisible) {
-      showModal(() => {
-        originalReload.call(window.location, forceReload);
-      });
-    } else {
-      originalReload.call(window.location, forceReload);
-    }
-  };
-  
-  // ========== HANDLE PAGE LOAD RESET ==========
-  window.addEventListener('load', () => {
-    refreshRequested = false;
-    modalVisible = false;
-    console.log('📄 Page loaded, refresh protection ready');
-  });
-  
-  // ========== CONSOLE HELPERS ==========
-  window.disableRefreshWarnings = function() {
-    warningsEnabled = false;
-    sessionStorage.setItem('refreshWarningsOff', 'true');
-    console.log('⚠️ Refresh warnings DISABLED');
-    alert('Refresh warnings disabled for this session');
-  };
-  
-  window.enableRefreshWarnings = function() {
-    warningsEnabled = true;
-    sessionStorage.removeItem('refreshWarningsOff');
-    console.log('✅ Refresh warnings ENABLED');
-    alert('Refresh warnings enabled');
-  };
-  
-  window.testRefreshWarning = function() {
-    console.log('🧪 Testing refresh warning...');
-    showModal(() => {
-      window.location.reload();
-    });
-  };
-  
-  console.log('✅ Refresh protection active for Vivaldi');
-  console.log('💡 Commands: testRefreshWarning(), enableRefreshWarnings(), disableRefreshWarnings()');
 })();
 
 // ========== PIN FEATURE ==========
 (function() {
-  console.log('📌 Initializing pin feature...');
-  
   function savePins() {
     const pinned = Array.from(document.querySelectorAll('.dashboard-item.pinned')).map(i => i.id);
     localStorage.setItem('pinnedItems', JSON.stringify(pinned));
@@ -394,7 +770,7 @@
     if (saved) {
       JSON.parse(saved).forEach(id => {
         const item = document.getElementById(id);
-        if (item) {
+        if (item && !item.classList.contains('hidden-module')) {
           item.classList.add('pinned');
           const btn = item.querySelector('.pin-btn');
           if (btn) {
@@ -403,22 +779,17 @@
           }
         }
       });
-      console.log('📌 Loaded pinned state');
     }
   }
   
   function movePinsToTop() {
     const grid = document.getElementById('dashboard-grid');
-    if (!grid) return;
-    
-    const items = Array.from(grid.children);
-    const pinned = items.filter(i => i.classList.contains('pinned'));
-    const unpinned = items.filter(i => !i.classList.contains('pinned'));
-    
+    const visibleItems = Array.from(grid.children).filter(child => !child.classList.contains('hidden-module'));
+    const pinned = visibleItems.filter(i => i.classList.contains('pinned'));
+    const unpinned = visibleItems.filter(i => !i.classList.contains('pinned'));
     pinned.forEach(i => grid.appendChild(i));
     unpinned.forEach(i => grid.appendChild(i));
     
-    // Refresh Packery if available
     if (window.pckry) {
       window.pckry.reloadItems();
       window.pckry.layout();
@@ -426,61 +797,38 @@
   }
   
   function initPins() {
-    const pinButtons = document.querySelectorAll('.pin-btn');
-    
-    pinButtons.forEach(btn => {
-      // Clone to remove old listeners
+    document.querySelectorAll('.pin-btn').forEach(btn => {
       const newBtn = btn.cloneNode(true);
       btn.parentNode.replaceChild(newBtn, btn);
       
-      newBtn.addEventListener('click', (e) => {
+      newBtn.onclick = (e) => {
         e.stopPropagation();
         const item = newBtn.closest('.dashboard-item');
-        
         if (item.classList.contains('pinned')) {
           item.classList.remove('pinned');
           newBtn.style.color = '';
           newBtn.style.transform = '';
-          console.log(`📌 Unpinned: ${item.id}`);
         } else {
           item.classList.add('pinned');
           newBtn.style.color = '#00ff41';
           newBtn.style.transform = 'rotate(45deg)';
-          console.log(`📌 Pinned: ${item.id}`);
         }
-        
         movePinsToTop();
         savePins();
-      });
-      
-      // Touch feedback
-      newBtn.addEventListener('touchstart', () => {
-        newBtn.style.transform = 'scale(0.95)';
-      });
-      newBtn.addEventListener('touchend', () => {
-        if (!newBtn.closest('.dashboard-item')?.classList.contains('pinned')) {
-          newBtn.style.transform = '';
-        }
-      });
+      };
     });
-    
-    console.log(`✅ Initialized ${pinButtons.length} pin buttons`);
   }
   
-  // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      loadPins();
-      initPins();
-      setTimeout(movePinsToTop, 100);
-    });
-  } else {
-    loadPins();
-    initPins();
-    setTimeout(movePinsToTop, 100);
-  }
+  // Watch for module visibility changes
+  window.addEventListener('settingsChanged', () => {
+    setTimeout(() => {
+      movePinsToTop();
+    }, 100);
+  });
   
-  console.log('✅ Pin feature active - click 📌 to pin modules');
+  loadPins();
+  initPins();
+  setTimeout(movePinsToTop, 100);
 })();
 </script>
 
