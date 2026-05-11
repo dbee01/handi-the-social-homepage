@@ -93,7 +93,7 @@
     }
     
     .module-section {
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       border: 1px solid var(--term-dim, #666);
       border-radius: 8px;
       overflow: hidden;
@@ -108,11 +108,33 @@
       cursor: pointer;
     }
     
-    .module-header input[type="checkbox"] {
+    .module-header .enable-toggle {
+      width: 50px;
+      height: 24px;
+      background: #444;
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .module-header .enable-toggle.active {
+      background: var(--term-green, #00ff41);
+    }
+    
+    .module-header .enable-toggle .toggle-slider {
       width: 20px;
       height: 20px;
-      cursor: pointer;
-      accent-color: var(--term-green, #00ff41);
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      transition: transform 0.3s;
+    }
+    
+    .module-header .enable-toggle.active .toggle-slider {
+      transform: translateX(26px);
     }
     
     .module-header h3 {
@@ -150,6 +172,11 @@
       color: var(--term-white, #fff);
       border-radius: 4px;
       font-family: monospace;
+    }
+    
+    .config-field input[readonly] {
+      background: #111;
+      cursor: pointer;
     }
     
     .config-field textarea {
@@ -250,35 +277,34 @@
 
 <div class="dashboard-wrapper" style="flex: 1;">
   <main id="dashboard-grid">
-
-    <!-- Gallery Module -->
+    <!-- All modules are initially empty - content loaded dynamically via app.js -->
+    <!-- Module containers - content populated by app.js based on settings -->
     <div class="dashboard-item" id="gallery" data-module="gallery" data-order="1">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      <div class="module-content"></div>
     </div>
 
-    <!-- Emergency Module -->
     <div class="dashboard-item" id="emergency" data-module="emergency" data-order="2">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      <div class="module-content"></div>
     </div>
     
-    <!-- Bus Module -->
     <div class="dashboard-item" id="bus" data-module="bus" data-order="3">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      <div class="module-content"></div>
     </div>
 
-    <!-- Friendly Phone Module -->
     <div class="dashboard-item" id="friendly-phone" data-module="friendly-phone" data-order="11">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      <div class="module-content"></div>
     </div>
     
-    <!-- Local Music Player Module -->
     <div class="dashboard-item" id="local-player" data-module="local-player" data-order="12">
       <button class="pin-btn" title="Pin to top">
         <i class="fa-solid fa-thumbtack"></i>
       </button>
-      <div id="music-player" class="module-content"></div>
+      <div class="module-content"></div>
     </div>
-
   </main>
 </div>
 
@@ -306,21 +332,23 @@
     <!-- Gallery Module Settings -->
     <div class="module-section">
       <div class="module-header">
-        <input type="checkbox" id="toggleGallery" data-module="gallery">
+        <div class="enable-toggle" data-module="gallery">
+          <div class="toggle-slider"></div>
+        </div>
         <h3><i class="fa-solid fa-images"></i> Gallery Module</h3>
-        <i class="fa-solid fa-chevron-down" style="color: var(--term-green);"></i>
+        <i class="fa-solid fa-chevron-down"></i>
       </div>
       <div class="module-config">
         <div class="config-field">
           <label><i class="fa-solid fa-folder"></i> Image Folder:</label>
-          <input type="text" id="galleryFolderPath" readonly placeholder="No folder selected" style="background: #111;">
+          <input type="text" id="galleryFolderPath" readonly placeholder="No folder selected" style="background: #111; cursor: pointer;">
           <button class="select-folder-btn" id="selectGalleryFolder">
             <i class="fa-solid fa-folder-open"></i> Select Image Folder
           </button>
         </div>
         <div class="config-field">
           <label><i class="fa-solid fa-clock"></i> Slideshow Speed (ms):</label>
-          <input type="number" id="gallerySpeed" min="500" max="10000" step="100">
+          <input type="number" id="gallerySpeed" min="500" max="10000" step="100" value="3000">
         </div>
         <div class="config-field">
           <label><i class="fa-solid fa-check-circle"></i> Auto-start Slideshow:</label>
@@ -335,7 +363,9 @@
     <!-- Bus Module Settings -->
     <div class="module-section">
       <div class="module-header">
-        <input type="checkbox" id="toggleBus" data-module="bus">
+        <div class="enable-toggle" data-module="bus">
+          <div class="toggle-slider"></div>
+        </div>
         <h3><i class="fa-solid fa-bus"></i> Bus Module</h3>
         <i class="fa-solid fa-chevron-down"></i>
       </div>
@@ -350,7 +380,7 @@
         </div>
         <div class="config-field">
           <label><i class="fa-solid fa-clock"></i> Refresh Interval (seconds):</label>
-          <input type="number" id="busRefreshInterval" min="30" max="300" step="10">
+          <input type="number" id="busRefreshInterval" min="30" max="300" step="10" value="60">
         </div>
       </div>
     </div>
@@ -358,21 +388,23 @@
     <!-- Music Player Settings -->
     <div class="module-section">
       <div class="module-header">
-        <input type="checkbox" id="toggleMusicPlayer" data-module="local-player">
+        <div class="enable-toggle" data-module="local-player">
+          <div class="toggle-slider"></div>
+        </div>
         <h3><i class="fa-solid fa-music"></i> Music Player</h3>
         <i class="fa-solid fa-chevron-down"></i>
       </div>
       <div class="module-config">
         <div class="config-field">
           <label><i class="fa-solid fa-folder"></i> Music Folder:</label>
-          <input type="text" id="musicFolderPath" readonly placeholder="No folder selected" style="background: #111;">
+          <input type="text" id="musicFolderPath" readonly placeholder="No folder selected" style="background: #111; cursor: pointer;">
           <button class="select-folder-btn" id="selectMusicFolder">
             <i class="fa-solid fa-folder-open"></i> Select Music Folder
           </button>
         </div>
         <div class="config-field">
           <label><i class="fa-solid fa-volume-up"></i> Default Volume (%):</label>
-          <input type="range" id="defaultVolume" min="0" max="200" step="1">
+          <input type="range" id="defaultVolume" min="0" max="200" step="1" value="100">
           <span id="volumeValue" style="color: var(--term-green);">100%</span>
         </div>
         <div class="config-field">
@@ -388,7 +420,9 @@
     <!-- Emergency Module Settings -->
     <div class="module-section">
       <div class="module-header">
-        <input type="checkbox" id="toggleEmergency" data-module="emergency">
+        <div class="enable-toggle" data-module="emergency">
+          <div class="toggle-slider"></div>
+        </div>
         <h3><i class="fa-solid fa-triangle-exclamation"></i> Emergency Module</h3>
         <i class="fa-solid fa-chevron-down"></i>
       </div>
@@ -402,7 +436,7 @@
         </div>
         <div class="config-field">
           <label><i class="fa-solid fa-clock"></i> Check Interval (minutes):</label>
-          <input type="number" id="emergencyInterval" min="1" max="60" step="1">
+          <input type="number" id="emergencyInterval" min="1" max="60" step="1" value="5">
         </div>
       </div>
     </div>
@@ -410,7 +444,9 @@
     <!-- Friendly Phone Settings -->
     <div class="module-section">
       <div class="module-header">
-        <input type="checkbox" id="toggleFriendlyPhone" data-module="friendly-phone">
+        <div class="enable-toggle" data-module="friendly-phone">
+          <div class="toggle-slider"></div>
+        </div>
         <h3><i class="fa-solid fa-phone"></i> Friendly Phone</h3>
         <i class="fa-solid fa-chevron-down"></i>
       </div>
@@ -424,7 +460,7 @@
         </div>
         <div class="config-field">
           <label><i class="fa-solid fa-clock"></i> Auto-dial Warning (seconds):</label>
-          <input type="number" id="autoDialDelay" min="5" max="30" step="1">
+          <input type="number" id="autoDialDelay" min="5" max="30" step="1" value="10">
         </div>
       </div>
     </div>
@@ -444,6 +480,15 @@
   window.emergencyContacts = [];
   window.phoneContacts = [];
   
+  // Module enabled state
+  let moduleStates = {
+    gallery: true,
+    bus: true,
+    'local-player': true,
+    emergency: true,
+    'friendly-phone': true
+  };
+  
   // Helper to show toast
   function showToast(message, isError = false) {
     const toast = document.createElement('div');
@@ -462,6 +507,28 @@
     toast.innerHTML = message;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
+  }
+  
+  // Update module visibility on homepage
+  function updateModuleVisibility() {
+    Object.keys(moduleStates).forEach(moduleId => {
+      const moduleElement = document.getElementById(moduleId);
+      if (moduleElement) {
+        if (moduleStates[moduleId]) {
+          moduleElement.classList.remove('hidden-module');
+        } else {
+          moduleElement.classList.add('hidden-module');
+        }
+      }
+    });
+    
+    // Refresh Packery layout
+    if (window.pckry) {
+      setTimeout(() => {
+        window.pckry.reloadItems();
+        window.pckry.layout();
+      }, 100);
+    }
   }
   
   // Render emergency contacts
@@ -565,9 +632,9 @@
       if ('showDirectoryPicker' in window) {
         const dirHandle = await window.showDirectoryPicker();
         inputElement.value = dirHandle.name;
+        showToast(`✅ Selected folder: ${dirHandle.name}`);
         return dirHandle;
       } else {
-        // Fallback for browsers without directory picker
         const input = document.createElement('input');
         input.type = 'file';
         input.webkitdirectory = true;
@@ -578,6 +645,7 @@
             if (input.files.length > 0) {
               const path = input.files[0].webkitRelativePath.split('/')[0];
               inputElement.value = path;
+              showToast(`✅ Selected folder: ${path}`);
             }
             resolve();
           };
@@ -586,7 +654,7 @@
         return null;
       }
     } catch (err) {
-      console.error('Folder selection cancelled or failed:', err);
+      console.error('Folder selection cancelled:', err);
       showToast('Folder selection cancelled', true);
       return null;
     }
@@ -598,24 +666,25 @@
     if (saved) {
       const settings = JSON.parse(saved);
       
-      // Module visibility
-      if (settings.modules) {
-        Object.keys(settings.modules).forEach(moduleId => {
-          const checkbox = document.querySelector(`[data-module="${moduleId}"]`);
-          if (checkbox) {
-            checkbox.checked = settings.modules[moduleId];
-          }
-          
-          const moduleElement = document.getElementById(moduleId);
-          if (moduleElement) {
-            if (settings.modules[moduleId]) {
-              moduleElement.classList.remove('hidden-module');
-            } else {
-              moduleElement.classList.add('hidden-module');
-            }
-          }
-        });
+      // Module enabled states
+      if (settings.moduleStates) {
+        moduleStates = { ...moduleStates, ...settings.moduleStates };
       }
+      
+      // Update toggle UI
+      Object.keys(moduleStates).forEach(moduleId => {
+        const toggle = document.querySelector(`.enable-toggle[data-module="${moduleId}"]`);
+        if (toggle) {
+          if (moduleStates[moduleId]) {
+            toggle.classList.add('active');
+          } else {
+            toggle.classList.remove('active');
+          }
+        }
+      });
+      
+      // Update module visibility
+      updateModuleVisibility();
       
       // Gallery settings
       if (settings.gallery) {
@@ -675,14 +744,24 @@
   }
   
   function setDefaultSettings() {
-    // Default module visibility (all visible)
-    document.querySelectorAll('.dashboard-item').forEach(item => {
-      item.classList.remove('hidden-module');
+    // Default module states (all enabled)
+    moduleStates = {
+      gallery: true,
+      bus: true,
+      'local-player': true,
+      emergency: true,
+      'friendly-phone': true
+    };
+    
+    // Update toggle UI
+    Object.keys(moduleStates).forEach(moduleId => {
+      const toggle = document.querySelector(`.enable-toggle[data-module="${moduleId}"]`);
+      if (toggle && moduleStates[moduleId]) {
+        toggle.classList.add('active');
+      }
     });
     
-    document.querySelectorAll('[data-module]').forEach(checkbox => {
-      checkbox.checked = true;
-    });
+    updateModuleVisibility();
     
     // Default gallery settings
     if (document.getElementById('gallerySpeed')) 
@@ -722,7 +801,7 @@
   // Save all settings
   function saveSettings() {
     const settings = {
-      modules: {},
+      moduleStates: moduleStates,
       gallery: {
         folderPath: document.getElementById('galleryFolderPath')?.value || '',
         speed: parseInt(document.getElementById('gallerySpeed')?.value) || 3000,
@@ -748,21 +827,6 @@
       }
     };
     
-    // Save module visibility
-    document.querySelectorAll('[data-module]').forEach(checkbox => {
-      const moduleId = checkbox.getAttribute('data-module');
-      settings.modules[moduleId] = checkbox.checked;
-      
-      const moduleElement = document.getElementById(moduleId);
-      if (moduleElement) {
-        if (checkbox.checked) {
-          moduleElement.classList.remove('hidden-module');
-        } else {
-          moduleElement.classList.add('hidden-module');
-        }
-      }
-    });
-    
     // Save to localStorage
     localStorage.setItem('moduleSettings', JSON.stringify(settings));
     
@@ -774,14 +838,6 @@
     
     // Close modal
     closeSettingsModal();
-    
-    // Refresh layout
-    if (window.pckry) {
-      setTimeout(() => {
-        window.pckry.reloadItems();
-        window.pckry.layout();
-      }, 100);
-    }
   }
   
   // Escape HTML helper
@@ -803,7 +859,7 @@
   
   function openSettingsModal() {
     settingsModal.classList.add('active');
-    loadSettings(); // Reload latest settings when opening
+    loadSettings();
   }
   
   function closeSettingsModal() {
@@ -824,7 +880,7 @@
   // Expand/collapse module sections
   document.querySelectorAll('.module-header').forEach(header => {
     header.onclick = (e) => {
-      if (e.target.type === 'checkbox') return;
+      if (e.target.closest('.enable-toggle')) return;
       
       const config = header.nextElementSibling;
       const icon = header.querySelector('.fa-chevron-down, .fa-chevron-up');
@@ -835,6 +891,23 @@
         } else {
           icon.className = 'fa-solid fa-chevron-down';
         }
+      }
+    };
+  });
+  
+  // Enable toggle functionality
+  document.querySelectorAll('.enable-toggle').forEach(toggle => {
+    toggle.onclick = (e) => {
+      e.stopPropagation();
+      const moduleId = toggle.getAttribute('data-module');
+      if (moduleId) {
+        moduleStates[moduleId] = !moduleStates[moduleId];
+        if (moduleStates[moduleId]) {
+          toggle.classList.add('active');
+        } else {
+          toggle.classList.remove('active');
+        }
+        updateModuleVisibility();
       }
     };
   });
@@ -891,7 +964,7 @@
   console.log('💡 Click the gear icon bottom-right to configure modules');
 })();
 
-// ========== REFRESH WARNING (Simple) ==========
+// ========== REFRESH WARNING ==========
 (function() {
   let warningsEnabled = true;
   let confirmedRefresh = false;
@@ -978,7 +1051,7 @@
 // ========== PIN FEATURE ==========
 (function() {
   function savePins() {
-    const pinned = Array.from(document.querySelectorAll('.dashboard-item.pinned')).map(i => i.id);
+    const pinned = Array.from(document.querySelectorAll('.dashboard-item.pinned:not(.hidden-module)')).map(i => i.id);
     localStorage.setItem('pinnedItems', JSON.stringify(pinned));
   }
   
