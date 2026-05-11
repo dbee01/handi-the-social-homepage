@@ -1,7 +1,7 @@
-// js/storage.js - UPDATED VERSION NUMBER
+// js/storage.js - COMPLETE WORKING VERSION
 
 const DB_NAME = 'pleie_storage';
-const DB_VERSION = 2;  // Increased from 1 to 2
+const DB_VERSION = 3;  // Increased version to force recreation
 
 let db = null;
 
@@ -18,26 +18,36 @@ function initDB() {
     
     request.onsuccess = () => {
       db = request.result;
+      console.log('Database opened successfully');
       resolve(db);
     };
     
     request.onupgradeneeded = (event) => {
       const database = event.target.result;
-      // Delete old stores if they exist
-      if (database.objectStoreNames.contains('music')) {
-        database.deleteObjectStore('music');
+      console.log('Creating/upgrading database stores...');
+      
+      // Create music store
+      if (!database.objectStoreNames.contains('music')) {
+        database.createObjectStore('music', { keyPath: 'id', autoIncrement: true });
+        console.log('Created music store');
       }
-      if (database.objectStoreNames.contains('settings')) {
-        database.deleteObjectStore('settings');
+      
+      // Create gallery store
+      if (!database.objectStoreNames.contains('gallery')) {
+        database.createObjectStore('gallery', { keyPath: 'id', autoIncrement: true });
+        console.log('Created gallery store');
       }
-      // Create fresh stores
-      database.createObjectStore('music', { keyPath: 'id', autoIncrement: true });
-      database.createObjectStore('settings', { keyPath: 'key' });
+      
+      // Create settings store
+      if (!database.objectStoreNames.contains('settings')) {
+        database.createObjectStore('settings', { keyPath: 'key' });
+        console.log('Created settings store');
+      }
     };
   });
 }
 
-// Save settings
+// ============ SETTINGS ============
 export function saveSettings(settings) {
   localStorage.setItem('pleie_settings', JSON.stringify(settings));
 }
@@ -47,19 +57,7 @@ export function loadSettings() {
   return saved ? JSON.parse(saved) : null;
 }
 
-// Clear all music
-export async function clearMusicFiles() {
-  await initDB();
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(['music'], 'readwrite');
-    const store = transaction.objectStore('music');
-    const request = store.clear();
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error);
-  });
-}
-
-// Save music files directly from File objects
+// ============ MUSIC FUNCTIONS ============
 export async function saveMusicFiles(files) {
   await initDB();
   
@@ -67,7 +65,7 @@ export async function saveMusicFiles(files) {
     const transaction = db.transaction(['music'], 'readwrite');
     const store = transaction.objectStore('music');
     
-    // Clear existing first
+    // Clear existing
     store.clear();
     
     let completed = 0;
@@ -83,27 +81,26 @@ export async function saveMusicFiles(files) {
         id: i,
         name: file.name,
         type: file.type,
-        file: file,
+        file: file.file || file,  // Handle both formats
         size: file.size
       });
       
       request.onsuccess = () => {
         completed++;
         if (completed === total) {
-          console.log(`Saved ${total} music files`);
+          console.log(`✅ Saved ${total} music files`);
           resolve();
         }
       };
       
       request.onerror = (e) => {
-        console.error('Error saving:', e);
+        console.error('Error saving music:', e);
         reject(e);
       };
     });
   });
 }
 
-// Load music files
 export async function loadMusicFiles() {
   await initDB();
   
@@ -127,26 +124,134 @@ export async function loadMusicFiles() {
   });
 }
 
-// Get storage info
-export async function getStorageInfo() {
+export async function clearMusicFiles() {
   await initDB();
-  
-  return new Promise((resolve) => {
-    const transaction = db.transaction(['music'], 'readonly');
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['music'], 'readwrite');
     const store = transaction.objectStore('music');
-    const request = store.count();
-    request.onsuccess = () => resolve({ music: request.result });
-    request.onerror = () => resolve({ music: 0 });
+    const request = store.clear();
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
   });
 }
 
-// For compatibility with existing code
-export async function saveGalleryImages() { return; }
-export async function loadGalleryImages() { return []; }
+// ============ GALLERY FUNCTIONS ============
+export async function saveGalleryImages(images) {
+  await initDB();
+  
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['gallery'], 'readwrite');
+    const store = transaction.objectStore('gallery');
+    
+    // Clear existing
+    store.clear();
+    
+    let completed = 0;
+    const total = images.length;
+    
+    if (total === 0) {
+      resolve();
+      return;
+    }
+    
+    images.forEach((image, i) => {
+      const fileToStore = image.blob || image.file || image;
+      const request = store.add({
+        id: i,
+        name: image.name,
+        type: image.type,
+        file: fileToStore,
+        size: image.size
+      });
+      
+      request.onsuccess = () => {
+        completed++;
+        if (completed === total) {
+          console.log(`✅ Saved ${total} gallery images`);
+          resolve();
+        }
+      };
+      
+      request.onerror = (e) => {
+        console.error('Error saving gallery:', e);
+        reject(e);
+      };
+    });
+  });
+}
+
+export async function loadGalleryImages() {
+  await initDB();
+  
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['gallery'], 'readonly');
+    const store = transaction.objectStore('gallery');
+    const request = store.getAll();
+    
+    request.onsuccess = () => {
+      const images = request.result.map(item => ({
+        name: item.name,
+        type: item.type,
+        file: item.file,
+        url: URL.createObjectURL(item.file),
+        size: item.size
+      }));
+      console.log(`✅ Loaded ${images.length} gallery images`);
+      resolve(images);
+    };
+    
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export async function clearGalleryImages() {
+  await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['gallery'], 'readwrite');
+    const store = transaction.objectStore('gallery');
+    const request = store.clear();
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
+// ============ STORAGE INFO ============
+export async function getStorageInfo() {
+  await initDB();
+  
+  const musicCount = await new Promise((resolve) => {
+    try {
+      const transaction = db.transaction(['music'], 'readonly');
+      const store = transaction.objectStore('music');
+      const request = store.count();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => resolve(0);
+    } catch(e) {
+      resolve(0);
+    }
+  });
+  
+  const galleryCount = await new Promise((resolve) => {
+    try {
+      const transaction = db.transaction(['gallery'], 'readonly');
+      const store = transaction.objectStore('gallery');
+      const request = store.count();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => resolve(0);
+    } catch(e) {
+      resolve(0);
+    }
+  });
+  
+  return { music: musicCount, images: galleryCount };
+}
+
+// ============ UTILITY FUNCTIONS ============
 export function fileToDataURL(file) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
     reader.readAsDataURL(file);
   });
 }

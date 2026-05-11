@@ -517,12 +517,13 @@
       saveMusicFiles, 
       loadGalleryImages, 
       loadMusicFiles,
-      fileToDataURL,
       getStorageInfo,
       saveSettings,
-      loadSettings
+      loadSettings,
+      clearMusicFiles,
+      clearGalleryImages
     } from './js/storage.js';
-    
+
     // Settings State
     let enabledModules = {
       gallery: true,
@@ -552,36 +553,107 @@
     
     async function selectFolder(inputElement, type) {
       try {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.webkitdirectory = true;
-        input.multiple = true;
-        
-        input.onchange = async (e) => {
-          const fileList = Array.from(e.target.files);
-          const audioFiles = [];
-          const folderName = fileList[0]?.webkitRelativePath?.split('/')[0] || 'Music';
-          inputElement.value = folderName;
+        // For modern browsers with directory picker API
+        if ('showDirectoryPicker' in window) {
+          const dirHandle = await window.showDirectoryPicker();
+          inputElement.value = dirHandle.name;
           
-          for (const file of fileList) {
-            const ext = file.name.toLowerCase().split('.').pop();
-            const isAudio = ['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac'].includes(ext);
-            
-            if (type === 'music' && isAudio) {
-              audioFiles.push(file);
+          const files = [];
+          for await (const entry of dirHandle.values()) {
+            if (entry.kind === 'file') {
+              const ext = entry.name.toLowerCase().split('.').pop();
+              const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+              const isAudio = ['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac'].includes(ext);
+              
+              if ((type === 'gallery' && isImage) || (type === 'music' && isAudio)) {
+                const file = await entry.getFile();
+                files.push(file);  // Store the File object directly
+              }
             }
           }
           
-          if (type === 'music') {
-            await saveMusicFiles(audioFiles);
-            showToast(`✅ Saved ${audioFiles.length} music files`);
+          if (type === 'gallery') {
+            // Convert File objects to the format saveGalleryImages expects
+            const imageFiles = files.map(file => ({
+              name: file.name,
+              type: file.type,
+              blob: file,  // Use 'blob' or 'file' property
+              file: file,
+              size: file.size
+            }));
+            await saveGalleryImages(imageFiles);
+            showToast(`✅ Saved ${imageFiles.length} images to gallery`);
+            await updateStorageInfo();
+          } else if (type === 'music') {
+            // Convert File objects to the format saveMusicFiles expects
+            const musicFiles = files.map(file => ({
+              name: file.name,
+              type: file.type,
+              file: file,
+              size: file.size
+            }));
+            await saveMusicFiles(musicFiles);
+            showToast(`✅ Saved ${musicFiles.length} music files to player`);
             await updateStorageInfo();
           }
-        };
-        
-        input.click();
+        } 
+        // Fallback for browsers without directory picker
+        else {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.webkitdirectory = true;
+          input.directory = true;
+          input.multiple = true;
+          
+          input.onchange = async (e) => {
+            const fileList = Array.from(e.target.files);
+            const folderName = fileList[0]?.webkitRelativePath?.split('/')[0] || 'selected';
+            inputElement.value = folderName;
+            
+            if (type === 'gallery') {
+              const imageFiles = [];
+              for (const file of fileList) {
+                const ext = file.name.toLowerCase().split('.').pop();
+                const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+                if (isImage) {
+                  imageFiles.push({
+                    name: file.name,
+                    type: file.type,
+                    blob: file,
+                    file: file,
+                    size: file.size
+                  });
+                }
+              }
+              await saveGalleryImages(imageFiles);
+              showToast(`✅ Saved ${imageFiles.length} images to gallery`);
+              await updateStorageInfo();
+            } 
+            else if (type === 'music') {
+              const musicFiles = [];
+              for (const file of fileList) {
+                const ext = file.name.toLowerCase().split('.').pop();
+                const isAudio = ['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac'].includes(ext);
+                if (isAudio) {
+                  musicFiles.push({
+                    name: file.name,
+                    type: file.type,
+                    file: file,
+                    size: file.size
+                  });
+                }
+              }
+              await saveMusicFiles(musicFiles);
+              showToast(`✅ Saved ${musicFiles.length} music files to player`);
+              await updateStorageInfo();
+            }
+          };
+          
+          input.click();
+        }
       } catch (err) {
-        showToast('Selection cancelled', true);
+        console.error('Folder selection error:', err);
+        showToast('Folder selection cancelled or failed', true);
       }
     }    
     async function updateStorageInfo() {
@@ -590,10 +662,10 @@
       const musicInfo = document.getElementById('musicStorageInfo');
       
       if (galleryInfo) {
-        galleryInfo.innerHTML = `<i class="fa-solid fa-database"></i> ${info.images} images stored in gallery`;
+        galleryInfo.innerHTML = `<i class="fa-solid fa-database"></i> ${info.images || 0} images stored in gallery`;
       }
       if (musicInfo) {
-        musicInfo.innerHTML = `<i class="fa-solid fa-database"></i> ${info.music} music files stored`;
+        musicInfo.innerHTML = `<i class="fa-solid fa-database"></i> ${info.music || 0} music files stored`;
       }
     }
     
