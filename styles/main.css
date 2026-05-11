@@ -826,35 +826,77 @@ footer {
 }
 
 /* Local Music Player */
-#local-player {
-  width: 100%;
-  box-sizing: border-box;
+/* Force Music Player to be single column width */
+#local-player,
+.dashboard-item#local-player {
+  width: 420px !important;
+  max-width: 420px !important;
+  min-width: 300px !important;
+  position: absolute !important;
+  box-sizing: border-box !important;
 }
 
-#music-player {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Ensure the module content stays within bounds */
+#local-player .module-content {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
 }
 
-#music-player * {
-  box-sizing: border-box;
-  max-width: 100%;
+/* Constrain all internal elements */
+#local-player * {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-/* Mobile */
-@media (max-width: 768px) {
+/* Fix the playlist container */
+#playlist-container {
+  max-height: 180px;
+  overflow-y: auto;
+  width: 100% !important;
+}
+
+/* Fix the playlist items */
+.playlist-item {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.playlist-item span {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: block !important;
+  flex: 1 !important;
+}
+
+/* Fix the canvas visualizer */
+#audio-visualizer {
+  width: 100% !important;
+  display: block !important;
+}
+
+/* Mobile override */
+@media (max-width: 1024px) {
   #local-player,
-  #music-player {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
+  .dashboard-item#local-player {
+    width: 380px !important;
+    max-width: 380px !important;
   }
 }
 
+@media (max-width: 800px) {
+  #local-player,
+  .dashboard-item#local-player {
+    width: 100% !important;
+    max-width: 100% !important;
+    position: relative !important;
+    margin-bottom: 12px;
+  }
+}
 /* Add to your CSS */
 
 .mobile-layout {
