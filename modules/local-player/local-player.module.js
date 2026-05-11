@@ -32,25 +32,27 @@ export default async function initLocalPlayer(container) {
     box-sizing: border-box;
   `;
 
-  // Folder Selection Area
-  const folderSection = document.createElement("div");
-  folderSection.style.cssText = `
+  // Info Section (replaces folder selector)
+  const infoSection = document.createElement("div");
+  infoSection.style.cssText = `
     text-align: center;
     padding: 20px;
     background: rgba(0,0,0,0.3);
     border: 1px dashed var(--term-dim);
     border-radius: var(--radius);
-    cursor: pointer;
     transition: all 0.3s;
   `;
-  folderSection.innerHTML = `
-    <i class="fa-solid fa-folder-open"
+  infoSection.innerHTML = `
+    <i class="fa-solid fa-music"
        style="font-size: 2rem; color: var(--term-cyan); margin-bottom: 10px;"></i>
     <div style="color: var(--term-cyan); font-weight: bold;">
-      Select Music Files
+      Music Player
     </div>
-    <div style="color: var(--term-dim); font-size: 0.8rem;">
-      Works in Firefox, Safari, Chrome, and Edge
+    <div style="color: var(--term-dim); font-size: 0.8rem; margin-top: 5px;">
+      <i class="fa-solid fa-gear"></i> Configure in Settings (gear icon)
+    </div>
+    <div id="music-player-status" style="color: var(--term-dim); font-size: 0.8rem; margin-top: 10px;">
+      No music loaded
     </div>
   `;
 
@@ -93,7 +95,7 @@ export default async function initLocalPlayer(container) {
     font-size: 0.8rem;
     margin-top: 5px;
   `;
-  trackStatus.textContent = "Select music files to begin";
+  trackStatus.textContent = "Configure music in Settings";
 
   trackInfo.append(trackTitle, trackStatus);
 
@@ -166,7 +168,7 @@ export default async function initLocalPlayer(container) {
     playlistSection
   );
 
-  playerContainer.append(folderSection, controlsSection);
+  playerContainer.append(infoSection, controlsSection);
   container.appendChild(playerContainer);
 
   // ===== STATE =====
@@ -174,6 +176,7 @@ export default async function initLocalPlayer(container) {
   let currentIndex = -1;
   let isPlaying = false;
   let isShuffle = false;
+  let musicFolderFiles = [];
 
   const audioElement = new Audio();
   audioElement.preload = "auto";
@@ -183,41 +186,50 @@ export default async function initLocalPlayer(container) {
   let source = null;
   let animationFrame = null;
 
-  // ===== FILE PICKER =====
-  folderSection.onclick = () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.multiple = true;
-    input.accept = ".mp3,.wav,.ogg,.flac,.m4a,audio/*";
-
-    input.addEventListener("change", (event) => {
-      const files = Array.from(event.target.files || []);
-
-      playlist = files
-        .filter((file) =>
-          /\.(mp3|wav|ogg|flac|m4a)$/i.test(file.name)
-        )
-        .sort((a, b) =>
-          a.name.localeCompare(b.name)
-        )
-        .map((file) => ({
-          name: file.name,
-          file,
-        }));
-
-      if (!playlist.length) {
-        alert("No supported audio files selected.");
-        return;
+  // ===== LOAD MUSIC FROM SETTINGS =====
+  function loadMusicFromSettings() {
+    const saved = localStorage.getItem('pleie_settings');
+    if (saved) {
+      const settings = JSON.parse(saved);
+      if (settings.musicPlayer && settings.musicPlayer.musicFiles) {
+        musicFolderFiles = settings.musicPlayer.musicFiles;
+        const statusMsg = document.getElementById('music-player-status');
+        
+        if (musicFolderFiles.length > 0) {
+          // Convert stored data to File objects
+          playlist = musicFolderFiles.map(fileData => ({
+            name: fileData.name,
+            file: new File([fileData.data], fileData.name, { type: fileData.type })
+          }));
+          
+          if (statusMsg) {
+            statusMsg.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${playlist.length} tracks loaded`;
+            statusMsg.style.color = 'var(--term-green)';
+          }
+          
+          // Show controls, hide info section
+          infoSection.style.display = "none";
+          controlsSection.style.display = "flex";
+          trackStatus.textContent = `${playlist.length} tracks loaded`;
+          renderPlaylist();
+          
+          // Apply saved volume and shuffle
+          if (settings.musicPlayer.defaultVolume) {
+            audioElement.volume = settings.musicPlayer.defaultVolume / 100;
+          }
+          if (settings.musicPlayer.defaultShuffle) {
+            isShuffle = settings.musicPlayer.defaultShuffle;
+            btnShuffle.style.color = isShuffle ? "var(--term-green)" : "var(--term-cyan)";
+          }
+        } else {
+          if (statusMsg) {
+            statusMsg.innerHTML = '<i class="fa-solid fa-gear"></i> No music loaded. Configure in Settings';
+            statusMsg.style.color = 'var(--term-dim)';
+          }
+        }
       }
-
-      renderPlaylist();
-      folderSection.style.display = "none";
-      controlsSection.style.display = "flex";
-      trackStatus.textContent = `${playlist.length} tracks loaded`;
-    });
-
-    input.click();
-  };
+    }
+  }
 
   // ===== CONTROL EVENTS =====
   btnPrev.onclick = () => {
@@ -282,6 +294,11 @@ export default async function initLocalPlayer(container) {
     }
   });
 
+  audioElement.addEventListener("error", (e) => {
+    console.error("Audio error:", e);
+    trackStatus.textContent = "Playback error";
+  });
+
   // ===== FUNCTIONS =====
   async function playTrack(index) {
     if (index < 0 || index >= playlist.length) return;
@@ -339,7 +356,7 @@ export default async function initLocalPlayer(container) {
         <i class="fa-solid fa-music"
            style="font-size:0.8rem;opacity:0.7;"></i>
         <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-          ${track.name}
+          ${escapeHtml(track.name)}
         </span>
       `;
 
@@ -458,4 +475,22 @@ export default async function initLocalPlayer(container) {
       bar.style.height = "5px";
     });
   }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  // Listen for settings changes
+  window.addEventListener('settingsChanged', () => {
+    loadMusicFromSettings();
+  });
+
+  // Initial load
+  loadMusicFromSettings();
 }
