@@ -25,8 +25,8 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      z-index: 20000;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 999999;
       justify-content: center;
       align-items: center;
     }
@@ -43,6 +43,8 @@
       max-width: 350px;
       width: 85%;
       text-align: center;
+      position: relative;
+      z-index: 999999;
     }
     
     .refresh-modal-icon {
@@ -82,6 +84,7 @@
       cursor: pointer;
       font-weight: bold;
       font-family: monospace;
+      font-size: 1rem;
     }
     
     .refresh-modal-btn.primary {
@@ -189,7 +192,7 @@
     <div class="refresh-modal-icon">
       <i class="fa-solid fa-triangle-exclamation"></i>
     </div>
-    <div class="refresh-modal-title">Refresh Page?</div>
+    <div class="refresh-modal-title">⚠️ Refresh Page?</div>
     <div class="refresh-modal-warning">
       <i class="fa-solid fa-database"></i> Playing media will stop<br>
       <i class="fa-solid fa-image"></i> Slideshow position will reset
@@ -199,109 +202,188 @@
       <label>Don't show again this session</label>
     </div>
     <div class="refresh-modal-buttons">
-      <button id="stayBtn" class="refresh-modal-btn primary">Stay</button>
-      <button id="refreshBtn" class="refresh-modal-btn danger">Refresh</button>
+      <button id="stayBtn" class="refresh-modal-btn primary">✓ Stay</button>
+      <button id="refreshBtn" class="refresh-modal-btn danger">⟳ Refresh</button>
     </div>
   </div>
 </div>
 
 <script>
-// ========== SIMPLE REFRESH WARNING (Works on all browsers) ==========
+// ========== VIVALDI-FRIENDLY REFRESH WARNING ==========
 (function() {
+  console.log('🛡️ Initializing refresh protection...');
+  
   let warningsEnabled = true;
-  let confirmedRefresh = false;
+  let refreshRequested = false;
+  let modalVisible = false;
+  
+  // Check session storage
+  if (sessionStorage.getItem('refreshWarningsOff') === 'true') {
+    warningsEnabled = false;
+    console.log('⚠️ Warnings disabled for this session');
+  }
   
   const modal = document.getElementById('refreshModal');
   const stayBtn = document.getElementById('stayBtn');
   const refreshBtn = document.getElementById('refreshBtn');
   const dontShowCheckbox = document.getElementById('dontShowAgain');
   
-  // Load preference
-  if (sessionStorage.getItem('refreshWarningsOff') === 'true') {
-    warningsEnabled = false;
+  // Hide modal function
+  function hideModal() {
+    if (modal) {
+      modal.classList.remove('active');
+      modalVisible = false;
+    }
   }
   
+  // Show modal function
   function showModal(callback) {
-    if (!warningsEnabled || confirmedRefresh) {
+    if (!warningsEnabled || refreshRequested) {
       if (callback) callback();
       return;
     }
     
-    modal.classList.add('active');
-    window.pendingRefresh = callback;
+    if (modal && !modalVisible) {
+      modal.classList.add('active');
+      modalVisible = true;
+      window.pendingRefresh = callback;
+      console.log('⚠️ Showing refresh warning modal');
+    }
   }
   
-  function hideModal() {
-    modal.classList.remove('active');
-    window.pendingRefresh = null;
-  }
-  
+  // Stay button - cancel refresh
   stayBtn.onclick = () => {
+    console.log('✓ User cancelled refresh');
     hideModal();
+    refreshRequested = false;
+    window.pendingRefresh = null;
   };
   
+  // Refresh button - proceed with refresh
   refreshBtn.onclick = () => {
+    console.log('⟳ User confirmed refresh');
+    
     if (dontShowCheckbox.checked) {
       warningsEnabled = false;
       sessionStorage.setItem('refreshWarningsOff', 'true');
     }
-    hideModal();
-    confirmedRefresh = true;
     
+    hideModal();
+    refreshRequested = true;
+    
+    // Execute the pending refresh
     if (window.pendingRefresh) {
       window.pendingRefresh();
     } else {
-      location.reload();
+      // Force reload without warnings
+      window.location.href = window.location.href;
     }
   };
   
+  // Click outside to close
   modal.onclick = (e) => {
-    if (e.target === modal) hideModal();
+    if (e.target === modal) {
+      hideModal();
+    }
   };
   
-  // Catch keyboard refresh
+  // ESC key to close
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'F5' || (e.ctrlKey && e.key === 'r') || (e.metaKey && e.key === 'r')) {
-      e.preventDefault();
-      showModal(() => location.reload());
+    if (e.key === 'Escape' && modalVisible) {
+      hideModal();
     }
   });
   
-  // Catch browser refresh button
+  // ========== INTERCEPT F5 AND CTRL+R ==========
+  document.addEventListener('keydown', (e) => {
+    const isF5 = e.key === 'F5';
+    const isCtrlR = (e.ctrlKey || e.metaKey) && (e.key === 'r' || e.key === 'R');
+    
+    if ((isF5 || isCtrlR) && warningsEnabled && !refreshRequested) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('🔑 Keyboard refresh detected, showing modal');
+      showModal(() => {
+        window.location.reload();
+      });
+      return false;
+    }
+  });
+  
+  // ========== INTERCEPT BEFOREUNLOAD (Browser refresh button) ==========
+  let beforeUnloadTime = null;
+  
   window.addEventListener('beforeunload', (e) => {
-    if (warningsEnabled && !confirmedRefresh) {
+    if (warningsEnabled && !refreshRequested && !modalVisible) {
+      beforeUnloadTime = Date.now();
+      console.log('🔄 Browser refresh detected');
+      
+      // Show modal with a slight delay
+      setTimeout(() => {
+        if (!refreshRequested) {
+          showModal(() => {
+            window.location.reload();
+          });
+        }
+      }, 10);
+      
+      // Required for Chrome/Vivaldi
       e.preventDefault();
       e.returnValue = '';
-      showModal(() => location.reload());
-      return e.returnValue;
+      return '';
     }
   });
   
-  // Override reload
-  const originalReload = location.reload;
-  location.reload = function() {
-    if (warningsEnabled && !confirmedRefresh) {
-      showModal(() => originalReload.call(location));
+  // ========== INTERCEPT LOCATION.RELOAD ==========
+  const originalReload = window.location.reload;
+  window.location.reload = function(forceReload) {
+    console.log('🔄 Programmatic reload detected');
+    if (warningsEnabled && !refreshRequested && !modalVisible) {
+      showModal(() => {
+        originalReload.call(window.location, forceReload);
+      });
     } else {
-      originalReload.call(location);
+      originalReload.call(window.location, forceReload);
     }
   };
   
-  // Console helpers
-  window.disableRefreshWarnings = () => {
+  // ========== HANDLE PAGE LOAD RESET ==========
+  window.addEventListener('load', () => {
+    refreshRequested = false;
+    modalVisible = false;
+    console.log('📄 Page loaded, refresh protection ready');
+  });
+  
+  // ========== CONSOLE HELPERS ==========
+  window.disableRefreshWarnings = function() {
     warningsEnabled = false;
     sessionStorage.setItem('refreshWarningsOff', 'true');
-  };
-  window.enableRefreshWarnings = () => {
-    warningsEnabled = true;
-    sessionStorage.removeItem('refreshWarningsOff');
+    console.log('⚠️ Refresh warnings DISABLED');
+    alert('Refresh warnings disabled for this session');
   };
   
-  console.log('✅ Refresh protection active');
+  window.enableRefreshWarnings = function() {
+    warningsEnabled = true;
+    sessionStorage.removeItem('refreshWarningsOff');
+    console.log('✅ Refresh warnings ENABLED');
+    alert('Refresh warnings enabled');
+  };
+  
+  window.testRefreshWarning = function() {
+    console.log('🧪 Testing refresh warning...');
+    showModal(() => {
+      window.location.reload();
+    });
+  };
+  
+  console.log('✅ Refresh protection active for Vivaldi');
+  console.log('💡 Commands: testRefreshWarning(), enableRefreshWarnings(), disableRefreshWarnings()');
 })();
 
 // ========== PIN FEATURE ==========
 (function() {
+  console.log('📌 Initializing pin feature...');
+  
   function savePins() {
     const pinned = Array.from(document.querySelectorAll('.dashboard-item.pinned')).map(i => i.id);
     localStorage.setItem('pinnedItems', JSON.stringify(pinned));
@@ -321,51 +403,84 @@
           }
         }
       });
+      console.log('📌 Loaded pinned state');
     }
   }
   
   function movePinsToTop() {
     const grid = document.getElementById('dashboard-grid');
+    if (!grid) return;
+    
     const items = Array.from(grid.children);
     const pinned = items.filter(i => i.classList.contains('pinned'));
     const unpinned = items.filter(i => !i.classList.contains('pinned'));
+    
     pinned.forEach(i => grid.appendChild(i));
     unpinned.forEach(i => grid.appendChild(i));
+    
+    // Refresh Packery if available
+    if (window.pckry) {
+      window.pckry.reloadItems();
+      window.pckry.layout();
+    }
   }
   
   function initPins() {
-    document.querySelectorAll('.pin-btn').forEach(btn => {
+    const pinButtons = document.querySelectorAll('.pin-btn');
+    
+    pinButtons.forEach(btn => {
+      // Clone to remove old listeners
       const newBtn = btn.cloneNode(true);
       btn.parentNode.replaceChild(newBtn, btn);
       
-      newBtn.onclick = (e) => {
+      newBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         const item = newBtn.closest('.dashboard-item');
+        
         if (item.classList.contains('pinned')) {
           item.classList.remove('pinned');
           newBtn.style.color = '';
           newBtn.style.transform = '';
+          console.log(`📌 Unpinned: ${item.id}`);
         } else {
           item.classList.add('pinned');
           newBtn.style.color = '#00ff41';
           newBtn.style.transform = 'rotate(45deg)';
+          console.log(`📌 Pinned: ${item.id}`);
         }
+        
         movePinsToTop();
         savePins();
-        
-        if (window.pckry) {
-          window.pckry.reloadItems();
-          window.pckry.layout();
+      });
+      
+      // Touch feedback
+      newBtn.addEventListener('touchstart', () => {
+        newBtn.style.transform = 'scale(0.95)';
+      });
+      newBtn.addEventListener('touchend', () => {
+        if (!newBtn.closest('.dashboard-item')?.classList.contains('pinned')) {
+          newBtn.style.transform = '';
         }
-      };
+      });
     });
+    
+    console.log(`✅ Initialized ${pinButtons.length} pin buttons`);
   }
   
-  loadPins();
-  initPins();
-  setTimeout(movePinsToTop, 100);
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPins();
+      initPins();
+      setTimeout(movePinsToTop, 100);
+    });
+  } else {
+    loadPins();
+    initPins();
+    setTimeout(movePinsToTop, 100);
+  }
   
-  console.log('✅ Pin feature active');
+  console.log('✅ Pin feature active - click 📌 to pin modules');
 })();
 </script>
 
