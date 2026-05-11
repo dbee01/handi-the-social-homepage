@@ -108,7 +108,7 @@
       cursor: pointer;
     }
     
-    /* Toggle Switch - Blue/Green theme */
+    /* Toggle Switch */
     .enable-toggle {
       width: 52px;
       height: 28px;
@@ -286,7 +286,6 @@
       transform: scale(0.98);
     }
     
-    /* Photo upload preview */
     .photo-preview {
       width: 80px;
       height: 80px;
@@ -320,7 +319,6 @@
       display: none;
     }
     
-    /* Responsive */
     @media (max-width: 768px) {
       .settings-modal-content {
         margin: 20px;
@@ -354,7 +352,7 @@
 
 <div class="dashboard-wrapper" style="flex: 1;">
   <main id="dashboard-grid">
-    <!-- Module containers - content populated by app.js based on settings -->
+    <!-- ALL MODULE CONTAINERS - NO INPUTS, JUST CONTENT LOADED BY app.js -->
     <div class="dashboard-item" id="gallery" data-module="gallery" data-order="1">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
       <div class="module-content"></div>
@@ -370,12 +368,27 @@
       <div class="module-content"></div>
     </div>
 
-    <div class="dashboard-item" id="friendly-phone" data-module="friendly-phone" data-order="11">
+    <div class="dashboard-item" id="news" data-module="news" data-order="4">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      <div class="module-content"></div>
+    </div>
+
+    <div class="dashboard-item" id="mastodon" data-module="mastodon" data-order="5">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      <div class="module-content"></div>
+    </div>
+
+    <div class="dashboard-item" id="radio" data-module="radio" data-order="6">
+      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      <div class="module-content"></div>
+    </div>
+
+    <div class="dashboard-item" id="friendly-phone" data-module="friendly-phone" data-order="7">
       <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
       <div class="module-content"></div>
     </div>
     
-    <div class="dashboard-item" id="local-player" data-module="local-player" data-order="12">
+    <div class="dashboard-item" id="local-player" data-module="local-player" data-order="8">
       <button class="pin-btn" title="Pin to top">
         <i class="fa-solid fa-thumbtack"></i>
       </button>
@@ -405,7 +418,7 @@
       <button class="close-settings" id="closeSettings">&times;</button>
     </div>
     
-    <!-- Gallery Module Settings -->
+    <!-- Gallery Module -->
     <div class="module-section">
       <div class="module-header">
         <div class="enable-toggle" data-module="gallery">
@@ -417,7 +430,7 @@
       <div class="module-config">
         <div class="config-field">
           <label><i class="fa-solid fa-folder"></i> Select Image Folder</label>
-          <input type="text" id="galleryFolderPath" readonly placeholder="No folder selected" style="background: #111; cursor: pointer;">
+          <input type="text" id="galleryFolderPath" readonly placeholder="No folder selected" style="background: #111;">
           <button class="select-folder-btn" id="selectGalleryFolder">
             <i class="fa-solid fa-folder-open"></i> Select a folder to begin
           </button>
@@ -436,7 +449,7 @@
       </div>
     </div>
     
-    <!-- Bus Module Settings -->
+    <!-- Bus Module -->
     <div class="module-section">
       <div class="module-header">
         <div class="enable-toggle" data-module="bus">
@@ -461,7 +474,83 @@
       </div>
     </div>
     
-    <!-- Music Player Settings -->
+    <!-- News Module -->
+    <div class="module-section">
+      <div class="module-header">
+        <div class="enable-toggle" data-module="news">
+          <div class="toggle-slider"></div>
+        </div>
+        <h3><i class="fa-solid fa-newspaper"></i> News Module</h3>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="module-config">
+        <div class="config-field">
+          <label><i class="fa-solid fa-globe"></i> News Source URL:</label>
+          <input type="text" id="newsSource" placeholder="https://api.example.com/news">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-tag"></i> Categories (comma-separated):</label>
+          <input type="text" id="newsCategories" placeholder="technology, science, world">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-clock"></i> Refresh Interval (minutes):</label>
+          <input type="number" id="newsInterval" min="5" max="120" step="5" value="30">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mastodon Module -->
+    <div class="module-section">
+      <div class="module-header">
+        <div class="enable-toggle" data-module="mastodon">
+          <div class="toggle-slider"></div>
+        </div>
+        <h3><i class="fa-brands fa-mastodon"></i> Mastodon Module</h3>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="module-config">
+        <div class="config-field">
+          <label><i class="fa-solid fa-building"></i> Instance URL:</label>
+          <input type="text" id="mastodonInstance" placeholder="https://mastodon.social">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-hashtag"></i> Hashtags to follow:</label>
+          <input type="text" id="mastodonHashtags" placeholder="technology, climate, energy">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-clock"></i> Refresh Interval (minutes):</label>
+          <input type="number" id="mastodonInterval" min="5" max="60" step="5" value="15">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Radio Module -->
+    <div class="module-section">
+      <div class="module-header">
+        <div class="enable-toggle" data-module="radio">
+          <div class="toggle-slider"></div>
+        </div>
+        <h3><i class="fa-solid fa-radio"></i> Radio Module</h3>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="module-config">
+        <div class="config-field">
+          <label><i class="fa-solid fa-link"></i> Radio Stream URL:</label>
+          <input type="text" id="radioStream" placeholder="https://example.com/stream.mp3">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-music"></i> Station Name:</label>
+          <input type="text" id="radioStation" placeholder="My Radio Station">
+        </div>
+        <div class="config-field">
+          <label><i class="fa-solid fa-volume-up"></i> Default Volume (%):</label>
+          <input type="range" id="radioVolume" min="0" max="100" step="1" value="70">
+          <span id="radioVolumeValue" style="color: var(--term-green);">70%</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Music Player -->
     <div class="module-section">
       <div class="module-header">
         <div class="enable-toggle" data-module="local-player">
@@ -473,7 +562,7 @@
       <div class="module-config">
         <div class="config-field">
           <label><i class="fa-solid fa-folder"></i> Select Music Folder</label>
-          <input type="text" id="musicFolderPath" readonly placeholder="No folder selected" style="background: #111; cursor: pointer;">
+          <input type="text" id="musicFolderPath" readonly placeholder="No folder selected" style="background: #111;">
           <button class="select-folder-btn" id="selectMusicFolder">
             <i class="fa-solid fa-folder-open"></i> Select a folder to begin
           </button>
@@ -493,7 +582,7 @@
       </div>
     </div>
     
-    <!-- Emergency Module Settings with Photo Support -->
+    <!-- Emergency Module -->
     <div class="module-section">
       <div class="module-header">
         <div class="enable-toggle" data-module="emergency">
@@ -519,7 +608,7 @@
       </div>
     </div>
     
-    <!-- Friendly Phone Settings with Photo Support -->
+    <!-- Friendly Phone -->
     <div class="module-section">
       <div class="module-header">
         <div class="enable-toggle" data-module="friendly-phone">
@@ -587,10 +676,13 @@
   window.emergencyContacts = [];
   window.phoneContacts = [];
   
-  // Module enabled state
+  // Module enabled state - ALL modules included
   let moduleStates = {
     gallery: true,
     bus: true,
+    news: true,
+    mastodon: true,
+    radio: true,
     'local-player': true,
     emergency: true,
     'friendly-phone': true
@@ -599,7 +691,6 @@
   let currentContactType = null;
   let currentPhotoData = null;
   
-  // Helper to show toast
   function showToast(message, isError = false) {
     const toast = document.createElement('div');
     toast.style.cssText = `
@@ -619,7 +710,7 @@
     setTimeout(() => toast.remove(), 3000);
   }
   
-  // Update module visibility on homepage
+  // Update module visibility
   function updateModuleVisibility() {
     Object.keys(moduleStates).forEach(moduleId => {
       const moduleElement = document.getElementById(moduleId);
@@ -640,7 +731,7 @@
     }
   }
   
-  // Render emergency contacts
+  // Render contacts
   function renderEmergencyContacts() {
     const container = document.getElementById('emergencyContactsList');
     if (!container) return;
@@ -669,7 +760,6 @@
     `).join('');
   }
   
-  // Render phone contacts
   function renderPhoneContacts() {
     const container = document.getElementById('phoneContactsList');
     if (!container) return;
@@ -697,38 +787,38 @@
     `).join('');
   }
   
-  // Show add contact modal
-  function showAddContactModal(type) {
-    currentContactType = type;
-    currentPhotoData = null;
+  // Contact handlers
+  window.addEmergencyContact = function() {
+    currentContactType = 'emergency';
     document.getElementById('contactName').value = '';
     document.getElementById('contactNumber').value = '';
-    const preview = document.getElementById('photoPreview');
-    preview.innerHTML = '<i class="fa-solid fa-camera"></i>';
+    document.getElementById('photoPreview').innerHTML = '<i class="fa-solid fa-camera"></i>';
     document.getElementById('addContactModal').style.display = 'flex';
-    
-    const title = type === 'emergency' ? 'Add Emergency Contact' : 'Add Contact';
-    document.getElementById('contactModalTitle').textContent = title;
-  }
+    document.getElementById('contactModalTitle').textContent = 'Add Emergency Contact';
+  };
   
-  // Save contact from modal
+  window.addPhoneContact = function() {
+    currentContactType = 'phone';
+    document.getElementById('contactName').value = '';
+    document.getElementById('contactNumber').value = '';
+    document.getElementById('photoPreview').innerHTML = '<i class="fa-solid fa-camera"></i>';
+    document.getElementById('addContactModal').style.display = 'flex';
+    document.getElementById('contactModalTitle').textContent = 'Add Contact';
+  };
+  
   function saveContactFromModal() {
     const name = document.getElementById('contactName').value.trim();
     const number = document.getElementById('contactNumber').value.trim();
     
-    if (!name) {
-      showToast('Please enter a name', true);
-      return;
-    }
-    if (!number) {
-      showToast('Please enter a phone number', true);
+    if (!name || !number) {
+      showToast('Please fill in all fields', true);
       return;
     }
     
     const contact = { name, number, photo: currentPhotoData };
     
     if (currentContactType === 'emergency') {
-      const relation = prompt('Enter relation (e.g., Family, Doctor, etc.):', '');
+      const relation = prompt('Enter relation (e.g., Family, Doctor):', '');
       if (relation) contact.relation = relation;
       window.emergencyContacts.push(contact);
       renderEmergencyContacts();
@@ -736,45 +826,30 @@
     } else {
       window.phoneContacts.push(contact);
       renderPhoneContacts();
-      showToast(`✅ Added ${name} to phone contacts`);
+      showToast(`✅ Added ${name} to contacts`);
     }
     
     document.getElementById('addContactModal').style.display = 'none';
-    currentContactType = null;
     currentPhotoData = null;
   }
   
-  // Add emergency contact
-  window.addEmergencyContact = function() {
-    showAddContactModal('emergency');
-  };
-  
-  // Add phone contact
-  window.addPhoneContact = function() {
-    showAddContactModal('phone');
-  };
-  
-  // Remove emergency contact
   window.removeEmergencyContact = function(index) {
-    const contact = window.emergencyContacts[index];
-    if (confirm(`Remove ${contact.name} from emergency contacts?`)) {
+    if (confirm('Remove this contact?')) {
       window.emergencyContacts.splice(index, 1);
       renderEmergencyContacts();
-      showToast(`❌ Removed ${contact.name} from emergency contacts`);
+      showToast('✅ Contact removed');
     }
   };
   
-  // Remove phone contact
   window.removePhoneContact = function(index) {
-    const contact = window.phoneContacts[index];
-    if (confirm(`Remove ${contact.name} from phone contacts?`)) {
+    if (confirm('Remove this contact?')) {
       window.phoneContacts.splice(index, 1);
       renderPhoneContacts();
-      showToast(`❌ Removed ${contact.name} from phone contacts`);
+      showToast('✅ Contact removed');
     }
   };
   
-  // Photo upload handling
+  // Photo upload
   document.getElementById('contactPhotoInput')?.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -788,28 +863,24 @@
     }
   });
   
-  // Modal buttons
   document.getElementById('saveContactBtn')?.addEventListener('click', saveContactFromModal);
   document.getElementById('cancelContactBtn')?.addEventListener('click', () => {
     document.getElementById('addContactModal').style.display = 'none';
-    currentContactType = null;
     currentPhotoData = null;
   });
   
-  // Folder selection helper
+  // Folder selection
   async function selectFolder(inputElement) {
     try {
       if ('showDirectoryPicker' in window) {
         const dirHandle = await window.showDirectoryPicker();
         inputElement.value = dirHandle.name;
         showToast(`✅ Selected folder: ${dirHandle.name}`);
-        return dirHandle;
       } else {
         const input = document.createElement('input');
         input.type = 'file';
         input.webkitdirectory = true;
         input.directory = true;
-        
         await new Promise((resolve) => {
           input.onchange = () => {
             if (input.files.length > 0) {
@@ -821,16 +892,13 @@
           };
           input.click();
         });
-        return null;
       }
     } catch (err) {
-      console.error('Folder selection cancelled:', err);
       showToast('Folder selection cancelled', true);
-      return null;
     }
   }
   
-  // Load saved settings from localStorage
+  // Load/Save settings
   function loadSettings() {
     const saved = localStorage.getItem('moduleSettings');
     if (saved) {
@@ -853,99 +921,59 @@
       
       updateModuleVisibility();
       
+      // Load all module settings
       if (settings.gallery) {
-        if (document.getElementById('galleryFolderPath')) 
-          document.getElementById('galleryFolderPath').value = settings.gallery.folderPath || '';
-        if (document.getElementById('gallerySpeed')) 
-          document.getElementById('gallerySpeed').value = settings.gallery.speed || 3000;
-        if (document.getElementById('galleryAutoStart')) 
-          document.getElementById('galleryAutoStart').value = settings.gallery.autoStart ? 'true' : 'false';
+        document.getElementById('galleryFolderPath').value = settings.gallery.folderPath || '';
+        document.getElementById('gallerySpeed').value = settings.gallery.speed || 3000;
+        document.getElementById('galleryAutoStart').value = settings.gallery.autoStart ? 'true' : 'false';
       }
       
       if (settings.bus) {
-        if (document.getElementById('busRouteIds')) 
-          document.getElementById('busRouteIds').value = settings.bus.routeIds || '';
-        if (document.getElementById('busStopId')) 
-          document.getElementById('busStopId').value = settings.bus.stopId || '';
-        if (document.getElementById('busRefreshInterval')) 
-          document.getElementById('busRefreshInterval').value = settings.bus.refreshInterval || 60;
+        document.getElementById('busRouteIds').value = settings.bus.routeIds || '';
+        document.getElementById('busStopId').value = settings.bus.stopId || '';
+        document.getElementById('busRefreshInterval').value = settings.bus.refreshInterval || 60;
+      }
+      
+      if (settings.news) {
+        document.getElementById('newsSource').value = settings.news.source || '';
+        document.getElementById('newsCategories').value = settings.news.categories || '';
+        document.getElementById('newsInterval').value = settings.news.interval || 30;
+      }
+      
+      if (settings.mastodon) {
+        document.getElementById('mastodonInstance').value = settings.mastodon.instance || '';
+        document.getElementById('mastodonHashtags').value = settings.mastodon.hashtags || '';
+        document.getElementById('mastodonInterval').value = settings.mastodon.interval || 15;
+      }
+      
+      if (settings.radio) {
+        document.getElementById('radioStream').value = settings.radio.stream || '';
+        document.getElementById('radioStation').value = settings.radio.station || '';
+        document.getElementById('radioVolume').value = settings.radio.volume || 70;
+        document.getElementById('radioVolumeValue').textContent = (settings.radio.volume || 70) + '%';
       }
       
       if (settings.musicPlayer) {
-        if (document.getElementById('musicFolderPath')) 
-          document.getElementById('musicFolderPath').value = settings.musicPlayer.musicFolder || '';
-        if (document.getElementById('defaultVolume')) 
-          document.getElementById('defaultVolume').value = settings.musicPlayer.defaultVolume || 100;
-        if (document.getElementById('defaultShuffle')) 
-          document.getElementById('defaultShuffle').value = settings.musicPlayer.defaultShuffle ? 'true' : 'false';
-        
-        const volumeSlider = document.getElementById('defaultVolume');
-        const volumeValue = document.getElementById('volumeValue');
-        if (volumeSlider && volumeValue) {
-          volumeValue.textContent = volumeSlider.value + '%';
-        }
+        document.getElementById('musicFolderPath').value = settings.musicPlayer.musicFolder || '';
+        document.getElementById('defaultVolume').value = settings.musicPlayer.defaultVolume || 100;
+        document.getElementById('defaultShuffle').value = settings.musicPlayer.defaultShuffle ? 'true' : 'false';
+        document.getElementById('volumeValue').textContent = (settings.musicPlayer.defaultVolume || 100) + '%';
       }
       
       if (settings.emergency) {
         window.emergencyContacts = settings.emergency.contacts || [];
-        if (document.getElementById('emergencyInterval')) 
-          document.getElementById('emergencyInterval').value = settings.emergency.interval || 5;
+        document.getElementById('emergencyInterval').value = settings.emergency.interval || 5;
         renderEmergencyContacts();
       }
       
       if (settings.friendlyPhone) {
         window.phoneContacts = settings.friendlyPhone.contacts || [];
-        if (document.getElementById('autoDialDelay')) 
-          document.getElementById('autoDialDelay').value = settings.friendlyPhone.autoDialDelay || 10;
+        document.getElementById('autoDialDelay').value = settings.friendlyPhone.autoDialDelay || 10;
         renderPhoneContacts();
       }
-    } else {
-      setDefaultSettings();
     }
   }
   
-  function setDefaultSettings() {
-    moduleStates = {
-      gallery: true,
-      bus: true,
-      'local-player': true,
-      emergency: true,
-      'friendly-phone': true
-    };
-    
-    Object.keys(moduleStates).forEach(moduleId => {
-      const toggle = document.querySelector(`.enable-toggle[data-module="${moduleId}"]`);
-      if (toggle && moduleStates[moduleId]) {
-        toggle.classList.add('active');
-      }
-    });
-    
-    updateModuleVisibility();
-    
-    if (document.getElementById('gallerySpeed')) 
-      document.getElementById('gallerySpeed').value = 3000;
-    if (document.getElementById('galleryAutoStart')) 
-      document.getElementById('galleryAutoStart').value = 'true';
-    if (document.getElementById('busRefreshInterval')) 
-      document.getElementById('busRefreshInterval').value = 60;
-    if (document.getElementById('defaultVolume')) 
-      document.getElementById('defaultVolume').value = 100;
-    if (document.getElementById('defaultShuffle')) 
-      document.getElementById('defaultShuffle').value = 'false';
-    
-    window.emergencyContacts = [];
-    window.phoneContacts = [];
-    
-    if (document.getElementById('emergencyInterval')) 
-      document.getElementById('emergencyInterval').value = 5;
-    if (document.getElementById('autoDialDelay')) 
-      document.getElementById('autoDialDelay').value = 10;
-    
-    renderEmergencyContacts();
-    renderPhoneContacts();
-  }
-  
-  // Save all settings
   function saveSettings() {
     const settings = {
       moduleStates: moduleStates,
@@ -958,6 +986,21 @@
         routeIds: document.getElementById('busRouteIds')?.value || '',
         stopId: document.getElementById('busStopId')?.value || '',
         refreshInterval: parseInt(document.getElementById('busRefreshInterval')?.value) || 60
+      },
+      news: {
+        source: document.getElementById('newsSource')?.value || '',
+        categories: document.getElementById('newsCategories')?.value || '',
+        interval: parseInt(document.getElementById('newsInterval')?.value) || 30
+      },
+      mastodon: {
+        instance: document.getElementById('mastodonInstance')?.value || '',
+        hashtags: document.getElementById('mastodonHashtags')?.value || '',
+        interval: parseInt(document.getElementById('mastodonInterval')?.value) || 15
+      },
+      radio: {
+        stream: document.getElementById('radioStream')?.value || '',
+        station: document.getElementById('radioStation')?.value || '',
+        volume: parseInt(document.getElementById('radioVolume')?.value) || 70
       },
       musicPlayer: {
         musicFolder: document.getElementById('musicFolderPath')?.value || '',
@@ -976,7 +1019,7 @@
     
     localStorage.setItem('moduleSettings', JSON.stringify(settings));
     window.dispatchEvent(new CustomEvent('settingsChanged', { detail: settings }));
-    showToast('✅ Settings saved successfully!');
+    showToast('✅ Settings saved!');
     closeSettingsModal();
   }
   
@@ -990,6 +1033,7 @@
     });
   }
   
+  // Modal controls
   const settingsIcon = document.getElementById('settingsIcon');
   const settingsModal = document.getElementById('settingsModal');
   const closeSettings = document.getElementById('closeSettings');
@@ -1009,28 +1053,21 @@
   saveSettingsBtn.onclick = saveSettings;
   
   settingsModal.onclick = (e) => {
-    if (e.target === settingsModal) {
-      closeSettingsModal();
-    }
+    if (e.target === settingsModal) closeSettingsModal();
   };
   
+  // Expand/collapse
   document.querySelectorAll('.module-header').forEach(header => {
     header.onclick = (e) => {
       if (e.target.closest('.enable-toggle')) return;
-      
       const config = header.nextElementSibling;
       const icon = header.querySelector('.fa-chevron-down, .fa-chevron-up');
       config.classList.toggle('active');
-      if (icon) {
-        if (config.classList.contains('active')) {
-          icon.className = 'fa-solid fa-chevron-up';
-        } else {
-          icon.className = 'fa-solid fa-chevron-down';
-        }
-      }
+      icon.className = config.classList.contains('active') ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
     };
   });
   
+  // Toggle switches
   document.querySelectorAll('.enable-toggle').forEach(toggle => {
     toggle.onclick = (e) => {
       e.stopPropagation();
@@ -1047,120 +1084,29 @@
     };
   });
   
-  const volumeSlider = document.getElementById('defaultVolume');
+  // Volume displays
+  const defaultVolume = document.getElementById('defaultVolume');
   const volumeValue = document.getElementById('volumeValue');
-  if (volumeSlider && volumeValue) {
-    volumeSlider.oninput = () => {
-      volumeValue.textContent = volumeSlider.value + '%';
-    };
+  if (defaultVolume && volumeValue) {
+    defaultVolume.oninput = () => { volumeValue.textContent = defaultVolume.value + '%'; };
   }
   
-  document.getElementById('selectGalleryFolder')?.addEventListener('click', async () => {
-    const input = document.getElementById('galleryFolderPath');
-    await selectFolder(input);
-  });
+  const radioVolume = document.getElementById('radioVolume');
+  const radioVolumeValue = document.getElementById('radioVolumeValue');
+  if (radioVolume && radioVolumeValue) {
+    radioVolume.oninput = () => { radioVolumeValue.textContent = radioVolume.value + '%'; };
+  }
   
-  document.getElementById('selectMusicFolder')?.addEventListener('click', async () => {
-    const input = document.getElementById('musicFolderPath');
-    await selectFolder(input);
-  });
+  // Folder buttons
+  document.getElementById('selectGalleryFolder')?.addEventListener('click', () => selectFolder(document.getElementById('galleryFolderPath')));
+  document.getElementById('selectMusicFolder')?.addEventListener('click', () => selectFolder(document.getElementById('musicFolderPath')));
   
-  document.getElementById('addEmergencyContact')?.addEventListener('click', () => {
-    window.addEmergencyContact();
-  });
-  
-  document.getElementById('addPhoneContact')?.addEventListener('click', () => {
-    window.addPhoneContact();
-  });
+  // Add contact buttons
+  document.getElementById('addEmergencyContact')?.addEventListener('click', () => window.addEmergencyContact());
+  document.getElementById('addPhoneContact')?.addEventListener('click', () => window.addPhoneContact());
   
   loadSettings();
-  
-  console.log('✅ Module management system ready');
-  console.log('💡 Click the gear icon bottom-right to configure modules');
-})();
-
-// ========== REFRESH WARNING ==========
-(function() {
-  let warningsEnabled = true;
-  let confirmedRefresh = false;
-  
-  if (sessionStorage.getItem('refreshWarningsOff') === 'true') {
-    warningsEnabled = false;
-  }
-  
-  function showRefreshWarning() {
-    if (!warningsEnabled || confirmedRefresh) return;
-    
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.95);
-      z-index: 200000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    `;
-    
-    modal.innerHTML = `
-      <div style="background: #1a1a2e; border: 2px solid #ffaa00; border-radius: 12px; padding: 25px; max-width: 350px; text-align: center;">
-        <div style="font-size: 3rem; color: #ffaa00; margin-bottom: 15px;">⚠️</div>
-        <div style="font-size: 1.3rem; color: #ffaa00; margin-bottom: 10px;">Refresh Page?</div>
-        <div style="background: rgba(255,68,68,0.1); border-left: 3px solid #ff4444; padding: 10px; margin: 15px 0; color: #ff8888; font-size: 0.8rem; text-align: left;">
-          <i class="fa-solid fa-database"></i> Playing media will stop<br>
-          <i class="fa-solid fa-image"></i> Slideshow position will reset
-        </div>
-        <div style="margin: 10px 0; text-align: left;">
-          <label style="color: #888;">
-            <input type="checkbox" id="dontWarnAgain"> Don't show again this session
-          </label>
-        </div>
-        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-          <button id="stayBtn" style="background: #00ff41; color: #000; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer;">Stay</button>
-          <button id="refreshBtn" style="background: #ff4444; color: #fff; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer;">Refresh</button>
-        </div>
-      </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    const stayBtn = modal.querySelector('#stayBtn');
-    const refreshBtn = modal.querySelector('#refreshBtn');
-    const dontWarnAgain = modal.querySelector('#dontWarnAgain');
-    
-    stayBtn.onclick = () => {
-      modal.remove();
-    };
-    
-    refreshBtn.onclick = () => {
-      if (dontWarnAgain.checked) {
-        warningsEnabled = false;
-        sessionStorage.setItem('refreshWarningsOff', 'true');
-      }
-      confirmedRefresh = true;
-      modal.remove();
-      window.location.reload();
-    };
-  }
-  
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'F5' || (e.ctrlKey && e.key === 'r') || (e.metaKey && e.key === 'r')) {
-      e.preventDefault();
-      showRefreshWarning();
-    }
-  });
-  
-  window.addEventListener('beforeunload', (e) => {
-    if (warningsEnabled && !confirmedRefresh) {
-      e.preventDefault();
-      e.returnValue = '';
-      showRefreshWarning();
-      return '';
-    }
-  });
+  console.log('✅ All modules configured in Settings');
 })();
 
 // ========== PIN FEATURE ==========
@@ -1224,12 +1170,7 @@
     });
   }
   
-  window.addEventListener('settingsChanged', () => {
-    setTimeout(() => {
-      movePinsToTop();
-    }, 100);
-  });
-  
+  window.addEventListener('settingsChanged', () => setTimeout(movePinsToTop, 100));
   loadPins();
   initPins();
   setTimeout(movePinsToTop, 100);
