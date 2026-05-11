@@ -1,4 +1,4 @@
-// app.js - FIXED VERSION
+// app.js - FIXED VERSION (only need to change this one file)
 
 import initNews from "./modules/news/news.module.js";
 import initEnergy from "./modules/energy/energy.module.js";
@@ -14,34 +14,30 @@ import initLocalPlayer from "./modules/local-player/local-player.module.js";
 import initFriendlyPhone from "./modules/friendly-phone/friendly-phone.module.js";
 import initLayoutSystem from "./modules/ui/layout-system.js";
 
-// Global flag to track layout initialization
 window.layoutSystemInitialized = false;
 
 /**
- * Initialize a module safely.
+ * Initialize a module safely - FIXED to pass the correct container
  */
-function safeInit(name, elementId, initFn, ...args) {
+function safeInit(name, moduleId, initFn, ...args) {
   try {
-    const element = document.getElementById(elementId);
-
-    if (!element) {
-      console.warn(`⚠️ ${name} element (#${elementId}) not found`);
+    // Get the dashboard item
+    const dashboardItem = document.getElementById(moduleId);
+    if (!dashboardItem) {
+      console.warn(`⚠️ ${name} element (#${moduleId}) not found`);
       return;
     }
-
-    // For modules that need the inner .module-content container
-    if (elementId === "local-player") {
-      const innerContainer = element.querySelector('.module-content');
-      if (innerContainer) {
-        initFn(innerContainer, ...args);
-        console.log(`✅ ${name} module initialized`);
-      } else {
-        console.warn(`⚠️ ${name} .module-content not found`);
-      }
-    } else {
-      initFn(element, ...args);
-      console.log(`✅ ${name} module initialized`);
+    
+    // Find the module-content container inside
+    const container = dashboardItem.querySelector('.module-content');
+    if (!container) {
+      console.warn(`⚠️ ${name} .module-content not found inside #${moduleId}`);
+      return;
     }
+    
+    // Initialize the module with the correct container
+    initFn(container, ...args);
+    console.log(`✅ ${name} module initialized`);
   } catch (error) {
     console.error(`Error initializing ${name}:`, error);
   }
@@ -153,7 +149,7 @@ function initializeSearch() {
 document.addEventListener("DOMContentLoaded", () => {
   console.log("🚀 App initializing...");
 
-  // Initialize modules - FIXED: Use 'local-player' not 'music-player'
+  // Initialize ALL modules using the same pattern
   safeInit("Local Music Player", "local-player", initLocalPlayer);
   safeInit("Radio", "radio", initRadio);
   safeInit("News", "news", initNews);
