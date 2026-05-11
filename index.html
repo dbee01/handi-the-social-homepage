@@ -17,6 +17,24 @@
   <script type="module" src="app.js" defer></script>
 
   <style>
+    /* Disable native pull-to-refresh in Vivaldi/Chrome */
+    body {
+      overscroll-behavior-y: none;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Main wrapper to enable scrolling without pull-to-refresh */
+    .scrollable-content {
+      height: 100%;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: none;
+    }
+    
     /* Refresh Warning Modal Styles */
     .refresh-modal {
       display: none;
@@ -203,73 +221,105 @@
         min-width: 48px;
       }
     }
+    
+    /* Custom pull-to-refresh indicator */
+    .pull-indicator {
+      position: fixed;
+      top: -60px;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(135deg, var(--term-amber), var(--term-red));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 14px;
+      z-index: 19999;
+      transition: top 0.2s ease;
+      font-family: monospace;
+    }
+    
+    .pull-indicator.visible {
+      top: 0;
+    }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="brand">
-    <i class="fa-solid fa-bolt"></i>
-    <span>ple.ie</span>
+<div class="scrollable-content">
+  <header>
+    <div class="brand">
+      <i class="fa-solid fa-bolt"></i>
+      <span>ple.ie</span>
+    </div>
+    <div class="search-wrapper">
+      <select class="search-engine-select" id="searchEngine">
+        <option value="google">Google</option>
+        <option value="duckduckgo">DuckDuckGo</option>
+        <option value="brave">Brave</option>
+        <option value="proton">Proton</option>
+      </select>
+      <input type="text" id="searchInput" placeholder="Search the network...">
+      <i class="fa-solid fa-arrow-right" style="cursor: pointer;"></i>
+    </div>
+    <div class="header-weather">
+      <i class="fa-solid fa-cloud-sun"></i>
+      <span id="weather">Loading...</span>
+    </div>
+  </header>
+
+  <div class="dashboard-wrapper" style="flex: 1;">
+    <!-- Main container for Packery -->
+    <main id="dashboard-grid">
+
+      <!-- Gallery Module -->
+      <div class="dashboard-item" id="gallery" data-order="1">
+        <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      </div>
+
+      <!-- Emergency Module -->
+      <div class="dashboard-item" id="emergency" data-order="2">
+        <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      </div>
+      
+      <!-- Bus Module -->
+      <div class="dashboard-item" id="bus" data-order="3">
+        <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      </div>
+
+      <!-- Friendly Phone Module -->
+      <div class="dashboard-item" id="friendly-phone" data-order="11">
+        <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+      </div>
+      
+      <!-- Local Music Player Module -->
+      <div class="dashboard-item" id="local-player" data-order="12">
+        <button class="pin-btn" title="Pin to top">
+          <i class="fa-solid fa-thumbtack"></i>
+        </button>
+        <div id="music-player" class="module-content"></div>
+      </div>
+
+    </main>
   </div>
-  <div class="search-wrapper">
-    <select class="search-engine-select" id="searchEngine">
-      <option value="google">Google</option>
-      <option value="duckduckgo">DuckDuckGo</option>
-      <option value="brave">Brave</option>
-      <option value="proton">Proton</option>
-    </select>
-    <input type="text" id="searchInput" placeholder="Search the network...">
-    <i class="fa-solid fa-arrow-right" style="cursor: pointer;"></i>
-  </div>
-  <div class="header-weather">
-    <i class="fa-solid fa-cloud-sun"></i>
-    <span id="weather">Loading...</span>
-  </div>
-</header>
 
-<div class="dashboard-wrapper" style="flex: 1;">
-  <!-- Main container for Packery -->
-  <main id="dashboard-grid">
-
-    <!-- Gallery Module -->
-    <div class="dashboard-item" id="gallery" data-order="1">
-      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
+  <footer>
+    <div class="footer-content">
+      <span><i class="fa-solid fa-location-dot"></i> Dublin</span>
+      <span><i class="fa-solid fa-leaf"></i> Green Energy</span>
+      <span><i class="fa-brands fa-github"></i> Open Source</span>
     </div>
-
-    <!-- Emergency Module -->
-    <div class="dashboard-item" id="emergency" data-order="2">
-      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-    </div>
-    
-    <!-- Bus Module -->
-    <div class="dashboard-item" id="bus" data-order="3">
-      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-    </div>
-
-    <!-- Friendly Phone Module -->
-    <div class="dashboard-item" id="friendly-phone" data-order="11">
-      <button class="pin-btn" title="Pin to top"><i class="fa-solid fa-thumbtack"></i></button>
-    </div>
-    
-    <!-- Local Music Player Module -->
-    <div class="dashboard-item" id="local-player" data-order="12">
-      <button class="pin-btn" title="Pin to top">
-        <i class="fa-solid fa-thumbtack"></i>
-      </button>
-      <div id="music-player" class="module-content"></div>
-    </div>
-
-  </main>
+  </footer>
 </div>
 
-<footer>
-  <div class="footer-content">
-    <span><i class="fa-solid fa-location-dot"></i> Dublin</span>
-    <span><i class="fa-solid fa-leaf"></i> Green Energy</span>
-    <span><i class="fa-brands fa-github"></i> Open Source</span>
-  </div>
-</footer>
+<!-- Pull indicator -->
+<div id="pullIndicator" class="pull-indicator">
+  <i class="fa-solid fa-arrow-down"></i>
+  <span>Pull to refresh</span>
+  <i class="fa-solid fa-arrow-down"></i>
+</div>
 
 <!-- Refresh Warning Modal HTML -->
 <div id="refreshWarningModal" class="refresh-modal">
@@ -306,23 +356,72 @@
 </div>
 
 <script>
-  // ========== WORKING PAGE REFRESH WARNING SYSTEM ==========
+  // ========== VIVALDI-SPECIFIC REFRESH WARNING SYSTEM ==========
   (function() {
-    console.log('🛡️ Initializing refresh protection system...');
+    console.log('🛡️ Initializing Vivaldi refresh protection system...');
     
     let warningEnabled = true;
-    let pendingRefresh = null;
     let userConfirmedRefresh = false;
+    let touchStartY = 0;
+    let isPulling = false;
+    let pullThreshold = 80;
     
     const modal = document.getElementById('refreshWarningModal');
     const stayBtn = document.getElementById('refreshStayBtn');
     const leaveBtn = document.getElementById('refreshLeaveBtn');
     const dontShowCheckbox = document.getElementById('dontShowRefreshWarning');
+    const pullIndicator = document.getElementById('pullIndicator');
+    const scrollableContent = document.querySelector('.scrollable-content');
     
-    // Check session storage for preference
-    if (sessionStorage.getItem('refreshWarningDisabled') === 'true') {
-      warningEnabled = false;
-      console.log('⚠️ Refresh warnings disabled for this session');
+    // Disable native pull-to-refresh in Vivaldi
+    if (scrollableContent) {
+      scrollableContent.addEventListener('touchstart', preventPullToRefresh, { passive: false });
+      scrollableContent.addEventListener('touchmove', handleTouchMove, { passive: false });
+      scrollableContent.addEventListener('touchend', handleTouchEnd);
+    }
+    
+    // Also prevent on body
+    document.body.addEventListener('touchstart', preventPullToRefresh, { passive: false });
+    
+    function preventPullToRefresh(e) {
+      const scrollTop = scrollableContent ? scrollableContent.scrollTop : window.pageYOffset;
+      if (scrollTop === 0 && e.touches) {
+        // Allow the event but we'll track it
+      }
+    }
+    
+    function handleTouchMove(e) {
+      const scrollTop = scrollableContent ? scrollableContent.scrollTop : window.pageYOffset;
+      const touchY = e.touches[0].clientY;
+      const pullDistance = touchY - touchStartY;
+      
+      // Detect pull-to-refresh when at top and pulling down
+      if (scrollTop === 0 && pullDistance > 10 && !isPulling) {
+        isPulling = true;
+        
+        // Show pull indicator
+        if (pullIndicator) {
+          pullIndicator.classList.add('visible');
+          pullIndicator.style.top = `${Math.min(pullDistance - 20, 60)}px`;
+        }
+        
+        // If pulled beyond threshold, show modal
+        if (pullDistance > pullThreshold && warningEnabled && !userConfirmedRefresh) {
+          e.preventDefault();
+          showRefreshWarning(() => {
+            userConfirmedRefresh = true;
+            window.location.reload();
+          });
+          isPulling = false;
+          if (pullIndicator) pullIndicator.classList.remove('visible');
+        }
+      }
+    }
+    
+    function handleTouchEnd() {
+      isPulling = false;
+      if (pullIndicator) pullIndicator.classList.remove('visible');
+      touchStartY = 0;
     }
     
     // Show toast notification
@@ -331,7 +430,6 @@
       toast.className = 'refresh-toast';
       toast.innerHTML = `<i class="fa-solid ${isWarning ? 'fa-exclamation-triangle' : 'fa-shield-alt'}"></i> ${message}`;
       toast.style.background = isWarning ? 'rgba(255, 68, 68, 0.9)' : 'rgba(0, 0, 0, 0.9)';
-      toast.style.color = isWarning ? '#fff' : 'var(--term-green)';
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 2500);
     }
@@ -344,10 +442,12 @@
       }
       
       if (modal && !modal.classList.contains('active')) {
-        pendingRefresh = refreshCallback;
         modal.classList.add('active');
         showToast('⛔ Refresh blocked - confirm to continue', true);
-        console.log('⚠️ Refresh warning shown to user');
+        console.log('⚠️ Refresh warning shown');
+        
+        // Store callback
+        window.pendingRefresh = refreshCallback;
       }
     }
     
@@ -356,14 +456,14 @@
       if (modal) {
         modal.classList.remove('active');
       }
-      pendingRefresh = null;
+      window.pendingRefresh = null;
     }
     
     // Handle stay
     function handleStay() {
       hideModal();
       showToast('✅ Refresh cancelled - staying on page');
-      console.log('User chose to stay on page');
+      console.log('User cancelled refresh');
     }
     
     // Handle leave/refresh
@@ -376,13 +476,11 @@
       
       hideModal();
       userConfirmedRefresh = true;
-      
       showToast('🔄 Refreshing page...');
-      console.log('User confirmed refresh - reloading page');
+      console.log('User confirmed refresh');
       
-      // Execute the refresh
-      if (pendingRefresh) {
-        pendingRefresh();
+      if (window.pendingRefresh) {
+        window.pendingRefresh();
       } else {
         setTimeout(() => {
           window.location.reload();
@@ -408,9 +506,13 @@
       });
     }
     
-    // ========== INTERCEPT ALL REFRESH METHODS ==========
+    // Check session storage
+    if (sessionStorage.getItem('refreshWarningDisabled') === 'true') {
+      warningEnabled = false;
+      console.log('⚠️ Refresh warnings disabled for this session');
+    }
     
-    // 1. Keyboard shortcuts (F5, Cmd+R, Ctrl+R)
+    // ========== INTERCEPT KEYBOARD REFRESH ==========
     document.addEventListener('keydown', (event) => {
       const isRefresh = (event.key === 'F5') ||
                        (event.key === 'r' && (event.ctrlKey || event.metaKey)) ||
@@ -421,21 +523,19 @@
         event.stopPropagation();
         console.log('🔑 Keyboard refresh detected');
         showRefreshWarning(() => {
+          userConfirmedRefresh = true;
           window.location.reload();
         });
         return false;
       }
     });
     
-    // 2. Browser refresh button (via beforeunload)
-    let beforeUnloadTime = null;
-    
+    // ========== INTERCEPT BROWSER REFRESH BUTTON ==========
     window.addEventListener('beforeunload', (event) => {
       if (warningEnabled && !userConfirmedRefresh) {
-        beforeUnloadTime = Date.now();
         console.log('🔄 Browser refresh/close detected');
         
-        // Show our custom modal (asynchronously)
+        // Show our modal
         setTimeout(() => {
           if (!userConfirmedRefresh) {
             showRefreshWarning(() => {
@@ -445,14 +545,14 @@
           }
         }, 10);
         
-        // Set the native message (required for beforeunload to show)
+        // Required for beforeunload to work
         event.preventDefault();
-        event.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+        event.returnValue = 'You have unsaved changes. Are you sure?';
         return event.returnValue;
       }
     });
     
-    // 3. Override location.reload()
+    // ========== OVERRIDE LOCATION.RELOAD ==========
     const originalReload = window.location.reload;
     window.location.reload = function(forceReload) {
       console.log('🔄 Programmatic reload detected');
@@ -466,79 +566,10 @@
       }
     };
     
-    // 4. Detect pull-to-refresh on mobile (touch-based)
-    let touchStartY = 0;
-    let pullToRefreshThreshold = 80;
-    let isRefreshing = false;
-    
-    document.addEventListener('touchstart', (e) => {
-      touchStartY = e.touches[0].clientY;
-      isRefreshing = false;
-    }, { passive: true });
-    
-    document.addEventListener('touchmove', (e) => {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const touchCurrentY = e.touches[0].clientY;
-      const pullDistance = touchCurrentY - touchStartY;
-      
-      // Detect pull-to-refresh (scrolled to top and pulling down)
-      if (scrollTop === 0 && pullDistance > pullToRefreshThreshold && !isRefreshing && warningEnabled && !userConfirmedRefresh) {
-        isRefreshing = true;
-        e.preventDefault();
-        console.log('📱 Pull-to-refresh detected');
-        showRefreshWarning(() => {
-          userConfirmedRefresh = true;
-          window.location.reload();
-        });
-      }
-    }, { passive: false });
-    
-    // 5. Detect Ctrl+Shift+R (hard refresh)
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'r' && event.ctrlKey && event.shiftKey && warningEnabled && !userConfirmedRefresh) {
-        event.preventDefault();
-        console.log('🔑 Hard refresh (Ctrl+Shift+R) detected');
-        showRefreshWarning(() => {
-          userConfirmedRefresh = true;
-          window.location.reload(true);
-        });
-      }
-    });
-    
-    // 6. Detect meta refresh tags
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'content') {
-          const metaRefresh = document.querySelector('meta[http-equiv="refresh"]');
-          if (metaRefresh && warningEnabled && !userConfirmedRefresh) {
-            console.log('🔄 Meta refresh tag detected');
-            showRefreshWarning(() => {
-              userConfirmedRefresh = true;
-              window.location.reload();
-            });
-          }
-        }
-      });
-    });
-    
-    observer.observe(document.head, {
-      attributes: true,
-      attributeFilter: ['content'],
-      subtree: true
-    });
-    
-    // Reset userConfirmedRefresh after page loads (new page load)
-    window.addEventListener('load', () => {
-      userConfirmedRefresh = false;
-      beforeUnloadTime = null;
-      console.log('📄 Page fully loaded - refresh protection active');
-    });
-    
-    // Console helpers for testing
+    // ========== CONSOLE COMMANDS ==========
     window.testRefreshWarning = function() {
       console.log('🧪 Testing refresh warning...');
       showRefreshWarning(() => {
-        console.log('Test refresh confirmed');
         window.location.reload();
       });
     };
@@ -557,41 +588,30 @@
       console.log('Refresh warnings disabled');
     };
     
-    window.getRefreshStatus = function() {
-      console.log(`Refresh warnings: ${warningEnabled ? 'ENABLED' : 'DISABLED'}`);
-      console.log(`User confirmed refresh: ${userConfirmedRefresh}`);
-      return { enabled: warningEnabled, confirmed: userConfirmedRefresh };
-    };
-    
-    console.log('✅ Refresh protection active!');
-    console.log('💡 Commands: testRefreshWarning(), enableRefreshWarnings(), disableRefreshWarnings(), getRefreshStatus()');
-    console.log('💡 Try: F5, Cmd/Ctrl+R, pull-to-refresh, or browser refresh button');
+    console.log('✅ Vivaldi refresh protection active!');
+    console.log('💡 Commands: testRefreshWarning(), enableRefreshWarnings(), disableRefreshWarnings()');
   })();
 </script>
 
 <script>
-  // ========== PIN FEATURE - ENABLED BY DEFAULT ON MOBILE ==========
+  // ========== PIN FEATURE - ENABLED BY DEFAULT ==========
   (function() {
     console.log('📌 Initializing pin feature...');
     
-    // Function to move pinned items to top
     function movePinnedToTop(grid) {
       const items = Array.from(document.querySelectorAll('.dashboard-item'));
       const pinnedItems = items.filter(item => item.classList.contains('pinned'));
       const unpinnedItems = items.filter(item => !item.classList.contains('pinned'));
       
-      // Reorder DOM: pinned items first
       pinnedItems.forEach(item => grid.appendChild(item));
       unpinnedItems.forEach(item => grid.appendChild(item));
       
-      // Store pin order in localStorage
       const pinnedOrder = pinnedItems.map(item => item.id);
       localStorage.setItem('pinnedItems', JSON.stringify(pinnedOrder));
       
       console.log(`📌 Moved ${pinnedItems.length} pinned items to top`);
     }
     
-    // Load pinned items from localStorage
     function loadPinnedState() {
       const savedPins = localStorage.getItem('pinnedItems');
       if (savedPins) {
@@ -611,12 +631,19 @@
       }
     }
     
-    // Initialize pin buttons
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'refresh-toast';
+      toast.innerHTML = `<i class="fa-solid fa-thumbtack"></i> ${message}`;
+      toast.style.background = 'rgba(0, 0, 0, 0.9)';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
+    
     function initPinButtons() {
       const pinButtons = document.querySelectorAll('.pin-btn');
       
       pinButtons.forEach(btn => {
-        // Remove existing listeners to avoid duplicates
         const newBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(newBtn, btn);
         
@@ -625,75 +652,48 @@
           const dashboardItem = newBtn.closest('.dashboard-item');
           if (!dashboardItem) return;
           
-          // Toggle pinned class
           if (dashboardItem.classList.contains('pinned')) {
             dashboardItem.classList.remove('pinned');
             newBtn.style.color = '';
             newBtn.style.transform = '';
-            console.log(`📌 Unpinned: ${dashboardItem.id}`);
-            showToast(`📌 Unpinned ${dashboardItem.id}`, false);
+            showToast(`📌 Unpinned ${dashboardItem.id}`);
           } else {
             dashboardItem.classList.add('pinned');
             newBtn.style.color = 'var(--term-green)';
             newBtn.style.transform = 'rotate(45deg)';
-            console.log(`📌 Pinned: ${dashboardItem.id}`);
-            showToast(`📌 Pinned ${dashboardItem.id} to top`, false);
+            showToast(`📌 Pinned ${dashboardItem.id} to top`);
           }
           
-          // Move pinned items to top
           const grid = document.getElementById('dashboard-grid');
-          if (grid && window.Packery) {
+          if (grid) {
             movePinnedToTop(grid);
-            // Refresh Packery layout
             if (window.pckry) {
               window.pckry.reloadItems();
               window.pckry.layout();
             }
-          } else {
-            movePinnedToTop(grid);
           }
-          
-          // Store state
-          const pinnedIds = Array.from(document.querySelectorAll('.dashboard-item.pinned'))
-            .map(item => item.id);
-          localStorage.setItem('pinnedItems', JSON.stringify(pinnedIds));
         });
         
-        // Add touch feedback for mobile
         newBtn.addEventListener('touchstart', () => {
           newBtn.style.transform = 'scale(0.95)';
         });
         newBtn.addEventListener('touchend', () => {
-          newBtn.style.transform = '';
+          if (!newBtn.closest('.dashboard-item')?.classList.contains('pinned')) {
+            newBtn.style.transform = '';
+          }
         });
       });
       
       console.log(`✅ Initialized ${pinButtons.length} pin buttons`);
     }
     
-    // Show toast helper
-    function showToast(message, isError = false) {
-      const toast = document.createElement('div');
-      toast.className = 'refresh-toast';
-      toast.innerHTML = `<i class="fa-solid fa-thumbtack"></i> ${message}`;
-      toast.style.background = 'rgba(0, 0, 0, 0.9)';
-      toast.style.color = 'var(--term-green)';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    }
-    
-    // Wait for DOM to be ready
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
         loadPinnedState();
         initPinButtons();
-        
-        // Move pinned items after layout is ready
         setTimeout(() => {
           const grid = document.getElementById('dashboard-grid');
-          if (grid) {
-            movePinnedToTop(grid);
-          }
+          if (grid) movePinnedToTop(grid);
         }, 500);
       });
     } else {
@@ -701,21 +701,11 @@
       initPinButtons();
       setTimeout(() => {
         const grid = document.getElementById('dashboard-grid');
-        if (grid) {
-          movePinnedToTop(grid);
-        }
+        if (grid) movePinnedToTop(grid);
       }, 500);
     }
     
-    // Export for debugging
-    window.pinFeature = {
-      movePinnedToTop,
-      loadPinnedState,
-      initPinButtons,
-      showToast
-    };
-    
-    console.log('✅ Pin feature enabled - click any 📌 to pin modules to top!');
+    console.log('✅ Pin feature active - click any 📌 to pin modules to top!');
   })();
 </script>
 
@@ -723,8 +713,6 @@
   // Simple initialization checker
   document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM ready, checking for layout system...');
-    
-    // Give the module time to load
     setTimeout(() => {
       if (typeof window.layoutSystemInitialized === 'undefined') {
         console.warn('Layout system not initialized yet, but modules should load soon...');
@@ -733,64 +721,17 @@
   });
 </script>
 
-<!-- Debug script to verify functionality -->
 <script>
   setTimeout(() => {
-    console.log("🔍 Debugging layout system...");
-    
-    const grid = document.getElementById('dashboard-grid');
-    const items = document.querySelectorAll('.dashboard-item');
-    const pins = document.querySelectorAll('.pin-btn');
-    
-    console.log(`Grid found: ${!!grid}`);
-    console.log(`Items found: ${items.length}`);
-    console.log(`Pin buttons found: ${pins.length}`);
-    
-    if (pins.length > 0) {
-      console.log("✅ Pin buttons exist and are active!");
-      console.log("💡 Click any pin button to pin a module to the top");
-    }
-    
-    if (typeof Sortable !== 'undefined') {
-      console.log("✅ SortableJS is available");
-    } else {
-      console.error("❌ SortableJS is NOT available");
-    }
-    
-    if (typeof Packery !== 'undefined') {
-      console.log("✅ Packery is available");
-    } else {
-      console.error("❌ Packery is NOT available");
-    }
-    
-    // Add test controls
-    const testDiv = document.createElement('div');
-    testDiv.style.cssText = 'position:fixed; bottom:10px; right:10px; z-index:9999; background:#000; color:#0f0; padding:10px; border:1px solid #0f0; font-size:12px; font-family:monospace; border-radius:8px;';
-    testDiv.innerHTML = `
-      <strong>🛠️ Debug</strong><br>
-      <button id="testRefreshBtn" style="margin:2px;">🔄 Test Refresh</button><br>
-      <button id="testPinBtn" style="margin:2px;">📌 Test Pin</button>
-    `;
-    document.body.appendChild(testDiv);
-    
-    document.getElementById('testRefreshBtn')?.addEventListener('click', () => {
-      console.log("🧪 Testing refresh warning...");
-      if (window.testRefreshWarning) window.testRefreshWarning();
-      else alert('Refresh warning function not available');
-    });
-    
-    document.getElementById('testPinBtn')?.addEventListener('click', () => {
-      const firstPin = document.querySelector('.pin-btn');
-      if (firstPin) {
-        console.log("📌 Testing pin click...");
-        firstPin.click();
-      } else {
-        alert('No pin button found!');
-      }
-    });
-    
-    console.log("🔍 Debug panel ready!");
-    console.log("✅ Features active: Refresh Protection + Pin to Top");
+    console.log("🔍 Debugging...");
+    console.log(`Grid: ${!!document.getElementById('dashboard-grid')}`);
+    console.log(`Items: ${document.querySelectorAll('.dashboard-item').length}`);
+    console.log(`Pin buttons: ${document.querySelectorAll('.pin-btn').length}`);
+    console.log("✅ Vivaldi-specific fixes applied:");
+    console.log("   • Native pull-to-refresh disabled");
+    console.log("   • Custom pull indicator added");
+    console.log("   • Keyboard shortcuts intercepted");
+    console.log("   • Pin feature enabled");
   }, 1000);
 </script>
 
