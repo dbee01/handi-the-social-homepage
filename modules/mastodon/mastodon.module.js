@@ -1,3 +1,4 @@
+// modules/mastodon/mastodon.module.js
 import { loadSettings } from '../../js/core/settings.js';
 
 export default async function initMastodon(container) {
@@ -11,14 +12,28 @@ export default async function initMastodon(container) {
     container.appendChild(title);
 
     const content = document.createElement('div');
-    content.style.cssText = 'padding: 10px; max-height: 400px; overflow-y: auto;';
+    content.style.cssText = 'padding: 10px; min-height: 380px; overflow-y: auto;';
     container.appendChild(content);
+
+    // Ensure the parent dashboard item has enough height
+    const parentItem = container.closest('.dashboard-item');
+    if (parentItem) parentItem.style.minHeight = '450px';
 
     const settings = loadSettings();
     const instance = settings.mastodon?.instance || 'https://mastodon.ie';
     const limit = settings.mastodon?.limit || 5;
 
     content.innerHTML = '<div style="text-align:center; padding:20px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading trending...</div>';
+
+    // Helper to force Packery to relayout after content changes
+    function refreshPackery() {
+        if (window.packeryInstance) {
+            setTimeout(() => {
+                window.packeryInstance.reloadItems();
+                window.packeryInstance.layout();
+            }, 50);
+        }
+    }
 
     try {
         const url = `${instance}/api/v1/trends/links?limit=${limit}`;
@@ -28,6 +43,7 @@ export default async function initMastodon(container) {
 
         if (!data.length) {
             content.innerHTML = '<div style="text-align:center; color:#888;">No trending links</div>';
+            refreshPackery();
             return;
         }
 
@@ -50,9 +66,19 @@ export default async function initMastodon(container) {
             `;
         }
         content.innerHTML = html;
+
+        // Ensure images trigger a layout when they load
+        const images = content.querySelectorAll('img');
+        images.forEach(img => {
+            if (!img.complete) {
+                img.addEventListener('load', refreshPackery);
+            }
+        });
+        refreshPackery();
     } catch (err) {
         console.error(err);
         content.innerHTML = `<div style="color:#f33; text-align:center;">Failed to load Mastodon. Check instance URL in Settings.</div>`;
+        refreshPackery();
     }
 
     function escapeHtml(str) {

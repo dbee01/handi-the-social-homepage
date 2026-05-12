@@ -1,0 +1,317 @@
+/* app_for_the_elderly.css – High contrast, large fonts, legible UI */
+/* Load this AFTER main.css */
+
+/* ----- Base ----- */
+body {
+    background: #fef9e8;
+    color: #1e1a15;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    font-size: 1.2rem;
+    line-height: 1.5;
+}
+
+/* ----- Headings – maximum contrast ----- */
+.brand,
+.panel-title,
+.module-header h3,
+.settings-header h1,
+.module-title h3,
+.panel-title i,
+h1, h2, h3, h4 {
+    color: #0a0a0a !important;
+    font-weight: 800;
+    letter-spacing: normal;
+}
+
+.panel-title {
+    font-size: 1.7rem;
+    font-weight: 800;
+    border-bottom: 3px solid #b3a18e;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+}
+
+/* ----- Secondary text ----- */
+.small-text,
+.story-content p,
+.feed-domain,
+.contact-info small,
+.bus-timestamp,
+.bus-footnote,
+.bus-loading,
+.bus-no-data,
+.bus-no-buses,
+#now-playing-text,
+#music-status,
+.scheduled-time {
+    color: #2c2c2c;
+    font-size: 0.95rem;
+}
+
+/* ----- Links ----- */
+a, .story-content a, .feed-item a, .mastodon-link {
+    color: #004c99 !important;
+    text-decoration: underline;
+    font-weight: 600;
+}
+a:visited {
+    color: #2c3e66;
+}
+a:hover, a:focus {
+    color: #003366;
+    text-decoration: none;
+    background-color: #e6e0d4;
+}
+
+/* ----- Buttons (generic) ----- */
+button,
+.control-btn,
+.select-folder-btn,
+.add-contact-btn,
+.save-btn,
+.exit-btn,
+.upload-btn {
+    background: #2c3e50;
+    color: #ffffff;
+    border: 2px solid #1a2a38;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 12px 20px;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+button:hover,
+.control-btn:hover {
+    background: #1a2a38;
+    color: #ffffff;
+    transform: scale(1.02);
+}
+
+/* Primary action buttons (green) */
+#btn-playpause,
+.save-settings-top,
+.emergency-button,
+#music-playpause {
+    background: #006644;
+    color: white;
+    border: 2px solid #004d33;
+}
+#btn-playpause:hover,
+.save-settings-top:hover,
+#music-playpause:hover {
+    background: #004d33;
+}
+
+/* ----- Pin button ----- */
+.pin-btn {
+    width: 44px;
+    height: 44px;
+    background: #4a3b2c;
+    border: 2px solid #8c7a6b;
+    border-radius: 12px;
+    color: #f0e6d8;
+    font-size: 1.5rem;
+}
+.pin-btn.pinned {
+    background: #006644;
+    color: white;
+    border-color: #004d33;
+}
+
+/* ----- Dashboard items – desktop layout (three columns) with 420px width ----- */
+@media (min-width: 900px) {
+    #dashboard-grid {
+        position: relative !important;   /* required for Packery absolute positioning */
+        display: block !important;
+    }
+    .dashboard-item {
+        width: 420px !important;
+        position: absolute !important;   /* Packery will set top/left */
+        background: #fffcf5;
+        border: 2px solid #c2ad96;
+        border-radius: 20px;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        padding: 1.5rem;
+    }
+}
+/* Mobile layout (≤ 899px) – single column */
+@media (max-width: 899px) {
+    #dashboard-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    .dashboard-item {
+        width: calc(100% - 2rem) !important;
+        max-width: 500px !important;
+        position: relative !important;
+        margin-bottom: 20px;
+    }
+}
+
+/* ----- Header & footer ----- */
+header {
+    background: #f4eddf;
+    border-bottom: 3px solid #c2ad96;
+    padding: 1.2rem 2rem;
+}
+.brand {
+    color: #2c6e49;
+    font-size: 2rem;
+}
+.search-wrapper input,
+.search-engine-select {
+    padding: 14px 18px;
+    font-size: 1.1rem;
+    border-radius: 60px;
+    background: white;
+    border: 1px solid #b3a18e;
+}
+.header-weather {
+    background: #e9e3d5;
+    font-size: 1.2rem;
+    padding: 8px 20px;
+    border-radius: 40px;
+}
+footer {
+    background: #f0e9de;
+    border-top: 2px solid #c2ad96;
+    padding: 1.5rem;
+    font-size: 1rem;
+    color: #4b3b2c;
+}
+.footer-content span {
+    font-size: 1rem;
+    gap: 8px;
+}
+
+/* ----- Module specific larger text ----- */
+.story-content h3,
+.feed-name,
+.contact-info strong,
+.bus-stop-title,
+.radio-station span,
+.music-track-item {
+    font-size: 1.1rem;
+}
+.story-content p,
+.feed-domain,
+.contact-info small {
+    font-size: 0.95rem;
+}
+
+/* Bus module – override dark theme */
+.bus-stop-card {
+    background: #fffcf5 !important;
+    border: 2px solid #c2ad96 !important;
+}
+.bus-stop-title {
+    color: #0a0a0a !important;
+}
+.bus-direction {
+    color: #2c2c2c !important;
+}
+.bus-item {
+    border-bottom: 1px solid #d4c8b8 !important;
+}
+.bus-route {
+    color: #1e1a15 !important;
+}
+.bus-arrival {
+    color: #006644 !important;
+    font-weight: bold;
+}
+.bus-retry-btn,
+.bus-refresh-btn {
+    background: #2c3e50 !important;
+    color: white !important;
+    border: 2px solid #1a2a38 !important;
+}
+
+/* Emergency button – high visibility */
+#emergencyTriggerBtn {
+    width: 200px;
+    height: 200px;
+    font-size: 1.6rem !important;
+    background: radial-gradient(circle at 30% 30%, #cc0000, #800000) !important;
+    border: 4px solid #ffcccc;
+    color: white;
+    font-weight: bold;
+    text-shadow: 0 0 2px black;
+    box-shadow: 0 0 20px rgba(200,0,0,0.5) !important;
+}
+
+/* Friendly phone – larger images and text */
+.contact-card,
+.friendly-phone-container .contact-item {
+    font-size: 1.1rem;
+}
+.contact-photo img {
+    width: 80px;
+    height: 80px;
+}
+
+/* Music player controls */
+#music-playpause,
+#btn-playpause,
+.control-btn {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+}
+#volume-slider {
+    height: 8px;
+}
+.volume-value {
+    font-size: 1.2rem;
+}
+
+/* Radio station list */
+.radio-station {
+    padding: 14px 16px;
+}
+.radio-station i {
+    font-size: 1.6rem;
+}
+
+/* News / Mastodon articles */
+.story-chunk,
+.feed-item {
+    gap: 20px;
+    padding: 18px 0;
+}
+.story-thumb,
+.feed-item img {
+    width: 100px;
+    height: 70px;
+}
+
+/* Settings page overrides */
+.settings-container {
+    max-width: 1000px;
+}
+.module-card {
+    border-radius: 24px;
+    border: 2px solid #c2ad96;
+}
+.module-header {
+    padding: 18px 24px;
+}
+.module-header h3 {
+    font-size: 1.5rem;
+}
+.config-field label {
+    font-size: 1rem;
+}
+.config-field input,
+.config-field select {
+    font-size: 1rem;
+    padding: 12px;
+}
+
+/* Focus indicators */
+:focus {
+    outline: 4px solid #004c99;
+    outline-offset: 3px;
+}

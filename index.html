@@ -6,6 +6,8 @@
     <title>ple.ie</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/app_for_the_elderly.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="https://unpkg.com/packery@2.1.2/dist/packery.pkgd.min.js"></script>
     <script src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
     <script type="module">
@@ -55,6 +57,59 @@
         // Initialise layout system (Packery, responsive)
         initLayoutSystem();
 
+        // ----- Search functionality (European privacy‑friendly engines) -----
+        function initializeSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchEngine = document.getElementById('searchEngine');
+
+            if (!searchInput || !searchEngine) {
+                console.warn("Search elements not found");
+                return;
+            }
+
+            function performSearch() {
+                const query = searchInput.value.trim();
+                if (!query) return;
+
+                const engine = searchEngine.value;
+                let searchUrl = '';
+
+                switch (engine) {
+                    case 'startpage':
+                        searchUrl = `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
+                        break;
+                    case 'qwant':
+                        searchUrl = `https://www.qwant.com/?q=${encodeURIComponent(query)}`;
+                        break;
+                    case 'ecosia':
+                        searchUrl = `https://www.ecosia.org/search?q=${encodeURIComponent(query)}`;
+                        break;
+                    case 'mojeek':
+                        searchUrl = `https://www.mojeek.com/search?q=${encodeURIComponent(query)}`;
+                        break;
+                    default:
+                        searchUrl = `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
+                }
+
+                window.open(searchUrl, '_blank');
+                searchInput.value = '';
+            }
+
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+
+            const searchIcon = document.querySelector('.search-wrapper i.fa-arrow-right');
+            if (searchIcon) {
+                searchIcon.addEventListener('click', performSearch);
+            }
+        }
+
+        // Call it after modules are initialised
+        initializeSearch();
+
         // Weather widget
         async function updateWeather() {
             const weatherEl = document.getElementById('weather');
@@ -77,22 +132,23 @@
         document.getElementById('settingsLink')?.addEventListener('click', () => {
             window.location.href = 'settings.html';
         });
+        
     </script>
 </head>
 <body>
     <header>
-        <div class="brand"><i class="fa-solid fa-bolt"></i> ple.ie</div>
-        <div class="search-wrapper">
-            <select id="searchEngine" class="search-engine-select">
-                <option value="google">Google</option>
-                <option value="duckduckgo">DuckDuckGo</option>
-                <option value="brave">Brave</option>
-                <option value="proton">Proton</option>
-            </select>
-            <input type="text" id="searchInput" placeholder="Search the network...">
-            <i class="fa-solid fa-arrow-right"></i>
-        </div>
-        <div class="header-weather">
+      <div class="brand"><i class="fa-solid fa-bolt"></i> ple.ie</div>
+      <div class="search-wrapper">
+      <select id="searchEngine" class="search-engine-select">
+          <option value="startpage">StartPage (NL)</option>
+          <option value="qwant">Qwant (FR)</option>
+          <option value="ecosia">Ecosia (DE)</option>
+          <option value="mojeek">Mojeek (UK)</option>
+      </select>
+      <input type="text" id="searchInput" placeholder="Search the network...">
+      <i class="fa-solid fa-arrow-right"></i>
+  </div>
+   <div class="header-weather">
             <i class="fa-solid fa-cloud-sun"></i>
             <span id="weather">🌤️ --°C</span>
         </div>

@@ -80,7 +80,7 @@
         </div>
     </div>
 
-    <!-- Emergency Module – inline contact fields, no modal -->
+    <!-- Emergency Module – inline contact fields -->
     <div class="module-card">
         <div class="module-header" data-module="emergency">
             <div class="module-title"><i class="fa-solid fa-triangle-exclamation"></i><h3>Emergency</h3></div>
@@ -88,16 +88,17 @@
         </div>
         <div class="module-config">
             <div class="config-field"><label>Emergency Contacts</label><div id="emergencyContactsList" class="contact-list"></div></div>
-            <div style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 16px;">
+            <div style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 16px; flex-wrap: wrap;">
                 <input type="text" id="emergencyName" placeholder="Name" style="flex:1;">
                 <input type="tel" id="emergencyPhone" placeholder="Phone" style="flex:1;">
+                <input type="file" id="emergencyPhoto" accept="image/*" style="flex:0.5;">
                 <button id="addEmergencyInline" class="add-contact-btn">+ Add</button>
             </div>
             <div class="config-field"><label>Check interval (minutes):</label><input type="number" id="emergencyInterval" min="1" max="60" value="5"></div>
         </div>
     </div>
 
-    <!-- Friendly Phone Module – inline contact fields, no modal -->
+    <!-- Friendly Phone Module – inline contact fields with photo upload -->
     <div class="module-card">
         <div class="module-header" data-module="phone">
             <div class="module-title"><i class="fa-solid fa-phone"></i><h3>Friendly Phone</h3></div>
@@ -105,9 +106,10 @@
         </div>
         <div class="module-config">
             <div class="config-field"><label>Phone Contacts</label><div id="phoneContactsList" class="contact-list"></div></div>
-            <div style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 16px;">
+            <div style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 16px; flex-wrap: wrap;">
                 <input type="text" id="phoneName" placeholder="Name" style="flex:1;">
                 <input type="tel" id="phoneNumber" placeholder="Phone" style="flex:1;">
+                <input type="file" id="phonePhoto" accept="image/*" style="flex:0.5;">
                 <button id="addPhoneInline" class="add-contact-btn">+ Add</button>
             </div>
             <div class="config-field"><label>Auto-dial warning (seconds):</label><input type="number" id="autoDialDelay" min="5" max="30" value="10"></div>

@@ -1,3 +1,4 @@
+// modules/local-player/local-player.module.js
 import { loadMusic } from '../../js/core/storage.js';
 
 export default async function initMusic(container) {
@@ -11,8 +12,13 @@ export default async function initMusic(container) {
     container.appendChild(title);
 
     const content = document.createElement('div');
-    content.style.cssText = 'padding: 10px;';
+    // Increased min-height to prevent overlapping
+    content.style.cssText = 'padding: 10px; min-height: 380px;';
     container.appendChild(content);
+
+    // Also ensure the parent dashboard-item has enough room
+    const parentItem = container.closest('.dashboard-item');
+    if (parentItem) parentItem.style.minHeight = '420px';
 
     const tracks = await loadMusic();
     console.log('Music tracks loaded:', tracks.length);
@@ -26,7 +32,7 @@ export default async function initMusic(container) {
     let currentIndex = 0;
     let isPlaying = false;
 
-    // Create UI
+    // Build UI
     content.innerHTML = `
         <div id="music-now-playing" style="background:#0a0a0a;border-radius:8px;padding:12px;margin-bottom:15px;text-align:center;border:1px solid #00ff41;">
             <div id="music-track-title" style="color:#00ff41;font-weight:bold;">${escapeHtml(tracks[0].name)}</div>
