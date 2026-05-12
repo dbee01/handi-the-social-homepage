@@ -4,14 +4,12 @@ const axios = require('axios');
 
 const app = express();
 const PORT = 3001;
-
 app.use(cors());
 
 const API_KEY = '2410ec27541243aa967e1edc53275c95';
 const REALTIME_URL = 'https://api.nationaltransport.ie/gtfsr/v2/gtfsr?format=json';
 
-// Hardcoded schedule for Route 223 (typical weekday schedule)
-// This is used as fallback when no real-time data is available
+// Hardcoded fallback schedule (as you already have)
 const FALLBACK_SCHEDULE = {
     'Rochestown Rise': {
         direction: 'City Centre',
@@ -25,13 +23,9 @@ const FALLBACK_SCHEDULE = {
 
 function getNextScheduledTimes(stopName) {
     const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    const currentTime = currentHour + currentMinute / 60;
-    
+    const currentTime = now.getHours() + now.getMinutes() / 60;
     const schedule = FALLBACK_SCHEDULE[stopName];
     if (!schedule) return [];
-    
     const nextTimes = [];
     for (const time of schedule.times) {
         if (time > currentTime && nextTimes.length < 3) {
@@ -51,93 +45,94 @@ function getNextScheduledTimes(stopName) {
     return nextTimes;
 }
 
+// ----- CACHE -----
+let cachedData = null;
+let lastFetch = 0;
+const CACHE_TTL = 30000; // 30 seconds
+
 app.get('/api/bus-realtime', async (req, res) => {
-    console.log('🚌 Bus request received');
-    
+    const now = Date.now();
+    if (cachedData && (now - lastFetch) < CACHE_TTL) {
+        console.log('📦 Returning cached bus data');
+        return res.json(cachedData);
+    }
+
     try {
         const response = await axios.get(REALTIME_URL, {
             headers: { 'x-api-key': API_KEY },
             timeout: 10000
         });
-        
+
         const stops = {
             'Rochestown Rise': { buses: [], direction: 'City Centre' },
             'South Mall': { buses: [], direction: 'Rochestown' }
         };
-        
-        // Process real-time data
         let hasRealTimeData = false;
-        
+
         if (response.data && response.data.entity) {
-            response.data.entity.forEach(entity => {
+            for (const entity of response.data.entity) {
                 if (entity.trip_update) {
                     const trip = entity.trip_update.trip;
-                    const routeId = trip.route_id;
-                    
-                    if (routeId === '223') {
-                        entity.trip_update.stop_time_update.forEach(update => {
+                    if (trip.route_id === '223') {
+                        for (const update of entity.trip_update.stop_time_update) {
                             let stopName = null;
                             if (update.stop_id === '242081') stopName = 'Rochestown Rise';
                             if (update.stop_id === '242051') stopName = 'South Mall';
-                            
                             if (stopName && stops[stopName]) {
                                 const arrival = update.arrival;
                                 if (arrival && arrival.time) {
                                     hasRealTimeData = true;
                                     const arrivalTime = new Date(arrival.time * 1000);
-                                    const nowTime = new Date();
-                                    const minutesAway = Math.round((arrivalTime - nowTime) / 60000);
-                                    
+                                    const minutesAway = Math.round((arrivalTime - Date.now()) / 60000);
                                     if (minutesAway >= 0 && minutesAway <= 60) {
                                         stops[stopName].buses.push({
-                                            route: routeId,
+                                            route: '223',
                                             minutes_away: minutesAway,
-                                            arrival_text: minutesAway === 0 ? 'Due' : `${minutesAway} min${minutesAway !== 1 ? 's' : ''}`,
+                                            arrival_text: minutesAway <= 0 ? 'Due' : `${minutesAway} min${minutesAway !== 1 ? 's' : ''}`,
                                             delay: arrival.delay || 0,
                                             realtime: true
                                         });
                                     }
                                 }
                             }
-                        });
+                        }
                     }
                 }
-            });
+            }
         }
-        
-        // If no real-time data, use fallback schedule
+
         const results = [];
         for (const [stopName, data] of Object.entries(stops)) {
             let buses = data.buses;
             let isRealtime = buses.length > 0;
-            
             if (!isRealtime) {
                 buses = getNextScheduledTimes(stopName);
             }
-            
             buses.sort((a, b) => a.minutes_away - b.minutes_away);
-            buses = buses.slice(0, 3);
-            
             results.push({
                 stop_name: stopName,
                 direction: data.direction,
-                buses: buses,
+                buses: buses.slice(0, 3),
                 realtime_data: isRealtime
             });
         }
-        
-        res.json({
+
+        const result = {
             success: true,
             last_updated: new Date().toISOString(),
             route: '223',
             stops: results,
-            note: hasRealTimeData ? 'Real-time data' : 'Showing scheduled times (no real-time data available)'
-        });
-        
+            note: hasRealTimeData ? 'Real-time data' : 'Scheduled times'
+        };
+        cachedData = result;
+        lastFetch = now;
+        res.json(result);
     } catch (error) {
-        console.error('API Error:', error.message);
-        
-        // Return fallback schedule on error
+        console.error('API error:', error.message);
+        if (cachedData) {
+            return res.json(cachedData);
+        }
+        // ultimate fallback
         const results = [];
         for (const [stopName, data] of Object.entries(FALLBACK_SCHEDULE)) {
             results.push({
@@ -147,14 +142,7 @@ app.get('/api/bus-realtime', async (req, res) => {
                 realtime_data: false
             });
         }
-        
-        res.json({
-            success: true,
-            last_updated: new Date().toISOString(),
-            route: '223',
-            stops: results,
-            note: 'Using scheduled times (API unavailable)'
-        });
+        res.json({ success: true, last_updated: new Date().toISOString(), route: '223', stops: results });
     }
 });
 
@@ -168,6 +156,4 @@ app.get('/api/news', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`✅ Server running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`✅ Server on http://localhost:${PORT}`));

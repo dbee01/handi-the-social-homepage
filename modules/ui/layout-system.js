@@ -1,213 +1,139 @@
 // modules/ui/layout-system.js
-
 export default function initLayoutSystem() {
-  const grid = document.getElementById('dashboard-grid');
-  if (!grid) {
-    console.error("❌ Dashboard grid not found!");
-    return;
-  }
+    const grid = document.getElementById('dashboard-grid');
+    if (!grid) return;
 
-  console.log("🎯 Initializing layout system...");
+    let packery = null;
+    let sortable = null;
 
-  let packery = null;
-  let isDragging = false;
-  
-  // Function to update grid height based on Packery items
-  function updateGridHeight() {
-    if (!packery) return;
-    
-    const items = packery.getItemElements();
-    if (items.length === 0) return;
-    
-    let maxBottom = 0;
-    
-    items.forEach(item => {
-      const rect = item.getBoundingClientRect();
-      const gridRect = grid.getBoundingClientRect();
-      const relativeBottom = rect.bottom - gridRect.top + 40; // Add padding
-      if (relativeBottom > maxBottom) maxBottom = relativeBottom;
-    });
-    
-    if (maxBottom > 0) {
-      grid.style.height = maxBottom + 'px';
-      console.log(`Grid height set to: ${maxBottom}px`);
+    // ----- Pin System (fully integrated) -----
+    function initPins() {
+        const handlePinClick = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const btn = e.currentTarget;
+            const panel = btn.closest('.dashboard-item');
+            if (!panel) return;
+
+            const isPinned = btn.classList.contains('pinned');
+            if (isPinned) {
+                btn.classList.remove('pinned');
+                btn.title = "Pin to top";
+                grid.appendChild(panel);      // move to bottom
+            } else {
+                btn.classList.add('pinned');
+                btn.title = "Unpin";
+                grid.insertBefore(panel, grid.firstChild); // move to top
+            }
+
+            // If Packery is active, refresh layout
+            if (packery) {
+                packery.reloadItems();
+                packery.layout();
+            }
+        };
+
+        const attach = () => {
+            const pins = grid.querySelectorAll('.pin-btn');
+            pins.forEach(btn => {
+                btn.removeEventListener('click', handlePinClick);
+                btn.addEventListener('click', handlePinClick);
+            });
+        };
+        attach();
+        // Watch for dynamically added modules
+        const observer = new MutationObserver(attach);
+        observer.observe(grid, { childList: true, subtree: true });
     }
-  }
-  
-  // Initialize SortableJS for drag & drop
-  if (typeof Sortable === 'undefined') {
-    console.error("❌ SortableJS not loaded!");
-    return;
-  }
 
-  console.log("✅ SortableJS found, enabling drag & drop...");
-  
-  const sortable = new Sortable(grid, {
-    animation: 300,
-    ghostClass: 'sortable-ghost',
-    chosenClass: 'sortable-chosen',
-    dragClass: 'sortable-drag',
-    handle: '.dashboard-item',
-    disabled: false,
-    
-    onStart: function() {
-      isDragging = true;
-      console.log("🖱️ Drag started");
-      if (packery) {
-        packery.options.isResizeLayout = false;
-      }
-    },
-    
-    onEnd: function() {
-      console.log("🖱️ Drag ended");
-      isDragging = false;
-      
-      if (packery) {
-        packery.options.isResizeLayout = true;
-        setTimeout(() => {
-          packery.reloadItems();
-          packery.layout();
-          setTimeout(() => updateGridHeight(), 100);
-        }, 50);
-      }
-    }
-  });
-
-  // Initialize Packery
-  const initPackery = () => {
-    if (typeof Packery === 'undefined') {
-      console.error("❌ Packery not loaded!");
-      return;
-    }
-    
-    packery = new Packery(grid, {
-      itemSelector: '.dashboard-item',
-      gutter: 30,
-      columnWidth: 420,
-      transitionDuration: '0.2s',
-      resize: true
-    });
-    
-    console.log("✅ Packery initialized");
-    window.packeryInstance = packery;
-    
-    // Update height after layout
-    packery.on('layoutComplete', () => {
-      updateGridHeight();
-    });
-    
-    // Initial layout and height update
-    setTimeout(() => {
-      packery.layout();
-      setTimeout(() => updateGridHeight(), 100);
-    }, 100);
-    
-    // Update height on window resize
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
+    function destroyPackery() {
         if (packery) {
-          packery.layout();
-          setTimeout(() => updateGridHeight(), 100);
+            packery.destroy();
+            packery = null;
+            window.packeryInstance = null;
         }
-      }, 250);
-    });
-    
-    // Also update when images load
-    const images = grid.querySelectorAll('img');
-    images.forEach(img => {
-      if (img.complete) {
-        updateGridHeight();
-      } else {
-        img.addEventListener('load', () => updateGridHeight());
-      }
-    });
-  };
-  
-  initPackery();
-
-  // Initialize Pin System
-  initPinSystem(grid, packery, updateGridHeight);
-  
-  console.log("✅ Layout system initialized");
-}
-
-// Pin System
-function initPinSystem(grid, packery, updateHeightCallback) {
-  console.log("📌 Initializing pin system...");
-  
-  function setupPinButtons() {
-    const allPins = grid.querySelectorAll('.pin-btn');
-    console.log(`📌 Found ${allPins.length} pin buttons`);
-    
-    allPins.forEach(btn => {
-      btn.removeEventListener('click', handlePinClick);
-      btn.addEventListener('click', handlePinClick);
-    });
-  }
-  
-  function handlePinClick(e) {
-    e.stopPropagation();
-    e.preventDefault();
-    
-    const btn = e.currentTarget;
-    const panel = btn.closest('.dashboard-item');
-    
-    if (!panel) return;
-    
-    const isPinned = btn.classList.contains('pinned');
-    
-    console.log(`📌 Pin clicked, isPinned: ${isPinned}`);
-    
-    // Toggle pin state
-    if (isPinned) {
-      btn.classList.remove('pinned');
-      btn.title = "Pin to top";
-    } else {
-      btn.classList.add('pinned');
-      btn.title = "Unpin";
+        if (sortable) {
+            sortable.destroy();
+            sortable = null;
+        }
     }
-    
-    // Reorder DOM based on pin states
-    const allItems = Array.from(grid.querySelectorAll('.dashboard-item'));
-    const pinnedItems = allItems.filter(item => {
-      const pinBtn = item.querySelector('.pin-btn');
-      return pinBtn && pinBtn.classList.contains('pinned');
-    });
-    const unpinnedItems = allItems.filter(item => {
-      const pinBtn = item.querySelector('.pin-btn');
-      return !pinBtn || !pinBtn.classList.contains('pinned');
-    });
-    
-    // New order: pinned first, then unpinned
-    const newOrder = [...pinnedItems, ...unpinnedItems];
-    
-    // Reorder DOM
-    newOrder.forEach(item => {
-      grid.appendChild(item);
-    });
-    
-    // Update Packery
-    if (packery) {
-      packery.reloadItems();
-      packery.layout();
-      setTimeout(() => {
-        if (updateHeightCallback) updateHeightCallback();
-      }, 100);
+
+    function initDesktop() {
+        destroyPackery();
+        grid.style.display = 'block';
+        // Reset item inline styles
+        const items = grid.querySelectorAll('.dashboard-item');
+        items.forEach(item => {
+            item.style.position = '';
+            item.style.top = '';
+            item.style.left = '';
+            item.style.width = '';
+            item.style.maxWidth = '';
+        });
+
+        if (typeof Packery === 'undefined') {
+            console.error('Packery not loaded');
+            return;
+        }
+        packery = new Packery(grid, {
+            itemSelector: '.dashboard-item',
+            gutter: 30,
+            columnWidth: 420,
+            transitionDuration: '0.2s'
+        });
+        window.packeryInstance = packery;
+        packery.layout();
+
+        if (typeof Sortable !== 'undefined') {
+            sortable = new Sortable(grid, {
+                animation: 300,
+                handle: '.dashboard-item',
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                dragClass: 'sortable-drag',
+                onEnd: () => {
+                    if (packery) {
+                        packery.reloadItems();
+                        packery.layout();
+                    }
+                }
+            });
+        }
+        console.log('Desktop layout (Packery) initialized');
     }
-  }
-  
-  setupPinButtons();
-  
-  // Watch for dynamically added items
-  const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      if (mutation.addedNodes.length) {
-        setupPinButtons();
-      }
+
+    function initMobile() {
+        destroyPackery();
+        grid.style.display = 'flex';
+        grid.style.flexDirection = 'column';
+        grid.style.alignItems = 'center';
+        grid.style.gap = '20px';
+        const items = grid.querySelectorAll('.dashboard-item');
+        items.forEach(item => {
+            item.style.position = 'relative';
+            item.style.width = '100%';
+            item.style.maxWidth = '100%';
+        });
+        console.log('Mobile layout (flex column) initialized');
+    }
+
+    function updateLayout() {
+        if (window.innerWidth > 899) {
+            initDesktop();
+        } else {
+            initMobile();
+        }
+    }
+
+    // Initial layout
+    updateLayout();
+    // Always initialise pins (they work in both modes)
+    initPins();
+
+    // Re-layout on resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(updateLayout, 150);
     });
-  });
-  
-  observer.observe(grid, { childList: true, subtree: true });
 }

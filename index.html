@@ -8,6 +8,76 @@
     <link rel="stylesheet" href="css/main.css">
     <script src="https://unpkg.com/packery@2.1.2/dist/packery.pkgd.min.js"></script>
     <script src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script type="module">
+        import { loadSettings } from './js/core/settings.js';
+        import initBus from './modules/bus/bus.module.js';
+        import initGallery from './modules/gallery/gallery.module.js';
+        import initMusic from './modules/local-player/local-player.module.js';
+        import initNews from './modules/news/news.module.js';
+        import initMastodon from './modules/mastodon/mastodon.module.js';
+        import initRadio from './modules/radio/radio.module.js';
+        import initEmergency from './modules/emergency/emergency.module.js';
+        import initPhone from './modules/friendly-phone/friendly-phone.module.js';
+        import initLayoutSystem from './modules/ui/layout-system.js';
+
+        const modules = {
+            gallery: initGallery,
+            bus: initBus,
+            music: initMusic,
+            news: initNews,
+            mastodon: initMastodon,
+            radio: initRadio,
+            emergency: initEmergency,
+            phone: initPhone
+        };
+
+        const settings = loadSettings();
+        const enabledModules = settings.enabledModules || {};
+
+        // Show/hide and initialise modules
+        for (const [id, initFn] of Object.entries(modules)) {
+            const element = document.getElementById(id);
+            if (!element) continue;
+            const isEnabled = enabledModules[id] !== false;
+            element.style.display = isEnabled ? 'block' : 'none';
+            if (isEnabled) {
+                const container = element.querySelector('.module-content');
+                if (container) {
+                    try {
+                        initFn(container);
+                    } catch (err) {
+                        console.error(`Error initialising ${id}:`, err);
+                    }
+                }
+            }
+        }
+
+        // Initialise layout system (Packery, responsive)
+        initLayoutSystem();
+
+        // Weather widget
+        async function updateWeather() {
+            const weatherEl = document.getElementById('weather');
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=53.3498&longitude=-6.2603&current_weather=true');
+                const data = await res.json();
+                if (data.current_weather) {
+                    weatherEl.innerHTML = `🌤️ ${Math.round(data.current_weather.temperature)}°C`;
+                } else {
+                    weatherEl.innerHTML = '🌤️ --°C';
+                }
+            } catch {
+                weatherEl.innerHTML = '🌤️ --°C';
+            }
+        }
+        updateWeather();
+        setInterval(updateWeather, 1800000);
+
+        // Settings link
+        document.getElementById('settingsLink')?.addEventListener('click', () => {
+            window.location.href = 'settings.html';
+        });
+    </script>
 </head>
 <body>
     <header>
@@ -30,7 +100,6 @@
 
     <div class="dashboard-wrapper">
         <main id="dashboard-grid">
-            <!-- All modules initially hidden; enabled ones will be shown by JS -->
             <div id="gallery" class="dashboard-item module" data-module="gallery">
                 <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
                 <div class="module-content"></div>
@@ -74,84 +143,5 @@
             <span class="settings-link" id="settingsLink"><i class="fa-solid fa-gear"></i> Settings</span>
         </div>
     </footer>
-
-    <script type="module">
-        import { loadSettings } from './js/core/settings.js';
-        import { initLayout } from './js/core/layout.js';
-        import initBus from './modules/bus/bus.module.js';
-        import initGallery from './modules/gallery/gallery.module.js';
-        import initMusic from './modules/local-player/local-player.module.js';
-        import initNews from './modules/news/news.module.js';
-        import initMastodon from './modules/mastodon/mastodon.module.js';
-        import initRadio from './modules/radio/radio.module.js';
-        import initEmergency from './modules/emergency/emergency.module.js';
-        import initPhone from './modules/friendly-phone/friendly-phone.module.js';
-
-        const modules = {
-            gallery: initGallery,
-            bus: initBus,
-            music: initMusic,
-            news: initNews,
-            mastodon: initMastodon,
-            radio: initRadio,
-            emergency: initEmergency,
-            phone: initPhone
-        };
-
-        const settings = loadSettings();
-        const enabledModules = settings.enabledModules || {};
-
-        // Show/hide modules based on settings
-        Object.entries(modules).forEach(([id, initFn]) => {
-            const element = document.getElementById(id);
-            if (!element) return;
-            // Enable by default if not explicitly disabled
-            const isEnabled = enabledModules[id] !== false;
-            if (isEnabled) {
-                element.style.display = 'block';
-                const container = element.querySelector('.module-content');
-                if (container) {
-                    try {
-                        initFn(container);
-                    } catch (err) {
-                        console.error(`Failed to init ${id}:`, err);
-                    }
-                }
-            } else {
-                element.style.display = 'none';
-            }
-        });
-
-        // Initialise Packery + Sortable (only on desktop)
-        initLayout();
-
-        // Listen for settings changes from settings page
-        window.addEventListener('settingsChanged', () => {
-            location.reload();
-        });
-
-        // Settings link button
-        document.getElementById('settingsLink')?.addEventListener('click', () => {
-            window.location.href = 'settings.html';
-        });
-
-        // Simple weather fetch
-        async function updateWeather() {
-            const weatherEl = document.getElementById('weather');
-            if (!weatherEl) return;
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=53.3498&longitude=-6.2603&current_weather=true');
-                const data = await res.json();
-                if (data.current_weather) {
-                    weatherEl.innerHTML = `🌤️ ${Math.round(data.current_weather.temperature)}°C`;
-                }
-            } catch (e) {
-                console.warn('Weather fetch failed');
-                weatherEl.innerHTML = '🌤️ 14°C';
-            }
-        }
-        updateWeather();
-        setInterval(updateWeather, 1800000);
-    </script>
 </body>
 </html>

@@ -57,11 +57,18 @@ header {
     gap: 20px;
     justify-content: center;
 }
+@media (max-width: 899px) {
+    .dashboard-item {
+        width: 100%;
+        max-width: 100%;
+    }
+}
 .dashboard-item {
+    position: absolute;
+    width: 420px;
     background: #0a0a0a;
     border: 1px solid #1f1f1f;
     border-radius: 8px;
-    width: 380px;
     min-height: 200px;
     padding: 15px;
     position: relative;
