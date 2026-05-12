@@ -142,6 +142,7 @@ function initResponsiveLayout() {
   if (window.innerWidth <= 800) {
     console.log("📱 Mobile layout enabled");
 
+    // Destroy Packery if it exists
     if (window.packeryInstance) {
       try {
         window.packeryInstance.destroy();
@@ -151,17 +152,20 @@ function initResponsiveLayout() {
       window.packeryInstance = null;
     }
 
-    grid.removeAttribute("style");
+    // Apply mobile classes and styles
     grid.classList.add("mobile-layout");
+    grid.style.position = "relative";
+    grid.style.height = "auto";
 
     const items = grid.querySelectorAll(".dashboard-item");
     items.forEach((item) => {
-      item.removeAttribute("style");
-      item.style.position = "static";
+      item.classList.add("mobile-item");
+      item.style.position = "relative";
+      item.style.left = "auto";
+      item.style.top = "auto";
       item.style.width = "100%";
       item.style.maxWidth = "100%";
       item.style.margin = "0 0 12px 0";
-      item.style.boxSizing = "border-box";
     });
 
     window.layoutSystemInitialized = true;
@@ -170,6 +174,15 @@ function initResponsiveLayout() {
 
   console.log("🖥️ Desktop layout enabled");
   grid.classList.remove("mobile-layout");
+  grid.style.height = "";
+
+  const items = grid.querySelectorAll(".dashboard-item");
+  items.forEach((item) => {
+    item.classList.remove("mobile-item");
+    item.style.position = "";
+    item.style.width = "";
+    item.style.margin = "";
+  });
 
   try {
     initLayoutSystem();

@@ -7,150 +7,157 @@ const PORT = 3001;
 
 app.use(cors());
 
-// Route: /stream?url=<encoded_radio_url>
-app.get('/stream', async (req, res) => {
-  const targetUrl = req.query.url;
+const API_KEY = '2410ec27541243aa967e1edc53275c95';
+const REALTIME_URL = 'https://api.nationaltransport.ie/gtfsr/v2/gtfsr?format=json';
 
-  if (!targetUrl) {
-    return res.status(400).send('Missing URL parameter');
-  }
-
-  try {
-    // Decode the URL
-    const decodedUrl = decodeURIComponent(targetUrl);
-
-    // Validate that it's an http/https URL to prevent SSRF attacks
-    if (!/^https?:\/\//.test(decodedUrl)) {
-      return res.status(400).send('Invalid URL scheme');
+// Hardcoded schedule for Route 223 (typical weekday schedule)
+// This is used as fallback when no real-time data is available
+const FALLBACK_SCHEDULE = {
+    'Rochestown Rise': {
+        direction: 'City Centre',
+        times: [6.15, 6.45, 7.15, 7.45, 8.15, 8.45, 9.15, 9.45, 10.15, 10.45, 11.15, 11.45, 12.15, 12.45, 13.15, 13.45, 14.15, 14.45, 15.15, 15.45, 16.15, 16.45, 17.15, 17.45, 18.15, 18.45, 19.15, 19.45, 20.15, 20.45, 21.15, 21.45, 22.15, 22.45]
+    },
+    'South Mall': {
+        direction: 'Rochestown',
+        times: [6.30, 7.00, 7.30, 8.00, 8.30, 9.00, 9.30, 10.00, 10.30, 11.00, 11.30, 12.00, 12.30, 13.00, 13.30, 14.00, 14.30, 15.00, 15.30, 16.00, 16.30, 17.00, 17.30, 18.00, 18.30, 19.00, 19.30, 20.00, 20.30, 21.00, 21.30, 22.00, 22.30]
     }
+};
 
-    console.log(`Proxying: ${decodedUrl}`);
-
-    // Stream the audio data directly to the client
-    const response = await axios({
-      method: 'get',
-      url: decodedUrl,
-      responseType: 'stream',
-      headers: {
-        // Mimic a browser to avoid 403 Forbidden on some stations
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Accept': '*/*',
-        'Connection': 'keep-alive'
-      }
-    });
-
-    // Set headers to tell the browser this is audio
-    res.setHeader('Content-Type', 'audio/mpeg');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Allow any origin
+function getNextScheduledTimes(stopName) {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTime = currentHour + currentMinute / 60;
     
-    // Pipe the stream directly to the response
-    response.data.pipe(res);
+    const schedule = FALLBACK_SCHEDULE[stopName];
+    if (!schedule) return [];
+    
+    const nextTimes = [];
+    for (const time of schedule.times) {
+        if (time > currentTime && nextTimes.length < 3) {
+            const hour = Math.floor(time);
+            const minute = Math.round((time % 1) * 60);
+            const busTime = new Date(now);
+            busTime.setHours(hour, minute, 0);
+            const minutesAway = Math.round((busTime - now) / 60000);
+            nextTimes.push({
+                route: '223',
+                minutes_away: minutesAway,
+                arrival_text: minutesAway <= 0 ? 'Due' : `${minutesAway} min${minutesAway !== 1 ? 's' : ''}`,
+                scheduled: true
+            });
+        }
+    }
+    return nextTimes;
+}
 
-  } catch (error) {
-    console.error('Proxy Error:', error.message);
-    res.status(500).send('Stream proxy failed');
-  }
-});
-
-app.get('/api/news', async (req, res) => {
-  console.log('📰 [SERVER] News request received');
-  try {
-    const rssUrl = 'https://www.rte.ie/feeds/rss/?index=/news';
-    const response = await axios.get(rssUrl, { 
-      responseType: 'text',
-      headers: { 'User-Agent': 'Mozilla/5.0 (PleIE-NewsBot)' }
-    });
-    res.type('application/xml').send(response.data);
-  } catch (error) {
-    console.error('📰 [SERVER] Error:', error.message);
-    res.status(500).send('Error fetching RTÉ news');
-  }
-});
-
-app.get('/api/energy', async (req, res) => {
-  console.log('⚡ [SERVER] Energy request received');
-  try {
-    const targetUrl = 'https://www.smartgriddashboard.com/DashboardService.svc/data?area=ROI&region=ALL';
-    const response = await axios.get(targetUrl);
-    res.json(response.data);
-  } catch (error) {
-    console.error('⚡ [SERVER] Error:', error.message);
-    res.status(500).json({ error: 'Failed to fetch energy data' });
-  }
-});
-
-// --- ADD THIS BUS ROUTE ---
 app.get('/api/bus-realtime', async (req, res) => {
-  console.log('🚌 [SERVER] Bus request received');
-  try {
-    // REPLACE THIS URL with your actual Bus API endpoint
-    // Example: https://api.transport-for-ireland.ie/bus/realtime?stop_id=242081
-    const targetUrl = 'https://api.transport-for-ireland.ie/bus/realtime?stop_id=242081'; 
+    console.log('🚌 Bus request received');
     
-    const response = await axios.get(targetUrl, { 
-      timeout: 5000,
-      headers: { 'User-Agent': 'PleIE-BusTracker' }
-    });
-    
-    console.log('🚌 [SERVER] Bus data fetched successfully');
-    res.json(response.data);
-  } catch (error) {
-    console.error('🚌 [SERVER] Bus API Error:', error.message);
-    // Return a 500 error so the frontend knows to use mock data
-    res.status(500).json({ error: 'Failed to fetch bus data', details: error.message });
-  }
-});
-
-// mastodon links endpoint
-app.get('/api/mastodon', async (req, res) => {
-  console.log('🔗 [SERVER] Mastodon Links request received');
-  try {
-    // Correct endpoint for trending links
-    const targetUrl = 'https://mastodon.ie/api/v1/trends/links?limit=5';
-    
-    console.log('🔗 [SERVER] Fetching from:', targetUrl);
-    
-    const response = await axios.get(targetUrl, {
-      timeout: 8000, // Increased timeout
-      headers: { 'User-Agent': 'PleIE-App/1.0' }
-    });
-
-    console.log('🔗 [SERVER] Success! Received', response.data.length, 'links');
-    res.json(response.data);
-
-  } catch (error) {
-    console.error('🔗 [SERVER] ERROR:', error.message);
-    
-    // Fallback Mock Data matching the API structure
-    const mockData = [
-      {
-        title: "Open Source News",
-        description: "Latest updates on Linux, Python, and Web Development.",
-        image: "https://via.placeholder.com/90x65/000000/00ffff?text=OSS",
-        url: "https://example.com",
-        provider_name: "TechDaily"
-      },
-      {
-        title: "AI Breakthrough",
-        description: "New model achieves human-level reasoning in complex tasks.",
-        image: "https://via.placeholder.com/90x65/000000/00ff41?text=AI",
-        url: "https://example.com",
-        provider_name: "FutureTech"
-      }
-    ];
-    
-    console.log('🔗 [SERVER] Returning mock data');
-    res.json(mockData);
-  }
+    try {
+        const response = await axios.get(REALTIME_URL, {
+            headers: { 'x-api-key': API_KEY },
+            timeout: 10000
+        });
+        
+        const stops = {
+            'Rochestown Rise': { buses: [], direction: 'City Centre' },
+            'South Mall': { buses: [], direction: 'Rochestown' }
+        };
+        
+        // Process real-time data
+        let hasRealTimeData = false;
+        
+        if (response.data && response.data.entity) {
+            response.data.entity.forEach(entity => {
+                if (entity.trip_update) {
+                    const trip = entity.trip_update.trip;
+                    const routeId = trip.route_id;
+                    
+                    if (routeId === '223') {
+                        entity.trip_update.stop_time_update.forEach(update => {
+                            let stopName = null;
+                            if (update.stop_id === '242081') stopName = 'Rochestown Rise';
+                            if (update.stop_id === '242051') stopName = 'South Mall';
+                            
+                            if (stopName && stops[stopName]) {
+                                const arrival = update.arrival;
+                                if (arrival && arrival.time) {
+                                    hasRealTimeData = true;
+                                    const arrivalTime = new Date(arrival.time * 1000);
+                                    const nowTime = new Date();
+                                    const minutesAway = Math.round((arrivalTime - nowTime) / 60000);
+                                    
+                                    if (minutesAway >= 0 && minutesAway <= 60) {
+                                        stops[stopName].buses.push({
+                                            route: routeId,
+                                            minutes_away: minutesAway,
+                                            arrival_text: minutesAway === 0 ? 'Due' : `${minutesAway} min${minutesAway !== 1 ? 's' : ''}`,
+                                            delay: arrival.delay || 0,
+                                            realtime: true
+                                        });
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+        
+        // If no real-time data, use fallback schedule
+        const results = [];
+        for (const [stopName, data] of Object.entries(stops)) {
+            let buses = data.buses;
+            let isRealtime = buses.length > 0;
+            
+            if (!isRealtime) {
+                buses = getNextScheduledTimes(stopName);
+            }
+            
+            buses.sort((a, b) => a.minutes_away - b.minutes_away);
+            buses = buses.slice(0, 3);
+            
+            results.push({
+                stop_name: stopName,
+                direction: data.direction,
+                buses: buses,
+                realtime_data: isRealtime
+            });
+        }
+        
+        res.json({
+            success: true,
+            last_updated: new Date().toISOString(),
+            route: '223',
+            stops: results,
+            note: hasRealTimeData ? 'Real-time data' : 'Showing scheduled times (no real-time data available)'
+        });
+        
+    } catch (error) {
+        console.error('API Error:', error.message);
+        
+        // Return fallback schedule on error
+        const results = [];
+        for (const [stopName, data] of Object.entries(FALLBACK_SCHEDULE)) {
+            results.push({
+                stop_name: stopName,
+                direction: data.direction,
+                buses: getNextScheduledTimes(stopName),
+                realtime_data: false
+            });
+        }
+        
+        res.json({
+            success: true,
+            last_updated: new Date().toISOString(),
+            route: '223',
+            stops: results,
+            note: 'Using scheduled times (API unavailable)'
+        });
+    }
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ [SERVER] Running on http://localhost:${PORT}`);
-  console.log(`✅ Radio Proxy Server running at http://localhost:${PORT}`);
-  console.log(`📡 Usage: http://localhost:${PORT}/stream?url=<encoded_station_url>`);
-  console.log(`   📰 Test News: http://localhost:${PORT}/api/news`);
-  console.log(`   ⚡ Test Energy: http://localhost:${PORT}/api/energy`);
-  console.log(`   🐘 Test Mastodon: http://localhost:${PORT}/api/mastodon`);
-  console.log(`   🚌 Test Bus: http://localhost:${PORT}/api/bus-realtime`);
+    console.log(`✅ Server running on http://localhost:${PORT}`);
 });

@@ -10,6 +10,13 @@
   <script src="https://unpkg.com/packery@2.1.2/dist/packery.pkgd.min.js"></script>
   <script src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
   <script type="module" src="app.js"></script>
+  <script type="module
+  
+  
+  
+  
+  
+  " src="js/dashboard.js"></script>
 </head>
 <body>
 
@@ -114,7 +121,29 @@
   }
   logStorageInfo();
 </script>
-
+<script>
+// Load and apply saved module visibility
+(function() {
+  var saved = localStorage.getItem('pleie_settings');
+  if (saved) {
+    var settings = JSON.parse(saved);
+    if (settings.enabledModules) {
+      for (var moduleId in settings.enabledModules) {
+        var element = document.getElementById(moduleId);
+        if (element) {
+          if (settings.enabledModules[moduleId]) {
+            element.style.display = 'block';
+            element.classList.add('visible');
+          } else {
+            element.style.display = 'none';
+            element.classList.remove('visible');
+          }
+        }
+      }
+    }
+  }
+})();
+</script>
 </body>
 </html>
 </html>
