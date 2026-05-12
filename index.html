@@ -1,149 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ple.ie</title>
-  <link rel="stylesheet" href="styles/main.css">
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <script src="https://unpkg.com/packery@2.1.2/dist/packery.pkgd.min.js"></script>
-  <script src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
-  <script type="module" src="app.js"></script>
-  <script type="module
-  
-  
-  
-  
-  
-  " src="js/dashboard.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ple.ie</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://unpkg.com/packery@2.1.2/dist/packery.pkgd.min.js"></script>
+    <script src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 <body>
+    <header>
+        <div class="brand"><i class="fa-solid fa-bolt"></i> ple.ie</div>
+        <div class="search-wrapper">
+            <select id="searchEngine" class="search-engine-select">
+                <option value="google">Google</option>
+                <option value="duckduckgo">DuckDuckGo</option>
+                <option value="brave">Brave</option>
+                <option value="proton">Proton</option>
+            </select>
+            <input type="text" id="searchInput" placeholder="Search the network...">
+            <i class="fa-solid fa-arrow-right"></i>
+        </div>
+        <div class="header-weather">
+            <i class="fa-solid fa-cloud-sun"></i>
+            <span id="weather">🌤️ --°C</span>
+        </div>
+    </header>
 
-<header>
-  <div class="brand">
-    <i class="fa-solid fa-bolt"></i>
-    <span>ple.ie</span>
-  </div>
-  <div class="search-wrapper">
-    <select class="search-engine-select" id="searchEngine">
-      <option value="google">Google</option>
-      <option value="duckduckgo">DuckDuckGo</option>
-      <option value="brave">Brave</option>
-      <option value="proton">Proton</option>
-    </select>
-    <input type="text" id="searchInput" placeholder="Search the network...">
-    <i class="fa-solid fa-arrow-right" style="cursor: pointer;"></i>
-  </div>
-  <div class="header-weather">
-    <i class="fa-solid fa-cloud-sun"></i>
-    <span id="weather">Loading...</span>
-  </div>
-</header>
+    <div class="dashboard-wrapper">
+        <main id="dashboard-grid">
+            <!-- All modules initially hidden; enabled ones will be shown by JS -->
+            <div id="gallery" class="dashboard-item module" data-module="gallery">
+                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
+                <div class="module-content"></div>
+            </div>
+            <div id="bus" class="dashboard-item module" data-module="bus">
+                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
+                <div class="module-content"></div>
+            </div>
+            <div id="music" class="dashboard-item module" data-module="music">
+                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
+                <div class="module-content"></div>
+            </div>
+            <div id="news" class="dashboard-item module" data-module="news">
+                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
+                <div class="module-content"></div>
+            </div>
+            <div id="mastodon" class="dashboard-item module" data-module="mastodon">
+                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
+                <div class="module-content"></div>
+            </div>
+            <div id="radio" class="dashboard-item module" data-module="radio">
+                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
+                <div class="module-content"></div>
+            </div>
+            <div id="emergency" class="dashboard-item module" data-module="emergency">
+                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
+                <div class="module-content"></div>
+            </div>
+            <div id="phone" class="dashboard-item module" data-module="phone">
+                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
+                <div class="module-content"></div>
+            </div>
+        </main>
+    </div>
 
-<div class="dashboard-wrapper">
-  <main id="dashboard-grid">
-    <!-- Module items - initially hidden -->
-    <div class="dashboard-item" id="gallery" data-module="gallery" style="display: none;">
-      <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
-      <div class="module-content"></div>
-    </div>
-    <div class="dashboard-item" id="emergency" data-module="emergency" style="display: none;">
-      <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
-      <div class="module-content"></div>
-    </div>
-    <div class="dashboard-item" id="bus" data-module="bus" style="display: none;">
-      <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
-      <div class="module-content"></div>
-    </div>
-    <div class="dashboard-item" id="news" data-module="news" style="display: none;">
-      <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
-      <div class="module-content"></div>
-    </div>
-    <div class="dashboard-item" id="mastodon" data-module="mastodon" style="display: none;">
-      <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
-      <div class="module-content"></div>
-    </div>
-    <div class="dashboard-item" id="radio" data-module="radio" style="display: none;">
-      <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
-      <div class="module-content"></div>
-    </div>
-    <div class="dashboard-item" id="friendly-phone" data-module="friendly-phone" style="display: none;">
-      <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
-      <div class="module-content"></div>
-    </div>
-    <div class="dashboard-item" id="local-player" data-module="local-player" style="display: none;">
-      <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
-      <div class="module-content"></div>
-    </div>
-  </main>
-</div>
+    <footer>
+        <div class="footer-content">
+            <span><i class="fa-solid fa-location-dot"></i> Dublin</span>
+            <span><i class="fa-solid fa-leaf"></i> Green Energy</span>
+            <span><i class="fa-brands fa-github"></i> Open Source</span>
+            <span class="settings-link" id="settingsLink"><i class="fa-solid fa-gear"></i> Settings</span>
+        </div>
+    </footer>
 
-<footer>
-  <div class="footer-content">
-    <span><i class="fa-solid fa-location-dot"></i> Dublin</span>
-    <span><i class="fa-solid fa-leaf"></i> Green Energy</span>
-    <span><i class="fa-brands fa-github"></i> Open Source</span>
-    <span class="settings-link" onclick="window.location.href='settings.html'">
-      <i class="fa-solid fa-gear"></i> Settings
-    </span>
-  </div>
-</footer>
+    <script type="module">
+        import { loadSettings } from './js/core/settings.js';
+        import { initLayout } from './js/core/layout.js';
+        import initBus from './modules/bus/bus.module.js';
+        import initGallery from './modules/gallery/gallery.module.js';
+        import initMusic from './modules/local-player/local-player.module.js';
+        import initNews from './modules/news/news.module.js';
+        import initMastodon from './modules/mastodon/mastodon.module.js';
+        import initRadio from './modules/radio/radio.module.js';
+        import initEmergency from './modules/emergency/emergency.module.js';
+        import initPhone from './modules/friendly-phone/friendly-phone.module.js';
 
-<!-- Floating Settings Button -->
-<div class="floating-settings" onclick="window.location.href='settings.html'">
-  <i class="fa-solid fa-gear"></i>
-</div>
+        const modules = {
+            gallery: initGallery,
+            bus: initBus,
+            music: initMusic,
+            news: initNews,
+            mastodon: initMastodon,
+            radio: initRadio,
+            emergency: initEmergency,
+            phone: initPhone
+        };
 
-<script src="js/pins.js"></script>
+        const settings = loadSettings();
+        const enabledModules = settings.enabledModules || {};
 
-<script type="module">
-  import { loadSettings, getStorageInfo } from './js/storage.js';
-  
-  // Ensure modules are shown based on saved settings
-  (function() {
-    const settings = loadSettings();
-    if (settings && settings.enabledModules) {
-      Object.keys(settings.enabledModules).forEach(moduleId => {
-        const element = document.getElementById(moduleId);
-        if (element && settings.enabledModules[moduleId]) {
-          element.style.display = 'block';
-          element.classList.add('visible');
+        // Show/hide modules based on settings
+        Object.entries(modules).forEach(([id, initFn]) => {
+            const element = document.getElementById(id);
+            if (!element) return;
+            // Enable by default if not explicitly disabled
+            const isEnabled = enabledModules[id] !== false;
+            if (isEnabled) {
+                element.style.display = 'block';
+                const container = element.querySelector('.module-content');
+                if (container) {
+                    try {
+                        initFn(container);
+                    } catch (err) {
+                        console.error(`Failed to init ${id}:`, err);
+                    }
+                }
+            } else {
+                element.style.display = 'none';
+            }
+        });
+
+        // Initialise Packery + Sortable (only on desktop)
+        initLayout();
+
+        // Listen for settings changes from settings page
+        window.addEventListener('settingsChanged', () => {
+            location.reload();
+        });
+
+        // Settings link button
+        document.getElementById('settingsLink')?.addEventListener('click', () => {
+            window.location.href = 'settings.html';
+        });
+
+        // Simple weather fetch
+        async function updateWeather() {
+            const weatherEl = document.getElementById('weather');
+            if (!weatherEl) return;
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=53.3498&longitude=-6.2603&current_weather=true');
+                const data = await res.json();
+                if (data.current_weather) {
+                    weatherEl.innerHTML = `🌤️ ${Math.round(data.current_weather.temperature)}°C`;
+                }
+            } catch (e) {
+                console.warn('Weather fetch failed');
+                weatherEl.innerHTML = '🌤️ 14°C';
+            }
         }
-      });
-    }
-  })();
-  
-  // Log storage info
-  async function logStorageInfo() {
-    const info = await getStorageInfo();
-    console.log(`📦 Storage: ${info.images} images, ${info.music} music files`);
-  }
-  logStorageInfo();
-</script>
-<script>
-// Load and apply saved module visibility
-(function() {
-  var saved = localStorage.getItem('pleie_settings');
-  if (saved) {
-    var settings = JSON.parse(saved);
-    if (settings.enabledModules) {
-      for (var moduleId in settings.enabledModules) {
-        var element = document.getElementById(moduleId);
-        if (element) {
-          if (settings.enabledModules[moduleId]) {
-            element.style.display = 'block';
-            element.classList.add('visible');
-          } else {
-            element.style.display = 'none';
-            element.classList.remove('visible');
-          }
-        }
-      }
-    }
-  }
-})();
-</script>
+        updateWeather();
+        setInterval(updateWeather, 1800000);
+    </script>
 </body>
-</html>
 </html>

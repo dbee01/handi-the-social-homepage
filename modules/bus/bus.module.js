@@ -1,4 +1,6 @@
 // modules/bus/bus.module.js
+import { loadSettings } from '../../js/core/settings.js';
+import { saveMusic } from '../../js/core/storage.js';
 
 export default async function initBus(container) {
     if (!container) {

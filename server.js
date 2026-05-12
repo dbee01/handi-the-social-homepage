@@ -158,6 +158,16 @@ app.get('/api/bus-realtime', async (req, res) => {
     }
 });
 
+app.get('/api/news', async (req, res) => {
+    try {
+        const rssUrl = 'https://www.rte.ie/feeds/rss/?index=/news';
+        const response = await axios.get(rssUrl, { responseType: 'text' });
+        res.type('application/xml').send(response.data);
+    } catch (error) {
+        res.status(500).send('Error fetching news');
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`✅ Server running on http://localhost:${PORT}`);
 });

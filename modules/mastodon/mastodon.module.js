@@ -1,87 +1,62 @@
-// modules/mastodon/mastodon.module.js
+import { loadSettings } from '../../js/core/settings.js';
 
 export default async function initMastodon(container) {
-  if (!container) {
-    console.error("Mastodon Module: Container not found");
-    return;
-  }
+    const pinBtn = container.querySelector('.pin-btn');
+    container.innerHTML = '';
+    if (pinBtn) container.appendChild(pinBtn);
 
-  // --- PRESERVE PIN BUTTON ---
-  const pinBtn = container.querySelector('.pin-btn');
-  container.innerHTML = '';
-  if (pinBtn) container.prepend(pinBtn);
-  // ---------------------------
+    const title = document.createElement('div');
+    title.className = 'panel-title';
+    title.innerHTML = '<i class="fa-brands fa-mastodon"></i> MASTODON';
+    container.appendChild(title);
 
-  try {
-    const apiUrl = 'http://localhost:3001/api/mastodon';
-    console.log("Fetching Mastodon Links from:", apiUrl);
-    
-    const response = await fetch(apiUrl);
-    
-    if (!response.ok) {
-      throw new Error(`Mastodon API failed: ${response.status}`);
+    const content = document.createElement('div');
+    content.style.cssText = 'padding: 10px; max-height: 400px; overflow-y: auto;';
+    container.appendChild(content);
+
+    const settings = loadSettings();
+    const instance = settings.mastodon?.instance || 'https://mastodon.ie';
+    const limit = settings.mastodon?.limit || 5;
+
+    content.innerHTML = '<div style="text-align:center; padding:20px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading trending...</div>';
+
+    try {
+        const url = `${instance}/api/v1/trends/links?limit=${limit}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Failed to fetch');
+        const data = await res.json();
+
+        if (!data.length) {
+            content.innerHTML = '<div style="text-align:center; color:#888;">No trending links</div>';
+            return;
+        }
+
+        let html = '';
+        for (const item of data) {
+            const titleText = item.title || 'Untitled';
+            const urlLink = item.url || '#';
+            const description = item.description || '';
+            const provider = item.provider_name || '';
+            const image = item.image || '';
+            html += `
+                <div style="border-bottom:1px solid #333; padding:12px 0; display:flex; gap:12px;">
+                    ${image ? `<img src="${image}" style="width:80px; height:60px; object-fit:cover; border-radius:6px;">` : ''}
+                    <div style="flex:1;">
+                        <a href="${urlLink}" target="_blank" style="color:#00ffff; text-decoration:none; font-weight:bold;">${escapeHtml(titleText)}</a>
+                        <div style="font-size:0.75rem; color:#888;">${escapeHtml(provider)}</div>
+                        <div style="font-size:0.8rem; margin-top:4px;">${escapeHtml(description.substring(0, 120))}...</div>
+                    </div>
+                </div>
+            `;
+        }
+        content.innerHTML = html;
+    } catch (err) {
+        console.error(err);
+        content.innerHTML = `<div style="color:#f33; text-align:center;">Failed to load Mastodon. Check instance URL in Settings.</div>`;
     }
 
-    const data = await response.json();
-    console.log("Raw Link Data:", data);
-
-    const links = Array.isArray(data) ? data : [];
-
-    if (links.length === 0) {
-      container.innerHTML += '<div class="story-chunk"><div class="story-content"><h3>No links found</h3><p>API returned empty.</p></div></div>';
-      return;
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m]));
     }
-
-    links.forEach((link, index) => {
-      const chunk = document.createElement('div');
-      chunk.className = 'story-chunk';
-
-      // 1. Title (from link.title)
-      const title = link.title || "Untitled Link";
-
-      // 2. Provider Name (Optional subtitle)
-      const provider = link.provider_name || link.author_name || "";
-
-      // 3. Image (from link.image)
-      const imgUrl = link.image || `https://via.placeholder.com/90x65/000000/00ffff?text=${encodeURIComponent(title.substring(0, 3))}`;
-
-      // 4. Text Excerpt (from link.description)
-      // Remove URLs from description
-      let rawDesc = link.description || "No description available";
-      
-      // Strip HTML tags
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = rawDesc;
-      let cleanText = tempDiv.textContent || "";
-      
-      // Remove URLs
-      cleanText = cleanText.replace(/https?:\/\/[^\s]+/g, '').trim();
-      
-      // Clean whitespace and truncate
-      cleanText = cleanText.replace(/\s+/g, ' ').substring(0, 150);
-
-      console.log(`Rendering Link ${index}: "${title}" | Img: ${imgUrl} | Text: ${cleanText}`);
-
-      chunk.innerHTML = `
-        <img src="${imgUrl}" alt="${title}" class="story-thumb" onerror="this.src='https://via.placeholder.com/90x65/000000/00ff41?text=No+Img'">
-        <div class="story-content">
-          <h3>${title}</h3>
-          ${provider ? `<small style="color: var(--term-cyan); font-size: 0.75rem; display: block; margin-bottom: 4px;">${provider}</small>` : ''}
-          <p>${cleanText || "No description"}</p>
-        </div>
-      `;
-
-      // Click to open the link
-      chunk.style.cursor = 'pointer';
-      chunk.onclick = () => {
-        if (link.url) window.open(link.url, '_blank');
-      };
-
-      container.appendChild(chunk);
-    });
-
-  } catch (error) {
-    console.error("Mastodon Error:", error);
-    container.innerHTML += '<div class="story-chunk"><div class="story-content"><h3 style="color:red">Error</h3><p>' + error.message + '</p></div></div>';
-  }
 }

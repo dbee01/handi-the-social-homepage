@@ -1,138 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ple.ie - Settings</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="styles/settings.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - ple.ie</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/settings.css">
 </head>
 <body>
-<div class="settings-page">
-<div class="settings-header">
-<h1><i class="fa-solid fa-sliders-h"></i> Module Settings</h1>
-<div class="header-buttons">
-<button class="save-settings-top" id="saveBtn">Save Settings</button>
-<button class="back-btn" id="backBtn">Back to Dashboard</button>
-</div>
+<div class="settings-container">
+    <div class="header">
+        <h1>Settings</h1>
+        <div class="header-buttons">
+            <button class="save-btn" id="saveBtn">Save Settings</button>
+            <button class="exit-btn" id="exitBtn">Exit</button>
+        </div>
+    </div>
+
+    <!-- Gallery Module -->
+    <div class="module-card">
+        <div class="module-header" data-module="gallery">
+            <div class="module-title"><i class="fa-solid fa-images"></i><h3>Gallery</h3></div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field"><label>Slideshow speed (ms):</label><input type="number" id="gallerySpeed" value="3000" step="100"></div>
+            <div class="config-field"><label>Auto-start slideshow:</label><select id="galleryAutoStart"><option value="true">Yes</option><option value="false">No</option></select></div>
+            <button id="uploadGalleryBtn" class="upload-btn">📸 Upload Images</button>
+        </div>
+    </div>
+
+    <!-- Bus Module -->
+    <div class="module-card">
+        <div class="module-header" data-module="bus">
+            <div class="module-title"><i class="fa-solid fa-bus"></i><h3>Bus Tracker</h3></div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field"><label>Route IDs (comma-separated):</label><input type="text" id="busRouteIds" placeholder="e.g., 223, 215"></div>
+            <div class="config-field"><label>Stop IDs (comma-separated):</label><input type="text" id="busStopIds" placeholder="e.g., 242081, 242051"></div>
+        </div>
+    </div>
+
+    <!-- Music Player Module -->
+    <div class="module-card">
+        <div class="module-header" data-module="music">
+            <div class="module-title"><i class="fa-solid fa-music"></i><h3>Music Player</h3></div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field"><label>Default volume (%):</label><input type="range" id="musicVolume" min="0" max="100" value="70"><span id="volumeValue">70%</span></div>
+            <div class="config-field"><label>Default shuffle:</label><select id="musicShuffle"><option value="false">Off</option><option value="true">On</option></select></div>
+            <button id="uploadMusicBtn" class="upload-btn">🎵 Upload Music Files</button>
+        </div>
+    </div>
+
+    <!-- News Module -->
+    <div class="module-card">
+        <div class="module-header" data-module="news">
+            <div class="module-title"><i class="fa-solid fa-newspaper"></i><h3>News</h3></div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field"><label>RSS Feed URL:</label><input type="url" id="newsRssUrl" placeholder="https://www.rte.ie/feeds/rss/?index=/news/"></div>
+            <div class="config-field"><label>Refresh interval (minutes):</label><input type="number" id="newsRefresh" min="5" max="120" value="15"></div>
+            <div class="config-field"><label>Max articles:</label><input type="number" id="newsMaxArticles" min="5" max="50" value="20"></div>
+        </div>
+    </div>
+
+    <!-- Mastodon Module -->
+    <div class="module-card">
+        <div class="module-header" data-module="mastodon">
+            <div class="module-title"><i class="fa-brands fa-mastodon"></i><h3>Mastodon</h3></div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field"><label>Instance URL:</label><input type="url" id="mastodonInstance" placeholder="https://mastodon.ie"></div>
+            <div class="config-field"><label>Trending limit:</label><input type="number" id="mastodonLimit" min="3" max="20" value="5"></div>
+        </div>
+    </div>
+
+    <!-- Emergency Module – inline contact fields, no modal -->
+    <div class="module-card">
+        <div class="module-header" data-module="emergency">
+            <div class="module-title"><i class="fa-solid fa-triangle-exclamation"></i><h3>Emergency</h3></div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field"><label>Emergency Contacts</label><div id="emergencyContactsList" class="contact-list"></div></div>
+            <div style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 16px;">
+                <input type="text" id="emergencyName" placeholder="Name" style="flex:1;">
+                <input type="tel" id="emergencyPhone" placeholder="Phone" style="flex:1;">
+                <button id="addEmergencyInline" class="add-contact-btn">+ Add</button>
+            </div>
+            <div class="config-field"><label>Check interval (minutes):</label><input type="number" id="emergencyInterval" min="1" max="60" value="5"></div>
+        </div>
+    </div>
+
+    <!-- Friendly Phone Module – inline contact fields, no modal -->
+    <div class="module-card">
+        <div class="module-header" data-module="phone">
+            <div class="module-title"><i class="fa-solid fa-phone"></i><h3>Friendly Phone</h3></div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field"><label>Phone Contacts</label><div id="phoneContactsList" class="contact-list"></div></div>
+            <div style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 16px;">
+                <input type="text" id="phoneName" placeholder="Name" style="flex:1;">
+                <input type="tel" id="phoneNumber" placeholder="Phone" style="flex:1;">
+                <button id="addPhoneInline" class="add-contact-btn">+ Add</button>
+            </div>
+            <div class="config-field"><label>Auto-dial warning (seconds):</label><input type="number" id="autoDialDelay" min="5" max="30" value="10"></div>
+        </div>
+    </div>
 </div>
 
-<!-- Gallery Module -->
-<div class="module-section">
-<div class="module-header">
-<div class="enable-toggle" data-module="gallery"><div class="toggle-slider"></div></div>
-<h3><i class="fa-solid fa-images"></i> Gallery Module</h3>
-<i class="fa-solid fa-chevron-down"></i>
-</div>
-<div class="module-config">
-<div class="config-field">
-<label>Image Folder</label>
-<input type="text" id="galleryFolderPath" readonly placeholder="No folder selected">
-<button class="select-folder-btn" id="selectGalleryBtn">Select Folder</button>
-</div>
-<div class="config-field">
-<label>Slideshow Speed (ms):</label>
-<input type="number" id="gallerySpeed" value="3000">
-</div>
-<div id="galleryStorageInfo" class="storage-info">0 images stored</div>
-</div>
-</div>
-
-<!-- Bus Module -->
-<div class="module-section">
-<div class="module-header">
-<div class="enable-toggle" data-module="bus"><div class="toggle-slider"></div></div>
-<h3><i class="fa-solid fa-bus"></i> Bus Module</h3>
-<i class="fa-solid fa-chevron-down"></i>
-</div>
-<div class="module-config">
-<div class="config-field">
-<label><i class="fa-solid fa-route"></i> Route IDs (comma-separated):</label>
-<input type="text" id="busRouteIds" placeholder="e.g., 223, 215">
-</div>
-<div class="config-field">
-<label><i class="fa-solid fa-map-marker-alt"></i> Stop IDs (comma-separated):</label>
-<input type="text" id="busStopIds" placeholder="e.g., 242081, 242051">
-</div>
-</div>
-</div>
-
-<!-- Music Player Module -->
-<div class="module-section">
-<div class="module-header">
-<div class="enable-toggle" data-module="local-player"><div class="toggle-slider"></div></div>
-<h3><i class="fa-solid fa-music"></i> Music Player</h3>
-<i class="fa-solid fa-chevron-down"></i>
-</div>
-<div class="module-config">
-<div class="config-field">
-<label>Music Folder</label>
-<input type="text" id="musicFolderPath" readonly placeholder="No folder selected">
-<button class="select-folder-btn" id="selectMusicBtn">Select Folder</button>
-</div>
-<div class="config-field">
-<label>Default Volume (%):</label>
-<input type="range" id="defaultVolume" min="0" max="100" value="70">
-<span id="volumeValue">70%</span>
-</div>
-<div id="musicStorageInfo" class="storage-info">0 music files stored</div>
-</div>
-</div>
-
-<!-- News Module -->
-<div class="module-section">
-<div class="module-header">
-<div class="enable-toggle" data-module="news"><div class="toggle-slider"></div></div>
-<h3><i class="fa-solid fa-newspaper"></i> News Module</h3>
-<i class="fa-solid fa-chevron-down"></i>
-</div>
-<div class="module-config">
-<div class="config-field">
-<label>Select RSS Feed</label>
-<div id="rssFeedList" class="feed-list"></div>
-</div>
-</div>
-</div>
-
-<!-- Emergency Module -->
-<div class="module-section">
-<div class="module-header">
-<div class="enable-toggle" data-module="emergency"><div class="toggle-slider"></div></div>
-<h3><i class="fa-solid fa-triangle-exclamation"></i> Emergency Module</h3>
-<i class="fa-solid fa-chevron-down"></i>
-</div>
-<div class="module-config">
-<div class="config-field">
-<label>Emergency Contacts</label>
-<div id="emergencyContactsList" class="contact-list">No contacts saved</div>
-<button class="add-contact-btn" id="addEmergencyBtn">Add Contact</button>
-</div>
-</div>
-</div>
-
-<!-- Friendly Phone Module -->
-<div class="module-section">
-<div class="module-header">
-<div class="enable-toggle" data-module="friendly-phone"><div class="toggle-slider"></div></div>
-<h3><i class="fa-solid fa-phone"></i> Friendly Phone</h3>
-<i class="fa-solid fa-chevron-down"></i>
-</div>
-<div class="module-config">
-<div class="config-field">
-<label>Phone Contacts</label>
-<div id="phoneContactsList" class="contact-list">No contacts saved</div>
-<button class="add-contact-btn" id="addPhoneBtn">Add Contact</button>
-</div>
-</div>
-</div>
-</div>
-
-<script type="module" src="js/settings.js"></script>
+<script type="module" src="js/settings-app.js"></script>
 </body>
 </html>
-
-
-
-
-
-

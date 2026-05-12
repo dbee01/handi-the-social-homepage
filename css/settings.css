@@ -1,0 +1,267 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #050505;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', monospace;
+    padding: 20px;
+}
+
+.settings-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0a0a0a;
+    border: 1px solid #1f1f1f;
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+}
+
+h1 {
+    color: #00ff41;
+    font-size: 1.8rem;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.save-btn, .exit-btn {
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    font-size: 0.9rem;
+}
+
+.save-btn {
+    background: #00ff41;
+    color: #000;
+}
+
+.save-btn:hover {
+    background: #00cc33;
+}
+
+.exit-btn {
+    background: #1f1f1f;
+    border: 1px solid #ff4444;
+    color: #ff4444;
+}
+
+.exit-btn:hover {
+    background: #ff4444;
+    color: #000;
+}
+
+.module-card {
+    background: #0a0a0a;
+    border: 1px solid #1f1f1f;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.module-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: #0f0f0f;
+    cursor: pointer;
+}
+
+.module-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.module-title i {
+    font-size: 1.2rem;
+    width: 28px;
+    color: #00ffff;
+}
+
+.module-title h3 {
+    color: #00ffff;
+    font-size: 1rem;
+}
+
+.toggle-switch {
+    width: 50px;
+    height: 26px;
+    background: #333;
+    border-radius: 13px;
+    position: relative;
+    transition: background 0.2s;
+}
+
+.toggle-switch.active {
+    background: #00ff41;
+}
+
+.toggle-slider {
+    width: 22px;
+    height: 22px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    transition: transform 0.2s;
+}
+
+.toggle-switch.active .toggle-slider {
+    transform: translateX(24px);
+}
+
+.module-config {
+    display: none;
+    padding: 20px;
+    border-top: 1px solid #1f1f1f;
+}
+
+.module-config.active {
+    display: block;
+}
+
+.config-field {
+    margin-bottom: 16px;
+}
+
+.config-field label {
+    display: block;
+    margin-bottom: 6px;
+    color: #00ff41;
+    font-size: 0.85rem;
+}
+
+.config-field input,
+.config-field select {
+    width: 100%;
+    padding: 8px 12px;
+    background: #000;
+    border: 1px solid #1f1f1f;
+    color: #e0e0e0;
+    border-radius: 6px;
+}
+
+.config-field input[type="range"] {
+    padding: 0;
+}
+
+.upload-btn {
+    background: #1f1f1f;
+    border: 1px solid #00ff41;
+    color: #00ff41;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.contact-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #1f1f1f;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    background: #000;
+}
+
+.contact-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #1f1f1f;
+}
+
+.contact-item:last-child {
+    border-bottom: none;
+}
+
+.delete-contact {
+    background: rgba(255,68,68,0.3);
+    border: none;
+    color: #ff8888;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.add-contact-btn {
+    background: #1f1f1f;
+    border: 1px solid #00ff41;
+    color: #00ff41;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #0a0a0a;
+    border: 2px solid #00ff41;
+    border-radius: 16px;
+    padding: 24px;
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal-content input {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    background: #000;
+    border: 1px solid #1f1f1f;
+    color: #e0e0e0;
+    border-radius: 6px;
+}
+
+.close-modal {
+    float: right;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #ff4444;
+}
+
+.photo-preview {
+    width: 60px;
+    height: 60px;
+    background: #1f1f1f;
+    border-radius: 50%;
+    margin: 10px auto;
+    overflow: hidden;
+}
+
+.photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
