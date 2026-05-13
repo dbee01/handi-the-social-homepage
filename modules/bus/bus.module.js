@@ -20,7 +20,7 @@ export default async function initBus(container) {
         if (isServerDown) return; // avoid retry spam
         content.innerHTML = '<div class="bus-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading bus times...</div>';
         try {
-            const response = await fetch('http://localhost:3001/api/bus-realtime');
+            const response = await fetch('/api/bus-realtime');
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
             isServerDown = false;
