@@ -18,7 +18,8 @@ export default async function initNews(container) {
 
     try {
         // ✅ USE THE FULL URL TO YOUR NODE BACKEND
-        const response = await fetch('http://localhost:3001/api/news');
+        // AFTER
+        const response = await fetch('/api/news');
         if (!response.ok) throw new Error('Failed to fetch');
         const xmlText = await response.text();
 
