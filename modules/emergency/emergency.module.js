@@ -48,10 +48,10 @@ export default async function initEmergency(container) {
     // If no contacts, show a helpful message
     if (contacts.length === 0) {
         content.innerHTML = `
-            <div style="background:#1a1a2e; border:1px solid #ff4444; border-radius:12px; padding:20px;">
-                <i class="fa-solid fa-phone" style="font-size:2rem; color:#ff4444;"></i>
+            <div style="border:1px solid #ff4444; border-radius:12px; padding:20px;">
+                <i class="fa-solid fa-phone" style="font-size:2rem;"></i>
                 <p style="margin-top:10px;">No emergency contacts saved.</p>
-                <button id="goToSettingsBtn" style="margin-top:10px; padding:8px 16px; background:#00ff41; color:#000; border:none; border-radius:6px; cursor:pointer;">Add Contacts in Settings</button>
+                <button id="goToSettingsBtn" style="margin-top:10px; padding:8px 16px; color:#000; border:none; border-radius:6px; cursor:pointer;">Add Contacts in Settings</button>
             </div>
         `;
         const btn = document.getElementById('goToSettingsBtn');
@@ -66,7 +66,6 @@ export default async function initEmergency(container) {
         width: 160px;
         height: 160px;
         border-radius: 50%;
-        background: radial-gradient(circle at 30% 30%, #ff0000, #990000);
         border: 3px solid #ffffff;
         color: white;
         font-size: 1.2rem;

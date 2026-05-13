@@ -38,8 +38,8 @@ export default async function initNews(container) {
             const pubDate = item.querySelector('pubDate')?.textContent || '';
             html += `
                 <div style="border-bottom:1px solid #333; padding:12px 0;">
-                    <a href="${link}" target="_blank" style="color:#00ffff; text-decoration:none; font-weight:bold;">${escapeHtml(itemTitle)}</a>
-                    <div style="font-size:0.7rem; color:#888; margin-top:4px;">${pubDate.substring(0,16)}</div>
+                    <a href="${link}" target="_blank" style="text-decoration:none; font-weight:bold;">${escapeHtml(itemTitle)}</a>
+                    <div style="font-size:0.7rem; margin-top:4px;">${pubDate.substring(0,16)}</div>
                 </div>
             `;
         }
