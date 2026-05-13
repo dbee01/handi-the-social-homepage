@@ -92,7 +92,12 @@ header {
 }
 
 /* BUTTONS */
-button, .radio-station, .phone-card {
+.phone-card {
+    min-height: 48px;
+    font-size: 1.05rem;
+}
+
+.radio-station {
     min-height: 48px;
     font-size: 1.05rem;
 }
@@ -161,6 +166,7 @@ a[href^="tel"] {
 .gallery-thumb.active {
     border-color: #0047cc;
 }
+
 
 /* LIGHTBOX */
 /* =========================================================
@@ -1072,6 +1078,88 @@ a:focus {
     color: #ffffff;
 }
 
+/* =========================================================
+   ELDERLY THEME OVERRIDE — NOW PLAYING PANEL
+   Overrides theme.css .music-now-playing
+========================================================= */
+
+.music-now-playing {
+    background: #ffffff !important;
+    border: 2px solid #0047cc !important;
+    border-radius: 16px !important;
+
+    padding: 18px 20px !important;
+    margin-bottom: 18px !important;
+
+    text-align: center !important;
+
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    line-height: 1.6 !important;
+    color: #111111 !important;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Track title inside the panel */
+.music-now-playing .track-title,
+.music-now-playing .current-track,
+.music-now-playing .now-playing {
+    display: block;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: #111111 !important;
+    line-height: 1.5 !important;
+    margin-bottom: 6px !important;
+}
+
+/* Artist / additional info */
+.music-now-playing .track-artist,
+.music-now-playing .artist-name,
+.music-now-playing .track-info {
+    display: block;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #475569 !important;
+    line-height: 1.5 !important;
+}
+
+/* Playing icon */
+.music-now-playing i {
+    color: #0047cc !important;
+    margin-right: 6px;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+    .music-now-playing {
+        padding: 16px !important;
+        font-size: 1.05rem !important;
+    }
+
+    .music-now-playing .track-title,
+    .music-now-playing .current-track,
+    .music-now-playing .now-playing {
+        font-size: 1.15rem !important;
+    }
+}
+
+.music-title {
+  color: unset !important;    
+}
+
+
+.player-controls button:hover, .music-controls button:hover, .audio-controls button:hover {
+  background: #eaf2ff;
+
+}
+
+.music-btn.primary {
+  background: unset;
+  color: unset;
+  width: 55px;
+  height: 55px;
+}
 /* ---------- Playlist items ---------- */
 
 .music-track-list,
@@ -1259,4 +1347,122 @@ a:focus {
 .radio-station.playing i,
 .radio-station[aria-current="true"] i {
     color: #0047cc !important;
+}
+
+.gallery-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 18px 0;
+}
+
+/* Top row grouping */
+.gallery-control-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Base button */
+.gallery-btn {
+    flex: 1;
+    min-height: 56px;
+    padding: 0 18px;
+
+    font-size: 1.15rem;
+    font-weight: 700;
+
+    border-radius: 14px;
+    border: 2px solid #0047cc;
+
+    background: #ffffff;
+    color: #0047cc;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    cursor: pointer;
+}
+
+/* Primary buttons (main navigation) */
+.gallery-btn.primary {
+    background: #0047cc;
+    color: #ffffff;
+    border-color: #0047cc;
+}
+
+/* Secondary button (wake lock) */
+.gallery-btn.secondary {
+    width: 100%;
+    background: #f8fbff;
+    border: 2px dashed #0047cc;
+}
+
+/* Hover states */
+.gallery-btn:hover {
+    transform: none;
+    filter: brightness(0.95);
+}
+
+/* Active press feedback */
+.gallery-btn:active {
+    transform: scale(0.98);
+}
+
+/* Focus accessibility */
+.gallery-btn:focus {
+    outline: 4px solid #ffcc00;
+    outline-offset: 3px;
+}
+
+/* Mobile stacking */
+@media (max-width: 500px) {
+    .gallery-control-group {
+        flex-direction: column;
+    }
+
+    .gallery-btn {
+        width: 100%;
+    }
+}
+.lightbox button {
+    min-height: 56px;
+    min-width: 56px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #ffffff;
+    color: #0047cc;
+
+    border: 3px solid #0047cc;
+    border-radius: 50%;
+
+    font-size: 1.6rem;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    position: absolute;
+}
+
+.lightbox .gallery-lightbox-close {
+    top: 20px;
+    right: 20px;
+}
+
+.lightbox .gallery-lightbox-prev {
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.lightbox .gallery-lightbox-next {
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
 }

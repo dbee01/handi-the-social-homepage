@@ -2,245 +2,276 @@
 import { loadGallery } from '../../js/core/storage.js';
 
 export default async function initGallery(container) {
-    // Preserve pin button
     const pinBtn = container.querySelector('.pin-btn');
     container.innerHTML = '';
     if (pinBtn) container.appendChild(pinBtn);
 
-    // Title
     const title = document.createElement('div');
     title.className = 'panel-title';
     title.innerHTML = '<i class="fa-solid fa-images"></i> GALLERY';
     container.appendChild(title);
 
-    // Main content area – increased min-height
     const content = document.createElement('div');
     content.className = 'gallery-content';
     container.appendChild(content);
 
-    // Mark parent for styling
     const parentItem = container.closest('.dashboard-item');
-    if (parentItem) {
-        parentItem.dataset.module = 'gallery';
-    }
+    if (parentItem) parentItem.dataset.module = 'gallery';
 
-    // Load images from IndexedDB
     let images = [];
     try {
         images = await loadGallery();
-    } catch (e) {
-        console.error('Gallery load error:', e);
+    } catch (err) {
+        console.error('Gallery load error:', err);
     }
 
     if (!images.length) {
         content.innerHTML = `
             <div class="module-empty">
-                <i class="fa-solid fa-folder-open"></i> No images
-                <div class="module-hint">Upload in Settings → Gallery</div>
-            </div>`;
+                <i class="fa-solid fa-folder-open"></i>
+                No images
+            </div>
+        `;
         return;
     }
 
-    // ----- Configuration -----
     let slideIndex = 0;
-    let slideshowInterval = null;
-    let isPlaying = true;
-    let slideSpeed = 5000;
-    let wakeLock = null;
-    let wakeLockSupported = 'wakeLock' in navigator;
+    let lightboxIndex = 0;
 
-    // ----- Wake lock helpers -----
+    let slideshowInterval = null;
+    let lightboxInterval = null;
+
+    let isPlaying = true;
+
+    const slideSpeed = 5000;
+    const lightboxSpeed = 5000;
+
+    let wakeLock = null;
+    const wakeLockSupported = 'wakeLock' in navigator;
+
     async function requestWakeLock() {
-        if (!wakeLockSupported || !isPlaying) return;
+        if (!wakeLockSupported || wakeLock || !isPlaying) return;
         try {
             wakeLock = await navigator.wakeLock.request('screen');
-            wakeLock.addEventListener('release', () => console.log('Wake lock released'));
-        } catch (err) { console.warn(err); }
+        } catch (e) {}
     }
-    function releaseWakeLock() {
-        if (wakeLock) { wakeLock.release(); wakeLock = null; }
-    }
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible' && isPlaying && !wakeLock) requestWakeLock();
-    });
 
-    // ----- Build slideshow UI -----
+    async function releaseWakeLock() {
+        if (wakeLock) {
+            try { await wakeLock.release(); } catch (e) {}
+            wakeLock = null;
+        }
+    }
+
+    /* ========================= SLIDESHOW ========================= */
+
     const slideshowDiv = document.createElement('div');
     slideshowDiv.className = 'gallery-slideshow';
 
-    // Main slide image – increased max-height
     const slideImg = document.createElement('img');
     slideImg.className = 'gallery-slide-img';
-    slideshowDiv.appendChild(slideImg);
 
-    // Caption
     const captionDiv = document.createElement('div');
     captionDiv.className = 'gallery-caption';
-    slideshowDiv.appendChild(captionDiv);
 
-    // Control buttons
     const controlsDiv = document.createElement('div');
     controlsDiv.className = 'gallery-controls';
-    controlsDiv.innerHTML = `
-        <button id="galleryPrevBtn" class="gallery-btn">⏮ Prev</button>
-        <button id="galleryPlayPauseBtn" class="gallery-btn play">⏸ Pause</button>
-        <button id="galleryNextBtn" class="gallery-btn">Next ⏭</button>
-        <button id="galleryWakeLockBtn" class="gallery-btn wakelock">💤 Stay awake</button>
-    `;
-    slideshowDiv.appendChild(controlsDiv);
 
-    // Thumbnail row
+    controlsDiv.innerHTML = `
+        <div class="gallery-control-group">
+            <button id="galleryPrevBtn" class="gallery-btn primary">❮ Prev</button>
+            <button id="galleryPlayPauseBtn" class="gallery-btn primary">⏸ Pause</button>
+            <button id="galleryNextBtn" class="gallery-btn primary">Next ❯</button>
+        </div>
+        <button id="galleryWakeLockBtn" class="gallery-btn secondary">💤 Keep screen awake</button>
+    `;
+
     const thumbsDiv = document.createElement('div');
     thumbsDiv.className = 'gallery-thumbs';
-    images.forEach((img, idx) => {
-        const thumb = document.createElement('img');
-        thumb.src = img.url;
-        thumb.className = 'gallery-thumb';
-        thumb.dataset.index = idx;
-        thumb.addEventListener('click', () => goToSlide(idx));
-        thumbsDiv.appendChild(thumb);
+
+    images.forEach((img, i) => {
+        const t = document.createElement('img');
+        t.src = img.url;
+        t.className = 'gallery-thumb';
+        t.onclick = () => goToSlide(i);
+        thumbsDiv.appendChild(t);
     });
+
+    slideshowDiv.appendChild(slideImg);
+    slideshowDiv.appendChild(captionDiv);
+    slideshowDiv.appendChild(controlsDiv);
     slideshowDiv.appendChild(thumbsDiv);
     content.appendChild(slideshowDiv);
 
-    // ----- Lightbox (fullscreen) -----
+    /* ========================= LIGHTBOX ========================= */
+
     const lightbox = document.createElement('div');
-    lightbox.id = 'galleryLightbox';
-    lightbox.className = 'gallery-lightbox';
+    lightbox.className = 'gallery-lightbox lightbox';
+
     const lbImg = document.createElement('img');
     lbImg.className = 'gallery-lightbox-img';
-    lbImg.addEventListener('click', closeLightbox);
+
     const lbCaption = document.createElement('div');
     lbCaption.className = 'gallery-lightbox-caption';
+
     const lbClose = document.createElement('button');
-    lbClose.innerHTML = '✖';
     lbClose.className = 'gallery-lightbox-close';
-    lbClose.addEventListener('click', closeLightbox);
+    lbClose.textContent = '✕';
+
     const lbPrev = document.createElement('button');
-    lbPrev.innerHTML = '❮';
-    lbPrev.className = 'gallery-lightbox-nav gallery-lightbox-prev';
-    lbPrev.addEventListener('click', (e) => { e.stopPropagation(); prevSlideLightbox(); });
+    lbPrev.className = 'gallery-lightbox-prev';
+    lbPrev.textContent = '❮';
+
     const lbNext = document.createElement('button');
-    lbNext.innerHTML = '❯';
-    lbNext.className = 'gallery-lightbox-nav gallery-lightbox-next';
-    lbNext.addEventListener('click', (e) => { e.stopPropagation(); nextSlideLightbox(); });
+    lbNext.className = 'gallery-lightbox-next';
+    lbNext.textContent = '❯';
+
     lightbox.appendChild(lbImg);
     lightbox.appendChild(lbCaption);
     lightbox.appendChild(lbClose);
     lightbox.appendChild(lbPrev);
     lightbox.appendChild(lbNext);
+
     document.body.appendChild(lightbox);
 
-    // ----- Core slideshow functions -----
+    /* ========================= CORE ========================= */
+
     function updateSlide() {
-        if (!images[slideIndex]) return;
-        slideImg.src = images[slideIndex].url;
-        captionDiv.innerText = images[slideIndex].name;
-        // Update thumbnail active border
-        Array.from(thumbsDiv.children).forEach((thumb, i) => {
-            thumb.classList.toggle('active', i === slideIndex);
+        const img = images[slideIndex];
+        if (!img) return;
+
+        slideImg.src = img.url;
+        captionDiv.textContent = img.name || '';
+
+        [...thumbsDiv.children].forEach((t, i) => {
+            t.classList.toggle('active', i === slideIndex);
         });
     }
 
-    function goToSlide(index) {
-        if (index < 0) index = images.length - 1;
-        if (index >= images.length) index = 0;
-        slideIndex = index;
+    function goToSlide(i) {
+        slideIndex = (i + images.length) % images.length;
         updateSlide();
-        resetAutoRotate();
+
+        if (lightbox.classList.contains('active')) {
+            lightboxIndex = slideIndex;
+            updateLightbox();
+        }
     }
 
     function nextSlide() { goToSlide(slideIndex + 1); }
     function prevSlide() { goToSlide(slideIndex - 1); }
 
-    function startAutoRotate() {
-        if (slideshowInterval) clearInterval(slideshowInterval);
+    /* ========================= LIGHTBOX ========================= */
+
+    function updateLightbox() {
+        const img = images[lightboxIndex];
+        if (!img) return;
+
+        lbImg.src = img.url;
+        lbCaption.textContent = img.name || '';
+    }
+
+    function openLightbox(i) {
+        lightboxIndex = i;
+        updateLightbox();
+
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+        stopAuto();
+        startLightboxAuto();
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+
+        stopLightboxAuto();
+
+        if (isPlaying) startAuto();
+    }
+
+    function prevLightbox() {
+        lightboxIndex = (lightboxIndex - 1 + images.length) % images.length;
+        slideIndex = lightboxIndex;
+        updateLightbox();
+        updateSlide();
+    }
+
+    function nextLightbox() {
+        lightboxIndex = (lightboxIndex + 1) % images.length;
+        slideIndex = lightboxIndex;
+        updateLightbox();
+        updateSlide();
+    }
+
+    /* ========================= AUTOPLAY ========================= */
+
+    function startAuto() {
+        stopAuto();
         slideshowInterval = setInterval(() => {
-            if (isPlaying) nextSlide();
+            if (isPlaying && !lightbox.classList.contains('active')) nextSlide();
         }, slideSpeed);
     }
 
-    function stopAutoRotate() {
-        if (slideshowInterval) clearInterval(slideshowInterval);
-        slideshowInterval = null;
+    function stopAuto() {
+        clearInterval(slideshowInterval);
     }
 
-    function resetAutoRotate() {
-        if (isPlaying) {
-            stopAutoRotate();
-            startAutoRotate();
-        }
+    function startLightboxAuto() {
+        stopLightboxAuto();
+        lightboxInterval = setInterval(() => {
+            if (lightbox.classList.contains('active')) nextLightbox();
+        }, lightboxSpeed);
     }
 
-    function togglePlayPause() {
+    function stopLightboxAuto() {
+        clearInterval(lightboxInterval);
+    }
+
+    function togglePlay() {
         isPlaying = !isPlaying;
-        const btn = document.getElementById('galleryPlayPauseBtn');
+
+        const btn = controlsDiv.querySelector('#galleryPlayPauseBtn');
+
         if (isPlaying) {
-            startAutoRotate();
-            btn.innerHTML = '⏸ Pause';
-            btn.classList.add('play');
-            requestWakeLock();
+            btn.textContent = '⏸ Pause';
+            startAuto();
         } else {
-            stopAutoRotate();
-            btn.innerHTML = '▶ Play';
-            btn.classList.remove('play');
-            releaseWakeLock();
+            btn.textContent = '▶ Play';
+            stopAuto();
+            stopLightboxAuto();
         }
     }
 
-    function toggleWakeLock() {
-        if (!wakeLockSupported) return;
-        if (wakeLock) {
-            releaseWakeLock();
-            document.getElementById('galleryWakeLockBtn').innerHTML = '💤 Stay awake';
-            document.getElementById('galleryWakeLockBtn').classList.remove('play');
-        } else {
-            requestWakeLock();
-            document.getElementById('galleryWakeLockBtn').innerHTML = '🌙 Screen on';
-            document.getElementById('galleryWakeLockBtn').classList.add('play');
-        }
-    }
+    /* ========================= EVENTS ========================= */
 
-    // Lightbox functions
-    let lightboxIndex = 0;
-    function openLightbox(index) {
-        lightboxIndex = index;
-        lbImg.src = images[lightboxIndex].url;
-        lbCaption.innerText = images[lightboxIndex].name;
-        lightbox.classList.add('active');
-        if (isPlaying) stopAutoRotate(); // pause auto-rotate while lightbox open
-    }
-    function closeLightbox() {
-        lightbox.classList.remove('active');
-        if (isPlaying) startAutoRotate(); // resume
-    }
-    function prevSlideLightbox() {
-        lightboxIndex = (lightboxIndex - 1 + images.length) % images.length;
-        lbImg.src = images[lightboxIndex].url;
-        lbCaption.innerText = images[lightboxIndex].name;
-    }
-    function nextSlideLightbox() {
-        lightboxIndex = (lightboxIndex + 1) % images.length;
-        lbImg.src = images[lightboxIndex].url;
-        lbCaption.innerText = images[lightboxIndex].name;
-    }
+    controlsDiv.querySelector('#galleryPrevBtn').onclick = prevSlide;
+    controlsDiv.querySelector('#galleryNextBtn').onclick = nextSlide;
+    controlsDiv.querySelector('#galleryPlayPauseBtn').onclick = togglePlay;
 
-    // ----- Attach event listeners -----
-    document.getElementById('galleryPrevBtn').addEventListener('click', prevSlide);
-    document.getElementById('galleryNextBtn').addEventListener('click', nextSlide);
-    document.getElementById('galleryPlayPauseBtn').addEventListener('click', togglePlayPause);
-    document.getElementById('galleryWakeLockBtn').addEventListener('click', toggleWakeLock);
-    slideImg.addEventListener('click', () => openLightbox(slideIndex));
+    slideImg.onclick = () => openLightbox(slideIndex);
 
-    // ----- Initialise -----
+    lbClose.onclick = closeLightbox;
+    lbPrev.onclick = prevLightbox;
+    lbNext.onclick = nextLightbox;
+
+    document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') prevLightbox();
+        if (e.key === 'ArrowRight') nextLightbox();
+    });
+
+    /* ========================= INIT ========================= */
+
     updateSlide();
-    startAutoRotate();
-    if (wakeLockSupported && isPlaying) requestWakeLock();
+    startAuto();
 
-    // Cleanup when module is removed
     return () => {
-        stopAutoRotate();
+        stopAuto();
+        stopLightboxAuto();
         releaseWakeLock();
-        if (lightbox && lightbox.parentNode) lightbox.remove();
+        lightbox.remove();
     };
 }

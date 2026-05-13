@@ -68,6 +68,7 @@ export default async function initEmergency(container) {
         border-radius: 50%;
         border: 3px solid #ffffff;
         color: white;
+        background: radial-gradient(circle at 30% 30%, #cc0000, #800000) !important;
         font-size: 1.2rem;
         font-weight: bold;
         cursor: pointer;
