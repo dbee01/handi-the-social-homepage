@@ -1,109 +1,542 @@
+/* =========================================================
+   GLOBAL RESET
+========================================================= */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
+:root {
+    --bg: #050505;
+    --panel: #0a0a0a;
+    --panel-alt: #111;
+    --border: #1f1f1f;
+    --border-light: #333;
+    --text: #e0e0e0;
+    --muted: #888;
+    --green: #00ff41;
+    --cyan: #00ffff;
+}
+
+html,
 body {
-    background: #050505;
-    color: #e0e0e0;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
     font-family: monospace;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
+
+/* =========================================================
+   HEADER
+========================================================= */
+
 header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
-    background: #000;
-    border-bottom: 1px solid #1f1f1f;
-    flex-wrap: wrap;
+    justify-content: space-between;
+
     gap: 1rem;
+    flex-wrap: wrap;
+
+    padding: 1rem 2rem;
+
+    background: #000;
+    border-bottom: 1px solid var(--border);
+
+    z-index: 10;
 }
+
 .brand {
-    color: #00ff41;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: var(--green);
+
     font-size: 1.8rem;
     font-weight: bold;
+
+    white-space: nowrap;
 }
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
 .search-wrapper {
-    display: flex;
     flex: 1;
-    max-width: 500px;
+
+    display: flex;
+    align-items: center;
+
+    min-width: 280px;
+    max-width: 650px;
+
+    background: var(--panel-alt);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+
+    overflow: hidden;
 }
+
+.search-engine-select {
+    background: #151515;
+    border: none;
+    border-right: 1px solid var(--border-light);
+
+    color: #ccc;
+
+    padding: 10px;
+    font-family: inherit;
+
+    outline: none;
+    cursor: pointer;
+}
+
 .search-wrapper input {
     flex: 1;
-    padding: 8px;
-    background: #111;
-    border: 1px solid #333;
+
+    padding: 12px;
+
+    background: transparent;
+    border: none;
+
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.95rem;
+
+    outline: none;
+}
+
+.search-wrapper input::placeholder {
+    color: #666;
+}
+
+.search-wrapper i {
+    padding: 0 14px;
+
+    color: var(--green);
+
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.search-wrapper i:hover {
     color: #fff;
 }
+
+/* =========================================================
+   WEATHER
+========================================================= */
+
 .header-weather {
-    background: #111;
-    padding: 5px 10px;
-    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    background: var(--panel-alt);
+
+    padding: 8px 14px;
+
+    border-radius: 999px;
+    border: 1px solid var(--border-light);
+
+    white-space: nowrap;
 }
+
+/* =========================================================
+   DASHBOARD WRAPPER
+========================================================= */
+
 .dashboard-wrapper {
     flex: 1;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-}
-#dashboard-grid {
-    max-width: 1400px;
+
     width: 100%;
+
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
     justify-content: center;
+
+    padding: 20px;
 }
-@media (max-width: 899px) {
+
+/* =========================================================
+   GRID
+========================================================= */
+
+#dashboard-grid {
+    position: relative;
+
+    width: 100%;
+    max-width: 1700px;
+
+    min-height: 400px;
+}
+
+/* =========================================================
+   DESKTOP - 3 COLUMNS
+========================================================= */
+
+.dashboard-item {
+
+    /* 3 columns with 20px gutters */
+    width: calc((100% - 40px) / 3);
+
+    background: #0a0a0a;
+
+    border: 1px solid #1f1f1f;
+    border-radius: 10px;
+
+    padding: 16px;
+
+    min-height: 200px;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+    display: block;
+}
+
+/* =========================================================
+   TABLET - 2 COLUMNS
+========================================================= */
+
+@media (max-width: 1200px) {
+
     .dashboard-item {
-        width: 100%;
-        max-width: 100%;
+
+        width: calc((100% - 20px) / 2);
     }
 }
-.dashboard-item {
-    position: absolute;
-    width: 420px;
-    background: #0a0a0a;
-    border: 1px solid #1f1f1f;
-    border-radius: 8px;
-    min-height: 200px;
-    padding: 15px;
-    position: relative;
-    display: none; /* hidden by default, JS shows enabled */
+
+/* =========================================================
+   MOBILE - 1 COLUMN
+========================================================= */
+
+@media (max-width: 900px) {
+
+    #dashboard-grid {
+
+        display: flex;
+        flex-direction: column;
+
+        gap: 16px;
+    }
+
+    .dashboard-item {
+
+        position: relative !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        left: auto !important;
+        top: auto !important;
+
+        transform: none !important;
+
+        margin: 0 !important;
+    }
 }
+
+/* =========================================================
+   DASHBOARD ITEMS
+========================================================= */
+
+.dashboard-item {
+
+    /* DESKTOP = 3 COLS */
+    width: calc((100% - 40px) / 3);
+
+    background: var(--panel);
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    padding: 16px;
+
+    min-height: 200px;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+    cursor: grab;
+
+    display: block;
+}
+
+.dashboard-item:hover {
+
+    border-color: #2e2e2e;
+
+    box-shadow:
+        0 0 0 1px rgba(0,255,65,0.08),
+        0 8px 24px rgba(0,0,0,0.35);
+}
+
+.dashboard-item:active {
+    cursor: grabbing;
+}
+
+/* =========================================================
+   TABLET = 2 COLS
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .dashboard-item {
+
+        width: calc((100% - 20px) / 2);
+    }
+}
+
+/* =========================================================
+   MOBILE = 1 COL
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .dashboard-item {
+
+        width: 100% !important;
+    }
+}
+
+/* =========================================================
+   PACKERY POSITIONING
+========================================================= */
+
+.packery-drop-placeholder {
+    outline: 2px dashed var(--green);
+    outline-offset: -6px;
+}
+
+/* =========================================================
+   PIN BUTTON
+========================================================= */
+
 .pin-btn {
     position: absolute;
+
     top: 10px;
     right: 10px;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #181818;
+
+    border: 1px solid #2c2c2c;
+    border-radius: 6px;
+
+    color: var(--muted);
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.pin-btn:hover {
     background: #222;
-    border: none;
-    color: #888;
-    cursor: pointer;
-    padding: 5px 8px;
-    border-radius: 4px;
+    color: #fff;
+    border-color: #444;
 }
+
+.pin-btn:active {
+    transform: scale(0.95);
+}
+
+.pin-btn.pinned {
+    background: rgba(0,255,65,0.12);
+    border-color: rgba(0,255,65,0.35);
+    color: var(--green);
+}
+
+/* =========================================================
+   PINNED PANELS
+========================================================= */
+
+.dashboard-item.is-pinned {
+    border-color: #00ff41;
+    box-shadow: 0 0 12px rgba(0,255,65,0.15);
+}
+
+/* =========================================================
+   PANEL TITLES
+========================================================= */
+
 .panel-title {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: bold;
-    margin-bottom: 15px;
-    color: #00ffff;
-    border-bottom: 1px solid #333;
-    padding-bottom: 5px;
+
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+
+    color: var(--cyan);
+
+    border-bottom: 1px solid var(--border-light);
 }
-footer {
-    text-align: center;
-    padding: 1rem;
-    background: #000;
-    border-top: 1px solid #1f1f1f;
-    margin-top: auto;
-}
-.settings-link {
-    cursor: pointer;
-    color: #00ff41;
-}
+
+/* =========================================================
+   MODULE CONTENT
+========================================================= */
+
 .module-content {
     min-height: 150px;
+}
+
+/* =========================================================
+   SORTABLE STATES
+========================================================= */
+
+.sortable-ghost {
+    opacity: 0.35;
+}
+
+.sortable-chosen {
+    z-index: 999;
+}
+
+.sortable-drag {
+    opacity: 0.9;
+    transform: rotate(1deg);
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+    margin-top: auto;
+
+    padding: 1rem;
+
+    background: #000;
+
+    border-top: 1px solid var(--border);
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    gap: 20px;
+
+    text-align: center;
+
+    color: #999;
+}
+
+.settings-link {
+    color: var(--green);
+    cursor: pointer;
+}
+
+.settings-link:hover {
+    text-decoration: underline;
+}
+
+/* =========================================================
+   TABLET FIXES
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .dashboard-item {
+        width: calc(50% - 10px);
+    }
+}
+
+/* =========================================================
+   MOBILE LAYOUT
+========================================================= */
+
+@media (max-width: 900px) {
+
+    header {
+        padding: 1rem;
+    }
+
+    .search-wrapper {
+        width: 100%;
+        max-width: 100%;
+        order: 3;
+    }
+
+    .dashboard-wrapper {
+        padding: 12px;
+    }
+
+    #dashboard-grid {
+        display: flex;
+        flex-direction: column;
+
+        gap: 16px;
+    }
+
+    .dashboard-item {
+        position: relative !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        left: auto !important;
+        top: auto !important;
+
+        transform: none !important;
+
+        margin: 0;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .brand {
+        font-size: 1.4rem;
+    }
+
+    .header-weather {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .dashboard-item {
+        padding: 14px;
+    }
 }

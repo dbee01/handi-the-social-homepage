@@ -6,10 +6,10 @@
     <title>ple.ie</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/app_for_the_elderly.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="https://unpkg.com/packery@2.1.2/dist/packery.pkgd.min.js"></script>
     <script src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script type="module" src="./js/pins.js"></script>
     <script type="module">
         import { loadSettings } from './js/core/settings.js';
         import initBus from './modules/bus/bus.module.js';
@@ -20,7 +20,10 @@
         import initRadio from './modules/radio/radio.module.js';
         import initEmergency from './modules/emergency/emergency.module.js';
         import initPhone from './modules/friendly-phone/friendly-phone.module.js';
-        import initLayoutSystem from './modules/ui/layout-system.js';
+
+        import { initLayout } from './js/core/layout.js';
+
+        initLayout();
 
         const modules = {
             gallery: initGallery,
@@ -53,10 +56,7 @@
                 }
             }
         }
-
-        // Initialise layout system (Packery, responsive)
-        initLayoutSystem();
-
+        
         // ----- Search functionality (European privacy‑friendly engines) -----
         function initializeSearch() {
             const searchInput = document.getElementById('searchInput');
