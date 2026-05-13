@@ -1,22 +1,17 @@
-// modules/radio/radio.module.js
-
 export default async function initRadio(container) {
 
     const pinBtn = container.querySelector('.pin-btn');
 
     container.innerHTML = '';
-
     if (pinBtn) container.appendChild(pinBtn);
 
     const title = document.createElement('div');
     title.className = 'panel-title';
     title.innerHTML = '<i class="fa-solid fa-radio"></i> RADIO';
-
     container.appendChild(title);
 
     const content = document.createElement('div');
     content.className = 'radio-content';
-
     container.appendChild(content);
 
     const stations = [
@@ -32,135 +27,162 @@ export default async function initRadio(container) {
         { name: 'Live 95 (Limerick)', url: 'https://onic.cork.live.stream.broadcasting.news/stream-live95' }
     ];
 
+    /* =========================
+       UI
+    ========================= */
+
     content.innerHTML = `
-        <div class="radio-wrapper">
-
-            <div id="stations-list" class="radio-list">
-
-                ${stations.map((s, idx) => `
-                    <div class="radio-station"
-                         data-index="${idx}"
-                         data-url="${s.url}">
-
-                        <i class="fa-solid fa-headphones"></i>
-
-                        <span>${escapeHtml(s.name)}</span>
-
-                    </div>
-                `).join('')}
-
-            </div>
+        <div class="radio-top-bar">
 
             <div class="radio-player-area">
-
-                <div id="now-playing-text" class="radio-now-playing">
+                <div class="radio-now-playing" id="now-playing">
                     Select a station
                 </div>
-
-                <div id="player-error" class="radio-error"></div>
-
             </div>
 
+            <button class="radio-stop-btn" id="radio-stop">
+                ⏹ OFF
+            </button>
+
         </div>
+
+        <div class="radio-scroll-wrapper">
+
+            <button id="radio-up" class="radio-scroll-btn">▲</button>
+
+            <div id="stations-list" class="radio-list"></div>
+
+            <button id="radio-down" class="radio-scroll-btn">▼</button>
+
+        </div>
+
+        <div class="radio-error" id="radio-error"></div>
     `;
+
+    /* =========================
+       ELEMENTS (SAFE)
+    ========================= */
+
+    const list = content.querySelector('#stations-list');
+    const nowPlaying = content.querySelector('#now-playing');
+    const error = content.querySelector('#radio-error');
+    const stopBtn = content.querySelector('#radio-stop');
+    const up = content.querySelector('#radio-up');
+    const down = content.querySelector('#radio-down');
+
+    /* =========================
+       STATE
+    ========================= */
 
     let currentAudio = null;
 
+    /* =========================
+       RENDER STATIONS
+    ========================= */
+
+    stations.forEach((station) => {
+        const el = document.createElement('div');
+        el.className = 'radio-station';
+
+        el.innerHTML = `
+            <i class="fa-solid fa-headphones"></i>
+            <span>${station.name}</span>
+        `;
+
+        el.addEventListener('click', () => {
+            playStation(station.url, station.name, el);
+        });
+
+        list.appendChild(el);
+    });
+
+    /* =========================
+       SCROLL
+    ========================= */
+
+    up.addEventListener('click', () => {
+        list.scrollBy({ top: -300, behavior: 'smooth' });
+    });
+
+    down.addEventListener('click', () => {
+        list.scrollBy({ top: 300, behavior: 'smooth' });
+    });
+
+    /* =========================
+       STOP RADIO
+    ========================= */
+
     function stopPlayback() {
 
-        if (!currentAudio) return;
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.src = '';
+            currentAudio = null;
+        }
 
-        currentAudio.pause();
-        currentAudio.src = '';
-        currentAudio = null;
+        if (nowPlaying) nowPlaying.innerText = 'Radio OFF';
+        if (error) error.innerText = '';
+
+        document.querySelectorAll('.radio-station')
+            .forEach(s => s.classList.remove('active'));
     }
 
-    function playStation(url, stationName, el) {
+    stopBtn.addEventListener('click', stopPlayback);
+
+    /* =========================
+       PLAY STATION
+    ========================= */
+
+    function playStation(url, name, el) {
 
         stopPlayback();
 
-        const nowPlaying = document.getElementById('now-playing-text');
-        const error = document.getElementById('player-error');
-
         if (nowPlaying) {
-            nowPlaying.innerHTML = `
-                <i class="fa-solid fa-spinner fa-spin"></i>
-                Connecting to ${stationName}...
-            `;
+            nowPlaying.innerText = `Connecting to ${name}...`;
         }
 
         if (error) error.innerText = '';
 
         try {
-
             currentAudio = new Audio(url);
 
             currentAudio.play()
-
                 .then(() => {
 
                     if (nowPlaying) {
-                        nowPlaying.innerHTML = `▶ Now playing: ${stationName}`;
+                        nowPlaying.innerText = `▶ Now playing: ${name}`;
                     }
-
-                    if (error) error.innerText = '';
 
                     document.querySelectorAll('.radio-station')
                         .forEach(s => s.classList.remove('active'));
 
-                    if (el) el.classList.add('active');
+                    el.classList.add('active');
                 })
-
                 .catch(() => {
-
                     if (error) error.innerText = 'Cannot play this station';
-
                     if (nowPlaying) nowPlaying.innerText = 'Playback failed';
                 });
 
             currentAudio.onerror = () => {
-
                 if (error) error.innerText = 'Stream unavailable';
-
                 if (nowPlaying) nowPlaying.innerText = 'Stream error';
             };
 
         } catch (err) {
-
             console.error(err);
-
             if (error) error.innerText = 'Unable to play stream';
         }
     }
 
-    content.querySelectorAll('.radio-station').forEach(el => {
-
-        el.addEventListener('click', () => {
-
-            playStation(
-                el.dataset.url,
-                el.querySelector('span').innerText,
-                el
-            );
-        });
-    });
-
-    function escapeHtml(str) {
-
-        if (!str) return '';
-
-        return str.replace(/[&<>]/g, m => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;'
-        }[m]));
-    }
+    /* =========================
+       CLEANUP
+    ========================= */
 
     return () => {
-
         if (currentAudio) {
             currentAudio.pause();
             currentAudio.src = '';
+            currentAudio = null;
         }
     };
 }

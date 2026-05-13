@@ -102,6 +102,33 @@ header {
     font-size: 1.05rem;
 }
 
+.radio-controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+.radio-stop-btn {
+    min-height: 56px;
+    padding: 0 20px;
+
+    font-size: 1.15rem;
+    font-weight: 700;
+
+    background: #cc0000;
+    color: #fff;
+
+    border: 3px solid #990000;
+    border-radius: 999px;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+.radio-stop-btn:hover {
+    background: #a80000;
+}
+
 /* MUSIC / RADIO READABILITY */
 .music-track-item,
 .radio-station {
@@ -111,6 +138,56 @@ header {
 .radio-station span {
     font-size: 0.9rem;
     color: #475569;    
+}
+.radio-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 12px;
+}
+
+
+.radio-player-area {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: unset;
+  margin-top: 6px;
+  background: #ffffff;
+  color: #0047cc;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: unset;
+  border-radius: unset;
+  cursor: pointer;
+}
+
+.radio-player-area:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.radio-player-area:active {
+  background: #0037a3;
+  color: #ffffff;
+}
+
+.radio-now-playing {
+    display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 0 24px;
+  margin-top: 6px;
+  background: #ffffff;
+  color: #0047cc;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 /* CALL TO ACTION */
@@ -1465,4 +1542,66 @@ a:focus {
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
+}
+
+.radio-scroll-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#stations-list.radio-list {
+    max-height: 420px;
+    overflow-y: auto;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+}
+
+.radio-scroll-btn {
+    height: 60px;
+    font-size: 2rem;
+    font-weight: 700;
+
+    background: #0047cc;
+    color: #fff;
+
+    border: none;
+    border-radius: 12px;
+
+    cursor: pointer;
+}
+
+.radio-scroll-btn:active {
+    transform: scale(0.98);
+}
+
+.music-scroll-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.music-playlist {
+    max-height: 420px;
+    overflow-y: auto;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+}
+
+.music-scroll-btn {
+    height: 60px;
+    font-size: 2rem;
+    font-weight: 700;
+
+    background: #0047cc;
+    color: #fff;
+
+    border: none;
+    border-radius: 12px;
+
+    cursor: pointer;
+}
+
+.music-scroll-btn:active {
+    transform: scale(0.98);
 }
