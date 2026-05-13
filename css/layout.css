@@ -1,0 +1,225 @@
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    padding: 1rem 2rem;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    white-space: nowrap;
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search-wrapper {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+
+    min-width: 280px;
+    max-width: 650px;
+
+    overflow: hidden;
+}
+
+.search-wrapper input {
+    flex: 1;
+}
+
+.search-wrapper i {
+    padding: 0 14px;
+}
+
+.header-weather {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    white-space: nowrap;
+}
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+.dashboard-wrapper {
+    flex: 1;
+
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+#dashboard-grid {
+    position: relative;
+
+    width: 100%;
+    max-width: 1700px;
+
+    min-height: 400px;
+}
+
+.dashboard-item.hidden {
+    display: none;
+}
+
+/* =========================================================
+   DESKTOP - 3 COLS
+========================================================= */
+
+.dashboard-item {
+
+    width: calc((100% - 40px) / 3);
+
+    min-height: 200px;
+
+    overflow: hidden;
+
+    display: block;
+}
+
+/* =========================================================
+   MODULES
+========================================================= */
+
+.module-content {
+    min-height: 150px;
+}
+
+/* =========================================================
+   PIN BUTTON
+========================================================= */
+
+.pin-btn {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+    margin-top: auto;
+
+    padding: 1rem;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 20px;
+
+    text-align: center;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .dashboard-item {
+
+        width: calc((100% - 20px) / 2);
+    }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    header {
+        padding: 1rem;
+    }
+
+    .search-wrapper {
+        width: 100%;
+        max-width: 100%;
+
+        order: 3;
+    }
+
+    .dashboard-wrapper {
+        padding: 12px;
+    }
+
+    #dashboard-grid {
+
+        display: flex;
+        flex-direction: column;
+
+        gap: 16px;
+    }
+
+    .dashboard-item {
+
+        position: relative !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        left: auto !important;
+        top: auto !important;
+
+        transform: none !important;
+
+        margin: 0 !important;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .footer-content {
+
+        flex-direction: column;
+
+        gap: 10px;
+    }
+}

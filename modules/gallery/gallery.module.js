@@ -15,8 +15,14 @@ export default async function initGallery(container) {
 
     // Main content area – increased min-height
     const content = document.createElement('div');
-    content.style.cssText = 'padding: 10px; min-height: 550px;';
+    content.className = 'gallery-content';
     container.appendChild(content);
+
+    // Mark parent for styling
+    const parentItem = container.closest('.dashboard-item');
+    if (parentItem) {
+        parentItem.dataset.module = 'gallery';
+    }
 
     // Load images from IndexedDB
     let images = [];
@@ -28,9 +34,9 @@ export default async function initGallery(container) {
 
     if (!images.length) {
         content.innerHTML = `
-            <div style="text-align:center; padding:30px; color:#ffb000;">
+            <div class="module-empty">
                 <i class="fa-solid fa-folder-open"></i> No images
-                <div style="font-size:0.8rem; margin-top:10px;">Upload in Settings → Gallery</div>
+                <div class="module-hint">Upload in Settings → Gallery</div>
             </div>`;
         return;
     }
@@ -60,36 +66,36 @@ export default async function initGallery(container) {
 
     // ----- Build slideshow UI -----
     const slideshowDiv = document.createElement('div');
-    slideshowDiv.style.cssText = 'position: relative; margin-bottom: 15px;';
+    slideshowDiv.className = 'gallery-slideshow';
 
     // Main slide image – increased max-height
     const slideImg = document.createElement('img');
-    slideImg.style.cssText = 'width: 100%; height: auto; max-height: 500px; object-fit: contain; background: #000; border-radius: 8px; cursor: pointer;';
+    slideImg.className = 'gallery-slide-img';
     slideshowDiv.appendChild(slideImg);
 
     // Caption
     const captionDiv = document.createElement('div');
-    captionDiv.style.cssText = 'text-align: center; margin-top: 8px; font-size: 0.8rem; color: #aaa;';
+    captionDiv.className = 'gallery-caption';
     slideshowDiv.appendChild(captionDiv);
 
     // Control buttons
     const controlsDiv = document.createElement('div');
-    controlsDiv.style.cssText = 'display: flex; justify-content: center; gap: 15px; margin: 12px 0;';
+    controlsDiv.className = 'gallery-controls';
     controlsDiv.innerHTML = `
-        <button id="galleryPrevBtn" style="background:#1f1f1f; border:none; color:#fff; padding:6px 12px; border-radius:20px; cursor:pointer;">⏮ Prev</button>
-        <button id="galleryPlayPauseBtn" style="background:#1f1f1f; border:none; color:#00ff41; padding:6px 12px; border-radius:20px; cursor:pointer;">⏸ Pause</button>
-        <button id="galleryNextBtn" style="background:#1f1f1f; border:none; color:#fff; padding:6px 12px; border-radius:20px; cursor:pointer;">Next ⏭</button>
-        <button id="galleryWakeLockBtn" style="background:#1f1f1f; border:none; color:#ffb000; padding:6px 12px; border-radius:20px; cursor:pointer;">💤 Stay awake</button>
+        <button id="galleryPrevBtn" class="gallery-btn">⏮ Prev</button>
+        <button id="galleryPlayPauseBtn" class="gallery-btn play">⏸ Pause</button>
+        <button id="galleryNextBtn" class="gallery-btn">Next ⏭</button>
+        <button id="galleryWakeLockBtn" class="gallery-btn wakelock">💤 Stay awake</button>
     `;
     slideshowDiv.appendChild(controlsDiv);
 
     // Thumbnail row
     const thumbsDiv = document.createElement('div');
-    thumbsDiv.style.cssText = 'display: flex; gap: 8px; overflow-x: auto; padding: 8px 0;';
+    thumbsDiv.className = 'gallery-thumbs';
     images.forEach((img, idx) => {
         const thumb = document.createElement('img');
         thumb.src = img.url;
-        thumb.style.cssText = 'width: 50px; height: 50px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent;';
+        thumb.className = 'gallery-thumb';
         thumb.dataset.index = idx;
         thumb.addEventListener('click', () => goToSlide(idx));
         thumbsDiv.appendChild(thumb);
@@ -100,27 +106,23 @@ export default async function initGallery(container) {
     // ----- Lightbox (fullscreen) -----
     const lightbox = document.createElement('div');
     lightbox.id = 'galleryLightbox';
-    lightbox.style.cssText = `
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.95); z-index: 20000;
-        justify-content: center; align-items: center; flex-direction: column;
-    `;
+    lightbox.className = 'gallery-lightbox';
     const lbImg = document.createElement('img');
-    lbImg.style.cssText = 'max-width: 90%; max-height: 80%; object-fit: contain; cursor: pointer;';
+    lbImg.className = 'gallery-lightbox-img';
     lbImg.addEventListener('click', closeLightbox);
     const lbCaption = document.createElement('div');
-    lbCaption.style.cssText = 'color: white; margin-top: 20px; font-size: 1rem;';
+    lbCaption.className = 'gallery-lightbox-caption';
     const lbClose = document.createElement('button');
     lbClose.innerHTML = '✖';
-    lbClose.style.cssText = 'position: absolute; top: 20px; right: 30px; background: none; border: none; color: white; font-size: 2rem; cursor: pointer;';
+    lbClose.className = 'gallery-lightbox-close';
     lbClose.addEventListener('click', closeLightbox);
     const lbPrev = document.createElement('button');
     lbPrev.innerHTML = '❮';
-    lbPrev.style.cssText = 'position: absolute; left: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 3rem; padding: 10px 20px; border-radius: 40px; cursor: pointer;';
+    lbPrev.className = 'gallery-lightbox-nav gallery-lightbox-prev';
     lbPrev.addEventListener('click', (e) => { e.stopPropagation(); prevSlideLightbox(); });
     const lbNext = document.createElement('button');
     lbNext.innerHTML = '❯';
-    lbNext.style.cssText = 'position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 3rem; padding: 10px 20px; border-radius: 40px; cursor: pointer;';
+    lbNext.className = 'gallery-lightbox-nav gallery-lightbox-next';
     lbNext.addEventListener('click', (e) => { e.stopPropagation(); nextSlideLightbox(); });
     lightbox.appendChild(lbImg);
     lightbox.appendChild(lbCaption);
@@ -136,7 +138,7 @@ export default async function initGallery(container) {
         captionDiv.innerText = images[slideIndex].name;
         // Update thumbnail active border
         Array.from(thumbsDiv.children).forEach((thumb, i) => {
-            thumb.style.borderColor = i === slideIndex ? '#00ff41' : 'transparent';
+            thumb.classList.toggle('active', i === slideIndex);
         });
     }
 
@@ -176,12 +178,12 @@ export default async function initGallery(container) {
         if (isPlaying) {
             startAutoRotate();
             btn.innerHTML = '⏸ Pause';
-            btn.style.color = '#00ff41';
+            btn.classList.add('play');
             requestWakeLock();
         } else {
             stopAutoRotate();
             btn.innerHTML = '▶ Play';
-            btn.style.color = '#ffb000';
+            btn.classList.remove('play');
             releaseWakeLock();
         }
     }
@@ -191,11 +193,11 @@ export default async function initGallery(container) {
         if (wakeLock) {
             releaseWakeLock();
             document.getElementById('galleryWakeLockBtn').innerHTML = '💤 Stay awake';
-            document.getElementById('galleryWakeLockBtn').style.color = '#ffb000';
+            document.getElementById('galleryWakeLockBtn').classList.remove('play');
         } else {
             requestWakeLock();
             document.getElementById('galleryWakeLockBtn').innerHTML = '🌙 Screen on';
-            document.getElementById('galleryWakeLockBtn').style.color = '#00ff41';
+            document.getElementById('galleryWakeLockBtn').classList.add('play');
         }
     }
 
@@ -205,11 +207,11 @@ export default async function initGallery(container) {
         lightboxIndex = index;
         lbImg.src = images[lightboxIndex].url;
         lbCaption.innerText = images[lightboxIndex].name;
-        lightbox.style.display = 'flex';
+        lightbox.classList.add('active');
         if (isPlaying) stopAutoRotate(); // pause auto-rotate while lightbox open
     }
     function closeLightbox() {
-        lightbox.style.display = 'none';
+        lightbox.classList.remove('active');
         if (isPlaying) startAutoRotate(); // resume
     }
     function prevSlideLightbox() {
@@ -234,10 +236,6 @@ export default async function initGallery(container) {
     updateSlide();
     startAutoRotate();
     if (wakeLockSupported && isPlaying) requestWakeLock();
-
-    // Ensure the parent dashboard item has enough height
-    const parentItem = container.closest('.dashboard-item');
-    if (parentItem) parentItem.style.minHeight = '600px';
 
     // Cleanup when module is removed
     return () => {

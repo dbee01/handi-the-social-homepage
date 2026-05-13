@@ -44,7 +44,7 @@
             const element = document.getElementById(id);
             if (!element) continue;
             const isEnabled = enabledModules[id] !== false;
-            element.style.display = isEnabled ? 'block' : 'none';
+            element.classList.toggle('hidden', !isEnabled);
             if (isEnabled) {
                 const container = element.querySelector('.module-content');
                 if (container) {
@@ -199,5 +199,10 @@
             <span class="settings-link" id="settingsLink"><i class="fa-solid fa-gear"></i> Settings</span>
         </div>
     </footer>
+
+    <script type="module">
+        import { initThemeSwitcher } from './js/core/theme-switcher.js';
+        initThemeSwitcher();
+    </script>
 </body>
 </html>

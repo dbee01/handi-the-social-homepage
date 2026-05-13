@@ -1,0 +1,858 @@
+/* =========================================================
+   ELDERLY THEME (PURE CSS OVERRIDES)
+   HIGH CONTRAST + LARGE TYPE
+========================================================= */
+
+html, body {
+    font-size: 20px;
+    line-height: 1.8;
+    background: #f6f8fc;
+    color: #111;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* LINKS */
+a {
+    color: #0047cc;
+    font-weight: 700;
+}
+
+/* HEADER */
+header {
+    background: #ffffff;
+    border-bottom: 3px solid #0047cc;
+}
+
+/* BRAND */
+.brand {
+    font-size: 2rem;
+    color: #0047cc;
+}
+
+/* THEME TOGGLE */
+.theme-toggle {
+    background: #ffffff;
+    border: 2px solid #0047cc;
+    color: #0047cc;
+    font-size: 0.95rem;
+    padding: 8px 12px;
+    font-weight: bold;
+    border-radius: 6px;
+}
+
+.theme-toggle:hover {
+    background: #0047cc;
+    color: #ffffff;
+    border-color: #0047cc;
+}
+
+/* SEARCH */
+.search-wrapper {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+}
+
+.search-wrapper input {
+    font-size: 1.1rem;
+}
+
+/* WEATHER */
+.header-weather {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+}
+
+/* GRID */
+#dashboard-grid {
+    gap: 18px;
+}
+
+/* PANELS */
+.dashboard-item {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* TITLES */
+.panel-title {
+    font-size: 1.4rem;
+    color: #0047cc;
+}
+
+/* PIN BUTTON */
+.pin-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 1rem;
+    border: 2px solid #cbd5e1;
+    background: #fff;
+}
+
+/* BUTTONS */
+button, .radio-station, .phone-card {
+    min-height: 48px;
+    font-size: 1.05rem;
+}
+
+/* MUSIC / RADIO READABILITY */
+.music-track-item,
+.radio-station {
+    font-size: 1.05rem;
+}
+
+/* CALL TO ACTION */
+a[href^="tel"] {
+    font-size: 1.1rem;
+    padding: 10px 14px;
+}
+
+/* GALLERY MODULE */
+.gallery-content {
+    min-height: 400px;
+}
+
+.gallery-slide-img {
+    max-height: 300px;
+    border: 3px solid #0047cc;
+    border-radius: 12px;
+}
+
+.gallery-caption {
+    font-size: 1.1rem;
+    color: #0047cc;
+    font-weight: 600;
+    margin-top: 12px;
+}
+
+.gallery-btn {
+    min-height: 48px;
+    font-size: 1.05rem;
+    padding: 8px 16px;
+    border: 2px solid #0047cc;
+    background: #ffffff;
+    color: #0047cc;
+    border-radius: 24px;
+    font-weight: bold;
+}
+
+.gallery-btn:hover {
+    background: #0047cc;
+    color: #ffffff;
+}
+
+.gallery-thumbs {
+    margin-top: 12px;
+}
+
+.gallery-thumb {
+    width: 60px;
+    height: 60px;
+    border: 3px solid #cbd5e1;
+}
+
+.gallery-thumb.active {
+    border-color: #0047cc;
+}
+
+/* LIGHTBOX */
+.gallery-lightbox {
+    display: none !important;
+}
+
+.gallery-lightbox.active {
+    display: flex !important;
+}
+
+.gallery-lightbox-nav {
+    font-size: 2.5rem;
+    padding: 12px 16px;
+    background: rgba(0,71,204,0.8);
+    color: #ffffff;
+}
+
+.gallery-lightbox-close {
+    font-size: 2rem;
+    color: #0047cc;
+    background: #ffffff;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================================
+   ELDERLY THEME OVERRIDES — GALLERY BUTTONS
+   Add this to elderly.css
+========================================================= */
+
+/* Button toolbar wrapper */
+.gallery-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin: 16px 0 18px;
+}
+
+/* Common gallery buttons */
+.gallery-controls button,
+.gallery-controls .gallery-btn,
+.gallery-controls .stay-awake-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 56px;
+    padding: 0 22px;
+    margin: 0;
+
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+
+    color: #0047cc;
+    background: #ffffff;
+    border: 3px solid #0047cc;
+    border-radius: 999px;
+
+    white-space: nowrap;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* Make the Stay Awake button start on a new line */
+.gallery-controls .stay-awake-btn {
+    flex-basis: 100%;
+    width: fit-content;
+}
+
+/* Hover/active states */
+.gallery-controls button:hover,
+.gallery-controls .gallery-btn:hover,
+.gallery-controls .stay-awake-btn:hover {
+    background: #eaf2ff;
+}
+
+.gallery-controls button:active,
+.gallery-controls .gallery-btn:active,
+.gallery-controls .stay-awake-btn:active {
+    background: #dbeafe;
+}
+
+/* Strong keyboard focus */
+.gallery-controls button:focus,
+.gallery-controls button:focus-visible,
+.gallery-controls .gallery-btn:focus,
+.gallery-controls .gallery-btn:focus-visible,
+.gallery-controls .stay-awake-btn:focus,
+.gallery-controls .stay-awake-btn:focus-visible {
+    outline: 4px solid #ffcc00;
+    outline-offset: 3px;
+}
+
+/* Keep icon sizes balanced */
+.gallery-controls i {
+    font-size: 1.05em;
+    line-height: 1;
+}
+
+/* Stack buttons vertically on very narrow screens */
+@media (max-width: 480px) {
+    .gallery-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .gallery-controls button,
+    .gallery-controls .gallery-btn,
+    .gallery-controls .stay-awake-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .gallery-controls .stay-awake-btn {
+        flex-basis: auto;
+        width: 100%;
+    }
+}
+
+/* REMOVE HEAVY EFFECTS */
+.dashboard-item:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* FOCUS ACCESSIBILITY */
+button:focus,
+a:focus {
+    outline: 4px solid #ffcc00;
+    outline-offset: 3px;
+}
+
+/* =========================================================
+   ELDERLY THEME OVERRIDES — MASTODON MODULE
+   Add this to elderly.css
+========================================================= */
+
+/* Content wrapper */
+.mastodon-content {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 12px;
+}
+
+/* Each trending story */
+.mastodon-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start;
+    gap: 14px;
+
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 12px;
+
+    overflow: hidden;
+}
+
+/* Thumbnail on the LEFT */
+.mastodon-image,
+.mastodon-item img {
+    display: block;
+    flex: 0 0 100px !important;
+    width: 100px !important;
+    height: 75px !important;
+    max-width: 100px !important;
+    min-width: 100px !important;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #e2e8f0;
+    margin: 0 !important;
+}
+
+/* Placeholder */
+.mastodon-image.placeholder {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 1.5rem;
+}
+
+/* Text content on the RIGHT */
+.mastodon-body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Title */
+.mastodon-title {
+    display: block;
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #0047cc;
+    margin-bottom: 6px;
+    text-decoration: underline;
+}
+
+/* Source/provider */
+.mastodon-provider {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+/* Description */
+.mastodon-desc {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #111827;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Loading / empty / error states */
+.module-loading,
+.module-empty,
+.module-error {
+    padding: 20px;
+    text-align: center;
+    font-size: 1.05rem;
+    color: #475569;
+}
+
+/* Compact panel height */
+.dashboard-item[data-module="mastodon"] {
+    min-height: auto !important;
+    height: auto !important;
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+    .mastodon-image,
+    .mastodon-item img {
+        flex-basis: 80px !important;
+        width: 80px !important;
+        height: 60px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+    }
+
+    .mastodon-title {
+        font-size: 1.05rem;
+    }
+
+    .mastodon-provider,
+    .mastodon-desc {
+        font-size: 0.95rem;
+    }
+}
+/* =========================================================
+   FRIENDLY PHONE — ELDERLY THEME
+   High contrast, large text, big touch targets
+========================================================= */
+
+/* Main content area */
+.phone-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Grid layout */
+.phone-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 16px;
+}
+
+/* On wider screens allow two columns */
+@media (min-width: 900px) {
+    .phone-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Individual contact card */
+.phone-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    background: #ffffff;
+    border: 3px solid #0047cc;
+    border-radius: 20px;
+
+    padding: 24px 20px;
+    min-height: 280px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Contact photo */
+.phone-avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+
+    border: 4px solid #0047cc;
+    background: #f1f5f9;
+
+    margin-bottom: 16px;
+}
+
+/* Placeholder avatar */
+.phone-avatar.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 2.5rem;
+    color: #0047cc;
+}
+
+/* Contact name */
+.phone-name {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #111111;
+    margin-bottom: 8px;
+
+    word-break: break-word;
+}
+
+/* Phone number */
+.phone-number {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 20px;
+
+    word-break: break-word;
+}
+
+/* Call button */
+.phone-call {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    min-height: 60px;
+    width: 100%;
+
+    padding: 14px 20px;
+    margin-top: auto;
+
+    background: #008000;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: 700;
+
+    border: 3px solid #006400;
+    border-radius: 14px;
+
+    transition: none;
+}
+
+/* Hover state */
+.phone-call:hover {
+    background: #006400;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+/* Active state */
+.phone-call:active {
+    background: #004d00;
+}
+
+/* Icon inside call button */
+.phone-call i {
+    font-size: 1.2rem;
+}
+
+/* Empty module state */
+.module-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 300px;
+    padding: 32px 24px;
+
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 600;
+    line-height: 1.6;
+    color: #475569;
+}
+
+.module-empty i {
+    font-size: 3.5rem;
+    color: #0047cc;
+    margin-bottom: 16px;
+}
+
+/* Hint text */
+.module-hint {
+    margin-top: 12px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: #64748b;
+}
+
+/* Strong keyboard focus */
+.phone-call:focus,
+.phone-call:focus-visible {
+    outline: 4px solid #ffcc00;
+    outline-offset: 4px;
+}
+
+/* High contrast support */
+@media (prefers-contrast: more) {
+    .phone-card {
+        border-width: 4px;
+    }
+
+    .phone-call {
+        border-width: 4px;
+    }
+
+    .phone-name,
+    .phone-number {
+        color: #000000;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .phone-call,
+    .phone-card {
+        transition: none;
+    }
+}
+
+/* =========================================================
+   ELDERLY THEME OVERRIDES — LOCAL PLAYER + RADIO
+   Add this to elderly.css
+========================================================= */
+
+/* ---------- Audio panel spacing ---------- */
+
+.local-player-content,
+.radio-content {
+    margin-top: 12px;
+}
+
+/* Current track title */
+.local-player-content .current-track,
+.local-player-content .track-title,
+.local-player-content .now-playing {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #111111;
+    margin-bottom: 6px;
+    word-break: break-word;
+}
+
+/* Status text */
+.local-player-content .player-status,
+.local-player-content .status {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 14px;
+}
+
+/* ---------- Player control buttons ---------- */
+
+.player-controls,
+.music-controls,
+.audio-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin: 14px 0 18px;
+}
+
+.player-controls button,
+.music-controls button,
+.audio-controls button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 64px;
+    min-height: 64px;
+    padding: 0 20px;
+    margin: 0;
+
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+
+    color: #0047cc;
+    background: #ffffff;
+    border: 3px solid #0047cc;
+    border-radius: 16px;
+
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    transition: none;
+}
+
+.player-controls button:hover,
+.music-controls button:hover,
+.audio-controls button:hover {
+    background: #eaf2ff;
+}
+
+.player-controls button:active,
+.music-controls button:active,
+.audio-controls button:active {
+    background: #dbeafe;
+}
+
+/* Play button emphasis */
+.player-controls .play-btn,
+.player-controls .pause-btn,
+.music-controls .play-btn,
+.music-controls .pause-btn {
+    min-width: 76px;
+    background: #0047cc;
+    color: #ffffff;
+}
+
+.player-controls .play-btn:hover,
+.player-controls .pause-btn:hover,
+.music-controls .play-btn:hover,
+.music-controls .pause-btn:hover {
+    background: #0037a3;
+    color: #ffffff;
+}
+
+/* ---------- Playlist items ---------- */
+
+.music-track-list,
+.track-list,
+.playlist {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.music-track-item,
+.track-item,
+.playlist-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    width: 100%;
+    padding: 12px 14px;
+
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: #111111;
+
+    text-decoration: none;
+    cursor: pointer;
+    word-break: break-word;
+}
+
+.music-track-item:hover,
+.track-item:hover,
+.playlist-item:hover {
+    border-color: #0047cc;
+    background: #f8fbff;
+}
+
+.music-track-item.active,
+.track-item.active,
+.playlist-item.active {
+    border-color: #0047cc;
+    background: #eaf2ff;
+}
+
+/* Track icons */
+.music-track-item i,
+.track-item i,
+.playlist-item i {
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    color: #0047cc;
+}
+
+/* ---------- Radio station links ---------- */
+
+.radio-stations,
+.station-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.radio-station {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: 100%;
+    min-height: 64px;
+    padding: 14px 18px;
+
+    background: #ffffff;
+    color: #111111;
+    text-decoration: none;
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.4;
+
+    border: 2px solid #cbd5e1;
+    border-radius: 14px;
+
+    box-sizing: border-box;
+}
+
+.radio-station:hover {
+    background: #f8fbff;
+    border-color: #0047cc;
+    color: #0047cc;
+    text-decoration: none;
+}
+
+.radio-station.active,
+.radio-station.playing {
+    background: #eaf2ff;
+    border-color: #0047cc;
+}
+
+/* Radio icons */
+.radio-station i {
+    flex-shrink: 0;
+    font-size: 1.35rem;
+    color: #0047cc;
+}
+
+/* ---------- Focus accessibility ---------- */
+
+.player-controls button:focus,
+.player-controls button:focus-visible,
+.music-track-item:focus,
+.music-track-item:focus-visible,
+.radio-station:focus,
+.radio-station:focus-visible {
+    outline: 4px solid #ffcc00;
+    outline-offset: 3px;
+}
+
+/* ---------- Mobile layout ---------- */
+
+@media (max-width: 640px) {
+    .player-controls,
+    .music-controls,
+    .audio-controls {
+        justify-content: center;
+    }
+
+    .player-controls button,
+    .music-controls button,
+    .audio-controls button {
+        min-width: 60px;
+        min-height: 60px;
+        font-size: 1.35rem;
+    }
+
+    .radio-station,
+    .music-track-item {
+        font-size: 1rem;
+    }
+}
