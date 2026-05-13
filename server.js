@@ -3,7 +3,7 @@ const cors = require('cors');
 const axios = require('axios');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 
 app.use(cors());
 
@@ -261,8 +261,8 @@ app.get('/api/news', async (req, res) => {
 // START SERVER
 // -----------------------------------------------------------------------------
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Server running on http://0.0.0.0:${PORT}`);
-  console.log(`🌐 Homepage: http://localhost:${PORT}/`);
-  console.log(`🚌 Bus API: http://localhost:${PORT}/api/bus-realtime`);
-  console.log(`📰 News API: http://localhost:${PORT}/api/news`);
+  console.log(`✅ Server running on http://ple.ie`);
+  console.log(`🌐 Homepage: https://ple.ie/`);
+  console.log(`🚌 Bus API: /api/bus-realtime`);
+  console.log(`📰 News API: /api/news`);
 });
