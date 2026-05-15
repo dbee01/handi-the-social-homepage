@@ -2024,3 +2024,30 @@ a:focus {
 .settings-link-btn i {
     font-size: 1.1rem;
 }
+
+/* =========================================================
+   FORCE NON‑SCROLLABLE TOUCH LISTS (NEWS + MASTODON)
+   Only the ▲ / ▼ buttons can navigate the list.
+========================================================= */
+
+.news-list,
+.mastodon-list {
+    height: 350px !important;          /* fixed height for exactly 2 items (170px each + 10px gap) */
+    max-height: 350px !important;
+    overflow-y: auto !important;       /* allow programmatic scrolling by buttons */
+    touch-action: none !important;     /* completely disable touch scrolling */
+    scrollbar-width: thin;             /* optional: keep scrollbar visible for feedback */
+}
+
+/* Ensure the wrapper does not introduce extra scroll */
+.news-scroll-wrapper,
+.mastodon-scroll-wrapper {
+    overflow: visible;
+    touch-action: manipulation;
+}
+
+/* Optional: prevent accidental overscroll on body while touching the list */
+.news-list,
+.mastodon-list {
+    overscroll-behavior: contain;
+}
