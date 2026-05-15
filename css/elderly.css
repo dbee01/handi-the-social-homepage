@@ -947,7 +947,7 @@ a:focus {
     color: #475569;
 }
 
-.news-scroll-btn {
+.news-scroll-btn, .music-scroll-btn, .radio-scroll-btn {
     width: 100%;
     padding: 12px 0;
     border-radius: 12px;
@@ -958,8 +958,12 @@ a:focus {
     cursor: pointer;
 }
 
-.news-scroll-btn:hover,
-.news-scroll-btn:active {
+.news-scroll-btn:hover, .music-scroll-btn:hover, .radio-scroll-btn:hover {
+    background: #e2e8f0;
+    border-color: #0047cc;
+    color: #0047cc;
+}
+.news-scroll-btn:active, .music-scroll-btn:active, .radio-scroll-btn:active {
     background: #e2e8f0;
 }
 
@@ -1619,25 +1623,6 @@ a:focus {
     border-radius: 12px;
 }
 
-.radio-scroll-btn {
-    height: 60px;
-    font-size: 2rem;
-    font-weight: 700;
-
-    background: #f8fafc;
-    color: #1e1e1e;
-    border: 2px solid #cbd5e1;
-
-    border-radius: 12px;
-
-    cursor: pointer;
-}
-
-.radio-scroll-btn:hover,
-.radio-scroll-btn:active {
-    background: #e2e8f0;
-}
-
 .music-scroll-wrapper {
     display: flex;
     flex-direction: column;
@@ -1650,25 +1635,6 @@ a:focus {
     border: 2px solid #cbd5e1;
     border-radius: 12px;
 }
-
-.music-scroll-btn {
-    height: 60px;
-    font-size: 2rem;
-    font-weight: 700;
-
-    background: #0047cc;
-    color: #fff;
-
-    border: none;
-    border-radius: 12px;
-
-    cursor: pointer;
-}
-
-.music-scroll-btn:active {
-    transform: scale(0.98);
-}
-
 /* =========================================================
    UNIFIED ACTIVE STYLES FOR RADIO & MUSIC (DARK MARKUP + WHITE ICONS)
    ========================================================= */
@@ -1725,4 +1691,38 @@ a:focus {
 .radio-station.active span,
 .music-track-item.active span {
     color: #ffffff !important;
+}
+
+/* Phone module action bar */
+.phone-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+/* Lock toggle button */
+.phone-lock-toggle {
+    width: 48px;
+    height: 48px;
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* color is set inline by JS: green or red */
+}
+
+.phone-lock-toggle:hover {
+    background: #f0f2f5;
+}
+
+/* Disabled call link (when locked) */
+.phone-call.locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(0.2);
 }
