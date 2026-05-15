@@ -1,13 +1,14 @@
 /* =========================================================
    ELDERLY THEME (PURE CSS OVERRIDES)
    HIGH CONTRAST + LARGE TYPE
+   Font color: off-black (#1e1e1e) for strong but softer contrast
 ========================================================= */
 
 html, body {
     font-size: 20px;
     line-height: 1.8;
     background: #f6f8fc;
-    color: #111;
+    color: #1e1e1e;   /* off-black, still high contrast */
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -56,7 +57,7 @@ header {
     background: #ffffff;
     border: none;
     border-right: 1px solid #cbd5e1;
-    color: #111;
+    color: #1e1e1e;
     padding: 12px;
     font-family: inherit;
     outline: none;
@@ -145,6 +146,26 @@ header {
     font-size: 1.05rem;
 }
 
+/* Music player synthesiser */
+.music-synth {
+    display: block;
+    width: 100%;
+    height: 80px;
+    background: #0a0a1a;
+    border-radius: 12px;
+    margin: 1rem 0;
+}
+
+/* Radio synthesiser (for consistency) */
+.radio-synth {
+    display: block;
+    width: 100%;
+    height: 80px;
+    background: #0a0a1a;
+    border-radius: 12px;
+    margin: 1rem 0;
+}
+
 .radio-station span {
     font-size: 0.9rem;
     color: #475569;    
@@ -156,7 +177,6 @@ header {
     width: 100%;
     gap: 12px;
 }
-
 
 .radio-player-area {
   display: inline-flex;
@@ -441,7 +461,7 @@ a[href^="tel"] {
     font-size: 1.15rem;
     font-weight: 600;
     line-height: 1.6;
-    color: #334155;
+    color: #1e1e1e;
 }
 
 .bus-loading i,
@@ -505,7 +525,7 @@ a[href^="tel"] {
     font-size: 1.35rem;
     font-weight: 700;
     line-height: 1.4;
-    color: #111111;
+    color: #1e1e1e;
 }
 
 /* Direction */
@@ -513,7 +533,7 @@ a[href^="tel"] {
     margin-bottom: 14px;
     font-size: 1rem;
     font-weight: 600;
-    color: #64748b;
+    color: #475569;
 }
 
 /* Individual route row */
@@ -555,7 +575,7 @@ a[href^="tel"] {
 .bus-arrival {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #111111;
+    color: #1e1e1e;
     text-align: right;
     white-space: nowrap;
 }
@@ -565,7 +585,7 @@ a[href^="tel"] {
     padding: 8px 0;
     font-size: 1rem;
     font-weight: 600;
-    color: #64748b;
+    color: #475569;
 }
 
 /* Refresh / retry buttons */
@@ -639,7 +659,6 @@ a[href^="tel"] {
 
 /* =========================================================
    ELDERLY THEME OVERRIDES — GALLERY BUTTONS
-   Add this to elderly.css
 ========================================================= */
 
 /* Button toolbar wrapper */
@@ -749,7 +768,6 @@ a:focus {
 
 /* =========================================================
    ELDERLY THEME OVERRIDES — MASTODON MODULE
-   Add this to elderly.css
 ========================================================= */
 
 /* Content wrapper */
@@ -795,7 +813,7 @@ a:focus {
     display: flex !important;
     align-items: center;
     justify-content: center;
-    color: #64748b;
+    color: #475569;
     font-size: 1.5rem;
 }
 
@@ -828,7 +846,7 @@ a:focus {
 .mastodon-desc {
     font-size: 1rem;
     line-height: 1.5;
-    color: #111827;
+    color: #1e1e1e;
 
     display: -webkit-box;
     line-clamp: 3;
@@ -843,7 +861,7 @@ a:focus {
     padding: 20px;
     text-align: center;
     font-size: 1.05rem;
-    color: #475569;
+    color: #1e1e1e;
 }
 
 /* Compact panel height */
@@ -919,7 +937,7 @@ a:focus {
 .mastodon-title {
     display: block;
     font-weight: 700;
-    color: #0f172a;
+    color: #1e1e1e;
     text-decoration: none;
     margin-bottom: 6px;
 }
@@ -935,7 +953,7 @@ a:focus {
     border-radius: 12px;
     border: 2px solid #cbd5e1;
     background: #f8fafc;
-    color: #0f172a;
+    color: #1e1e1e;
     font-size: 1rem;
     cursor: pointer;
 }
@@ -1017,7 +1035,7 @@ a:focus {
     font-size: 1.6rem;
     font-weight: 700;
     line-height: 1.3;
-    color: #111111;
+    color: #1e1e1e;
     margin-bottom: 8px;
 
     word-break: break-word;
@@ -1027,7 +1045,7 @@ a:focus {
 .phone-number {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #334155;
+    color: #1e1e1e;
     margin-bottom: 20px;
 
     word-break: break-word;
@@ -1089,7 +1107,7 @@ a:focus {
     font-size: 1.4rem;
     font-weight: 600;
     line-height: 1.6;
-    color: #475569;
+    color: #1e1e1e;
 }
 
 .module-empty i {
@@ -1103,7 +1121,7 @@ a:focus {
     margin-top: 12px;
     font-size: 1.05rem;
     font-weight: 500;
-    color: #64748b;
+    color: #475569;
 }
 
 /* Strong keyboard focus */
@@ -1139,7 +1157,6 @@ a:focus {
 
 /* =========================================================
    ELDERLY THEME OVERRIDES — LOCAL PLAYER + RADIO
-   Add this to elderly.css
 ========================================================= */
 
 /* ---------- Audio panel spacing ---------- */
@@ -1156,7 +1173,7 @@ a:focus {
     font-size: 1.15rem;
     font-weight: 700;
     line-height: 1.5;
-    color: #111111;
+    color: #1e1e1e;
     margin-bottom: 6px;
     word-break: break-word;
 }
@@ -1240,7 +1257,6 @@ a:focus {
 
 /* =========================================================
    ELDERLY THEME OVERRIDE — NOW PLAYING PANEL
-   Overrides theme.css .music-now-playing
 ========================================================= */
 
 .music-now-playing {
@@ -1256,7 +1272,7 @@ a:focus {
     font-size: 1.15rem !important;
     font-weight: 700 !important;
     line-height: 1.6 !important;
-    color: #111111 !important;
+    color: #1e1e1e !important;
 
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
 }
@@ -1268,7 +1284,7 @@ a:focus {
     display: block;
     font-size: 1.25rem !important;
     font-weight: 700 !important;
-    color: #111111 !important;
+    color: #1e1e1e !important;
     line-height: 1.5 !important;
     margin-bottom: 6px !important;
 }
@@ -1348,25 +1364,11 @@ a:focus {
     font-size: 1.05rem;
     font-weight: 600;
     line-height: 1.5;
-    color: #111111;
+    color: #1e1e1e;
 
     text-decoration: none;
     cursor: pointer;
     word-break: break-word;
-}
-
-.music-track-item:hover,
-.track-item:hover,
-.playlist-item:hover {
-    border-color: #0047cc;
-    background: #f8fbff;
-}
-
-.music-track-item.active,
-.track-item.active,
-.playlist-item.active {
-    border-color: #0047cc;
-    background: #eaf2ff;
 }
 
 /* Track icons */
@@ -1398,7 +1400,7 @@ a:focus {
     padding: 14px 18px;
 
     background: #ffffff;
-    color: #111111;
+    color: #1e1e1e;
     text-decoration: none;
     font-size: 1.15rem;
     font-weight: 700;
@@ -1415,12 +1417,6 @@ a:focus {
     border-color: #0047cc;
     color: #0047cc;
     text-decoration: none;
-}
-
-.radio-station.active,
-.radio-station.playing {
-    background: #eaf2ff;
-    border-color: #0047cc;
 }
 
 /* Radio icons */
@@ -1468,7 +1464,6 @@ a:focus {
 /* =========================================================
    ELDERLY THEME OVERRIDES — RADIO LINK COLOR FIX
    Prevent visited/current radio links from turning light blue.
-   Add this near the END of elderly.css
 ========================================================= */
 
 .radio-station,
@@ -1478,7 +1473,7 @@ a:focus {
 .radio-station:active,
 .radio-station:focus,
 .radio-station:focus-visible {
-    color: #111111 !important;
+    color: #1e1e1e !important;
     text-decoration: none !important;
 }
 
@@ -1491,22 +1486,6 @@ a:focus {
 .radio-station:hover {
     background: #f8fbff !important;
     border-color: #0047cc !important;
-}
-
-/* Active / currently playing station */
-.radio-station.active,
-.radio-station.playing,
-.radio-station[aria-current="true"] {
-    background: #eaf2ff !important;
-    border-color: #0047cc !important;
-    color: #111111 !important;
-}
-
-/* Optional emphasis for the station currently playing */
-.radio-station.active i,
-.radio-station.playing i,
-.radio-station[aria-current="true"] i {
-    color: #0047cc !important;
 }
 
 .gallery-controls {
@@ -1646,7 +1625,7 @@ a:focus {
     font-weight: 700;
 
     background: #f8fafc;
-    color: #0f172a;
+    color: #1e1e1e;
     border: 2px solid #cbd5e1;
 
     border-radius: 12px;
@@ -1688,4 +1667,62 @@ a:focus {
 
 .music-scroll-btn:active {
     transform: scale(0.98);
+}
+
+/* =========================================================
+   UNIFIED ACTIVE STYLES FOR RADIO & MUSIC (DARK MARKUP + WHITE ICONS)
+   ========================================================= */
+
+/* Active music track */
+.music-track-item.active,
+.music-track-item.active i,
+.music-track-item.active .music-track-icon i,
+.music-track-item.active .fa-volume-high,
+.music-track-item.active .fa-volume-mute {
+    background: #1e2a3a !important;        /* Dark slate background */
+    color: #ffffff !important;            /* White text */
+    border-left: 5px solid #00d4ff !important;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.5) !important;
+}
+
+/* Ensure any icon inside active music track becomes white */
+.music-track-item.active i {
+    color: #ffffff !important;
+}
+
+/* Active radio station (using .active-station class from JS) */
+.radio-station.active-station,
+.radio-station.active-station i,
+.radio-station.active-station .station-icon i,
+.radio-station.active-station .fa-volume-high,
+.radio-station.active-station .fa-volume-mute {
+    background: #1e2a3a !important;        /* Same dark background */
+    color: #ffffff !important;
+    border-left: 5px solid #00d4ff !important;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.5) !important;
+}
+
+/* Also cover any .active class on radio stations (fallback) */
+.radio-station.active,
+.radio-station.active i {
+    background: #1e2a3a !important;
+    color: #ffffff !important;
+    border-left: 5px solid #00d4ff !important;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.5) !important;
+}
+
+/* Force icon color white for all cases above */
+.radio-station.active-station i,
+.radio-station.active i,
+.music-track-item.active i {
+    color: #ffffff !important;
+}
+
+/* =========================================================
+   FIX: Ensure station name text (e.g., "Newstalk") turns white when active
+   ========================================================= */
+.radio-station.active-station span,
+.radio-station.active span,
+.music-track-item.active span {
+    color: #ffffff !important;
 }

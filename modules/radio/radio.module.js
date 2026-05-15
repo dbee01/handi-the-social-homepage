@@ -1,7 +1,6 @@
+// modules/radio/radio.module.js
 export default async function initRadio(container) {
-
     const pinBtn = container.querySelector('.pin-btn');
-
     container.innerHTML = '';
     if (pinBtn) container.appendChild(pinBtn);
 
@@ -27,162 +26,212 @@ export default async function initRadio(container) {
         { name: 'Live 95 (Limerick)', url: 'https://onic.cork.live.stream.broadcasting.news/stream-live95' }
     ];
 
-    /* =========================
-       UI
-    ========================= */
-
+    // Build UI: top bar with canvas and now‑playing text
     content.innerHTML = `
         <div class="radio-top-bar">
-
-            <div class="radio-player-area">
-                <div class="radio-now-playing" id="now-playing">
-                    Select a station
-                </div>
-            </div>
-
-            <button class="radio-stop-btn" id="radio-stop">
-                ⏹ OFF
-            </button>
-
+            <canvas id="radio-synth" class="radio-synth" width="400" height="80"></canvas>
+            <div class="radio-now-playing" id="now-playing">No station playing</div>
         </div>
-
         <div class="radio-scroll-wrapper">
-
             <button id="radio-up" class="radio-scroll-btn">▲</button>
-
             <div id="stations-list" class="radio-list"></div>
-
             <button id="radio-down" class="radio-scroll-btn">▼</button>
-
         </div>
-
         <div class="radio-error" id="radio-error"></div>
     `;
-
-    /* =========================
-       ELEMENTS (SAFE)
-    ========================= */
 
     const list = content.querySelector('#stations-list');
     const nowPlaying = content.querySelector('#now-playing');
     const error = content.querySelector('#radio-error');
-    const stopBtn = content.querySelector('#radio-stop');
     const up = content.querySelector('#radio-up');
     const down = content.querySelector('#radio-down');
+    const synthCanvas = content.querySelector('#radio-synth');
 
-    /* =========================
-       STATE
-    ========================= */
+    // Hide synthesiser initially, add margins
+    if (synthCanvas) {
+        synthCanvas.style.display = 'none';
+        synthCanvas.style.marginTop = '1rem';
+        synthCanvas.style.marginBottom = '1rem';
+    }
 
     let currentAudio = null;
+    let stopVisualiser = null;
+    let activeStationItem = null;
+    let activeStationName = null;
 
     /* =========================
-       RENDER STATIONS
+       Fake visualiser (CORS‑safe)
     ========================= */
+    function startFakeVisualiser(canvas) {
+        if (!canvas) return null;
+        canvas.style.display = 'block';
+        let animationId = null;
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width = canvas.clientWidth;
+        const height = canvas.height = canvas.clientHeight;
 
-    stations.forEach((station) => {
-        const el = document.createElement('div');
-        el.className = 'radio-station';
+        let time = 0;
+        function draw() {
+            animationId = requestAnimationFrame(draw);
+            time += 0.05;
+            ctx.clearRect(0, 0, width, height);
 
-        el.innerHTML = `
-            <i class="fa-solid fa-headphones"></i>
-            <span>${station.name}</span>
-        `;
+            const barCount = 32;
+            const barWidth = width / barCount;
 
-        el.addEventListener('click', () => {
-            playStation(station.url, station.name, el);
-        });
+            for (let i = 0; i < barCount; i++) {
+                const value = (Math.sin(time + i * 0.3) + 1) / 2;
+                const noise = Math.random() * 0.3;
+                const heightPercent = Math.min(0.9, value * 0.7 + noise);
+                const barHeight = height * heightPercent;
+                const hue = 200 + (heightPercent * 60);
+                ctx.fillStyle = `hsl(${hue}, 80%, 55%)`;
+                ctx.fillRect(i * barWidth, height - barHeight, barWidth - 1, barHeight);
+            }
+        }
+        draw();
+        return () => cancelAnimationFrame(animationId);
+    }
 
-        list.appendChild(el);
-    });
+    function stopVisualiserAndClear() {
+        if (stopVisualiser) {
+            stopVisualiser();
+            stopVisualiser = null;
+        }
+        if (synthCanvas) {
+            const ctx = synthCanvas.getContext('2d');
+            ctx.clearRect(0, 0, synthCanvas.width, synthCanvas.height);
+            ctx.fillStyle = '#1e1e2f';
+            ctx.fillRect(0, 0, synthCanvas.width, synthCanvas.height);
+            synthCanvas.style.display = 'none';
+        }
+    }
 
     /* =========================
-       SCROLL
+       Stop playback and reset UI
     ========================= */
-
-    up.addEventListener('click', () => {
-        list.scrollBy({ top: -300, behavior: 'smooth' });
-    });
-
-    down.addEventListener('click', () => {
-        list.scrollBy({ top: 300, behavior: 'smooth' });
-    });
-
-    /* =========================
-       STOP RADIO
-    ========================= */
-
-    function stopPlayback() {
-
+    function stopPlayback(resetIcon = true) {
         if (currentAudio) {
             currentAudio.pause();
             currentAudio.src = '';
             currentAudio = null;
         }
+        stopVisualiserAndClear();
+        nowPlaying.innerText = 'No station playing';
+        error.innerText = '';
 
-        if (nowPlaying) nowPlaying.innerText = 'Radio OFF';
-        if (error) error.innerText = '';
-
-        document.querySelectorAll('.radio-station')
-            .forEach(s => s.classList.remove('active'));
+        if (resetIcon && activeStationItem) {
+            const iconSpan = activeStationItem.querySelector('.station-icon');
+            if (iconSpan) {
+                iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
+            }
+            activeStationItem.classList.remove('active-station');
+            activeStationItem = null;
+            activeStationName = null;
+        }
     }
 
-    stopBtn.addEventListener('click', stopPlayback);
-
     /* =========================
-       PLAY STATION
+       Play a station
     ========================= */
+    function playStation(url, name, stationItem) {
+        if (currentAudio && activeStationName === name) return;
 
-    function playStation(url, name, el) {
-
-        stopPlayback();
-
-        if (nowPlaying) {
-            nowPlaying.innerText = `Connecting to ${name}...`;
+        if (currentAudio) {
+            stopPlayback(true);
         }
 
-        if (error) error.innerText = '';
+        nowPlaying.innerText = `Connecting to ${name}...`;
+        error.innerText = '';
 
         try {
             currentAudio = new Audio(url);
-
             currentAudio.play()
                 .then(() => {
-
-                    if (nowPlaying) {
-                        nowPlaying.innerText = `▶ Now playing: ${name}`;
-                    }
-
-                    document.querySelectorAll('.radio-station')
-                        .forEach(s => s.classList.remove('active'));
-
-                    el.classList.add('active');
+                    nowPlaying.innerText = `▶ Now playing: ${name}`;
+                    document.querySelectorAll('.radio-station').forEach(item => {
+                        const iconSpan = item.querySelector('.station-icon');
+                        if (item === stationItem) {
+                            iconSpan.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+                            item.classList.add('active-station');
+                        } else {
+                            iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
+                            item.classList.remove('active-station');
+                        }
+                    });
+                    activeStationItem = stationItem;
+                    activeStationName = name;
+                    stopVisualiser = startFakeVisualiser(synthCanvas);
                 })
-                .catch(() => {
-                    if (error) error.innerText = 'Cannot play this station';
-                    if (nowPlaying) nowPlaying.innerText = 'Playback failed';
+                .catch((err) => {
+                    console.warn('Play error:', err);
+                    error.innerText = 'Cannot play this station';
+                    nowPlaying.innerText = 'Playback failed';
+                    stopPlayback(true);
                 });
 
             currentAudio.onerror = () => {
-                if (error) error.innerText = 'Stream unavailable';
-                if (nowPlaying) nowPlaying.innerText = 'Stream error';
+                error.innerText = 'Stream unavailable';
+                nowPlaying.innerText = 'Stream error';
+                stopPlayback(true);
             };
-
         } catch (err) {
             console.error(err);
-            if (error) error.innerText = 'Unable to play stream';
+            error.innerText = 'Unable to play stream';
+            stopPlayback(true);
+        }
+    }
+
+    function toggleStation(station) {
+        const { url, name } = station;
+        const stationDiv = station.element;
+
+        if (activeStationItem === stationDiv && currentAudio && !currentAudio.paused) {
+            stopPlayback(true);
+        } else {
+            playStation(url, name, stationDiv);
         }
     }
 
     /* =========================
-       CLEANUP
+       Create station list – NO HEADPHONES ICON
     ========================= */
+    stations.forEach((station) => {
+        const stationDiv = document.createElement('div');
+        stationDiv.className = 'radio-station';
 
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'station-icon';
+        iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
+
+        const nameSpan = document.createElement('span');
+        // Removed the headphones icon – just the station name
+        nameSpan.textContent = station.name;
+
+        stationDiv.appendChild(iconSpan);
+        stationDiv.appendChild(nameSpan);
+
+        stationDiv.stationData = { url: station.url, name: station.name, element: stationDiv };
+        stationDiv.addEventListener('click', () => toggleStation(stationDiv.stationData));
+
+        list.appendChild(stationDiv);
+    });
+
+    /* =========================
+       Scroll buttons
+    ========================= */
+    up.addEventListener('click', () => list.scrollBy({ top: -300, behavior: 'smooth' }));
+    down.addEventListener('click', () => list.scrollBy({ top: 300, behavior: 'smooth' }));
+
+    /* =========================
+       Cleanup
+    ========================= */
     return () => {
         if (currentAudio) {
             currentAudio.pause();
             currentAudio.src = '';
             currentAudio = null;
         }
+        stopVisualiserAndClear();
     };
 }

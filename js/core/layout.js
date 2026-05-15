@@ -24,60 +24,50 @@ export function initLayout() {
     window.refreshDashboardLayout = refreshLayout;
 
     const grid = document.getElementById('dashboard-grid');
-
     if (!grid) return;
 
-    const isMobile = window.innerWidth <= 900 || isTouchscreen();
+    // Use width only to decide between multi‑column (Packery) or single‑column layout
+    const isNarrow = window.innerWidth <= 900;   // renamed from isMobile
 
     // ========================================
-    // MOBILE
+    // NARROW WIDTH – single column, no Packery, no Sortable
     // ========================================
-
-    if (isMobile) {
-
+    if (isNarrow) {
         grid.classList.add('mobile-layout');
 
         if (window.packeryInstance) {
             window.packeryInstance.destroy();
             window.packeryInstance = null;
         }
-
         if (sortableInstance) {
             sortableInstance.destroy();
             sortableInstance = null;
         }
-
-        // CRITICAL:
-        // remove inline styles Packery added
+        // Remove inline styles left by Packery
         grid.querySelectorAll('.dashboard-item').forEach(item => {
-
             item.style.position = '';
             item.style.left = '';
             item.style.top = '';
             item.style.transform = '';
         });
-
         return;
     }
 
     // ========================================
-    // DESKTOP
+    // WIDE WIDTH – multi‑column (Packery) + optionally Sortable (drag‑and‑drop)
     // ========================================
-
     grid.classList.remove('mobile-layout');
 
     if (window.packeryInstance) {
         window.packeryInstance.destroy();
     }
-
     if (sortableInstance) {
         sortableInstance.destroy();
+        sortableInstance = null;
     }
 
-    // CRITICAL:
-    // clear ALL old inline styles
+    // Clear old inline styles (clean slate)
     grid.querySelectorAll('.dashboard-item').forEach(item => {
-
         item.style.width = '';
         item.style.position = '';
         item.style.left = '';
@@ -85,44 +75,35 @@ export function initLayout() {
         item.style.transform = '';
     });
 
-    // ========================================
-    // PACKERY
-    // ========================================
-
+    // -------------------------
+    // 1. ALWAYS create Packery (masonry layout)
+    // -------------------------
     window.packeryInstance = new Packery(grid, {
-
         itemSelector: '.dashboard-item',
-
         gutter: 20,
-
         percentPosition: false,
-
         transitionDuration: '0.2s'
     });
 
-    // ========================================
-    // SORTABLE
-    // ========================================
+    // -------------------------
+    // 2. Create Sortable ONLY if the device is NOT a touchscreen
+    //    (drag‑and‑drop is awkward on touch devices)
+    // -------------------------
+    if (!isTouchscreen()) {
+        sortableInstance = new Sortable(grid, {
+            animation: 200,
+            handle: '.dashboard-item',
+            draggable: '.dashboard-item',
+            onEnd: () => {
+                window.packeryInstance.reloadItems();
+                requestAnimationFrame(() => {
+                    window.packeryInstance.layout();
+                });
+            }
+        });
+    }
 
-    sortableInstance = new Sortable(grid, {
-
-        animation: 200,
-
-        handle: '.dashboard-item',
-
-        draggable: '.dashboard-item',
-
-        onEnd: () => {
-
-            window.packeryInstance.reloadItems();
-
-            requestAnimationFrame(() => {
-                window.packeryInstance.layout();
-            });
-        }
-    });
-
-    // Force layout after render
+    // Force layout
     requestAnimationFrame(() => {
         window.packeryInstance.layout();
     });
@@ -137,22 +118,15 @@ export function refreshDashboardLayout() {
 // ========================================
 // INIT
 // ========================================
-
 window.addEventListener('load', initLayout);
 
 // ========================================
-// RESIZE
+// RESIZE (debounced)
 // ========================================
-
 let resizeTimer;
-
 window.addEventListener('resize', () => {
-
     clearTimeout(resizeTimer);
-
     resizeTimer = setTimeout(() => {
-
         initLayout();
-
     }, 150);
 });
