@@ -51,6 +51,7 @@ export default async function initBus(container) {
             isServerDown = false;
             fetchBusData();
         });
+        if (window.refreshDashboardLayout) window.refreshDashboardLayout();
     }
 
     function renderBusData(data) {
@@ -90,6 +91,7 @@ export default async function initBus(container) {
         content.innerHTML = html;
         const refreshBtn = content.querySelector('.bus-refresh-btn');
         if (refreshBtn) refreshBtn.addEventListener('click', fetchBusData);
+        if (window.refreshDashboardLayout) window.refreshDashboardLayout();
     }
 
     function startAutoRefresh() {

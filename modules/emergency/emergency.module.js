@@ -156,7 +156,7 @@ export default async function initEmergency(container) {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
                 const shortCode = osmShortlink(lat, lon);
-                const osmShortUrl = `https://osm.org/go/${shortCode}`;
+                const osmShortUrl = `https://osm.org/go/${shortCode}?z=16`;
 
                 setStatus(`Location obtained. Sending alerts to ${contacts.length} contact(s)...`, false);
 

@@ -2,13 +2,32 @@
 
 let sortableInstance = null;
 
+function refreshLayout() {
+    if (typeof window === 'undefined') return;
+    if (window.packeryInstance) {
+        window.packeryInstance.reloadItems();
+        window.packeryInstance.layout();
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.refreshDashboardLayout = refreshLayout;
+}
+
+function isTouchscreen() {
+    return (('ontouchstart' in window) || 
+            (navigator.maxTouchPoints > 0) || 
+            (navigator.msMaxTouchPoints > 0));
+}
+
 export function initLayout() {
+    window.refreshDashboardLayout = refreshLayout;
 
     const grid = document.getElementById('dashboard-grid');
 
     if (!grid) return;
 
-    const isMobile = window.innerWidth <= 900;
+    const isMobile = window.innerWidth <= 900 || isTouchscreen();
 
     // ========================================
     // MOBILE
@@ -107,6 +126,12 @@ export function initLayout() {
     requestAnimationFrame(() => {
         window.packeryInstance.layout();
     });
+}
+
+export function refreshDashboardLayout() {
+    if (typeof window !== 'undefined' && window.refreshDashboardLayout) {
+        window.refreshDashboardLayout();
+    }
 }
 
 // ========================================

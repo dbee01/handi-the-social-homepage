@@ -55,7 +55,7 @@ function loadUI() {
     // Toggles
     toggleSwitches.forEach(sw => {
         const moduleId = sw.closest('.module-header').dataset.module;
-        if (settings.enabledModules?.[moduleId]) sw.classList.add('active');
+        if (settings.enabledModules?.[moduleId] !== false) sw.classList.add('active');
         else sw.classList.remove('active');
     });
     // Bus
@@ -78,12 +78,12 @@ function loadUI() {
     if (settings.news) {
         if (document.getElementById('newsRssUrl')) document.getElementById('newsRssUrl').value = settings.news.rssUrl || '';
         if (document.getElementById('newsRefresh')) document.getElementById('newsRefresh').value = settings.news.refresh || 15;
-        if (document.getElementById('newsMaxArticles')) document.getElementById('newsMaxArticles').value = settings.news.maxArticles || 20;
+        if (document.getElementById('newsMaxArticles')) document.getElementById('newsMaxArticles').value = settings.news.maxArticles || 4;
     }
     // Mastodon
     if (settings.mastodon) {
         if (document.getElementById('mastodonInstance')) document.getElementById('mastodonInstance').value = settings.mastodon.instance || 'https://mastodon.ie';
-        if (document.getElementById('mastodonLimit')) document.getElementById('mastodonLimit').value = settings.mastodon.limit || 5;
+        if (document.getElementById('mastodonLimit')) document.getElementById('mastodonLimit').value = settings.mastodon.limit || 4;
     }
     // Emergency
     if (settings.emergency) {
@@ -123,7 +123,7 @@ function collectSettings() {
         news: {
             rssUrl: document.getElementById('newsRssUrl')?.value || '',
             refresh: parseInt(document.getElementById('newsRefresh')?.value) || 15,
-            maxArticles: parseInt(document.getElementById('newsMaxArticles')?.value) || 20
+            maxArticles: parseInt(document.getElementById('newsMaxArticles')?.value) || 4
         },
         mastodon: {
             instance: document.getElementById('mastodonInstance')?.value || 'https://mastodon.ie',

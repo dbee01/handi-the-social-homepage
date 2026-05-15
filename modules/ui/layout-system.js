@@ -1,10 +1,16 @@
 // modules/ui/layout-system.js
+function isTouchscreen() {
+    return (('ontouchstart' in window) || 
+            (navigator.maxTouchPoints > 0) || 
+            (navigator.msMaxTouchPoints > 0));
+}
+
 export default function initLayoutSystem() {
     const grid = document.getElementById('dashboard-grid');
     if (!grid || window.packeryInstance) return;
 
-    if (window.innerWidth <= 899) {
-        // Mobile: simple column
+    if (window.innerWidth <= 899 || isTouchscreen()) {
+        // Mobile or touchscreen: simple column
         grid.style.display = 'flex';
         grid.style.flexDirection = 'column';
         grid.style.alignItems = 'center';

@@ -249,7 +249,7 @@ app.get('/health', (req, res) => {
 // -----------------------------------------------------------------------------
 const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Server running on port ${PORT}`);
-    console.log(`🌐 API base: http://localhost:${PORT}/`);
+    console.log(`🌐 API base: http://ple.ie:${PORT}/`);
     console.log(`🚌 Bus API: /api/bus-realtime`);
     console.log(`📰 News API: /api/news`);
     console.log(`❤️ Health: /health`);

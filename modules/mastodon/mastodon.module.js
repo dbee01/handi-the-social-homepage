@@ -31,17 +31,42 @@ export default async function initMastodon(container) {
     // Settings
     const settings = loadSettings();
     const instance = settings.mastodon?.instance || 'https://mastodon.ie';
-    const limit = settings.mastodon?.limit || 5;
+    const limit = settings.mastodon?.limit || 4;
 
     // Loading state
     content.innerHTML = `
-        <div class="module-loading">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            Loading trending...
+        <div class="mastodon-scroll-wrapper">
+            <button id="mastodon-up" class="news-scroll-btn">▲</button>
+            <div id="mastodon-list" class="mastodon-list">
+                <div class="module-loading">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    Loading trending...
+                </div>
+            </div>
+            <button id="mastodon-down" class="news-scroll-btn">▼</button>
         </div>
     `;
 
+    const list = content.querySelector('#mastodon-list');
+    const up = content.querySelector('#mastodon-up');
+    const down = content.querySelector('#mastodon-down');
+
+    function getMastodonStoryHeight() {
+        const firstStory = list.querySelector('.mastodon-item');
+        if (!firstStory) return 280;
+        const style = window.getComputedStyle(firstStory);
+        const gap = 10;
+        return firstStory.offsetHeight + gap;
+    }
+
+    up.addEventListener('click', () => list.scrollBy({ top: -getMastodonStoryHeight(), behavior: 'smooth' }));
+    down.addEventListener('click', () => list.scrollBy({ top: getMastodonStoryHeight(), behavior: 'smooth' }));
+
     function refreshPackery() {
+        if (window.refreshDashboardLayout) {
+            window.refreshDashboardLayout();
+            return;
+        }
         if (!window.packeryInstance) return;
 
         requestAnimationFrame(() => {
@@ -61,7 +86,7 @@ export default async function initMastodon(container) {
         const data = await res.json();
 
         if (!Array.isArray(data) || !data.length) {
-            content.innerHTML = `
+            list.innerHTML = `
                 <div class="module-empty">
                     No trending links
                 </div>
@@ -136,10 +161,10 @@ export default async function initMastodon(container) {
             `;
         }).join('');
 
-        content.innerHTML = html;
+        list.innerHTML = html;
 
         // Re-layout after images load
-        const images = content.querySelectorAll('img');
+        const images = list.querySelectorAll('img');
         images.forEach(img => {
             if (!img.complete) {
                 img.addEventListener('load', refreshPackery, { once: true });
@@ -151,7 +176,7 @@ export default async function initMastodon(container) {
     } catch (err) {
         console.error('Mastodon module error:', err);
 
-        content.innerHTML = `
+        list.innerHTML = `
             <div class="module-error">
                 Failed to load Mastodon.
                 Check instance URL in Settings.

@@ -103,6 +103,10 @@ export default async function initGallery(container) {
     slideshowDiv.appendChild(thumbsDiv);
     content.appendChild(slideshowDiv);
 
+    slideImg.onload = () => {
+        if (window.refreshDashboardLayout) window.refreshDashboardLayout();
+    };
+
     /* ========================= LIGHTBOX ========================= */
 
     const lightbox = document.createElement('div');
@@ -141,7 +145,7 @@ export default async function initGallery(container) {
         if (!img) return;
 
         slideImg.src = img.url;
-        captionDiv.textContent = img.name || '';
+        captionDiv.textContent = (img.name || '').replace(/\+|\..*/g, '');
 
         [...thumbsDiv.children].forEach((t, i) => {
             t.classList.toggle('active', i === slideIndex);

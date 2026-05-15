@@ -52,6 +52,17 @@ header {
     border: 2px solid #cbd5e1;
 }
 
+.search-engine-select {
+    background: #ffffff;
+    border: none;
+    border-right: 1px solid #cbd5e1;
+    color: #111;
+    padding: 12px;
+    font-family: inherit;
+    outline: none;
+    cursor: pointer;
+}
+
 .search-wrapper input {
     font-size: 1.1rem;
 }
@@ -117,7 +128,6 @@ header {
     background: #cc0000;
     color: #fff;
 
-    border: 3px solid #990000;
     border-radius: 999px;
 
     cursor: pointer;
@@ -821,12 +831,12 @@ a:focus {
     color: #111827;
 
     display: -webkit-box;
+    line-clamp: 3;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-/* Loading / empty / error states */
 .module-loading,
 .module-empty,
 .module-error {
@@ -862,6 +872,79 @@ a:focus {
         font-size: 0.95rem;
     }
 }
+
+/* =========================================================
+   ELDERLY THEME OVERRIDES — NEWS MODULE
+========================================================= */
+
+.news-scroll-wrapper,
+.mastodon-scroll-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.news-list,
+.mastodon-list {
+    max-height: 380px;
+    overflow: hidden;
+    touch-action: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.news-article,
+.mastodon-item {
+    padding: 12px 14px;
+    border-bottom: 1px solid #cbd5e1;
+    background: #ffffff;
+    border-radius: 12px;
+    margin-bottom: 0;
+    min-height: 170px;
+    height: 170px;
+    overflow: hidden;
+}
+
+.news-article:last-child,
+.mastodon-item:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.news-article a,
+.mastodon-title {
+    display: block;
+    font-weight: 700;
+    color: #0f172a;
+    text-decoration: none;
+    margin-bottom: 6px;
+}
+
+.news-date {
+    font-size: 0.85rem;
+    color: #475569;
+}
+
+.news-scroll-btn {
+    width: 100%;
+    padding: 12px 0;
+    border-radius: 12px;
+    border: 2px solid #cbd5e1;
+    background: #f8fafc;
+    color: #0f172a;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.news-scroll-btn:hover,
+.news-scroll-btn:active {
+    background: #e2e8f0;
+}
+
 /* =========================================================
    FRIENDLY PHONE — ELDERLY THEME
    High contrast, large text, big touch targets
@@ -1437,12 +1520,12 @@ a:focus {
 .gallery-control-group {
     display: flex;
     gap: 12px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 /* Base button */
 .gallery-btn {
-    flex: 1;
+    flex: 1 1 auto;
     min-height: 56px;
     padding: 0 18px;
 
@@ -1466,8 +1549,8 @@ a:focus {
 
 /* Primary buttons (main navigation) */
 .gallery-btn.primary {
-    background: #0047cc;
-    color: #ffffff;
+    background: #ffffff;
+    color: #0047cc;
     border-color: #0047cc;
 }
 
@@ -1495,14 +1578,14 @@ a:focus {
     outline-offset: 3px;
 }
 
-/* Mobile stacking */
+/* Mobile behavior */
 @media (max-width: 500px) {
     .gallery-control-group {
-        flex-direction: column;
+        flex-wrap: wrap;
     }
 
     .gallery-btn {
-        width: 100%;
+        min-width: 120px;
     }
 }
 .lightbox button {
@@ -1562,17 +1645,18 @@ a:focus {
     font-size: 2rem;
     font-weight: 700;
 
-    background: #0047cc;
-    color: #fff;
+    background: #f8fafc;
+    color: #0f172a;
+    border: 2px solid #cbd5e1;
 
-    border: none;
     border-radius: 12px;
 
     cursor: pointer;
 }
 
+.radio-scroll-btn:hover,
 .radio-scroll-btn:active {
-    transform: scale(0.98);
+    background: #e2e8f0;
 }
 
 .music-scroll-wrapper {

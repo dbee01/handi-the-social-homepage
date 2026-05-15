@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ple.ie</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/main.css">
@@ -61,11 +61,28 @@
         function initializeSearch() {
             const searchInput = document.getElementById('searchInput');
             const searchEngine = document.getElementById('searchEngine');
+            const searchEngineLogo = document.getElementById('searchEngineLogo');
 
-            if (!searchInput || !searchEngine) {
+            if (!searchInput || !searchEngine || !searchEngineLogo) {
                 console.warn("Search elements not found");
                 return;
             }
+
+            function updateSearchLogo(value) {
+                const logoMap = {
+                    startpage: { label: 'SP', className: 'logo-startpage' },
+                    qwant: { label: 'Q', className: 'logo-qwant' },
+                    ecosia: { label: 'E', className: 'logo-ecosia' },
+                    mojeek: { label: 'M', className: 'logo-mojeek' }
+                };
+                const engine = logoMap[value] || logoMap.startpage;
+                searchEngineLogo.className = `search-engine-logo ${engine.className}`;
+                searchEngineLogo.textContent = engine.label;
+                searchEngineLogo.title = searchEngine.options[searchEngine.selectedIndex]?.text || 'Search engine';
+            }
+
+            updateSearchLogo(searchEngine.value);
+            searchEngine.addEventListener('change', () => updateSearchLogo(searchEngine.value));
 
             function performSearch() {
                 const query = searchInput.value.trim();
@@ -137,17 +154,18 @@
 </head>
 <body>
     <header>
-      <div class="brand"><i class="fa-solid fa-bolt"></i> ple.ie</div>
+      <div class="brand"><i class="fa-solid fa-bolt"></i>&nbsp;</div>
       <div class="search-wrapper">
-      <select id="searchEngine" class="search-engine-select">
-          <option value="startpage">StartPage (NL)</option>
-          <option value="qwant">Qwant (FR)</option>
-          <option value="ecosia">Ecosia (DE)</option>
-          <option value="mojeek">Mojeek (UK)</option>
-      </select>
-      <input type="text" id="searchInput" placeholder="Search the network...">
-      <i class="fa-solid fa-arrow-right"></i>
-  </div>
+          <span class="search-engine-logo logo-startpage" id="searchEngineLogo" title="StartPage">SP</span>
+          <select id="searchEngine" class="search-engine-select">
+              <option value="startpage">StartPage</option>
+              <option value="qwant">Qwant</option>
+              <option value="ecosia">Ecosia</option>
+              <option value="mojeek">Mojeek</option>
+          </select>
+          <input type="text" id="searchInput" placeholder="Safe search">
+          <i class="fa-solid fa-arrow-right"></i>
+      </div>
    <div class="header-weather">
             <i class="fa-solid fa-cloud-sun"></i>
             <span id="weather">🌤️ --°C</span>

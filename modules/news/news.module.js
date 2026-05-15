@@ -11,43 +11,58 @@ export default async function initNews(container) {
     container.appendChild(title);
 
     const content = document.createElement('div');
-    content.style.cssText = 'padding: 10px; max-height: 400px; overflow-y: auto;';
+    content.className = 'news-content';
     container.appendChild(content);
 
-    content.innerHTML = '<div style="text-align:center; color:#888;">Loading news...</div>';
+    content.innerHTML = `
+        <div class="news-scroll-wrapper">
+            <button id="news-up" class="news-scroll-btn">▲</button>
+            <div id="news-list" class="news-list">
+                <div class="news-loading">Loading news...</div>
+            </div>
+            <button id="news-down" class="news-scroll-btn">▼</button>
+        </div>
+    `;
+
+    const list = content.querySelector('#news-list');
+    const up = content.querySelector('#news-up');
+    const down = content.querySelector('#news-down');
+
+    up.addEventListener('click', () => list.scrollBy({ top: -280, behavior: 'smooth' }));
+    down.addEventListener('click', () => list.scrollBy({ top: 280, behavior: 'smooth' }));
 
     try {
-        // ✅ USE THE FULL URL TO YOUR NODE BACKEND
-        // AFTER
-        const response = await fetch('/api/news');
-        if (!response.ok) throw new Error('Failed to fetch');
-        const xmlText = await response.text();
-
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(xmlText, 'text/xml');
-        const items = xml.querySelectorAll('item');
+        // Get RSS URL from settings
         const settings = loadSettings();
-        const max = settings.news?.maxArticles || 10;
+        const rssUrl = settings.news?.rssUrl || 'https://www.rte.ie/feeds/rss/?index=/news';
 
-        if (items.length === 0) throw new Error('No items');
+        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
+        if (!response.ok) throw new Error('Failed to fetch');
+        const data = await response.json();
+
+        if (!data.items || data.items.length === 0) throw new Error('No items');
+
+        const maxArticles = Number.isFinite(parseInt(settings.news?.maxArticles, 10)) && parseInt(settings.news?.maxArticles, 10) > 0 ? parseInt(settings.news?.maxArticles, 10) : 4;
 
         let html = '';
-        for (let i = 0; i < Math.min(items.length, max); i++) {
-            const item = items[i];
-            const itemTitle = item.querySelector('title')?.textContent || 'Untitled';
-            const link = item.querySelector('link')?.textContent || '#';
-            const pubDate = item.querySelector('pubDate')?.textContent || '';
+        for (let i = 0; i < Math.min(data.items.length, maxArticles); i++) {
+            const item = data.items[i];
+            const itemTitle = item.title || 'Untitled';
+            const link = item.link || '#';
+            const pubDate = item.pubDate || '';
             html += `
-                <div style="border-bottom:1px solid #333; padding:12px 0;">
-                    <a href="${link}" target="_blank" style="text-decoration:none; font-weight:bold;">${escapeHtml(itemTitle)}</a>
-                    <div style="font-size:0.7rem; margin-top:4px;">${pubDate.substring(0,16)}</div>
+                <div class="news-article">
+                    <a href="${link}" target="_blank">${escapeHtml(itemTitle)}</a>
+                    <div class="news-date">${pubDate.substring(0, 16)}</div>
                 </div>
             `;
         }
-        content.innerHTML = html;
+        list.innerHTML = html;
+        if (window.refreshDashboardLayout) window.refreshDashboardLayout();
     } catch (err) {
         console.error(err);
-        content.innerHTML = '<div style="color:#f33; text-align:center;">Failed to load news. Make sure your Node server is running on port 3001 with /api/news endpoint.</div>';
+        list.innerHTML = '<div class="news-error">Failed to load news. Check RSS URL in Settings.</div>';
+        if (window.refreshDashboardLayout) window.refreshDashboardLayout();
     }
 
     function escapeHtml(str) {

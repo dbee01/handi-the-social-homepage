@@ -15,7 +15,7 @@ export default async function initEnergy(gridEl, carbonValEl, carbonMsgEl) {
   preservePin(carbonMsgEl);
 
   try {
-    const response = await fetch('http://localhost:3001/api/energy');
+    const response = await fetch('api/energy');
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
