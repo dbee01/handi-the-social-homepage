@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ple.ie</title>
+    <title>Elderly Theme by Handi Homepage</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/main.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -130,17 +130,70 @@
         // Weather widget
         async function updateWeather() {
             const weatherEl = document.getElementById('weather');
+            if (!weatherEl) return;
+
+            // Latitude/longitude for Dublin city centre (or use your exact coordinates)
+            const lat = 51.8985;
+            const lon = 8.4756;
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`;
+
             try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=53.3498&longitude=-6.2603&current_weather=true');
+                const res = await fetch(url);
                 const data = await res.json();
+
                 if (data.current_weather) {
-                    weatherEl.innerHTML = `🌤️ ${Math.round(data.current_weather.temperature)}°C`;
+                    const temp = Math.round(data.current_weather.temperature);
+                    const weatherCode = data.current_weather.weathercode;
+                    const outlook = getWeatherDescription(weatherCode);
+
+                    // Build HTML: location, temperature, outlook
+                    weatherEl.innerHTML = `
+                        <div class="weather-location">📍 Cork City</div>
+                        <div class="weather-temp">🌡️ ${temp}°C</div>
+                        <div class="weather-outlook">${outlook}</div>
+                    `;
                 } else {
-                    weatherEl.innerHTML = '🌤️ --°C';
+                    weatherEl.innerHTML = `<div class="weather-fallback">🌤️ --°C</div>`;
                 }
-            } catch {
-                weatherEl.innerHTML = '🌤️ --°C';
+            } catch (err) {
+                console.warn("Weather fetch failed:", err);
+                weatherEl.innerHTML = `<div class="weather-fallback">🌤️ --°C</div>`;
             }
+        }
+
+        // Helper: map WMO weather codes to human‑readable outlook
+        function getWeatherDescription(code) {
+            const codes = {
+                0: "☀️ Clear sky",
+                1: "🌤️ Mainly clear",
+                2: "⛅ Partly cloudy",
+                3: "☁️ Overcast",
+                45: "🌫️ Fog",
+                48: "🌫️ Depositing rime fog",
+                51: "🌧️ Light drizzle",
+                53: "🌧️ Moderate drizzle",
+                55: "🌧️ Dense drizzle",
+                56: "🌧️ Freezing drizzle",
+                57: "🌧️ Heavy freezing drizzle",
+                61: "🌧️ Slight rain",
+                63: "🌧️ Moderate rain",
+                65: "🌧️ Heavy rain",
+                66: "🌨️ Freezing rain",
+                67: "🌨️ Heavy freezing rain",
+                71: "🌨️ Slight snow",
+                73: "🌨️ Moderate snow",
+                75: "🌨️ Heavy snow",
+                77: "🌨️ Snow grains",
+                80: "🌧️ Slight rain showers",
+                81: "🌧️ Moderate rain showers",
+                82: "🌧️ Violent rain showers",
+                85: "🌨️ Slight snow showers",
+                86: "🌨️ Heavy snow showers",
+                95: "⛈️ Thunderstorm",
+                96: "⛈️ Thunderstorm with hail",
+                99: "⛈️ Heavy thunderstorm with hail"
+            };
+            return codes[code] || "🌡️ Unknown";
         }
         updateWeather();
         setInterval(updateWeather, 1800000);
@@ -166,7 +219,7 @@
           <input type="text" id="searchInput" placeholder="Safe search">
           <i class="fa-solid fa-arrow-right"></i>
       </div>
-   <div class="header-weather">
+        <div class="header-weather">
             <i class="fa-solid fa-cloud-sun"></i>
             <span id="weather">🌤️ --°C</span>
         </div>
@@ -211,16 +264,16 @@
 
     <footer>
         <div class="footer-content">
-            <span><i class="fa-solid fa-location-dot"></i> Dublin</span>
+            <span><i class="fa-solid fa-location-dot"></i> Europe</span>
             <span><i class="fa-solid fa-leaf"></i> Green Energy</span>
             <span><i class="fa-brands fa-github"></i> Open Source</span>
             <span class="settings-link" id="settingsLink"><i class="fa-solid fa-gear"></i> Settings</span>
         </div>
     </footer>
 
-    <script type="module">
+    <!-- <script type="module">
         import { initThemeSwitcher } from './js/core/theme-switcher.js';
         initThemeSwitcher();
-    </script>
+    </script> --> 
 </body>
 </html>

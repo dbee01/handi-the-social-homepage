@@ -18,19 +18,175 @@ a {
     font-weight: 700;
 }
 
-/* HEADER */
+/* =========================================================
+   HEADER – ENHANCED ELDERLY STYLES (flex, large touch targets)
+========================================================= */
 header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
     background: #ffffff;
     border-bottom: 3px solid #0047cc;
+    padding: 12px 20px;
 }
 
-/* BRAND */
+/* Brand / logo */
 .brand {
     font-size: 2rem;
     color: #0047cc;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-/* THEME TOGGLE */
+/* Search wrapper */
+.search-wrapper {
+    flex: 2;
+    min-width: 240px;
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 48px;
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    transition: border-color 0.2s;
+}
+.search-wrapper:focus-within {
+    border-color: #0047cc;
+    box-shadow: 0 0 0 3px rgba(0, 71, 204, 0.2);
+}
+
+/* Search engine logo (e.g., SP) */
+.search-engine-logo {
+    font-weight: 700;
+    font-size: 1.2rem;
+    background: #eaf2ff;
+    padding: 8px 12px;
+    border-radius: 40px;
+    color: #0047cc;
+    margin-right: 8px;
+    white-space: nowrap;
+}
+
+/* Select dropdown */
+.search-engine-select {
+    background: #ffffff;
+    border: none;
+    border-right: 2px solid #cbd5e1;
+    padding: 10px 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e1e1e;
+    cursor: pointer;
+    outline: none;
+    font-family: inherit;
+}
+.search-engine-select:hover {
+    background: #f8fbff;
+}
+
+/* Search input field */
+#searchInput {
+    flex: 1;
+    border: none;
+    padding: 12px 12px;
+    font-size: 0.8rem;
+    background: transparent;
+    color: #1e1e1e;
+    outline: none;
+    min-width: 120px;
+}
+#searchInput::placeholder {
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* Arrow icon inside search wrapper */
+.search-wrapper .fa-arrow-right {
+    font-size: 1.3rem;
+    color: #0047cc;
+    margin: 0 8px;
+    cursor: pointer;
+}
+.search-wrapper .fa-arrow-right:hover {
+    color: #0037a3;
+}
+
+/* Weather widget inside header */
+.header-weather {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #eaf2ff;
+    padding: 8px 16px;
+    border-radius: 48px;
+    border: 1px solid #bfd4ff;
+    white-space: nowrap;
+}
+.header-weather i {
+    font-size: 1.4rem;
+    color: #0047cc;
+}
+#weather {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    font-size: 0.95rem;
+    font-weight: 600;
+    flex-wrap: wrap;
+}
+.weather-location,
+.weather-temp,
+.weather-outlook {
+    white-space: nowrap;
+    color: #1e1e1e;
+}
+
+/* Responsive: stack on narrow screens */
+@media (max-width: 800px) {
+    header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .brand {
+        justify-content: center;
+    }
+    .header-weather {
+        justify-content: center;
+        white-space: normal;
+    }
+    #weather {
+        justify-content: center;
+    }
+}
+
+/* Large touch targets for all interactive elements */
+.search-engine-select,
+#searchInput,
+.search-wrapper .fa-arrow-right,
+.header-weather {
+    cursor: pointer;
+}
+.search-engine-select,
+#searchInput,
+.search-engine-logo {
+    min-height: 44px;  /* comfortable tap size */
+}
+
+/* Focus outlines for accessibility */
+.search-engine-select:focus,
+#searchInput:focus,
+.search-wrapper .fa-arrow-right:focus,
+.header-weather:focus {
+    outline: 4px solid #ffcc00;
+    outline-offset: 2px;
+}
+
+/* =========================================================
+   THEME TOGGLE
+========================================================= */
 .theme-toggle {
     background: #ffffff;
     border: 2px solid #0047cc;
@@ -40,38 +196,10 @@ header {
     font-weight: bold;
     border-radius: 6px;
 }
-
 .theme-toggle:hover {
     background: #0047cc;
     color: #ffffff;
     border-color: #0047cc;
-}
-
-/* SEARCH */
-.search-wrapper {
-    background: #ffffff;
-    border: 2px solid #cbd5e1;
-}
-
-.search-engine-select {
-    background: #ffffff;
-    border: none;
-    border-right: 1px solid #cbd5e1;
-    color: #1e1e1e;
-    padding: 12px;
-    font-family: inherit;
-    outline: none;
-    cursor: pointer;
-}
-
-.search-wrapper input {
-    font-size: 1.1rem;
-}
-
-/* WEATHER */
-.header-weather {
-    background: #ffffff;
-    border: 2px solid #cbd5e1;
 }
 
 /* GRID */
@@ -140,6 +268,42 @@ header {
     background: #a80000;
 }
 
+/* Radio header row (title, lock, pin) */
+.radio-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.radio-header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Lock toggle button */
+.radio-lock-toggle, .phone-lock-toggle, .music-lock-toggle, .emergency-lock-toggle {
+    width: 48px;
+    height: 48px;
+    background: #ffffff;
+    border: 0 solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-top: 0;
+    right: 48px;
+    bottom: 10px;
+}
+
+.radio-lock-toggle:hover {
+    background: #f0f2f5;
+}
+
 /* MUSIC / RADIO READABILITY */
 .music-track-item,
 .radio-station {
@@ -177,7 +341,17 @@ header {
     width: 100%;
     gap: 12px;
 }
-
+#galleryWakeLockBtn {
+    min-height: 56px;
+    padding: 0 20px;
+    color: #475569 !important;
+    font-size: 1.15rem;
+    font-weight: 700;
+    border-radius: 999px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 315px;
+}
 .radio-player-area {
   display: inline-flex;
   align-items: center;
@@ -228,7 +402,8 @@ a[href^="tel"] {
 
 /* GALLERY MODULE */
 .gallery-content {
-    min-height: 400px;
+  min-height: 400px;
+  text-align: center;
 }
 
 .gallery-slide-img {
@@ -278,10 +453,6 @@ a[href^="tel"] {
 /* LIGHTBOX */
 /* =========================================================
    GALLERY LIGHTBOX FIX
-   Add this AFTER all elderly.css overrides.
-   The elderly theme currently overrides the lightbox with:
-   .gallery-lightbox { display: none !important; }
-   which prevents the lightbox from ever appearing.
 ========================================================= */
 
 /* Hidden by default */
@@ -429,7 +600,6 @@ a[href^="tel"] {
 
 /* =========================================================
    BUS TRACKER — ELDERLY THEME
-   Large text, high contrast, accessible touch targets
 ========================================================= */
 
 /* Main content wrapper */
@@ -969,7 +1139,6 @@ a:focus {
 
 /* =========================================================
    FRIENDLY PHONE — ELDERLY THEME
-   High contrast, large text, big touch targets
 ========================================================= */
 
 /* Main content area */
@@ -1200,6 +1369,7 @@ a:focus {
     flex-wrap: wrap;
     gap: 12px;
     align-items: center;
+    justify-content: center;   /* ← add this line */
     margin: 14px 0 18px;
 }
 
@@ -1701,21 +1871,6 @@ a:focus {
     margin-bottom: 16px;
 }
 
-/* Lock toggle button */
-.phone-lock-toggle {
-    width: 48px;
-    height: 48px;
-    background: #ffffff;
-    border: 2px solid #cbd5e1;
-    border-radius: 12px;
-    font-size: 1.4rem;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    /* color is set inline by JS: green or red */
-}
-
 .phone-lock-toggle:hover {
     background: #f0f2f5;
 }
@@ -1725,4 +1880,147 @@ a:focus {
     opacity: 0.6;
     cursor: not-allowed;
     filter: grayscale(0.2);
+}
+
+/* =========================================================
+   RADIO MODULE – Fix pin button overlapping lock
+========================================================= */
+.radio-header-actions, .music-header-actions, .radio-header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.radio-header-actions .pin-btn,
+.radio-header-actions .pin-btn-clone {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    margin: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+}
+
+/* Music header row (title, lock, pin) */
+.music-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.music-header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.music-lock-toggle:hover {
+    background: #f0f2f5;
+}
+
+/* Ensure pin button (clone) behaves correctly */
+.music-header-actions .pin-btn-clone,
+.music-header-actions .pin-btn {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    margin: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+}
+
+/* Phone header row (title, lock, pin) */
+.phone-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.phone-header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Lock toggle button */
+.phone-lock-toggle:hover {
+    background: #f0f2f5;
+}
+
+/* Ensure cloned pin button behaves normally (no absolute positioning) */
+.phone-header-actions .pin-btn-clone,
+.phone-header-actions .pin-btn {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    margin: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+}
+
+/* Emergency header row (title, lock, pin) */
+.emergency-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.emergency-header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.emergency-lock-toggle:hover {
+    background: #f0f2f5;
+}
+
+/* Ensure cloned pin button behaves normally */
+.emergency-header-actions .pin-btn-clone,
+.emergency-header-actions .pin-btn {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    margin: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+}
+
+/* Settings link button (used in empty states) */
+.settings-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px 20px;
+    background: #0047cc;
+    color: white;
+    border: none;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.settings-link-btn:hover {
+    background: #0037a3;
+}
+.settings-link-btn i {
+    font-size: 1.1rem;
 }

@@ -2,20 +2,27 @@
 import { loadSettings } from '../../js/core/settings.js';
 
 export default async function initPhone(container) {
-    const pinBtn = container.querySelector('.pin-btn');
+    // ---------- Create header row: title + lock + pin ----------
+    const headerRow = document.createElement('div');
+    headerRow.className = 'phone-header-row';
 
-    container.innerHTML = '';
+    // Title (left)
+    const title = document.createElement('div');
+    title.className = 'panel-title';
+    title.innerHTML = '<i class="fa-solid fa-phone"></i> PHONE';
+    headerRow.appendChild(title);
 
-    // Action buttons wrapper
-    const actionsDiv = document.createElement('div');
-    actionsDiv.className = 'phone-actions';
+    // Right side container for lock + pin
+    const headerActions = document.createElement('div');
+    headerActions.className = 'phone-header-actions';
 
+    // Lock toggle button
     const lockToggle = document.createElement('button');
     lockToggle.className = 'phone-lock-toggle';
 
     // Load saved lock state – default to LOCKED (true)
     const saved = localStorage.getItem('phoneLocked');
-    let isLocked = saved !== null ? saved === 'true' : true;  // default locked
+    let isLocked = saved !== null ? saved === 'true' : true;
 
     function updateLockIcon() {
         lockToggle.innerHTML = isLocked
@@ -33,16 +40,25 @@ export default async function initPhone(container) {
         applyLockState();
     });
 
-    actionsDiv.appendChild(lockToggle);
-    if (pinBtn) actionsDiv.appendChild(pinBtn);
-    container.appendChild(actionsDiv);
+    headerActions.appendChild(lockToggle);
 
-    // Title
-    const title = document.createElement('div');
-    title.className = 'panel-title';
-    title.innerHTML = '<i class="fa-solid fa-phone"></i> FRIENDLY PHONE';
-    container.appendChild(title);
+    // Pin button handling (clone to avoid absolute positioning issues)
+    const originalPinBtn = container.querySelector('.pin-btn');
+    let pinBtn = null;
+    if (originalPinBtn) {
+        pinBtn = originalPinBtn.cloneNode(true);
+        pinBtn.classList.add('pin-btn-clone');
+        originalPinBtn.style.display = 'none'; // hide original
+        headerActions.appendChild(pinBtn);
+    }
 
+    headerRow.appendChild(headerActions);
+
+    // Clear container and add header row
+    container.innerHTML = '';
+    container.appendChild(headerRow);
+
+    // ----- Phone content area (will be disabled when locked) -----
     const content = document.createElement('div');
     content.className = 'phone-content';
     container.appendChild(content);
@@ -53,16 +69,23 @@ export default async function initPhone(container) {
     const settings = loadSettings();
     const contacts = settings.phone?.contacts || [];
 
+    // Empty state with Settings button
     if (!contacts.length) {
         content.innerHTML = `
             <div class="module-empty">
                 <i class="fa-solid fa-address-book"></i>
-                No phone contacts
-                <div class="module-hint">
-                    Add in Settings → Friendly Phone
-                </div>
+                <p>No phone contacts saved.</p>
+                <button id="phoneSettingsBtn" class="settings-link-btn">
+                    <i class="fa-solid fa-gear"></i> Add Contacts in Settings
+                </button>
             </div>
         `;
+        const settingsBtn = content.querySelector('#phoneSettingsBtn');
+        if (settingsBtn) {
+            settingsBtn.onclick = () => {
+                window.location.href = 'settings.html';
+            };
+        }
         return;
     }
 

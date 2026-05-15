@@ -2,15 +2,55 @@
 import { loadMusic } from '../../js/core/storage.js';
 
 export default async function initMusic(container) {
-    const pinBtn = container.querySelector('.pin-btn');
-    container.innerHTML = '';
-    if (pinBtn) container.appendChild(pinBtn);
+    // ---------- Create header row: title + lock + pin ----------
+    const headerRow = document.createElement('div');
+    headerRow.className = 'music-header-row';
 
+    // Title (left)
     const title = document.createElement('div');
     title.className = 'panel-title';
     title.innerHTML = '<i class="fa-solid fa-music"></i> MUSIC PLAYER';
-    container.appendChild(title);
+    headerRow.appendChild(title);
 
+    // Right side container for lock + pin
+    const headerActions = document.createElement('div');
+    headerActions.className = 'music-header-actions';
+
+    // Lock toggle button
+    const lockToggle = document.createElement('button');
+    lockToggle.className = 'music-lock-toggle';
+
+    // Load saved lock state – default to LOCKED (true)
+    const saved = localStorage.getItem('musicLocked');
+    let isLocked = saved !== null ? saved === 'true' : true;
+
+    function updateLockIcon() {
+        lockToggle.innerHTML = isLocked
+            ? '<i class="fa-solid fa-lock"></i>'
+            : '<i class="fa-solid fa-lock-open"></i>';
+        lockToggle.style.color = isLocked ? '#cc0000' : '#008000';
+    }
+    updateLockIcon();
+
+    headerActions.appendChild(lockToggle);
+
+    // Pin button handling (clone to avoid absolute positioning issues)
+    const originalPinBtn = container.querySelector('.pin-btn');
+    let pinBtn = null;
+    if (originalPinBtn) {
+        pinBtn = originalPinBtn.cloneNode(true);
+        pinBtn.classList.add('pin-btn-clone');
+        originalPinBtn.style.display = 'none'; // hide original
+        headerActions.appendChild(pinBtn);
+    }
+
+    headerRow.appendChild(headerActions);
+
+    // Clear container and add header row
+    container.innerHTML = '';
+    container.appendChild(headerRow);
+
+    // ----- Music content area (will be disabled when locked) -----
     const content = document.createElement('div');
     content.className = 'music-content';
     container.appendChild(content);
@@ -23,13 +63,28 @@ export default async function initMusic(container) {
 
     const tracks = await loadMusic();
 
+    // Empty state with Settings button
     if (!tracks.length) {
-        content.innerHTML = `<div class="module-empty">No music uploaded.</div>`;
+        content.innerHTML = `
+            <div class="module-empty">
+                <i class="fa-solid fa-music"></i>
+                <p>No music uploaded.</p>
+                <button id="musicSettingsBtn" class="settings-link-btn">
+                    <i class="fa-solid fa-gear"></i> Add Music in Settings
+                </button>
+            </div>
+        `;
+        const settingsBtn = content.querySelector('#musicSettingsBtn');
+        if (settingsBtn) {
+            settingsBtn.onclick = () => {
+                window.location.href = 'settings.html';
+            };
+        }
         return;
     }
 
     let currentAudio = null;
-    let currentIndex = -1;          // ← FIX: no track selected initially
+    let currentIndex = -1;
     let isPlaying = false;
     let stopVisualiser = null;
 
@@ -65,6 +120,8 @@ export default async function initMusic(container) {
     const playPauseBtn = content.querySelector('#music-playpause');
     const trackTitleSpan = content.querySelector('#music-track-title');
     const stateSpan = content.querySelector('.music-state-text');
+    const prevBtn = content.querySelector('#music-prev');
+    const nextBtn = content.querySelector('#music-next');
 
     // Hide canvas initially
     if (synthCanvas) {
@@ -72,7 +129,7 @@ export default async function initMusic(container) {
     }
 
     /* =========================
-       Fake visualiser (unchanged)
+       Fake visualiser
     ========================= */
     function startFakeVisualiser(canvas) {
         if (!canvas) return null;
@@ -131,7 +188,7 @@ export default async function initMusic(container) {
     }
 
     /* =========================
-       Helper to update track icons & active state (no active when index = -1)
+       Helper to update track icons & active state
     ========================= */
     function updateTrackIconsAndActive() {
         document.querySelectorAll('.music-track-item').forEach((item, idx) => {
@@ -149,7 +206,7 @@ export default async function initMusic(container) {
             }
         });
 
-        if (isPlaying && currentAudio && currentIndex !== -1) {
+        if (isPlaying && currentAudio && currentIndex !== -1 && !isLocked) {
             if (!stopVisualiser) stopVisualiser = startFakeVisualiser(synthCanvas);
         } else {
             stopVisualiserAndClear();
@@ -157,7 +214,7 @@ export default async function initMusic(container) {
     }
 
     /* =========================
-       Core playback functions (handle -1 initial index)
+       Core playback functions
     ========================= */
     function stopCurrentAudio(resetIcon = true) {
         if (currentAudio) {
@@ -172,6 +229,10 @@ export default async function initMusic(container) {
     }
 
     function playTrack(index, autoPlay = true) {
+        if (isLocked) {
+            stateSpan.innerText = 'Player locked – unlock to play';
+            return;
+        }
         if (index < 0 || index >= tracks.length) return;
 
         if (currentAudio && currentIndex === index && autoPlay === false) return;
@@ -215,18 +276,30 @@ export default async function initMusic(container) {
     }
 
     function playNext() {
+        if (isLocked) {
+            stateSpan.innerText = 'Player locked – unlock to play';
+            return;
+        }
         if (tracks.length === 0) return;
         const nextIndex = (currentIndex + 1) % tracks.length;
         playTrack(nextIndex, true);
     }
 
     function playPrev() {
+        if (isLocked) {
+            stateSpan.innerText = 'Player locked – unlock to play';
+            return;
+        }
         if (tracks.length === 0) return;
         const prevIndex = (currentIndex - 1 + tracks.length) % tracks.length;
         playTrack(prevIndex, true);
     }
 
     function togglePlayPause() {
+        if (isLocked) {
+            stateSpan.innerText = 'Player locked – unlock to play';
+            return;
+        }
         if (currentIndex === -1 || !currentAudio) {
             playTrack(0, true);
             return;
@@ -250,6 +323,10 @@ export default async function initMusic(container) {
     }
 
     function onTrackClick(index) {
+        if (isLocked) {
+            stateSpan.innerText = 'Player locked – unlock to play';
+            return;
+        }
         if (index === currentIndex && currentAudio) {
             if (isPlaying) {
                 currentAudio.pause();
@@ -273,7 +350,73 @@ export default async function initMusic(container) {
     }
 
     /* =========================
-       Render playlist (no active class on first track initially)
+       Apply lock state: disable all interactions, stop audio
+    ========================= */
+    function applyLockState() {
+        // Stop all audio immediately when locking
+        if (isLocked) {
+            stopCurrentAudio(true);
+        }
+
+        // Disable/enable playlist items
+        const allTrackItems = playlist.querySelectorAll('.music-track-item');
+        allTrackItems.forEach(item => {
+            if (isLocked) {
+                item.style.pointerEvents = 'none';
+                item.style.opacity = '0.6';
+            } else {
+                item.style.pointerEvents = '';
+                item.style.opacity = '';
+            }
+        });
+
+        // Disable/enable control buttons
+        const controlBtns = [prevBtn, playPauseBtn, nextBtn, up, down];
+        controlBtns.forEach(btn => {
+            if (btn) {
+                if (isLocked) {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                } else {
+                    btn.disabled = false;
+                    btn.style.opacity = '';
+                    btn.style.cursor = '';
+                }
+            }
+        });
+
+        // If locked, ensure visualiser is stopped and hide it
+        if (isLocked) {
+            stopVisualiserAndClear();
+            if (currentIndex === -1) trackTitleSpan.innerText = '—';
+            stateSpan.innerText = 'Locked';
+        } else {
+            // If unlocked and there is an active track playing, restart visualiser
+            if (currentAudio && isPlaying && currentIndex !== -1) {
+                stopVisualiser = startFakeVisualiser(synthCanvas);
+                stateSpan.innerText = 'Playing...';
+            } else if (currentIndex !== -1 && !isPlaying) {
+                stateSpan.innerText = 'Paused';
+            } else {
+                stateSpan.innerText = 'Ready';
+            }
+        }
+    }
+
+    /* =========================
+       Lock toggle event
+    ========================= */
+    lockToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isLocked = !isLocked;
+        localStorage.setItem('musicLocked', isLocked);
+        updateLockIcon();
+        applyLockState();
+    });
+
+    /* =========================
+       Render playlist
     ========================= */
     tracks.forEach((track, i) => {
         const el = document.createElement('div');
@@ -305,9 +448,12 @@ export default async function initMusic(container) {
     /* =========================
        Control buttons
     ========================= */
-    content.querySelector('#music-prev').addEventListener('click', playPrev);
-    content.querySelector('#music-next').addEventListener('click', playNext);
+    prevBtn.addEventListener('click', playPrev);
+    nextBtn.addEventListener('click', playNext);
     playPauseBtn.addEventListener('click', togglePlayPause);
+
+    // Apply initial lock state (locked by default)
+    applyLockState();
 
     /* =========================
        Cleanup

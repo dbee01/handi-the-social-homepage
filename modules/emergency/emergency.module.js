@@ -3,7 +3,6 @@ import { loadSettings } from '../../js/core/settings.js';
 
 // ----------------------------------------------------------------------
 // Convert lat/lon to OSM shortlink code (https://osm.org/go/...)
-// Based on the official OpenStreetMap shortlink algorithm
 // ----------------------------------------------------------------------
 function osmShortlink(lat, lon) {
     const codeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_~";
@@ -26,36 +25,92 @@ function osmShortlink(lat, lon) {
 }
 
 export default async function initEmergency(container) {
-    // Preserve pin button
-    const pinBtn = container.querySelector('.pin-btn');
-    container.innerHTML = '';
-    if (pinBtn) container.appendChild(pinBtn);
+    // ---------- Create header row: title + lock + pin ----------
+    const headerRow = document.createElement('div');
+    headerRow.className = 'emergency-header-row';
 
-    // Title
+    // Title (left)
     const title = document.createElement('div');
     title.className = 'panel-title';
     title.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> EMERGENCY';
-    container.appendChild(title);
+    headerRow.appendChild(title);
+
+    // Right side container for lock + pin
+    const headerActions = document.createElement('div');
+    headerActions.className = 'emergency-header-actions';
+
+    // Lock toggle button
+    const lockToggle = document.createElement('button');
+    lockToggle.className = 'emergency-lock-toggle';
+
+    // Load saved lock state – default to LOCKED (true)
+    const saved = localStorage.getItem('emergencyLocked');
+    let isLocked = saved !== null ? saved === 'true' : true;
+
+    function updateLockIcon() {
+        lockToggle.innerHTML = isLocked
+            ? '<i class="fa-solid fa-lock"></i>'
+            : '<i class="fa-solid fa-lock-open"></i>';
+        lockToggle.style.color = isLocked ? '#cc0000' : '#008000';
+    }
+    updateLockIcon();
+
+    lockToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isLocked = !isLocked;
+        localStorage.setItem('emergencyLocked', isLocked);
+        updateLockIcon();
+        applyLockState();
+    });
+
+    headerActions.appendChild(lockToggle);
+
+    // Pin button handling (clone to avoid absolute positioning)
+    const originalPinBtn = container.querySelector('.pin-btn');
+    let pinBtn = null;
+    if (originalPinBtn) {
+        pinBtn = originalPinBtn.cloneNode(true);
+        pinBtn.classList.add('pin-btn-clone');
+        originalPinBtn.style.display = 'none'; // hide original
+        headerActions.appendChild(pinBtn);
+    }
+
+    headerRow.appendChild(headerActions);
+
+    // Clear container and add header row
+    container.innerHTML = '';
+    container.appendChild(headerRow);
+
+    // ----- Content wrapper (will be visually disabled when locked) -----
+    const contentWrapper = document.createElement('div');
+    contentWrapper.className = 'emergency-content-wrapper';
+    container.appendChild(contentWrapper);
 
     const content = document.createElement('div');
     content.style.cssText = 'padding: 10px; text-align: center;';
-    container.appendChild(content);
+    contentWrapper.appendChild(content);
 
     // Load contacts from settings
     const settings = loadSettings();
     const contacts = settings.emergency?.contacts || [];
 
-    // If no contacts, show a helpful message
+    // If no contacts, show a helpful message with styled Settings button
     if (contacts.length === 0) {
         content.innerHTML = `
-            <div style="border:1px solid #ff4444; border-radius:12px; padding:20px;">
-                <i class="fa-solid fa-phone" style="font-size:2rem;"></i>
-                <p style="margin-top:10px;">No emergency contacts saved.</p>
-                <button id="goToSettingsBtn" style="margin-top:10px; padding:8px 16px; color:#000; border:none; border-radius:6px; cursor:pointer;">Add Contacts in Settings</button>
+            <div class="module-empty">
+                <i class="fa-solid fa-phone"></i>
+                <p>No emergency contacts saved.</p>
+                <button id="emergencySettingsBtn" class="settings-link-btn">
+                    <i class="fa-solid fa-gear"></i> Add Emergency Contacts in Settings
+                </button>
             </div>
         `;
-        const btn = document.getElementById('goToSettingsBtn');
-        if (btn) btn.onclick = () => location.href = 'settings.html';
+        const settingsBtn = content.querySelector('#emergencySettingsBtn');
+        if (settingsBtn) {
+            settingsBtn.onclick = () => {
+                window.location.href = 'settings.html';
+            };
+        }
         return;
     }
 
@@ -111,7 +166,7 @@ export default async function initEmergency(container) {
         }, 8000);
     }
 
-    // Send SMS via SendMode API (hardcoded sender ID)
+    // Send SMS via SendMode API
     async function sendSMS(phoneNumber, shortlink) {
         const fullLink = `https://osm.org/go/${shortlink}`;
         const message = `🚨 EMERGENCY ALERT! 🚨\n\nSomeone needs your help.\n📍 Location: ${fullLink}\n⏰ Time: ${new Date().toLocaleString()}\n\nPlease check on them immediately.`;
@@ -123,7 +178,7 @@ export default async function initEmergency(container) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    sender_id: '+353899466476', // hardcoded sender number
+                    sender_id: '+353899466476',
                     message: message,
                     mobile_numbers: [phoneNumber]
                 })
@@ -137,8 +192,12 @@ export default async function initEmergency(container) {
         }
     }
 
-    // Main emergency flow
+    // Main emergency flow (only if unlocked)
     function triggerEmergency() {
+        if (isLocked) {
+            setStatus('Emergency button is locked – unlock to activate.', true);
+            return;
+        }
         if (!confirm('⚠️ EMERGENCY: Are you sure you want to send an alert to all your emergency contacts? Your current location will be shared.')) {
             setStatus('Emergency cancelled.', false);
             return;
@@ -166,13 +225,11 @@ export default async function initEmergency(container) {
                     const result = await sendSMS(contact.number, shortCode);
                     if (result.success) successCount++;
                     else failCount++;
-                    // brief delay to avoid overwhelming the API
                     await new Promise(r => setTimeout(r, 500));
                 }
 
                 if (successCount > 0) {
                     setStatus(`✅ Emergency alerts sent to ${successCount} contact(s). ${failCount > 0 ? `Failed: ${failCount}` : ''}`, false);
-                    // Show the short link in the UI
                     const linkDiv = document.createElement('div');
                     linkDiv.style.cssText = 'margin-top: 10px; font-size: 0.7rem; word-break: break-all;';
                     linkDiv.innerHTML = `<a href="${osmShortUrl}" target="_blank" style="color:#00ff41;">📍 View shared location on OpenStreetMap</a>`;
@@ -196,5 +253,38 @@ export default async function initEmergency(container) {
         );
     }
 
+    // Apply lock state: disable the emergency button visually and functionally
+    function applyLockState() {
+        if (isLocked) {
+            emergencyBtn.disabled = true;
+            emergencyBtn.style.opacity = '0.6';
+            emergencyBtn.style.cursor = 'not-allowed';
+            emergencyBtn.onmouseenter = null;
+            emergencyBtn.onmouseleave = null;
+        } else {
+            emergencyBtn.disabled = false;
+            emergencyBtn.style.opacity = '';
+            emergencyBtn.style.cursor = '';
+            // Restore original content and hover effects
+            emergencyBtn.innerHTML = `
+                <i class="fa-solid fa-bell" style="font-size: 2rem;"></i>
+                <span>EMERGENCY</span>
+                <span style="font-size: 0.7rem;">Press for Help</span>
+            `;
+            emergencyBtn.onmouseenter = () => {
+                emergencyBtn.style.transform = 'scale(1.05)';
+                emergencyBtn.style.boxShadow = '0 0 25px rgba(255,0,0,0.9)';
+            };
+            emergencyBtn.onmouseleave = () => {
+                emergencyBtn.style.transform = 'scale(1)';
+                emergencyBtn.style.boxShadow = '0 0 15px rgba(255,0,0,0.6)';
+            };
+        }
+    }
+
+    // Attach the emergency click handler (always calls triggerEmergency, which checks isLocked)
     emergencyBtn.onclick = triggerEmergency;
+
+    // Apply initial lock state
+    applyLockState();
 }

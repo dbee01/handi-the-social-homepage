@@ -25,13 +25,23 @@ export default async function initGallery(container) {
         console.error('Gallery load error:', err);
     }
 
+    // Empty state with Settings button
     if (!images.length) {
         content.innerHTML = `
             <div class="module-empty">
                 <i class="fa-solid fa-folder-open"></i>
-                No images
+                <p>No images in gallery.</p>
+                <button id="gallerySettingsBtn" class="settings-link-btn">
+                    <i class="fa-solid fa-gear"></i> Add Images in Settings
+                </button>
             </div>
         `;
+        const settingsBtn = content.querySelector('#gallerySettingsBtn');
+        if (settingsBtn) {
+            settingsBtn.onclick = () => {
+                window.location.href = 'settings.html';
+            };
+        }
         return;
     }
 
@@ -80,7 +90,7 @@ export default async function initGallery(container) {
     controlsDiv.innerHTML = `
         <div class="gallery-control-group">
             <button id="galleryPrevBtn" class="gallery-btn primary">❮ Prev</button>
-            <button id="galleryPlayPauseBtn" class="gallery-btn primary">⏸ Pause</button>
+            <button id="galleryPlayPauseBtn" class="gallery-btn primary">⏸</button>
             <button id="galleryNextBtn" class="gallery-btn primary">Next ❯</button>
         </div>
         <button id="galleryWakeLockBtn" class="gallery-btn secondary">💤 Keep screen awake</button>
@@ -172,7 +182,7 @@ export default async function initGallery(container) {
         if (!img) return;
 
         lbImg.src = img.url;
-        lbCaption.textContent = img.name || '';
+        lbCaption.textContent = (img.name || '').replace(/\+|\..*/g, '');
     }
 
     function openLightbox(i) {

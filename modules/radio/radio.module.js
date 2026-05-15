@@ -1,14 +1,50 @@
 // modules/radio/radio.module.js
 export default async function initRadio(container) {
-    const pinBtn = container.querySelector('.pin-btn');
-    container.innerHTML = '';
-    if (pinBtn) container.appendChild(pinBtn);
+    // ---------- Create header row: title + lock + pin ----------
+    const headerRow = document.createElement('div');
+    headerRow.className = 'radio-header-row';
 
+    // Title (left)
     const title = document.createElement('div');
     title.className = 'panel-title';
     title.innerHTML = '<i class="fa-solid fa-radio"></i> RADIO';
-    container.appendChild(title);
+    headerRow.appendChild(title);
 
+    // Right side container for lock + pin
+    const headerActions = document.createElement('div');
+    headerActions.className = 'radio-header-actions';
+
+    // Lock toggle button (created before pin, but added after)
+    const lockToggle = document.createElement('button');
+    lockToggle.className = 'radio-lock-toggle';
+
+    // Load saved lock state – default to LOCKED (true)
+    const saved = localStorage.getItem('radioLocked');
+    let isLocked = saved !== null ? saved === 'true' : true;
+
+    function updateLockIcon() {
+        lockToggle.innerHTML = isLocked
+            ? '<i class="fa-solid fa-lock"></i>'
+            : '<i class="fa-solid fa-lock-open"></i>';
+        lockToggle.style.color = isLocked ? '#cc0000' : '#008000';
+    }
+    updateLockIcon();
+
+    headerActions.appendChild(lockToggle);
+
+    // Pin button (original, if exists)
+    const pinBtn = container.querySelector('.pin-btn');
+    if (pinBtn) {
+        headerActions.appendChild(pinBtn);
+    }
+
+    headerRow.appendChild(headerActions);
+
+    // Clear container and add header row
+    container.innerHTML = '';
+    container.appendChild(headerRow);
+
+    // ----- Radio content area (will be disabled when locked) -----
     const content = document.createElement('div');
     content.className = 'radio-content';
     container.appendChild(content);
@@ -29,9 +65,9 @@ export default async function initRadio(container) {
     // Build UI: top bar with canvas and now‑playing text
     content.innerHTML = `
         <div class="radio-top-bar">
-            <canvas id="radio-synth" class="radio-synth" width="400" height="80"></canvas>
-            <div class="radio-now-playing" id="now-playing">No station playing</div>
+            <canvas id="radio-synth" class="radio-synth"></canvas>
         </div>
+        <div class="radio-now-playing" id="now-playing">No station playing</div>
         <div class="radio-scroll-wrapper">
             <button id="radio-up" class="radio-scroll-btn">▲</button>
             <div id="stations-list" class="radio-list"></div>
@@ -47,11 +83,9 @@ export default async function initRadio(container) {
     const down = content.querySelector('#radio-down');
     const synthCanvas = content.querySelector('#radio-synth');
 
-    // Hide synthesiser initially, add margins
+    // Hide synthesiser initially
     if (synthCanvas) {
         synthCanvas.style.display = 'none';
-        synthCanvas.style.marginTop = '1rem';
-        synthCanvas.style.marginBottom = '1rem';
     }
 
     let currentAudio = null;
@@ -67,13 +101,22 @@ export default async function initRadio(container) {
         canvas.style.display = 'block';
         let animationId = null;
         const ctx = canvas.getContext('2d');
-        const width = canvas.width = canvas.clientWidth;
-        const height = canvas.height = canvas.clientHeight;
+
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
         let time = 0;
         function draw() {
             animationId = requestAnimationFrame(draw);
             time += 0.05;
+            const width = canvas.width;
+            const height = canvas.height;
+            if (width === 0 || height === 0) return;
             ctx.clearRect(0, 0, width, height);
 
             const barCount = 32;
@@ -90,7 +133,10 @@ export default async function initRadio(container) {
             }
         }
         draw();
-        return () => cancelAnimationFrame(animationId);
+        return () => {
+            cancelAnimationFrame(animationId);
+            window.removeEventListener('resize', resizeCanvas);
+        };
     }
 
     function stopVisualiserAndClear() {
@@ -100,9 +146,7 @@ export default async function initRadio(container) {
         }
         if (synthCanvas) {
             const ctx = synthCanvas.getContext('2d');
-            ctx.clearRect(0, 0, synthCanvas.width, synthCanvas.height);
-            ctx.fillStyle = '#1e1e2f';
-            ctx.fillRect(0, 0, synthCanvas.width, synthCanvas.height);
+            if (ctx) ctx.clearRect(0, 0, synthCanvas.width, synthCanvas.height);
             synthCanvas.style.display = 'none';
         }
     }
@@ -132,9 +176,13 @@ export default async function initRadio(container) {
     }
 
     /* =========================
-       Play a station
+       Play a station (only if unlocked)
     ========================= */
     function playStation(url, name, stationItem) {
+        if (isLocked) {
+            error.innerText = 'Radio is locked – unlock to play';
+            return;
+        }
         if (currentAudio && activeStationName === name) return;
 
         if (currentAudio) {
@@ -161,7 +209,9 @@ export default async function initRadio(container) {
                     });
                     activeStationItem = stationItem;
                     activeStationName = name;
-                    stopVisualiser = startFakeVisualiser(synthCanvas);
+                    if (!isLocked) {
+                        stopVisualiser = startFakeVisualiser(synthCanvas);
+                    }
                 })
                 .catch((err) => {
                     console.warn('Play error:', err);
@@ -183,6 +233,10 @@ export default async function initRadio(container) {
     }
 
     function toggleStation(station) {
+        if (isLocked) {
+            error.innerText = 'Radio is locked – unlock to play';
+            return;
+        }
         const { url, name } = station;
         const stationDiv = station.element;
 
@@ -194,7 +248,70 @@ export default async function initRadio(container) {
     }
 
     /* =========================
-       Create station list – NO HEADPHONES ICON
+       Apply lock state: disable all interactions, stop any audio
+    ========================= */
+    function applyLockState() {
+        // Stop all audio immediately when locking
+        if (isLocked) {
+            stopPlayback(true);
+        }
+
+        // Disable / enable station click listeners
+        const allStationDivs = list.querySelectorAll('.radio-station');
+        allStationDivs.forEach(div => {
+            if (isLocked) {
+                div.style.pointerEvents = 'none';
+                div.style.opacity = '0.6';
+            } else {
+                div.style.pointerEvents = '';
+                div.style.opacity = '';
+            }
+        });
+
+        // Disable / enable scroll buttons
+        const scrollBtns = [up, down];
+        scrollBtns.forEach(btn => {
+            if (isLocked) {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            } else {
+                btn.disabled = false;
+                btn.style.opacity = '';
+                btn.style.cursor = '';
+            }
+        });
+
+        // If locked and visualiser is running, stop it
+        if (isLocked) {
+            stopVisualiserAndClear();
+            nowPlaying.innerText = 'Radio locked';
+            error.innerText = '';
+        } else {
+            if (activeStationItem && currentAudio && !currentAudio.paused) {
+                // If there was an active station before locking and it's still present, resume visualiser
+                stopVisualiser = startFakeVisualiser(synthCanvas);
+                nowPlaying.innerText = `▶ Now playing: ${activeStationName}`;
+            } else if (!currentAudio || currentAudio.paused) {
+                nowPlaying.innerText = 'No station playing';
+            }
+            error.innerText = '';
+        }
+    }
+
+    /* =========================
+       Lock toggle event
+    ========================= */
+    lockToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isLocked = !isLocked;
+        localStorage.setItem('radioLocked', isLocked);
+        updateLockIcon();
+        applyLockState();
+    });
+
+    /* =========================
+       Create station list
     ========================= */
     stations.forEach((station) => {
         const stationDiv = document.createElement('div');
@@ -205,7 +322,6 @@ export default async function initRadio(container) {
         iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
 
         const nameSpan = document.createElement('span');
-        // Removed the headphones icon – just the station name
         nameSpan.textContent = station.name;
 
         stationDiv.appendChild(iconSpan);
@@ -222,6 +338,9 @@ export default async function initRadio(container) {
     ========================= */
     up.addEventListener('click', () => list.scrollBy({ top: -300, behavior: 'smooth' }));
     down.addEventListener('click', () => list.scrollBy({ top: 300, behavior: 'smooth' }));
+
+    // Apply initial lock state (locked by default)
+    applyLockState();
 
     /* =========================
        Cleanup

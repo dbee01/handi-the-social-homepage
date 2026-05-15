@@ -220,6 +220,57 @@ function addContact(type, nameField, phoneField, photoField) {
     }
 }
 
+// ----- Reset all data (localStorage + IndexedDB) -----
+// In settings-app.js – improved reset function
+async function resetAllData() {
+    const confirmed = confirm(
+        '⚠️ WARNING: This will permanently delete ALL of your data:\n\n' +
+        '• All uploaded images (gallery)\n' +
+        '• All uploaded music files\n' +
+        '• All phone & emergency contacts\n' +
+        '• All module settings (toggles, speeds, volumes, etc.)\n\n' +
+        'The page will reload and return to the dashboard.\n\n' +
+        'Are you absolutely sure?'
+    );
+    if (!confirmed) return;
+
+    // 1. Clear localStorage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // 2. Delete ALL IndexedDB databases (not just known names)
+    if (window.indexedDB) {
+        const databases = await indexedDB.databases(); // Chromium only, but works in most modern browsers
+        for (const db of databases) {
+            if (db.name) {
+                try {
+                    await new Promise((resolve, reject) => {
+                        const req = indexedDB.deleteDatabase(db.name);
+                        req.onsuccess = () => resolve();
+                        req.onerror = (e) => reject(e);
+                    });
+                    console.log(`Deleted database: ${db.name}`);
+                } catch (e) {
+                    console.warn(`Could not delete ${db.name}:`, e);
+                }
+            }
+        }
+    }
+
+    // 3. Optionally clear any cached blob URLs (if any)
+    // 4. Redirect to dashboard
+    alert('All data has been reset. The application will now restart.');
+    window.location.href = '/';
+}
+
+// Wire the Reset button after the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    const resetBtn = document.getElementById('resetBtn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetAllData);
+    }
+});
+
 // Inline add handlers
 document.getElementById('addEmergencyInline')?.addEventListener('click', () => {
     addContact('emergency', 'emergencyName', 'emergencyPhone', 'emergencyPhoto');

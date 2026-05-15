@@ -13,6 +13,7 @@
         <h1>Settings</h1>
         <div class="header-buttons">
             <button class="save-btn" id="saveBtn">Save Settings</button>
+            <button class="reset-btn" id="resetBtn">⟳ Reset All</button>
             <button class="exit-btn" id="exitBtn">Exit</button>
         </div>
     </div>
@@ -26,7 +27,7 @@
         <div class="module-config">
             <div class="config-field"><label>Slideshow speed (ms):</label><input type="number" id="gallerySpeed" value="3000" step="100"></div>
             <div class="config-field"><label>Auto-start slideshow:</label><select id="galleryAutoStart"><option value="true">Yes</option><option value="false">No</option></select></div>
-            <button id="uploadGalleryBtn" class="upload-btn">📸 Upload Images</button>
+            <button id="uploadGalleryBtn" class="upload-btn">📸 Upload New Images</button>
         </div>
     </div>
 
@@ -82,8 +83,7 @@
         </div>
     </div>
 
-
-    <!-- Friendly Phone Module – inline contact fields with photo upload -->
+    <!-- Friendly Phone Module -->
     <div class="module-card">
         <div class="module-header" data-module="phone">
             <div class="module-title"><i class="fa-solid fa-phone"></i><h3>Friendly Phone</h3></div>
@@ -101,11 +101,9 @@
         </div>
     </div>
 
-
-    <!-- PREMIUM MODULES BELOW - FOR FUTURE IMPLEMENTATION -->
+    <!-- PREMIUM MODULES -->
     <div class="header">
         <h2>Premium Modules</h2>
-
     </div>
 
     <!-- Bus Module -->
@@ -120,7 +118,7 @@
         </div>
     </div>
 
-    <!-- Emergency Module – inline contact fields -->
+    <!-- Emergency Module -->
     <div class="module-card">
         <div class="module-header" data-module="emergency">
             <div class="module-title"><i class="fa-solid fa-triangle-exclamation"></i><h3>Emergency Location Button</h3></div>
@@ -137,9 +135,6 @@
             <div class="config-field"><label>Check interval (minutes):</label><input type="number" id="emergencyInterval" min="1" max="60" value="5"></div>
         </div>
     </div>
-
-
-
 </div>
 
 <script type="module" src="js/settings-app.js"></script>
