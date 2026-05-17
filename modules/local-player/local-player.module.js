@@ -1,10 +1,9 @@
 // modules/music/music.module.js
 import { loadMusic } from '../../js/core/storage.js';
 
-// Helper: remove file extension (e.g., .mp3, .ogg, .wav)
 function removeFileExtension(filename) {
     if (!filename) return '';
-    return filename.replace(/\.[^/.]+$/, ''); // removes last dot and following characters
+    return filename.replace(/\.[^/.]+$/, '');
 }
 
 export default async function initMusic(container) {
@@ -23,9 +22,7 @@ export default async function initMusic(container) {
     let isLocked = saved !== null ? saved === 'true' : true;
 
     function updateLockIcon() {
-        lockToggle.innerHTML = isLocked
-            ? '<i class="fa-solid fa-lock"></i>'
-            : '<i class="fa-solidfa-solid fa-lock-open"></i>';
+        lockToggle.innerHTML = isLocked ? '<i class="fa-solid fa-lock"></i>' : '<i class="fa-solid fa-lock-open"></i>';
         lockToggle.style.color = isLocked ? '#cc0000' : '#008000';
     }
     updateLockIcon();
@@ -74,7 +71,7 @@ export default async function initMusic(container) {
     let isPlaying = false;
     let stopVisualiser = null;
 
-    // --- GLOBAL MUTE (no pause) ---
+    // Global mute
     function applyGlobalMute(muted) {
         if (currentAudio) currentAudio.muted = muted;
     }
@@ -84,7 +81,7 @@ export default async function initMusic(container) {
     const initialMute = localStorage.getItem('globalMute') === 'true';
     applyGlobalMute(initialMute);
 
-    // ---- Build UI ----
+    // Build UI
     content.innerHTML = `
         <div class="music-now-playing">
             <canvas id="music-synth" class="music-synth"></canvas>
@@ -117,12 +114,15 @@ export default async function initMusic(container) {
 
     if (synthCanvas) synthCanvas.style.display = 'none';
 
-    // --- Visualiser (unchanged) ---
+    // Visualiser
     function startFakeVisualiser(canvas) {
         if (!canvas) return null;
+        // Stop any existing visualiser
+        if (stopVisualiser) stopVisualiser();
         canvas.style.display = 'block';
         let animationId = null;
         const ctx = canvas.getContext('2d');
+        
         function resizeCanvas() {
             const rect = canvas.getBoundingClientRect();
             canvas.width = rect.width;
@@ -130,6 +130,7 @@ export default async function initMusic(container) {
         }
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
+        
         let time = 0;
         function draw() {
             animationId = requestAnimationFrame(draw);
@@ -158,7 +159,10 @@ export default async function initMusic(container) {
     }
 
     function stopVisualiserAndClear() {
-        if (stopVisualiser) { stopVisualiser(); stopVisualiser = null; }
+        if (stopVisualiser) {
+            stopVisualiser();
+            stopVisualiser = null;
+        }
         if (synthCanvas) {
             const ctx = synthCanvas.getContext('2d');
             if (ctx) ctx.clearRect(0, 0, synthCanvas.width, synthCanvas.height);
@@ -181,8 +185,12 @@ export default async function initMusic(container) {
                 item.classList.remove('active');
             }
         });
+        
+        // Start visualiser if playing and unlocked
         if (isPlaying && currentAudio && currentIndex !== -1 && !isLocked) {
-            if (!stopVisualiser) stopVisualiser = startFakeVisualiser(synthCanvas);
+            if (!stopVisualiser) {
+                stopVisualiser = startFakeVisualiser(synthCanvas);
+            }
         } else {
             stopVisualiserAndClear();
         }
@@ -206,19 +214,25 @@ export default async function initMusic(container) {
             return;
         }
         if (index < 0 || index >= tracks.length) return;
-        if (currentAudio && currentIndex === index && autoPlay === false) return;
         if (currentAudio && currentIndex === index && isPlaying) return;
-        stopCurrentAudio(false);
+        
+        // Stop current audio and clear visualiser
+        if (currentAudio) {
+            stopCurrentAudio(true);
+        }
+        
         currentIndex = index;
         const track = tracks[currentIndex];
-        // Display cleaned name (remove extension)
         const displayName = removeFileExtension(track.name);
         trackTitleSpan.innerText = displayName;
         stateSpan.innerText = 'Playing...';
         playPauseBtn.innerHTML = '⏸';
+        
+        // Create new audio
         currentAudio = new Audio(track.url);
         currentAudio.volume = 0.7;
         currentAudio.muted = localStorage.getItem('globalMute') === 'true';
+        
         if (autoPlay) {
             currentAudio.play().catch(err => {
                 console.warn('Play error:', err);
@@ -233,13 +247,18 @@ export default async function initMusic(container) {
             playPauseBtn.innerHTML = '▶';
             stateSpan.innerText = 'Paused';
         }
-        currentAudio.onended = () => playNext();
+        
+        currentAudio.onended = () => {
+            // Auto-play next track
+            playNext();
+        };
         currentAudio.onerror = () => {
             stateSpan.innerText = 'Stream error';
             isPlaying = false;
             playPauseBtn.innerHTML = '▶';
             updateTrackIconsAndActive();
         };
+        
         updateTrackIconsAndActive();
     }
 
@@ -259,7 +278,10 @@ export default async function initMusic(container) {
 
     function togglePlayPause() {
         if (isLocked) { stateSpan.innerText = 'Player locked – unlock to play'; return; }
-        if (currentIndex === -1 || !currentAudio) { playTrack(0, true); return; }
+        if (currentIndex === -1 || !currentAudio) {
+            playTrack(0, true);
+            return;
+        }
         if (isPlaying) {
             currentAudio.pause();
             isPlaying = false;
@@ -281,6 +303,7 @@ export default async function initMusic(container) {
     function onTrackClick(index) {
         if (isLocked) { stateSpan.innerText = 'Player locked – unlock to play'; return; }
         if (index === currentIndex && currentAudio) {
+            // Same track: toggle play/pause
             if (isPlaying) {
                 currentAudio.pause();
                 isPlaying = false;
@@ -298,6 +321,7 @@ export default async function initMusic(container) {
                 updateTrackIconsAndActive();
             }
         } else {
+            // Different track: play it
             playTrack(index, true);
         }
     }
@@ -352,6 +376,7 @@ export default async function initMusic(container) {
         applyLockState();
     });
 
+    // Create playlist items
     tracks.forEach((track, i) => {
         const el = document.createElement('div');
         el.className = 'music-track-item';
@@ -360,7 +385,6 @@ export default async function initMusic(container) {
         iconSpan.className = 'music-track-icon';
         iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
         const nameSpan = document.createElement('span');
-        // Remove extension for playlist display
         nameSpan.textContent = escapeHtml(removeFileExtension(track.name));
         el.appendChild(iconSpan);
         el.appendChild(nameSpan);
