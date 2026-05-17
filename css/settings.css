@@ -51,13 +51,23 @@ h1 {
     transition: all 0.2s ease;
 }
 
+/* More noticeable hover effect for Save button */
 .save-btn {
-    background: #2563eb;
-    color: #ffffff;
+    background-color: #0047cc;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
 }
 
 .save-btn:hover {
-    background: #1d4ed8;
+    background-color: #ff8c00;      /* bright orange – highly visible */
+    color: #1e1e1e;
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .exit-btn {
@@ -324,3 +334,4 @@ h1 {
 .reset-btn:hover {
     background-color: #c82333;
 }
+

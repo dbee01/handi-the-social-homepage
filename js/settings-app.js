@@ -221,7 +221,6 @@ function addContact(type, nameField, phoneField, photoField) {
 }
 
 // ----- Reset all data (localStorage + IndexedDB) -----
-// In settings-app.js – improved reset function
 async function resetAllData() {
     const confirmed = confirm(
         '⚠️ WARNING: This will permanently delete ALL of your data:\n\n' +
@@ -234,13 +233,11 @@ async function resetAllData() {
     );
     if (!confirmed) return;
 
-    // 1. Clear localStorage
     localStorage.clear();
     sessionStorage.clear();
 
-    // 2. Delete ALL IndexedDB databases (not just known names)
     if (window.indexedDB) {
-        const databases = await indexedDB.databases(); // Chromium only, but works in most modern browsers
+        const databases = await indexedDB.databases();
         for (const db of databases) {
             if (db.name) {
                 try {
@@ -257,18 +254,14 @@ async function resetAllData() {
         }
     }
 
-    // 3. Optionally clear any cached blob URLs (if any)
-    // 4. Redirect to dashboard
     alert('All data has been reset. The application will now restart.');
     window.location.href = '/';
 }
 
-// Wire the Reset button after the DOM is loaded
+// Wire the Reset button
 document.addEventListener('DOMContentLoaded', () => {
     const resetBtn = document.getElementById('resetBtn');
-    if (resetBtn) {
-        resetBtn.addEventListener('click', resetAllData);
-    }
+    if (resetBtn) resetBtn.addEventListener('click', resetAllData);
 });
 
 // Inline add handlers
@@ -285,3 +278,52 @@ if (exitBtn) exitBtn.addEventListener('click', () => window.location.href = 'ind
 
 // Initialize
 loadUI();
+
+// =========================================================
+// NEW: Auto‑expand module based on URL parameter 'p'
+// =========================================================
+function expandModuleByParameter() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let param = urlParams.get('p');
+    if (!param) return;
+
+    // Map friendly names to data-module attribute values
+    const paramMap = {
+        'social_media': 'mastodon',
+        'mastodon': 'mastodon',
+        'phone': 'phone',
+        'friendly_phone': 'phone',
+        'emergency': 'emergency',
+        'news': 'news',
+        'music': 'music',
+        'gallery': 'gallery',
+        'bus': 'bus'
+    };
+
+    const targetModule = paramMap[param.toLowerCase()];
+    if (!targetModule) return;
+
+    // Find the module card with matching data-module
+    const moduleCard = document.querySelector(`.module-card[data-module="${targetModule}"]`);
+    if (!moduleCard) return;
+
+    const configDiv = moduleCard.querySelector('.module-config');
+    if (!configDiv) return;
+
+    // Expand the config panel (add class 'active')
+    configDiv.classList.add('active');
+
+    // Scroll to the module smoothly
+    moduleCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Optional: highlight briefly
+    moduleCard.style.transition = 'background-color 0.3s';
+    moduleCard.style.backgroundColor = '#eaf2ff';
+    setTimeout(() => {
+        moduleCard.style.backgroundColor = '';
+    }, 1500);
+}
+
+// Run after loadUI to ensure DOM is ready
+// Use a short delay to allow any initial layout
+setTimeout(expandModuleByParameter, 100);

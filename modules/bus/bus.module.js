@@ -1,4 +1,6 @@
 // modules/bus/bus.module.js
+import { loadSettings } from '../../js/core/settings.js';
+
 export default async function initBus(container) {
     const pinBtn = container.querySelector('.pin-btn');
     container.innerHTML = '';
@@ -16,20 +18,103 @@ export default async function initBus(container) {
     let refreshInterval = null;
     let isServerDown = false;
 
+    const settings = loadSettings();
+    const savedRouteIds = settings.bus?.routeIds || '30';
+    const savedStopIds = settings.bus?.stopIds || '330061,240161';
+    const routeId = savedRouteIds.split(',')[0].trim();
+    const stopIds = savedStopIds.split(',').map(id => id.trim()).join(',');
+
+    // Build static structure once
+    function buildStaticStructure() {
+        content.innerHTML = `
+            <div class="bus-timestamp">
+                <i class="fa-solid fa-sync-alt"></i> <span class="bus-time">--:--:--</span>
+                <span class="bus-footnote"></span>
+            </div>
+            <div class="bus-stops-container"></div>
+            <button class="bus-refresh-btn">Refresh Times</button>
+        `;
+        const refreshBtn = content.querySelector('.bus-refresh-btn');
+        refreshBtn.addEventListener('click', () => fetchBusData());
+    }
+
+    // Create stop cards (only once)
+    function createStopCards(stopsData) {
+        const containerDiv = content.querySelector('.bus-stops-container');
+        containerDiv.innerHTML = '';
+        for (const stop of stopsData) {
+            const card = document.createElement('div');
+            card.className = 'bus-stop-card';
+            card.dataset.stopName = stop.stop_name;
+            card.innerHTML = `
+                <h3 class="bus-stop-title">📍 ${escapeHtml(stop.stop_name)}</h3>
+                <div class="bus-direction">→ ${escapeHtml(stop.direction)}</div>
+                <div class="bus-buses-list"></div>
+            `;
+            containerDiv.appendChild(card);
+        }
+    }
+
+    // Update existing cards with new bus times
+    function updateStopCards(stopsData) {
+        const cards = content.querySelectorAll('.bus-stop-card');
+        for (let i = 0; i < cards.length; i++) {
+            const stop = stopsData[i];
+            if (!stop) continue;
+            const busesList = cards[i].querySelector('.bus-buses-list');
+            const buses = stop.buses.slice(0, 2);
+            if (!buses || buses.length === 0) {
+                busesList.innerHTML = '<div class="bus-no-buses">No upcoming buses</div>';
+            } else {
+                busesList.innerHTML = buses.map(bus => `
+                    <div class="bus-item">
+                        <span class="bus-route">Route ${bus.route}</span>
+                        <span class="bus-arrival">${bus.arrival_text}</span>
+                    </div>
+                `).join('');
+            }
+        }
+    }
+
+    function renderBusData(data) {
+        if (!data.stops || data.stops.length === 0) {
+            content.innerHTML = '<div class="bus-no-data">No bus data available</div>';
+            if (window.refreshDashboardLayout) window.refreshDashboardLayout();
+            return;
+        }
+
+        const isRealtime = data.stops.some(stop => stop.realtime_data === true);
+        const footnote = isRealtime ? 'Real‑time data' : 'Scheduled times';
+
+        const timeSpan = content.querySelector('.bus-time');
+        if (timeSpan) timeSpan.textContent = new Date(data.last_updated).toLocaleTimeString();
+        const footnoteSpan = content.querySelector('.bus-footnote');
+        if (footnoteSpan) footnoteSpan.textContent = footnote;
+
+        if (content.querySelectorAll('.bus-stop-card').length === 0) {
+            createStopCards(data.stops);
+        } else {
+            updateStopCards(data.stops);
+        }
+        if (window.refreshDashboardLayout) window.refreshDashboardLayout();
+    }
+
     async function fetchBusData() {
-        if (isServerDown) return; // avoid retry spam
-        content.innerHTML = '<div class="bus-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading bus times...</div>';
+        if (isServerDown) return;
+        const timeSpan = content.querySelector('.bus-time');
+        if (timeSpan) timeSpan.textContent = 'Loading...';
         try {
-            const response = await fetch('/api/bus-realtime');
+            const url = `/api/bus-realtime?route=${encodeURIComponent(routeId)}&stops=${encodeURIComponent(stopIds)}`;
+            const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
+            if (!data.stops) throw new Error('Invalid response');
             isServerDown = false;
             renderBusData(data);
-            // ensure auto-refresh is running
             if (!refreshInterval) startAutoRefresh();
         } catch (err) {
-            console.warn('Bus server unreachable – displaying offline message');
-            showOfflineMessage();
+            console.error('Bus fetch error:', err);
+            showErrorMessage(err.message);
             isServerDown = true;
             if (refreshInterval) {
                 clearInterval(refreshInterval);
@@ -38,11 +123,11 @@ export default async function initBus(container) {
         }
     }
 
-    function showOfflineMessage() {
+    function showErrorMessage(errorMsg) {
         content.innerHTML = `
             <div class="bus-offline">
-                <i class="fa-solid fa-server"></i> Bus service offline
-                <div class="bus-offline-desc">Unable to reach the bus server. Please try later.</div>
+                <i class="fa-solid fa-exclamation-triangle"></i> Bus data error
+                <div class="bus-offline-desc">${escapeHtml(errorMsg)}</div>
                 <button class="bus-retry-btn">Retry</button>
             </div>
         `;
@@ -51,46 +136,6 @@ export default async function initBus(container) {
             isServerDown = false;
             fetchBusData();
         });
-        if (window.refreshDashboardLayout) window.refreshDashboardLayout();
-    }
-
-    function renderBusData(data) {
-        if (!data.stops || data.stops.length === 0) {
-            content.innerHTML = '<div class="bus-no-data">No bus data available</div>';
-            return;
-        }
-
-        const isRealtime = data.stops.some(stop => stop.realtime_data === true);
-        const footnote = isRealtime ? 'Real‑time data' : 'Scheduled times (GTFS)';
-
-        let html = `
-            <div class="bus-timestamp">
-                <i class="fa-solid fa-sync-alt"></i> ${new Date(data.last_updated).toLocaleTimeString()}
-                <span class="bus-footnote">${footnote}</span>
-            </div>
-        `;
-
-        for (const stop of data.stops) {
-            const buses = stop.buses.slice(0, 2);
-            html += `
-                <div class="bus-stop-card">
-                    <h3 class="bus-stop-title">📍 ${escapeHtml(stop.stop_name)}</h3>
-                    <div class="bus-direction">→ ${escapeHtml(stop.direction)}</div>
-                    ${buses.length === 0 ? '<div class="bus-no-buses">No upcoming buses</div>' :
-                        buses.map(bus => `
-                            <div class="bus-item">
-                                <span class="bus-route">Route ${bus.route}</span>
-                                <span class="bus-arrival">${bus.arrival_text}</span>
-                            </div>
-                        `).join('')
-                    }
-                </div>
-            `;
-        }
-        html += `<button class="bus-refresh-btn">Refresh</button>`;
-        content.innerHTML = html;
-        const refreshBtn = content.querySelector('.bus-refresh-btn');
-        if (refreshBtn) refreshBtn.addEventListener('click', fetchBusData);
         if (window.refreshDashboardLayout) window.refreshDashboardLayout();
     }
 
@@ -104,6 +149,7 @@ export default async function initBus(container) {
         return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
     }
 
+    buildStaticStructure();
     fetchBusData();
     startAutoRefresh();
 }

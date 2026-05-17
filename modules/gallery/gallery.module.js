@@ -25,7 +25,6 @@ export default async function initGallery(container) {
         console.error('Gallery load error:', err);
     }
 
-    // Empty state with Settings button
     if (!images.length) {
         content.innerHTML = `
             <div class="module-empty">
@@ -37,44 +36,20 @@ export default async function initGallery(container) {
             </div>
         `;
         const settingsBtn = content.querySelector('#gallerySettingsBtn');
-        if (settingsBtn) {
-            settingsBtn.onclick = () => {
-                window.location.href = 'settings.html';
-            };
-        }
+        if (settingsBtn) settingsBtn.onclick = () => location.href = 'settings.html';
         return;
     }
 
     let slideIndex = 0;
     let lightboxIndex = 0;
-
     let slideshowInterval = null;
     let lightboxInterval = null;
-
     let isPlaying = true;
 
     const slideSpeed = 5000;
     const lightboxSpeed = 5000;
 
-    let wakeLock = null;
-    const wakeLockSupported = 'wakeLock' in navigator;
-
-    async function requestWakeLock() {
-        if (!wakeLockSupported || wakeLock || !isPlaying) return;
-        try {
-            wakeLock = await navigator.wakeLock.request('screen');
-        } catch (e) {}
-    }
-
-    async function releaseWakeLock() {
-        if (wakeLock) {
-            try { await wakeLock.release(); } catch (e) {}
-            wakeLock = null;
-        }
-    }
-
-    /* ========================= SLIDESHOW ========================= */
-
+    // ----- Slideshow UI -----
     const slideshowDiv = document.createElement('div');
     slideshowDiv.className = 'gallery-slideshow';
 
@@ -86,19 +61,17 @@ export default async function initGallery(container) {
 
     const controlsDiv = document.createElement('div');
     controlsDiv.className = 'gallery-controls';
-
     controlsDiv.innerHTML = `
         <div class="gallery-control-group">
             <button id="galleryPrevBtn" class="gallery-btn primary">❮ Prev</button>
             <button id="galleryPlayPauseBtn" class="gallery-btn primary">⏸</button>
             <button id="galleryNextBtn" class="gallery-btn primary">Next ❯</button>
         </div>
-        <button id="galleryWakeLockBtn" class="gallery-btn secondary">💤 Keep screen awake</button>
+        <button id="galleryFullscreenBtn" class="gallery-btn secondary">🖥️ Full Screen Gallery</button>
     `;
 
     const thumbsDiv = document.createElement('div');
     thumbsDiv.className = 'gallery-thumbs';
-
     images.forEach((img, i) => {
         const t = document.createElement('img');
         t.src = img.url;
@@ -117,55 +90,47 @@ export default async function initGallery(container) {
         if (window.refreshDashboardLayout) window.refreshDashboardLayout();
     };
 
-    /* ========================= LIGHTBOX ========================= */
-
+    // ----- Lightbox (full‑size overlay) -----
     const lightbox = document.createElement('div');
     lightbox.className = 'gallery-lightbox lightbox';
-
     const lbImg = document.createElement('img');
     lbImg.className = 'gallery-lightbox-img';
-
     const lbCaption = document.createElement('div');
     lbCaption.className = 'gallery-lightbox-caption';
-
     const lbClose = document.createElement('button');
     lbClose.className = 'gallery-lightbox-close';
     lbClose.textContent = '✕';
-
     const lbPrev = document.createElement('button');
     lbPrev.className = 'gallery-lightbox-prev';
     lbPrev.textContent = '❮';
-
     const lbNext = document.createElement('button');
     lbNext.className = 'gallery-lightbox-next';
     lbNext.textContent = '❯';
-
     lightbox.appendChild(lbImg);
     lightbox.appendChild(lbCaption);
     lightbox.appendChild(lbClose);
     lightbox.appendChild(lbPrev);
     lightbox.appendChild(lbNext);
-
     document.body.appendChild(lightbox);
 
-    /* ========================= CORE ========================= */
+    // ----- Full Screen Gallery button – opens lightbox on current slide -----
+    const fullscreenBtn = controlsDiv.querySelector('#galleryFullscreenBtn');
+    fullscreenBtn.addEventListener('click', () => {
+        openLightbox(slideIndex);
+    });
 
+    // ----- Slideshow & Lightbox logic (unchanged) -----
     function updateSlide() {
         const img = images[slideIndex];
         if (!img) return;
-
         slideImg.src = img.url;
         captionDiv.textContent = (img.name || '').replace(/\+|\..*/g, '');
-
-        [...thumbsDiv.children].forEach((t, i) => {
-            t.classList.toggle('active', i === slideIndex);
-        });
+        [...thumbsDiv.children].forEach((t, i) => t.classList.toggle('active', i === slideIndex));
     }
 
     function goToSlide(i) {
         slideIndex = (i + images.length) % images.length;
         updateSlide();
-
         if (lightbox.classList.contains('active')) {
             lightboxIndex = slideIndex;
             updateLightbox();
@@ -175,12 +140,9 @@ export default async function initGallery(container) {
     function nextSlide() { goToSlide(slideIndex + 1); }
     function prevSlide() { goToSlide(slideIndex - 1); }
 
-    /* ========================= LIGHTBOX ========================= */
-
     function updateLightbox() {
         const img = images[lightboxIndex];
         if (!img) return;
-
         lbImg.src = img.url;
         lbCaption.textContent = (img.name || '').replace(/\+|\..*/g, '');
     }
@@ -188,10 +150,8 @@ export default async function initGallery(container) {
     function openLightbox(i) {
         lightboxIndex = i;
         updateLightbox();
-
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
-
         stopAuto();
         startLightboxAuto();
     }
@@ -199,9 +159,7 @@ export default async function initGallery(container) {
     function closeLightbox() {
         lightbox.classList.remove('active');
         document.body.style.overflow = '';
-
         stopLightboxAuto();
-
         if (isPlaying) startAuto();
     }
 
@@ -219,8 +177,6 @@ export default async function initGallery(container) {
         updateSlide();
     }
 
-    /* ========================= AUTOPLAY ========================= */
-
     function startAuto() {
         stopAuto();
         slideshowInterval = setInterval(() => {
@@ -228,26 +184,18 @@ export default async function initGallery(container) {
         }, slideSpeed);
     }
 
-    function stopAuto() {
-        clearInterval(slideshowInterval);
-    }
-
+    function stopAuto() { clearInterval(slideshowInterval); }
     function startLightboxAuto() {
         stopLightboxAuto();
         lightboxInterval = setInterval(() => {
             if (lightbox.classList.contains('active')) nextLightbox();
         }, lightboxSpeed);
     }
-
-    function stopLightboxAuto() {
-        clearInterval(lightboxInterval);
-    }
+    function stopLightboxAuto() { clearInterval(lightboxInterval); }
 
     function togglePlay() {
         isPlaying = !isPlaying;
-
         const btn = controlsDiv.querySelector('#galleryPlayPauseBtn');
-
         if (isPlaying) {
             btn.textContent = '⏸ Pause';
             startAuto();
@@ -258,18 +206,14 @@ export default async function initGallery(container) {
         }
     }
 
-    /* ========================= EVENTS ========================= */
-
+    // Event listeners
     controlsDiv.querySelector('#galleryPrevBtn').onclick = prevSlide;
     controlsDiv.querySelector('#galleryNextBtn').onclick = nextSlide;
     controlsDiv.querySelector('#galleryPlayPauseBtn').onclick = togglePlay;
-
     slideImg.onclick = () => openLightbox(slideIndex);
-
     lbClose.onclick = closeLightbox;
     lbPrev.onclick = prevLightbox;
     lbNext.onclick = nextLightbox;
-
     document.addEventListener('keydown', (e) => {
         if (!lightbox.classList.contains('active')) return;
         if (e.key === 'Escape') closeLightbox();
@@ -277,15 +221,12 @@ export default async function initGallery(container) {
         if (e.key === 'ArrowRight') nextLightbox();
     });
 
-    /* ========================= INIT ========================= */
-
     updateSlide();
     startAuto();
 
     return () => {
         stopAuto();
         stopLightboxAuto();
-        releaseWakeLock();
         lightbox.remove();
     };
 }

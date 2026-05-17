@@ -1,6 +1,12 @@
 // modules/music/music.module.js
 import { loadMusic } from '../../js/core/storage.js';
 
+// Helper: remove file extension (e.g., .mp3, .ogg, .wav)
+function removeFileExtension(filename) {
+    if (!filename) return '';
+    return filename.replace(/\.[^/.]+$/, ''); // removes last dot and following characters
+}
+
 export default async function initMusic(container) {
     const headerRow = document.createElement('div');
     headerRow.className = 'music-header-row';
@@ -19,7 +25,7 @@ export default async function initMusic(container) {
     function updateLockIcon() {
         lockToggle.innerHTML = isLocked
             ? '<i class="fa-solid fa-lock"></i>'
-            : '<i class="fa-solid fa-lock-open"></i>';
+            : '<i class="fa-solidfa-solid fa-lock-open"></i>';
         lockToggle.style.color = isLocked ? '#cc0000' : '#008000';
     }
     updateLockIcon();
@@ -70,9 +76,7 @@ export default async function initMusic(container) {
 
     // --- GLOBAL MUTE (no pause) ---
     function applyGlobalMute(muted) {
-        if (currentAudio) {
-            currentAudio.muted = muted;
-        }
+        if (currentAudio) currentAudio.muted = muted;
     }
     window.addEventListener('globalMuteToggle', (e) => {
         applyGlobalMute(e.detail.muted);
@@ -113,8 +117,8 @@ export default async function initMusic(container) {
 
     if (synthCanvas) synthCanvas.style.display = 'none';
 
-    // --- Visualiser (same as before) ---
-    function startFakeVisualiser(canvas) { /* ... unchanged ... */ 
+    // --- Visualiser (unchanged) ---
+    function startFakeVisualiser(canvas) {
         if (!canvas) return null;
         canvas.style.display = 'block';
         let animationId = null;
@@ -207,7 +211,9 @@ export default async function initMusic(container) {
         stopCurrentAudio(false);
         currentIndex = index;
         const track = tracks[currentIndex];
-        trackTitleSpan.innerText = track.name;
+        // Display cleaned name (remove extension)
+        const displayName = removeFileExtension(track.name);
+        trackTitleSpan.innerText = displayName;
         stateSpan.innerText = 'Playing...';
         playPauseBtn.innerHTML = '⏸';
         currentAudio = new Audio(track.url);
@@ -354,7 +360,8 @@ export default async function initMusic(container) {
         iconSpan.className = 'music-track-icon';
         iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
         const nameSpan = document.createElement('span');
-        nameSpan.textContent = escapeHtml(track.name);
+        // Remove extension for playlist display
+        nameSpan.textContent = escapeHtml(removeFileExtension(track.name));
         el.appendChild(iconSpan);
         el.appendChild(nameSpan);
         el.addEventListener('click', () => onTrackClick(i));

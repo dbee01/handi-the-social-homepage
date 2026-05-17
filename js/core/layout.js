@@ -107,6 +107,11 @@ export function initLayout() {
     requestAnimationFrame(() => {
         window.packeryInstance.layout();
     });
+
+    if (window.packeryInstance) {
+    window.packeryInstance.reloadItems();
+    window.packeryInstance.layout();
+    }
 }
 
 export function refreshDashboardLayout() {

@@ -365,3 +365,83 @@ footer {
         width: 100%;
     }
 }
+
+/* =========================================================
+   SITE BRANDING (Logo + Tagline)
+========================================================= */
+
+.site-branding {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;     /* ensures text wraps nicely */
+}
+
+.handi-logo {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.handi-logo i {
+    font-size: 2.2rem;
+    color: #1471ff;        /* your accent blue */
+}
+
+.logo-text {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #1471ff, #8bccff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.subtitle {
+    font-size: 0.85rem;
+    color: #556d8b;
+    line-height: 1.4;
+    margin-top: 4px;
+}
+
+/* Optional: hover effect on logo */
+.handi-logo:hover i {
+    color: #0a4bb5;
+    transition: color 0.2s;
+}
+.handi-logo:hover .logo-text {
+    background: linear-gradient(135deg, #0a4bb5, #1471ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+/* Mobile adjustments */
+@media (max-width: 700px) {
+    .handi-logo i {
+        font-size: 1.8rem;
+    }
+    .logo-text {
+        font-size: 1.4rem;
+    }
+    .subtitle {
+        font-size: 0.75rem;
+    }
+
+    .header-inner {
+        justify-content: space-between; /* default – keeps logo left, menu right */
+    }
+    /* If you want both centered, use: */
+    .header-inner {
+        justify-content: center;
+        gap: 2rem;
+    }
+    .site-branding {
+        display: flex;
+        flex-direction: column;
+        align-items: center;    /* centers children horizontally */
+        gap: 6px;
+        text-align: center;     /* ensures text wraps nicely */
+    }
+}
+.logo-link {
+    text-decoration: none;
+}
