@@ -263,17 +263,65 @@
     </div>
 
     <footer>
-        <div class="footer-content">
-            <span><i class="fa-solid fa-location-dot"></i> Europe</span>
-            <span><i class="fa-solid fa-leaf"></i> Green Energy</span>
-            <span><i class="fa-brands fa-github"></i> Open Source</span>
-            <span class="settings-link" id="settingsLink"><i class="fa-solid fa-gear"></i> Settings</span>
+        <div class="footer-bar">
+            <button id="footerSettingsBtn" class="footer-icon" title="Settings">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+            <button id="footerMuteBtn" class="footer-icon" title="Mute all audio">
+                <i class="fa-solid fa-volume-high"></i>
+            </button>
+            <button id="footerWakeLockBtn" class="footer-icon" title="Keep screen awake">
+                <i class="fa-solid fa-bed"></i>
+            </button>
+            <button id="footerDocsBtn" class="footer-icon" title="Documentation">
+                <i class="fa-solid fa-book"></i>
+            </button>
+            <button id="footerEmailBtn" class="footer-icon" title="Contact">
+                <i class="fa-solid fa-envelope"></i>
+            </button>
         </div>
     </footer>
+
+    <!-- Intro Popup (first visit only) -->
+    <div id="introPopup" class="intro-popup-overlay" style="display: none;">
+        <div class="intro-popup-container">
+            <div class="intro-popup-header">
+                <i class="fa-solid fa-hand-peace"></i> Welcome to HandiHomepage
+            </div>
+            
+              <p class="intro-popup-intro" style="text-align: center;padding: 1rem;">Designed with ❤️ for older adults, HandiHomepage puts everything you need in one easy‑to‑use dashboard. Agree to the terms and click the button below to continue.</p>
+            
+            <div class="intro-popup-body" style="font-size: 1rem;">
+                <p>🔒 <strong>Lock modules</strong> (red lock) to prevent accidental taps.</p>
+                <p>📞 <strong>Phone</strong> – one‑tap calls to your favourite contacts.</p>
+                <p>🎵 <strong>Music Player</strong> – upload your own tunes and lock.</p>
+                <p>📻 <strong>Radio</strong> – Irish radio stations.</p>
+                <p>🚌 <strong>Bus Tracker</strong> – live times for your local buses.</p>
+                <p>🖼️ <strong>Gallery</strong> – slideshow of family photos.</p>
+                <p>🚨 <strong>Emergency</strong> – sends location alerts with one press.</p>
+                <p>⚙️ <strong>Settings</strong> – add contacts, upload images/music etc.</p>
+                <p>📍 <strong>Pin</strong> – keep your favourite modules on top.</p>
+
+                <div class="intro-checkboxes">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="termsCheckbox"> I agree to the <a href="#" id="termsLink">Terms and Conditions</a>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="privacyCheckbox"> I agree to the <a href="#" id="privacyLink">Privacy Policy</a>
+                    </label>
+                </div>
+            </div>
+            <div class="intro-popup-footer">
+                <button id="agreeBtn" class="agree-btn" disabled>Agree & Continue</button>
+            </div>
+        </div>
+    </div>
 
     <!-- <script type="module">
         import { initThemeSwitcher } from './js/core/theme-switcher.js';
         initThemeSwitcher();
-    </script> --> 
+    </script> -->
+    <script src="js/core/first-popup.js"></script> 
+    <script src="js/core/footer-controls.js"></script> 
 </body>
 </html>

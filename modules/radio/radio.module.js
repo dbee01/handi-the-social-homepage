@@ -4,21 +4,17 @@ export default async function initRadio(container) {
     const headerRow = document.createElement('div');
     headerRow.className = 'radio-header-row';
 
-    // Title (left)
     const title = document.createElement('div');
     title.className = 'panel-title';
     title.innerHTML = '<i class="fa-solid fa-radio"></i> RADIO';
     headerRow.appendChild(title);
 
-    // Right side container for lock + pin
     const headerActions = document.createElement('div');
     headerActions.className = 'radio-header-actions';
 
-    // Lock toggle button (created before pin, but added after)
     const lockToggle = document.createElement('button');
     lockToggle.className = 'radio-lock-toggle';
 
-    // Load saved lock state – default to LOCKED (true)
     const saved = localStorage.getItem('radioLocked');
     let isLocked = saved !== null ? saved === 'true' : true;
 
@@ -32,19 +28,15 @@ export default async function initRadio(container) {
 
     headerActions.appendChild(lockToggle);
 
-    // Pin button (original, if exists)
     const pinBtn = container.querySelector('.pin-btn');
     if (pinBtn) {
         headerActions.appendChild(pinBtn);
     }
 
     headerRow.appendChild(headerActions);
-
-    // Clear container and add header row
     container.innerHTML = '';
     container.appendChild(headerRow);
 
-    // ----- Radio content area (will be disabled when locked) -----
     const content = document.createElement('div');
     content.className = 'radio-content';
     container.appendChild(content);
@@ -62,7 +54,6 @@ export default async function initRadio(container) {
         { name: 'Live 95 (Limerick)', url: 'https://onic.cork.live.stream.broadcasting.news/stream-live95' }
     ];
 
-    // Build UI: top bar with canvas and now‑playing text
     content.innerHTML = `
         <div class="radio-top-bar">
             <canvas id="radio-synth" class="radio-synth"></canvas>
@@ -83,19 +74,29 @@ export default async function initRadio(container) {
     const down = content.querySelector('#radio-down');
     const synthCanvas = content.querySelector('#radio-synth');
 
-    // Hide synthesiser initially
-    if (synthCanvas) {
-        synthCanvas.style.display = 'none';
-    }
+    if (synthCanvas) synthCanvas.style.display = 'none';
 
     let currentAudio = null;
     let stopVisualiser = null;
     let activeStationItem = null;
     let activeStationName = null;
 
-    /* =========================
-       Fake visualiser (CORS‑safe)
-    ========================= */
+    // --- GLOBAL MUTE (no pause, only toggle muted) ---
+    function applyGlobalMute(muted) {
+        if (currentAudio) {
+            currentAudio.muted = muted;
+            // Do NOT pause – audio continues silently
+        }
+    }
+
+    window.addEventListener('globalMuteToggle', (e) => {
+        applyGlobalMute(e.detail.muted);
+    });
+
+    const initialMute = localStorage.getItem('globalMute') === 'true';
+    applyGlobalMute(initialMute);
+
+    // --- Visualiser (unchanged) ---
     function startFakeVisualiser(canvas) {
         if (!canvas) return null;
         canvas.style.display = 'block';
@@ -118,10 +119,8 @@ export default async function initRadio(container) {
             const height = canvas.height;
             if (width === 0 || height === 0) return;
             ctx.clearRect(0, 0, width, height);
-
             const barCount = 32;
             const barWidth = width / barCount;
-
             for (let i = 0; i < barCount; i++) {
                 const value = (Math.sin(time + i * 0.3) + 1) / 2;
                 const noise = Math.random() * 0.3;
@@ -151,9 +150,6 @@ export default async function initRadio(container) {
         }
     }
 
-    /* =========================
-       Stop playback and reset UI
-    ========================= */
     function stopPlayback(resetIcon = true) {
         if (currentAudio) {
             currentAudio.pause();
@@ -163,37 +159,29 @@ export default async function initRadio(container) {
         stopVisualiserAndClear();
         nowPlaying.innerText = 'No station playing';
         error.innerText = '';
-
         if (resetIcon && activeStationItem) {
             const iconSpan = activeStationItem.querySelector('.station-icon');
-            if (iconSpan) {
-                iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
-            }
+            if (iconSpan) iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
             activeStationItem.classList.remove('active-station');
             activeStationItem = null;
             activeStationName = null;
         }
     }
 
-    /* =========================
-       Play a station (only if unlocked)
-    ========================= */
     function playStation(url, name, stationItem) {
         if (isLocked) {
             error.innerText = 'Radio is locked – unlock to play';
             return;
         }
         if (currentAudio && activeStationName === name) return;
-
-        if (currentAudio) {
-            stopPlayback(true);
-        }
+        if (currentAudio) stopPlayback(true);
 
         nowPlaying.innerText = `Connecting to ${name}...`;
         error.innerText = '';
-
         try {
             currentAudio = new Audio(url);
+            // Apply current global mute state
+            currentAudio.muted = localStorage.getItem('globalMute') === 'true';
             currentAudio.play()
                 .then(() => {
                     nowPlaying.innerText = `▶ Now playing: ${name}`;
@@ -209,9 +197,7 @@ export default async function initRadio(container) {
                     });
                     activeStationItem = stationItem;
                     activeStationName = name;
-                    if (!isLocked) {
-                        stopVisualiser = startFakeVisualiser(synthCanvas);
-                    }
+                    if (!isLocked) stopVisualiser = startFakeVisualiser(synthCanvas);
                 })
                 .catch((err) => {
                     console.warn('Play error:', err);
@@ -219,7 +205,6 @@ export default async function initRadio(container) {
                     nowPlaying.innerText = 'Playback failed';
                     stopPlayback(true);
                 });
-
             currentAudio.onerror = () => {
                 error.innerText = 'Stream unavailable';
                 nowPlaying.innerText = 'Stream error';
@@ -239,7 +224,6 @@ export default async function initRadio(container) {
         }
         const { url, name } = station;
         const stationDiv = station.element;
-
         if (activeStationItem === stationDiv && currentAudio && !currentAudio.paused) {
             stopPlayback(true);
         } else {
@@ -247,16 +231,8 @@ export default async function initRadio(container) {
         }
     }
 
-    /* =========================
-       Apply lock state: disable all interactions, stop any audio
-    ========================= */
     function applyLockState() {
-        // Stop all audio immediately when locking
-        if (isLocked) {
-            stopPlayback(true);
-        }
-
-        // Disable / enable station click listeners
+        if (isLocked) stopPlayback(true);
         const allStationDivs = list.querySelectorAll('.radio-station');
         allStationDivs.forEach(div => {
             if (isLocked) {
@@ -267,8 +243,6 @@ export default async function initRadio(container) {
                 div.style.opacity = '';
             }
         });
-
-        // Disable / enable scroll buttons
         const scrollBtns = [up, down];
         scrollBtns.forEach(btn => {
             if (isLocked) {
@@ -281,15 +255,12 @@ export default async function initRadio(container) {
                 btn.style.cursor = '';
             }
         });
-
-        // If locked and visualiser is running, stop it
         if (isLocked) {
             stopVisualiserAndClear();
             nowPlaying.innerText = 'Radio locked';
             error.innerText = '';
         } else {
             if (activeStationItem && currentAudio && !currentAudio.paused) {
-                // If there was an active station before locking and it's still present, resume visualiser
                 stopVisualiser = startFakeVisualiser(synthCanvas);
                 nowPlaying.innerText = `▶ Now playing: ${activeStationName}`;
             } else if (!currentAudio || currentAudio.paused) {
@@ -299,9 +270,6 @@ export default async function initRadio(container) {
         }
     }
 
-    /* =========================
-       Lock toggle event
-    ========================= */
     lockToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         isLocked = !isLocked;
@@ -310,41 +278,25 @@ export default async function initRadio(container) {
         applyLockState();
     });
 
-    /* =========================
-       Create station list
-    ========================= */
     stations.forEach((station) => {
         const stationDiv = document.createElement('div');
         stationDiv.className = 'radio-station';
-
         const iconSpan = document.createElement('span');
         iconSpan.className = 'station-icon';
         iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
-
         const nameSpan = document.createElement('span');
         nameSpan.textContent = station.name;
-
         stationDiv.appendChild(iconSpan);
         stationDiv.appendChild(nameSpan);
-
         stationDiv.stationData = { url: station.url, name: station.name, element: stationDiv };
         stationDiv.addEventListener('click', () => toggleStation(stationDiv.stationData));
-
         list.appendChild(stationDiv);
     });
 
-    /* =========================
-       Scroll buttons
-    ========================= */
     up.addEventListener('click', () => list.scrollBy({ top: -300, behavior: 'smooth' }));
     down.addEventListener('click', () => list.scrollBy({ top: 300, behavior: 'smooth' }));
-
-    // Apply initial lock state (locked by default)
     applyLockState();
 
-    /* =========================
-       Cleanup
-    ========================= */
     return () => {
         if (currentAudio) {
             currentAudio.pause();

@@ -252,3 +252,116 @@ footer {
         gap: 10px;
     }
 }
+
+/* =========================================================
+   INTRO POPUP (FIRST VISIT)
+========================================================= */
+.intro-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.intro-popup-container {
+    background: #ffffff;
+    border-radius: 28px;
+    max-width: 650px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3);
+    border: 3px solid #0047cc;
+}
+
+.intro-popup-header {
+    background: #0047cc;
+    color: white;
+    font-size: 1.6rem;
+    font-weight: bold;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    border-radius: 28px 28px 0 0;
+}
+
+.intro-popup-body {
+    padding: 1.5rem 3rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #1e1e1e;
+}
+
+.intro-checkboxes {
+    margin: 1.5rem 0 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-left: 3rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.checkbox-label input {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    accent-color: #0047cc;
+}
+.checkbox-label a {
+    margin-left: 5px;
+    color: #0047cc;
+    text-decoration: underline;
+}
+
+.intro-popup-footer {
+    padding: 1rem 1.5rem 1.5rem;
+    text-align: center;
+}
+
+.agree-btn {
+    background: #0047cc;
+    color: white;
+    border: none;
+    border-radius: 48px;
+    padding: 12px 32px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    min-width: 200px;
+}
+.agree-btn:hover:not(:disabled) {
+    background: #0037a3;
+}
+.agree-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+    .intro-popup-header {
+        font-size: 1.3rem;
+    }
+    .intro-popup-body {
+        font-size: 0.8rem;
+        padding: 1.2rem;
+    }
+    .agree-btn {
+        width: 100%;
+    }
+}
