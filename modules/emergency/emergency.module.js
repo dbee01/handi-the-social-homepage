@@ -29,33 +29,36 @@ function osmShortlink(lat, lon) {
     return result || "0";
 }
 
+// Helper: Check if coordinates are plausibly in Ireland
+function isPlausibleIrelandLocation(lat, lon) {
+    // Ireland bounding box (approximate)
+    const minLat = 51.0;
+    const maxLat = 55.5;
+    const minLon = -11.0;
+    const maxLon = -5.5;
+    return (lat >= minLat && lat <= maxLat && lon >= minLon && lon <= maxLon);
+}
+
 export default async function initEmergency(container) {
     // ---------- Create header row: title + lock + pin ----------
     const headerRow = document.createElement('div');
     headerRow.className = 'emergency-header-row';
 
-    // Title (left)
     const title = document.createElement('div');
     title.className = 'panel-title';
     title.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> EMERGENCY';
     headerRow.appendChild(title);
 
-    // Right side container for lock + pin
     const headerActions = document.createElement('div');
     headerActions.className = 'emergency-header-actions';
 
-    // Lock toggle button
     const lockToggle = document.createElement('button');
     lockToggle.className = 'emergency-lock-toggle';
-
-    // Load saved lock state – default to LOCKED (true)
     const saved = localStorage.getItem('emergencyLocked');
     let isLocked = saved !== null ? saved === 'true' : true;
 
     function updateLockIcon() {
-        lockToggle.innerHTML = isLocked
-            ? '<i class="fa-solid fa-lock"></i>'
-            : '<i class="fa-solid fa-lock-open"></i>';
+        lockToggle.innerHTML = isLocked ? '<i class="fa-solid fa-lock"></i>' : '<i class="fa-solid fa-lock-open"></i>';
         lockToggle.style.color = isLocked ? '#cc0000' : '#008000';
     }
     updateLockIcon();
@@ -70,23 +73,19 @@ export default async function initEmergency(container) {
 
     headerActions.appendChild(lockToggle);
 
-    // Pin button handling (clone to avoid absolute positioning)
     const originalPinBtn = container.querySelector('.pin-btn');
     let pinBtn = null;
     if (originalPinBtn) {
         pinBtn = originalPinBtn.cloneNode(true);
         pinBtn.classList.add('pin-btn-clone');
-        originalPinBtn.style.display = 'none'; // hide original
+        originalPinBtn.style.display = 'none';
         headerActions.appendChild(pinBtn);
     }
 
     headerRow.appendChild(headerActions);
-
-    // Clear container and add header row
     container.innerHTML = '';
     container.appendChild(headerRow);
 
-    // ----- Content wrapper (will be visually disabled when locked) -----
     const contentWrapper = document.createElement('div');
     contentWrapper.className = 'emergency-content-wrapper';
     container.appendChild(contentWrapper);
@@ -95,11 +94,9 @@ export default async function initEmergency(container) {
     content.style.cssText = 'padding: 10px; text-align: center;';
     contentWrapper.appendChild(content);
 
-    // Load contacts from settings
     const settings = loadSettings();
     const contacts = settings.emergency?.contacts || [];
 
-    // If no contacts, show a helpful message with styled Settings button
     if (contacts.length === 0) {
         content.innerHTML = `
             <div class="module-empty">
@@ -111,15 +108,10 @@ export default async function initEmergency(container) {
             </div>
         `;
         const settingsBtn = content.querySelector('#emergencySettingsBtn');
-        if (settingsBtn) {
-            settingsBtn.onclick = () => {
-                window.location.href = 'settings.html';
-            };
-        }
+        if (settingsBtn) settingsBtn.onclick = () => location.href = 'settings.html';
         return;
     }
 
-    // Create the big red emergency button
     const emergencyBtn = document.createElement('button');
     emergencyBtn.id = 'emergencyTriggerBtn';
     emergencyBtn.style.cssText = `
@@ -157,7 +149,6 @@ export default async function initEmergency(container) {
         emergencyBtn.style.boxShadow = '0 0 15px rgba(255,0,0,0.6)';
     };
 
-    // Status area
     const statusDiv = document.createElement('div');
     statusDiv.style.cssText = 'margin-top: 20px; font-size: 0.8rem; color: #ffb000;';
     content.appendChild(statusDiv);
@@ -171,7 +162,6 @@ export default async function initEmergency(container) {
         }, 8000);
     }
 
-    // Send SMS via SendMode API
     async function sendSMS(phoneNumber, shortlink) {
         const fullLink = `https://osm.org/go/${shortlink}`;
         const message = `🚨 EMERGENCY ALERT! 🚨\n\nSomeone needs your help.\n📍 Location: ${fullLink}\n⏰ Time: ${new Date().toLocaleString()}\n\nPlease check on them immediately.`;
@@ -197,7 +187,7 @@ export default async function initEmergency(container) {
         }
     }
 
-    // Main emergency flow (only if unlocked)
+    // Main emergency flow with location validation
     function triggerEmergency() {
         if (isLocked) {
             setStatus('Emergency button is locked – unlock to activate.', true);
@@ -208,7 +198,7 @@ export default async function initEmergency(container) {
             return;
         }
 
-        setStatus('Requesting your location...', false);
+        setStatus('Requesting your location (please allow precise location)...', false);
 
         if (!navigator.geolocation) {
             setStatus('Geolocation is not supported by your browser.', true);
@@ -219,6 +209,20 @@ export default async function initEmergency(container) {
             async (position) => {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
+
+                // Validate location – if not in Ireland, warn and ask to proceed
+                if (!isPlausibleIrelandLocation(lat, lon)) {
+                    const proceed = confirm(
+                        `⚠️ The location we received (${lat.toFixed(2)}, ${lon.toFixed(2)}) does not appear to be in Ireland.\n` +
+                        `This may be because your browser could not get a precise GPS fix.\n\n` +
+                        `Do you still want to send the emergency alert with this location?`
+                    );
+                    if (!proceed) {
+                        setStatus('Emergency cancelled – location inaccurate.', true);
+                        return;
+                    }
+                }
+
                 const shortCode = osmShortlink(lat, lon);
                 const osmShortUrl = `https://osm.org/go/${shortCode}?z=16`;
 
@@ -247,18 +251,24 @@ export default async function initEmergency(container) {
             (error) => {
                 let errorMsg = '';
                 switch (error.code) {
-                    case error.PERMISSION_DENIED: errorMsg = 'Location permission denied. Cannot send alert.'; break;
-                    case error.POSITION_UNAVAILABLE: errorMsg = 'Location information unavailable.'; break;
-                    case error.TIMEOUT: errorMsg = 'Location request timed out.'; break;
-                    default: errorMsg = 'Unknown geolocation error.';
+                    case error.PERMISSION_DENIED:
+                        errorMsg = 'Location permission denied. Please allow precise location in your browser settings.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMsg = 'Location information unavailable. Please check your GPS or try again.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMsg = 'Location request timed out. Please move to an area with better GPS signal.';
+                        break;
+                    default:
+                        errorMsg = 'Unknown geolocation error.';
                 }
                 setStatus(errorMsg, true);
             },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 } // increased timeout, allow some cache
         );
     }
 
-    // Apply lock state: disable the emergency button visually and functionally
     function applyLockState() {
         if (isLocked) {
             emergencyBtn.disabled = true;
@@ -270,7 +280,6 @@ export default async function initEmergency(container) {
             emergencyBtn.disabled = false;
             emergencyBtn.style.opacity = '';
             emergencyBtn.style.cursor = '';
-            // Restore original content and hover effects
             emergencyBtn.innerHTML = `
                 <i class="fa-solid fa-bell" style="font-size: 2rem;"></i>
                 <span>EMERGENCY</span>
@@ -287,9 +296,6 @@ export default async function initEmergency(container) {
         }
     }
 
-    // Attach the emergency click handler (always calls triggerEmergency, which checks isLocked)
     emergencyBtn.onclick = triggerEmergency;
-
-    // Apply initial lock state
     applyLockState();
 }

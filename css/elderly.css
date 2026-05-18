@@ -2263,6 +2263,13 @@ footer {
     }
 }
 
+@media (max-width: 900px) {
+    .footer-bar button {
+        font-size: 3.0rem;
+    }
+}
+
+
 /* =========================================================
    FIX FOOTER OVERLAP – add bottom padding to main content
 ========================================================= */

@@ -219,7 +219,9 @@ app.get('/api/news', async (req, res) => {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept': 'application/rss+xml, application/xml, text/xml, */*'
-            }
+            },
+            // Uncomment if you have SSL certificate issues (temporary)
+            // httpsAgent: new https.Agent({ rejectUnauthorized: false })
         });
         if (response.status !== 200) throw new Error(`HTTP ${response.status}`);
         res.type('application/xml').send(response.data);
@@ -228,18 +230,17 @@ app.get('/api/news', async (req, res) => {
         console.error('❌ News API error:', error.message);
         if (error.response) {
             console.error('Status:', error.response.status);
-            console.error('Headers:', error.response.headers);
         }
-        // Return a fallback XML to avoid breaking the frontend completely
+        // Return a more useful fallback
         const fallbackXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
 <channel>
 <title>News (Fallback)</title>
 <description>Unable to fetch live news at this time</description>
 <item>
-<title>Please check your internet connection</title>
+<title>⚠️ Cannot reach RSS feed – check server internet</title>
 <link>#</link>
-<description>The news service is temporarily unavailable. Please try again later.</description>
+<description>Error: ${error.message}</description>
 <pubDate>${new Date().toUTCString()}</pubDate>
 </item>
 </channel>
