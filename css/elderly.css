@@ -2265,8 +2265,12 @@ footer {
 
 @media (max-width: 800px) {
     .footer-bar button {
-        font-size: 3.0rem;
+        font-size: 2.4rem;
     }
+    .handi-logo {
+        font-size: 2.5rem;
+        align-self: center;
+    }   
 }
 
 
