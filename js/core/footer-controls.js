@@ -123,4 +123,12 @@
             window.location.href = 'mailto:true.cork.rebel@proton.me';
         });
     }
+
+    // --- Buy Me a Coffee button ---
+    const coffeeBtn = document.getElementById('footerCoffeeBtn');
+    if (coffeeBtn) {
+        coffeeBtn.addEventListener('click', () => {
+            window.open('https://buymeacoffee.com/dazrunner', '_blank');
+        });
+    }
 })();
