@@ -467,3 +467,32 @@ footer {
     color: #fff;
     border-color: #0047cc;
 }
+
+.brand .subtitle a {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0047cc;
+    text-decoration: none;
+    padding: 8px 6px;
+    display: inline-block;
+}
+.brand .subtitle a:hover {
+    text-decoration: underline;
+}
+
+.brand .subtitle {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+@media (max-width: 640px) {
+    .brand .subtitle {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .brand .subtitle a {
+        white-space: nowrap;
+    }
+}
+
