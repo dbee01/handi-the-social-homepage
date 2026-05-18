@@ -2263,7 +2263,7 @@ footer {
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 800px) {
     .footer-bar button {
         font-size: 3.0rem;
     }
