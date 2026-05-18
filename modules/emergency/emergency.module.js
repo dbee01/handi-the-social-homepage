@@ -103,7 +103,7 @@ export default async function initEmergency(container) {
                 <i class="fa-solid fa-phone"></i>
                 <p>No emergency contacts saved.</p>
                 <button id="emergencySettingsBtn" class="settings-link-btn">
-                    <i class="fa-solid fa-gear"></i> Add Emergency Contacts in Settings
+                    <i class="fa-solid fa-gear"></i> Add Contacts Phone Numbers to Settings
                 </button>
             </div>
         `;
@@ -164,7 +164,7 @@ export default async function initEmergency(container) {
 
     async function sendSMS(phoneNumber, shortlink) {
         const fullLink = `https://osm.org/go/${shortlink}`;
-        const message = `🚨 EMERGENCY ALERT! 🚨\n\nSomeone needs your help.\n📍 Location: ${fullLink}\n⏰ Time: ${new Date().toLocaleString()}\n\nPlease check on them immediately.`;
+        const message = `🚨 EMERGENCY ALERT! 🚨\n\nSomeone sent you their location.\n📍 Location: ${fullLink}\n⏰ Time: ${new Date().toLocaleString()}\n\nPlease check.`;
         try {
             const response = await fetch('https://sms-rest.sendmode.dev/3.0/send/bulk', {
                 method: 'POST',

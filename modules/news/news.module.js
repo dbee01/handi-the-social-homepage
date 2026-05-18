@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2026 Handi Homepage
- * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
- * See the LICENSE file in the repository root for full details.
- */
-// modules/news/news.module.js – shows cleaned channel name (e.g., "RTE NEWS")
+// modules/news/news.module.js – supports RSS and Atom feeds
 export default async function initNews(container) {
     const pinBtn = container.querySelector('.pin-btn');
     container.innerHTML = '';
@@ -18,21 +13,39 @@ export default async function initNews(container) {
     content.className = 'news-content';
     container.appendChild(content);
 
-    const rssUrl = 'https://www.rte.ie/feeds/rss/?index=/news/';
+    // Default to Irish Examiner (Atom) – works out of the box
+    const rssUrl = 'https://www.irishexaminer.com/feed/35-top_news.xml';
     const refreshMinutes = 15;
     let refreshIntervalId = null;
 
-    // Helper: convert channel URL to a clean source name
     function formatSourceName(url) {
         try {
             const hostname = new URL(url).hostname;
-            // Remove 'www.' prefix, then extract the main part before the first dot
             let name = hostname.replace(/^www\./, '').split('.')[0];
-            // Uppercase and add " NEWS"
             return name.toUpperCase() + ' NEWS';
         } catch (e) {
             return 'NEWS';
         }
+    }
+
+    // Extract image from various possible tags
+    function extractImageFromEntry(entry, description = '') {
+        // Check for <link rel="enclosure" type="image/jpeg">
+        const enclosureLink = entry.querySelector('link[rel="enclosure"][type^="image"]');
+        if (enclosureLink && enclosureLink.getAttribute('href')) {
+            return enclosureLink.getAttribute('href');
+        }
+        // Check for <media:content>
+        const mediaContent = entry.querySelector('media\\:content, content');
+        if (mediaContent && mediaContent.getAttribute('url')) {
+            return mediaContent.getAttribute('url');
+        }
+        // Try to find an <img> inside description/summary
+        if (description) {
+            const imgMatch = description.match(/<img[^>]+src="([^">]+)"/);
+            if (imgMatch) return imgMatch[1];
+        }
+        return '';
     }
 
     async function fetchNews() {
@@ -46,67 +59,95 @@ export default async function initNews(container) {
             const parseError = xmlDoc.querySelector('parsererror');
             if (parseError) throw new Error('Invalid XML');
 
-            const channel = xmlDoc.querySelector('channel');
-            const channelLink = channel?.querySelector('link')?.textContent?.trim() || '#';
+            // Determine feed type
+            let channel, items, channelLink, channelTitle;
+            const rssChannel = xmlDoc.querySelector('channel');
+            const atomFeed = xmlDoc.querySelector('feed');
 
-            const items = xmlDoc.querySelectorAll('item');
+            if (rssChannel) {
+                // RSS 2.0
+                channel = rssChannel;
+                channelLink = channel.querySelector('link')?.textContent?.trim() || '#';
+                channelTitle = channel.querySelector('title')?.textContent?.trim() || 'News';
+                items = xmlDoc.querySelectorAll('item');
+            } else if (atomFeed) {
+                // Atom 1.0
+                channelLink = atomFeed.querySelector('link[rel="self"]')?.getAttribute('href') || '#';
+                channelTitle = atomFeed.querySelector('title')?.textContent?.trim() || 'News';
+                items = xmlDoc.querySelectorAll('entry');
+            } else {
+                throw new Error('Unknown feed format');
+            }
+
             const articles = [];
             for (let i = 0; i < Math.min(items.length, 2); i++) {
                 const item = items[i];
-                const articleTitle = item.querySelector('title')?.textContent?.trim() || 'No title';
-                const articleLink = item.querySelector('link')?.textContent?.trim() || '#';
-                const pubDateRaw = item.querySelector('pubDate')?.textContent || '';
-                const description = item.querySelector('description')?.textContent || '';
+                let title, link, pubDateRaw, description, imageUrl;
 
+                if (rssChannel) {
+                    // RSS parsing
+                    title = item.querySelector('title')?.textContent?.trim() || 'No title';
+                    link = item.querySelector('link')?.textContent?.trim() || '#';
+                    pubDateRaw = item.querySelector('pubDate')?.textContent || '';
+                    description = item.querySelector('description')?.textContent || '';
+                    imageUrl = extractImageFromEntry(item, description);
+                } else {
+                    // Atom parsing
+                    title = item.querySelector('title')?.textContent?.trim() || 'No title';
+                    const linkElem = item.querySelector('link[rel="alternate"]');
+                    link = linkElem ? linkElem.getAttribute('href') : (item.querySelector('link')?.getAttribute('href') || '#');
+                    pubDateRaw = item.querySelector('published')?.textContent || item.querySelector('updated')?.textContent || '';
+                    description = item.querySelector('summary')?.textContent?.trim() || item.querySelector('content')?.textContent?.trim() || '';
+                    // Remove HTML tags for excerpt
+                    const textDesc = description.replace(/<[^>]*>/g, '');
+                    description = textDesc;
+                    imageUrl = extractImageFromEntry(item, description);
+                }
+
+                // Format date
                 let formattedDate = '';
                 if (pubDateRaw) {
                     const dateObj = new Date(pubDateRaw);
-                    formattedDate = dateObj.toLocaleString('en-IE', {
-                        timeZone: 'Europe/Dublin',
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
+                    if (!isNaN(dateObj.getTime())) {
+                        formattedDate = dateObj.toLocaleString('en-IE', {
+                            timeZone: 'Europe/Dublin',
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    } else {
+                        formattedDate = 'Date unknown';
+                    }
                 } else {
                     formattedDate = 'Date unknown';
                 }
 
-                let imageUrl = '';
-                const mediaContent = item.querySelector('media\\:content, content');
-                if (mediaContent && mediaContent.getAttribute('url')) {
-                    imageUrl = mediaContent.getAttribute('url');
-                }
-                if (!imageUrl && description) {
-                    const imgMatch = description.match(/<img[^>]+src="([^">]+)"/);
-                    if (imgMatch) imageUrl = imgMatch[1];
-                }
-
-                const fullExcerpt = description.replace(/<[^>]*>/g, '').trim();
+                // Full excerpt (strip HTML already done for Atom)
+                const fullExcerpt = description.substring(0, 300); // limit to avoid huge text
 
                 articles.push({
-                    title: articleTitle,
-                    link: articleLink,
+                    title,
+                    link,
                     pubDate: formattedDate,
                     excerpt: fullExcerpt,
                     imageUrl,
                     channelLink
                 });
             }
-            renderNews(articles, channelLink);
+            renderNews(articles, channelLink, channelTitle);
         } catch (err) {
             console.error('News fetch error:', err);
             content.innerHTML = '<div class="module-error">Failed to load news.</div>';
         }
     }
 
-    function renderNews(articles, channelLink) {
+    function renderNews(articles, channelLink, channelTitle) {
         if (!articles.length) {
             content.innerHTML = '<div class="module-empty">No news available.</div>';
             return;
         }
-
         content.innerHTML = `
             <div class="news-scroll-wrapper">
                 <button id="newsScrollUp" class="news-scroll-btn">▲</button>
@@ -117,8 +158,6 @@ export default async function initNews(container) {
         const list = document.getElementById('newsList');
         const up = document.getElementById('newsScrollUp');
         const down = document.getElementById('newsScrollDown');
-
-        // Use the same formatted source name for all articles (same channel)
         const sourceDisplay = formatSourceName(channelLink);
 
         for (const article of articles) {
@@ -137,7 +176,6 @@ export default async function initNews(container) {
             `;
             list.appendChild(articleDiv);
         }
-
         up.addEventListener('click', () => list.scrollBy({ top: -280, behavior: 'smooth' }));
         down.addEventListener('click', () => list.scrollBy({ top: 280, behavior: 'smooth' }));
         if (window.refreshDashboardLayout) window.refreshDashboardLayout();
