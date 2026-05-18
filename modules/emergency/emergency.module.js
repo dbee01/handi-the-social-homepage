@@ -282,8 +282,8 @@ export default async function initEmergency(container) {
             emergencyBtn.style.cursor = '';
             emergencyBtn.innerHTML = `
                 <i class="fa-solid fa-bell" style="font-size: 2rem;"></i>
-                <span>EMERGENCY</span>
-                <span style="font-size: 0.7rem;">Press for Help</span>
+                <span>ALERT</span>
+                <span style="font-size: 0.7rem;">Press on Your Phone</span>
             `;
             emergencyBtn.onmouseenter = () => {
                 emergencyBtn.style.transform = 'scale(1.05)';
