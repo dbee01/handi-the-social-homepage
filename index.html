@@ -14,7 +14,6 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="https://unpkg.com/packery@2.1.2/dist/packery.pkgd.min.js"></script>
     <script src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script type="module" src="./js/pins.js"></script>
     <script type="module">
         import { loadSettings } from './js/core/settings.js';
         import initBus from './modules/bus/bus.module.js';
@@ -219,7 +218,6 @@
                     <span class="logo-text">HandiHomepage</span>
                 </a>
             </div>
-            <span class="subtitle">Irish smart device solutions for families and caregivers</span>
         </div>
         <div class="search-wrapper">
           <span class="search-engine-logo logo-startpage" id="searchEngineLogo" title="StartPage">SP</span>
@@ -295,6 +293,10 @@
             </button>
         </div>
     </footer>
+ 
+    <div class="brand">
+        <span class="subtitle"><a href="/terms">Terms of Service</a> | <a href="/privacy">Privacy Policy</a></span>
+    </div>
 
     <!-- Intro Popup (first visit only) -->
     <div id="introPopup" class="intro-popup-overlay" style="display: none;">
@@ -306,7 +308,7 @@
               <p class="intro-popup-intro" style="text-align: center;padding: 1rem;">Designed with ❤️ for older adults, HandiHomepage puts everything you need in one easy‑to‑use dashboard. Agree to the terms and click the button below to continue.</p>
             
             <div class="intro-popup-body" style="font-size: 1rem;">
-                <p>🔒 <strong>Lock modules</strong> (red lock) to prevent accidental taps.</p>
+                <p><i class="fa-solid fa-lock" style="color: red;"></i> <strong>Lock modules</strong> (red lock) to prevent accidental taps.</p>
                 <p>📞 <strong>Phone</strong> – one‑tap calls to your favourite contacts.</p>
                 <p>🎵 <strong>Music Player</strong> – upload your own tunes and lock.</p>
                 <p>📻 <strong>Radio</strong> – Irish radio stations.</p>
@@ -318,10 +320,10 @@
 
                 <div class="intro-checkboxes">
                     <label class="checkbox-label">
-                        <input type="checkbox" id="termsCheckbox"> I agree to the <a href="#" id="termsLink">Terms and Conditions</a>
+                        <input type="checkbox" id="termsCheckbox"> I agree to the <a href="/terms" id="termsLink">Terms and Conditions</a>
                     </label>
                     <label class="checkbox-label">
-                        <input type="checkbox" id="privacyCheckbox"> I agree to the <a href="#" id="privacyLink">Privacy Policy</a>
+                        <input type="checkbox" id="privacyCheckbox"> I agree to the <a href="/privacy" id="privacyLink">Privacy Policy</a>
                     </label>
                 </div>
             </div>
@@ -337,6 +339,5 @@
     </script> -->
     <script src="js/core/module-buttons.js"></script>
     <script src="js/core/footer-controls.js"></script> 
-    <script src="js/core/help-popup.js"></script>
 </body>
 </html>
