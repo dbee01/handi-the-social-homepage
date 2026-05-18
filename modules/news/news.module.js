@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 Handi Homepage
+ * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
+ * See the LICENSE file in the repository root for full details.
+ */
 // modules/news/news.module.js – shows cleaned channel name (e.g., "RTE NEWS")
 export default async function initNews(container) {
     const pinBtn = container.querySelector('.pin-btn');

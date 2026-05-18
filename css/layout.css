@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2026 Handi Homepage
+ * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
+ * See the LICENSE file in the repository root for full details.
+ */
+
 /* =========================================================
    BODY
 ========================================================= */
@@ -444,4 +450,19 @@ footer {
 }
 .logo-link {
     text-decoration: none;
+}
+/* Module controls container */
+.module-controls {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+/* All buttons inside have same styling (provided by JS) */
+.pin-btn.pinned {
+    background: #0047cc;
+    color: #fff;
+    border-color: #0047cc;
 }

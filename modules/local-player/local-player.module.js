@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 Handi Homepage
+ * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
+ * See the LICENSE file in the repository root for full details.
+ */
 // modules/music/music.module.js
 import { loadMusic } from '../../js/core/storage.js';
 
@@ -117,7 +122,6 @@ export default async function initMusic(container) {
     // Visualiser
     function startFakeVisualiser(canvas) {
         if (!canvas) return null;
-        // Stop any existing visualiser
         if (stopVisualiser) stopVisualiser();
         canvas.style.display = 'block';
         let animationId = null;
@@ -170,6 +174,14 @@ export default async function initMusic(container) {
         }
     }
 
+    function ensureVisualiserRunning() {
+        if (isPlaying && currentAudio && currentIndex !== -1 && !isLocked) {
+            if (!stopVisualiser) {
+                stopVisualiser = startFakeVisualiser(synthCanvas);
+            }
+        }
+    }
+
     function updateTrackIconsAndActive() {
         document.querySelectorAll('.music-track-item').forEach((item, idx) => {
             const iconSpan = item.querySelector('.music-track-icon');
@@ -185,15 +197,7 @@ export default async function initMusic(container) {
                 item.classList.remove('active');
             }
         });
-        
-        // Start visualiser if playing and unlocked
-        if (isPlaying && currentAudio && currentIndex !== -1 && !isLocked) {
-            if (!stopVisualiser) {
-                stopVisualiser = startFakeVisualiser(synthCanvas);
-            }
-        } else {
-            stopVisualiserAndClear();
-        }
+        ensureVisualiserRunning();
     }
 
     function stopCurrentAudio(resetIcon = true) {
@@ -216,10 +220,7 @@ export default async function initMusic(container) {
         if (index < 0 || index >= tracks.length) return;
         if (currentAudio && currentIndex === index && isPlaying) return;
         
-        // Stop current audio and clear visualiser
-        if (currentAudio) {
-            stopCurrentAudio(true);
-        }
+        if (currentAudio) stopCurrentAudio(true);
         
         currentIndex = index;
         const track = tracks[currentIndex];
@@ -228,7 +229,6 @@ export default async function initMusic(container) {
         stateSpan.innerText = 'Playing...';
         playPauseBtn.innerHTML = '⏸';
         
-        // Create new audio
         currentAudio = new Audio(track.url);
         currentAudio.volume = 0.7;
         currentAudio.muted = localStorage.getItem('globalMute') === 'true';
@@ -248,10 +248,7 @@ export default async function initMusic(container) {
             stateSpan.innerText = 'Paused';
         }
         
-        currentAudio.onended = () => {
-            // Auto-play next track
-            playNext();
-        };
+        currentAudio.onended = () => playNext();
         currentAudio.onerror = () => {
             stateSpan.innerText = 'Stream error';
             isPlaying = false;
@@ -259,6 +256,7 @@ export default async function initMusic(container) {
             updateTrackIconsAndActive();
         };
         
+        ensureVisualiserRunning();
         updateTrackIconsAndActive();
     }
 
@@ -303,7 +301,6 @@ export default async function initMusic(container) {
     function onTrackClick(index) {
         if (isLocked) { stateSpan.innerText = 'Player locked – unlock to play'; return; }
         if (index === currentIndex && currentAudio) {
-            // Same track: toggle play/pause
             if (isPlaying) {
                 currentAudio.pause();
                 isPlaying = false;
@@ -321,7 +318,6 @@ export default async function initMusic(container) {
                 updateTrackIconsAndActive();
             }
         } else {
-            // Different track: play it
             playTrack(index, true);
         }
     }
@@ -357,8 +353,8 @@ export default async function initMusic(container) {
             if (currentIndex === -1) trackTitleSpan.innerText = '—';
             stateSpan.innerText = 'Locked';
         } else {
+            ensureVisualiserRunning();
             if (currentAudio && isPlaying && currentIndex !== -1) {
-                stopVisualiser = startFakeVisualiser(synthCanvas);
                 stateSpan.innerText = 'Playing...';
             } else if (currentIndex !== -1 && !isPlaying) {
                 stateSpan.innerText = 'Paused';
@@ -376,7 +372,6 @@ export default async function initMusic(container) {
         applyLockState();
     });
 
-    // Create playlist items
     tracks.forEach((track, i) => {
         const el = document.createElement('div');
         el.className = 'music-track-item';

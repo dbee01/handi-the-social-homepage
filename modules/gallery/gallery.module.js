@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2026 Handi Homepage
+ * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
+ * See the LICENSE file in the repository root for full details.
+ */
+
 // modules/gallery/gallery.module.js
 import { loadGallery } from '../../js/core/storage.js';
 
@@ -124,7 +130,7 @@ export default async function initGallery(container) {
         const img = images[slideIndex];
         if (!img) return;
         slideImg.src = img.url;
-        captionDiv.textContent = (img.name || '').replace(/\+|\..*/g, '');
+        captionDiv.textContent = (img.name || '').replace(/\+|\..*/g, ' ');
         [...thumbsDiv.children].forEach((t, i) => t.classList.toggle('active', i === slideIndex));
     }
 
@@ -144,7 +150,7 @@ export default async function initGallery(container) {
         const img = images[lightboxIndex];
         if (!img) return;
         lbImg.src = img.url;
-        lbCaption.textContent = (img.name || '').replace(/\+|\..*/g, '');
+        lbCaption.textContent = (img.name || '').replace(/\+|\..*/g, ' ');
     }
 
     function openLightbox(i) {

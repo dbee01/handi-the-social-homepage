@@ -1,4 +1,8 @@
-
+/*
+ * Copyright (c) 2026 Handi Homepage
+ * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
+ * See the LICENSE file in the repository root for full details.
+ */
 export default async function initEnergy(gridEl, carbonValEl, carbonMsgEl) {
   
   // Helper to preserve pin in any element

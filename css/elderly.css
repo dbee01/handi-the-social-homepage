@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2026 Handi Homepage
+ * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
+ * See the LICENSE file in the repository root for full details.
+ */
+ 
 /* =========================================================
    ELDERLY THEME (PURE CSS OVERRIDES)
    HIGH CONTRAST + LARGE TYPE
@@ -2280,4 +2286,60 @@ footer {
     padding: 0.5rem 1rem;
     z-index: 1000;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+}
+
+/* =========================================================
+   FIX BUTTON ALIGNMENT INSIDE MODULE CONTROLS
+========================================================= */
+.module-controls {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+/* Override global absolute positioning for all buttons inside .module-controls */
+.module-controls button,
+.module-controls .pin-btn,
+.module-controls .radio-lock-toggle,
+.module-controls .music-lock-toggle,
+.module-controls .phone-lock-toggle,
+.module-controls .emergency-lock-toggle {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    margin: 0 !important;
+    width: 44px;
+    height: 44px;
+    border: 2px solid #cbd5e1;
+    background: #ffffff;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+/* Ensure pin button keeps its pinned colour */
+.module-controls .pin-btn.pinned {
+    background: #0047cc;
+    color: #fff;
+    border-color: #0047cc;
+}
+
+/* Hover effect for all module control buttons */
+.module-controls button:hover {
+    background: #f0f2f5;
+}
+
+/* Remove any extra margins or transforms */
+.module-controls button i {
+    margin: 0;
+    font-size: inherit;
 }
