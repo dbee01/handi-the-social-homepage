@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Elderly Theme by Handi Homepage</title>
+    <title>HandiHomepage – Your Safe & Simple Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/main.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -136,7 +136,7 @@
             const weatherEl = document.getElementById('weather');
             if (!weatherEl) return;
 
-            // Latitude/longitude for Dublin city centre (or use your exact coordinates)
+            // Latitude/longitude for Cork City
             const lat = 51.8985;
             const lon = 8.4756;
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`;
@@ -150,7 +150,6 @@
                     const weatherCode = data.current_weather.weathercode;
                     const outlook = getWeatherDescription(weatherCode);
 
-                    // Build HTML: location, temperature, outlook
                     weatherEl.innerHTML = `
                         <div class="weather-location">📍 Cork City</div>
                         <div class="weather-temp">🌡️ ${temp}°C</div>
@@ -165,7 +164,6 @@
             }
         }
 
-        // Helper: map WMO weather codes to human‑readable outlook
         function getWeatherDescription(code) {
             const codes = {
                 0: "☀️ Clear sky",
@@ -208,6 +206,12 @@
         });
         
     </script>
+    <!-- Privacy-friendly analytics by Plausible -->
+    <script async src="https://plausible.io/js/pa-cvqvYb9dRTC-BwuguUIVj.js"></script>
+    <script>
+    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+    plausible.init()
+    </script>
 </head>
 <body>
     <header>
@@ -220,16 +224,16 @@
             </div>
         </div>
         <div class="search-wrapper">
-          <span class="search-engine-logo logo-startpage" id="searchEngineLogo" title="StartPage">SP</span>
-          <select id="searchEngine" class="search-engine-select">
-              <option value="startpage">StartPage</option>
-              <option value="qwant">Qwant</option>
-              <option value="ecosia">Ecosia</option>
-              <option value="mojeek">Mojeek</option>
-          </select>
-          <input type="text" id="searchInput" placeholder="Safe search">
-          <i class="fa-solid fa-arrow-right"></i>
-      </div>
+            <span class="search-engine-logo logo-startpage" id="searchEngineLogo" title="StartPage">SP</span>
+            <select id="searchEngine" class="search-engine-select">
+                <option value="startpage">StartPage</option>
+                <option value="qwant">Qwant</option>
+                <option value="ecosia">Ecosia</option>
+                <option value="mojeek">Mojeek</option>
+            </select>
+            <input type="text" id="searchInput" placeholder="Safe search">
+            <i class="fa-solid fa-arrow-right"></i>
+        </div>
         <div class="header-weather">
             <i class="fa-solid fa-cloud-sun"></i>
             <span id="weather">🌤️ --°C</span>
@@ -276,7 +280,6 @@
 
     <footer>
         <div class="footer-bar">
-            <!-- existing buttons -->
             <button id="footerSettingsBtn" class="footer-icon" title="Settings">
                 <i class="fa-solid fa-gear"></i>
             </button>
@@ -292,11 +295,9 @@
             <button id="footerEmailBtn" class="footer-icon" title="Contact">
                 <i class="fa-solid fa-envelope"></i>
             </button>
-            <!-- New Pint glass button -->
             <button id="footerCoffeeBtn" class="footer-icon" title="Buy me a pint">
                 <i class="fa-solid fa-beer"></i>
             </button>
-
         </div>
     </footer>
 
@@ -310,9 +311,7 @@
             <div class="intro-popup-header">
                 <i class="fa-solid fa-hand-peace"></i> Welcome to HandiHomepage
             </div>
-            
-              <p class="intro-popup-intro" style="text-align: center;padding: 1rem;">Designed with ❤️ for older adults, HandiHomepage puts everything you need in one easy‑to‑use dashboard. Agree to the terms and click the button below to continue.</p>
-            
+            <p class="intro-popup-intro" style="text-align: center; padding: 1rem;">Designed with ❤️ for older adults, HandiHomepage puts everything you need in one easy‑to‑use dashboard. Agree to the terms and click the button below to continue.</p>
             <div class="intro-popup-body" style="font-size: 1rem;">
                 <p><i class="fa-solid fa-lock" style="color: red;"></i> <strong>Lock modules</strong> (red lock) to prevent accidental taps.</p>
                 <p>📞 <strong>Phone</strong> – one‑tap calls to your favourite contacts.</p>
@@ -323,7 +322,6 @@
                 <p>🚨 <strong>Emergency</strong> – sends location alerts with one press.</p>
                 <p>⚙️ <strong>Settings</strong> – add contacts, upload images/music etc.</p>
                 <p>📍 <strong>Pin</strong> – keep your favourite modules on top.</p>
-
                 <div class="intro-checkboxes">
                     <label class="checkbox-label">
                         <input type="checkbox" id="termsCheckbox"> I agree to the <a href="/terms" id="termsLink">Terms and Conditions</a>
@@ -339,11 +337,43 @@
         </div>
     </div>
 
-    <!-- <script type="module">
-        import { initThemeSwitcher } from './js/core/theme-switcher.js';
-        initThemeSwitcher();
-    </script> -->
     <script src="js/core/module-buttons.js"></script>
-    <script src="js/core/footer-controls.js"></script> 
+    <script src="js/core/footer-controls.js"></script>
+
+    <!-- Intro Popup Controller -->
+    <script>
+    (function() {
+        const POPUP_KEY = 'handiHomepageAgreed';
+        if (localStorage.getItem(POPUP_KEY) === 'true') return;
+
+        const overlay = document.getElementById('introPopup');
+        const termsBox = document.getElementById('termsCheckbox');
+        const privacyBox = document.getElementById('privacyCheckbox');
+        const agreeBtn = document.getElementById('agreeBtn');
+
+        if (!overlay || !termsBox || !privacyBox || !agreeBtn) return;
+
+        overlay.style.display = 'flex';
+
+        function updateAgreeButton() {
+            agreeBtn.disabled = !(termsBox.checked && privacyBox.checked);
+        }
+
+        termsBox.addEventListener('change', updateAgreeButton);
+        privacyBox.addEventListener('change', updateAgreeButton);
+
+        agreeBtn.addEventListener('click', () => {
+            if (termsBox.checked && privacyBox.checked) {
+                localStorage.setItem(POPUP_KEY, 'true');
+                overlay.style.display = 'none';
+            }
+        });
+
+        const termsLink = document.getElementById('termsLink');
+        const privacyLink = document.getElementById('privacyLink');
+        if (termsLink) termsLink.href = 'https://handihomepage.com/terms';
+        if (privacyLink) privacyLink.href = 'https://handihomepage.com/privacy';
+    })();
+    </script>
 </body>
 </html>
