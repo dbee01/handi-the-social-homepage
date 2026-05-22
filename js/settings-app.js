@@ -15,35 +15,6 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m]));
 }
 
-// Cache coordinates in localStorage after first geocoding
-async function getCoordinatesForLocation(locationName, countryCode) {
-    const cacheKey = `weather_coords_${locationName}_${countryCode}`;
-    const cached = localStorage.getItem(cacheKey);
-    
-    if (cached) {
-        try {
-            return JSON.parse(cached);
-        } catch(e) {}
-    }
-    
-    const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(locationName)}, ${countryCode}&format=json&limit=1`;
-    const geoResponse = await fetch(geoUrl, {
-        headers: { 'User-Agent': 'HandiHomepage/1.0 (https://handihomepage.com)' }
-    });
-    const geoData = await geoResponse.json();
-    
-    if (geoData && geoData.length > 0) {
-        const coords = {
-            lat: parseFloat(geoData[0].lat),
-            lon: parseFloat(geoData[0].lon),
-            displayName: geoData[0].display_name?.split(',')[0] || locationName
-        };
-        localStorage.setItem(cacheKey, JSON.stringify(coords));
-        return coords;
-    }
-    return null;
-}
-
 // Render both contact lists
 function renderContacts(type) {
     const container = document.getElementById(`${type}ContactsList`);
@@ -92,20 +63,20 @@ function getWeatherDescription(code) {
         2: "⛅ Partly cloudy",
         3: "☁️ Overcast",
         45: "🌫️ Fog",
-        48: "🌫️ Depositing rime fog",
+        48: "🌫️ Fog",
         51: "🌧️ Light drizzle",
         53: "🌧️ Moderate drizzle",
         55: "🌧️ Dense drizzle",
-        61: "🌧️ Slight rain",
+        61: "🌧️ Light rain",
         63: "🌧️ Moderate rain",
         65: "🌧️ Heavy rain",
-        71: "🌨️ Slight snow",
+        71: "🌨️ Light snow",
         73: "🌨️ Moderate snow",
         75: "🌨️ Heavy snow",
-        80: "🌧️ Slight rain showers",
-        81: "🌧️ Moderate rain showers",
-        82: "🌧️ Violent rain showers",
-        85: "🌨️ Slight snow showers",
+        80: "🌧️ Rain showers",
+        81: "🌧️ Moderate showers",
+        82: "🌧️ Heavy showers",
+        85: "🌨️ Snow showers",
         86: "🌨️ Heavy snow showers",
         95: "⛈️ Thunderstorm"
     };
@@ -243,6 +214,26 @@ function detectMyLocation() {
     );
 }
 
+// Sync module visibility with the selection popup
+function syncModuleTogglesWithPopup() {
+    const modulesSelected = localStorage.getItem('modulesSelected');
+    const moduleOrder = localStorage.getItem('moduleOrder');
+    
+    if (modulesSelected === 'true' && moduleOrder) {
+        const enabledModules = JSON.parse(moduleOrder);
+        
+        toggleSwitches.forEach(sw => {
+            const moduleId = sw.closest('.module-header').dataset.module;
+            const isEnabled = enabledModules.includes(moduleId);
+            if (isEnabled) {
+                sw.classList.add('active');
+            } else {
+                sw.classList.remove('active');
+            }
+        });
+    }
+}
+
 // Load UI from localStorage
 function loadUI() {
     const settings = loadSettings();
@@ -290,8 +281,13 @@ function loadUI() {
     if (settings.weather) {
         if (document.getElementById('weatherLocation')) document.getElementById('weatherLocation').value = settings.weather.location || 'Cork';
         if (document.getElementById('weatherCountry')) document.getElementById('weatherCountry').value = settings.weather.country || 'IE';
-        // Trigger preview after loading
         setTimeout(() => showWeatherPreview(), 100);
+    }
+    
+    // Calendar (Proton ICS)
+    if (settings.calendar) {
+        if (document.getElementById('calendarUrl')) document.getElementById('calendarUrl').value = settings.calendar.url || '';
+        if (document.getElementById('calendarNotificationMinutes')) document.getElementById('calendarNotificationMinutes').value = settings.calendar.notificationMinutes || 30;
     }
     
     // Emergency
@@ -301,28 +297,25 @@ function loadUI() {
         renderContacts('emergency');
     }
     
-    // Chat
-    if (settings.chat) {
-        if (document.getElementById('chatRoom1')) document.getElementById('chatRoom1').value = settings.chat.rooms?.[0] || '';
-        if (document.getElementById('chatRoom2')) document.getElementById('chatRoom2').value = settings.chat.rooms?.[1] || '';
-        if (document.getElementById('chatRoom3')) document.getElementById('chatRoom3').value = settings.chat.rooms?.[2] || '';
-        if (document.getElementById('chatRefreshInterval')) document.getElementById('chatRefreshInterval').value = settings.chat.refreshInterval || 30;
-    }
-
     // Phone
     if (settings.phone) {
         phoneContacts = settings.phone.contacts || [];
         if (document.getElementById('autoDialDelay')) document.getElementById('autoDialDelay').value = settings.phone.autoDialDelay || 10;
         renderContacts('phone');
     }
-
-    // Calendar
-    if (settings.calendar) {
-        if (document.getElementById('calendarUrl')) document.getElementById('calendarUrl').value = settings.calendar.url || '';
-        if (document.getElementById('calendarNotificationMinutes')) document.getElementById('calendarNotificationMinutes').value = settings.calendar.notificationMinutes || 30;
+    
+    // Chat
+    if (settings.chat) {
+        if (document.getElementById('chatHomeserver')) document.getElementById('chatHomeserver').value = settings.chat.homeserver || 'https://matrix.org';
+        if (document.getElementById('chatAccessToken')) document.getElementById('chatAccessToken').value = settings.chat.accessToken || '';
+        if (document.getElementById('chatUserId')) document.getElementById('chatUserId').value = settings.chat.userId || '';
+        if (document.getElementById('chatRoom1')) document.getElementById('chatRoom1').value = settings.chat.rooms?.[0] || '';
+        if (document.getElementById('chatRoom2')) document.getElementById('chatRoom2').value = settings.chat.rooms?.[1] || '';
+        if (document.getElementById('chatRoom3')) document.getElementById('chatRoom3').value = settings.chat.rooms?.[2] || '';
+        if (document.getElementById('chatRefreshInterval')) document.getElementById('chatRefreshInterval').value = settings.chat.refreshInterval || 30;
     }
-
-    // After loading all settings, sync with popup selection
+    
+    // Sync toggles with popup selection
     syncModuleTogglesWithPopup();
 }
 
@@ -330,11 +323,21 @@ function loadUI() {
 function collectSettings() {
     const enabledModules = {};
     
-    // ALWAYS use the current toggle state for settings (ignore popup)
-    toggleSwitches.forEach(sw => {
-        const moduleId = sw.closest('.module-header').dataset.module;
-        enabledModules[moduleId] = sw.classList.contains('active');
-    });
+    const modulesSelected = localStorage.getItem('modulesSelected');
+    const moduleOrder = localStorage.getItem('moduleOrder');
+    
+    if (modulesSelected === 'true' && moduleOrder) {
+        const enabledList = JSON.parse(moduleOrder);
+        toggleSwitches.forEach(sw => {
+            const moduleId = sw.closest('.module-header').dataset.module;
+            enabledModules[moduleId] = enabledList.includes(moduleId);
+        });
+    } else {
+        toggleSwitches.forEach(sw => {
+            const moduleId = sw.closest('.module-header').dataset.module;
+            enabledModules[moduleId] = sw.classList.contains('active');
+        });
+    }
     
     return {
         enabledModules,
@@ -363,6 +366,10 @@ function collectSettings() {
             location: document.getElementById('weatherLocation')?.value || 'Cork',
             country: document.getElementById('weatherCountry')?.value || 'IE'
         },
+        calendar: {
+            url: document.getElementById('calendarUrl')?.value || '',
+            notificationMinutes: parseInt(document.getElementById('calendarNotificationMinutes')?.value) || 30
+        },
         emergency: {
             contacts: emergencyContacts,
             interval: parseInt(document.getElementById('emergencyInterval')?.value) || 5
@@ -372,29 +379,26 @@ function collectSettings() {
             autoDialDelay: parseInt(document.getElementById('autoDialDelay')?.value) || 10
         },
         chat: {
+            homeserver: document.getElementById('chatHomeserver')?.value || 'https://matrix.org',
+            accessToken: document.getElementById('chatAccessToken')?.value || '',
+            userId: document.getElementById('chatUserId')?.value || '',
             rooms: [
                 document.getElementById('chatRoom1')?.value || '',
                 document.getElementById('chatRoom2')?.value || '',
                 document.getElementById('chatRoom3')?.value || ''
             ].filter(r => r.trim() !== ''),
             refreshInterval: parseInt(document.getElementById('chatRefreshInterval')?.value) || 30
-        },
-        calendar: {
-            url: document.getElementById('calendarUrl')?.value || '',
-            notificationMinutes: parseInt(document.getElementById('calendarNotificationMinutes')?.value) || 30
         }
     };
 }
+
 function saveAllSettings() {
     const settings = collectSettings();
     saveSettings(settings);
     
-    // DO NOT clear the popup flag - it should stay true forever
-    // Only update the moduleOrder to match settings
-    const enabledList = Object.keys(settings.enabledModules).filter(id => settings.enabledModules[id] === true);
-    if (enabledList.length > 0) {
-        localStorage.setItem('moduleOrder', JSON.stringify(enabledList));
-    }
+    // Clear popup selection so dashboard uses settings
+    localStorage.removeItem('modulesSelected');
+    localStorage.removeItem('moduleOrder');
     
     alert('Settings saved!');
     location.reload();
@@ -550,14 +554,14 @@ if (exitBtn) exitBtn.addEventListener('click', () => window.location.href = 'ind
 // Initialize
 loadUI();
 
-// URL Parameter Handler – opens the corresponding module configuration
+// URL Parameter Handler
 (function() {
     const urlParams = new URLSearchParams(window.location.search);
     const paramValue = urlParams.get('args');
     
     if (!paramValue) return;
     
-    const validModules = ['gallery', 'music', 'news', 'mastodon', 'phone', 'bus', 'emergency', 'weather', 'chat', 'calendar'];    
+    const validModules = ['gallery', 'music', 'news', 'mastodon', 'phone', 'bus', 'emergency', 'weather', 'calendar', 'chat'];
     const targetModule = paramValue.toLowerCase();
     
     if (!validModules.includes(targetModule)) return;
@@ -576,20 +580,3 @@ loadUI();
         moduleCard.style.backgroundColor = '';
     }, 1500);
 })();
-
-// Sync module visibility with the selection popup
-function syncModuleTogglesWithPopup() {
-    const settings = loadSettings();
-    const enabledModules = settings.enabledModules || {};
-    
-    // Update each toggle switch based on saved settings
-    toggleSwitches.forEach(sw => {
-        const moduleId = sw.closest('.module-header').dataset.module;
-        const isEnabled = enabledModules[moduleId] !== false; // Default to true if not set
-        if (isEnabled) {
-            sw.classList.add('active');
-        } else {
-            sw.classList.remove('active');
-        }
-    });
-}

@@ -33,8 +33,11 @@ const DEFAULT_SETTINGS = {
     phone: { contacts: [], autoDialDelay: 10 },
     emergency: { contacts: [], checkInterval: 5 },
     chat: {
-        rooms: [],
-        refreshInterval: 30
+        rooms: [''],
+        refreshInterval: 30,
+        homeserver: 'https://matrix.org',
+        accessToken: '',
+        userId: ''
     }
 };
 

@@ -227,6 +227,45 @@ app.get('/api/bus-realtime', async (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
+// Proxy for Proton Calendar ICS
+// -----------------------------------------------------------------------------
+// Proxy for Proton Calendar ICS
+app.get('/api/calendar-proxy', async (req, res) => {
+    let icsUrl = req.query.url;
+    if (!icsUrl) {
+        return res.status(400).send('Missing calendar URL');
+    }
+    
+    // Decode the URL if it was encoded
+    try {
+        icsUrl = decodeURIComponent(icsUrl);
+    } catch(e) {
+        // If decoding fails, use as is
+        console.log('URL decoding not needed');
+    }
+    
+    console.log('Fetching calendar from:', icsUrl.substring(0, 100) + '...');
+    
+    try {
+        const response = await fetch(icsUrl, {
+            headers: {
+                'User-Agent': 'HandiHomepage/1.0',
+                'Accept': 'text/calendar, */*'
+            }
+        });
+        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const icsText = await response.text();
+        res.setHeader('Content-Type', 'text/calendar');
+        res.send(icsText);
+    } catch (err) {
+        console.error('Calendar proxy error:', err.message);
+        res.status(500).send(`Failed to fetch calendar: ${err.message}`);
+    }
+});
+
+// -----------------------------------------------------------------------------
 // NEWS API – FIXED with proper User-Agent and error handling
 // -----------------------------------------------------------------------------
 app.get('/api/news', async (req, res) => {

@@ -20,7 +20,18 @@ export default async function initCalendar(container) {
     const notificationMinutes = settings.calendar?.notificationMinutes || 30;
     
     let refreshIntervalId = null;
-    let notifiedEventIds = new Set(); // Track which events we've already notified about
+    let notifiedEventIds = new Set();
+    let lastSyncTime = null;
+
+    // Safe text decode (handles invalid URI sequences gracefully)
+    function safeDecode(str) {
+        if (!str) return '';
+        try {
+            return decodeURIComponent(str);
+        } catch (e) {
+            return str;
+        }
+    }
 
     // Parse iCal (ICS) format
     function parseICS(icsText) {
@@ -42,13 +53,11 @@ export default async function initCalendar(container) {
                 inEvent = false;
                 currentEvent = null;
             } else if (inEvent && line) {
-                // Parse key:value pairs
                 const colonIndex = line.indexOf(':');
                 if (colonIndex > 0) {
                     const key = line.substring(0, colonIndex);
                     let value = line.substring(colonIndex + 1);
                     
-                    // Handle multiline values (they start with space)
                     while (i + 1 < lines.length && lines[i + 1].startsWith(' ')) {
                         value += lines[i + 1].trim();
                         i++;
@@ -56,7 +65,7 @@ export default async function initCalendar(container) {
                     
                     switch(key) {
                         case 'SUMMARY':
-                            currentEvent.summary = decodeURIComponent(value.replace(/\\,/g, ',').replace(/\\;/g, ';'));
+                            currentEvent.summary = safeDecode(value.replace(/\\,/g, ',').replace(/\\;/g, ';'));
                             break;
                         case 'DTSTART':
                             currentEvent.start = parseICalDate(value);
@@ -65,10 +74,10 @@ export default async function initCalendar(container) {
                             currentEvent.end = parseICalDate(value);
                             break;
                         case 'DESCRIPTION':
-                            currentEvent.description = decodeURIComponent(value.replace(/\\n/g, '\n'));
+                            currentEvent.description = safeDecode(value.replace(/\\n/g, '\n'));
                             break;
                         case 'LOCATION':
-                            currentEvent.location = decodeURIComponent(value);
+                            currentEvent.location = safeDecode(value);
                             break;
                         case 'UID':
                             currentEvent.uid = value;
@@ -80,14 +89,11 @@ export default async function initCalendar(container) {
         return events;
     }
 
-    // Parse iCal date format (YYYYMMDDTHHMMSSZ or YYYYMMDD)
     function parseICalDate(dateStr) {
         if (!dateStr) return null;
-        // Remove timezone 'Z' if present and treat as UTC
         let clean = dateStr.replace(/Z$/, '');
         
         if (clean.includes('T')) {
-            // Full date + time: 20240521T143000
             const year = parseInt(clean.substring(0, 4));
             const month = parseInt(clean.substring(4, 6)) - 1;
             const day = parseInt(clean.substring(6, 8));
@@ -96,7 +102,6 @@ export default async function initCalendar(container) {
             const second = parseInt(clean.substring(13, 15)) || 0;
             return new Date(Date.UTC(year, month, day, hour, minute, second));
         } else {
-            // All-day event: 20240521
             const year = parseInt(clean.substring(0, 4));
             const month = parseInt(clean.substring(4, 6)) - 1;
             const day = parseInt(clean.substring(6, 8));
@@ -104,46 +109,54 @@ export default async function initCalendar(container) {
         }
     }
 
-    // Check if an event is happening today
     function isToday(date) {
         if (!date) return false;
         const today = new Date();
-        return date.getDate() === today.getDate() &&
-               date.getMonth() === today.getMonth() &&
-               date.getFullYear() === today.getFullYear();
+        const eventDate = new Date(date);
+        return eventDate.getDate() === today.getDate() &&
+               eventDate.getMonth() === today.getMonth() &&
+               eventDate.getFullYear() === today.getFullYear();
     }
 
-    // Check if an event is upcoming within notification window
+    function isTomorrow(date) {
+        if (!date) return false;
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const eventDate = new Date(date);
+        return eventDate.getDate() === tomorrow.getDate() &&
+               eventDate.getMonth() === tomorrow.getMonth() &&
+               eventDate.getFullYear() === tomorrow.getFullYear();
+    }
+
     function isUpcoming(event, minutesThreshold) {
         if (!event.start) return false;
         const now = new Date();
-        const eventTime = event.start;
+        const eventTime = new Date(event.start);
         const diffMs = eventTime - now;
         const diffMinutes = diffMs / (1000 * 60);
         return diffMinutes > 0 && diffMinutes <= minutesThreshold;
     }
 
-    // Format time for display
     function formatEventTime(event) {
         if (!event.start) return 'Time TBD';
         
-        const start = event.start;
+        const start = new Date(event.start);
         const options = { hour: '2-digit', minute: '2-digit' };
         
-        if (event.end && event.end > event.start) {
-            return `${start.toLocaleTimeString([], options)} - ${event.end.toLocaleTimeString([], options)}`;
+        if (event.end) {
+            const end = new Date(event.end);
+            if (end > start) {
+                return `${start.toLocaleTimeString([], options)} - ${end.toLocaleTimeString([], options)}`;
+            }
         }
         return start.toLocaleTimeString([], options);
     }
 
-    // Format date for display
-    function formatEventDate(date) {
-        if (!date) return '';
-        const options = { month: 'short', day: 'numeric' };
-        return date.toLocaleDateString([], options);
+    function formatSyncTime() {
+        if (!lastSyncTime) return 'Never';
+        return lastSyncTime.toLocaleTimeString();
     }
 
-    // Send browser notification
     function sendNotification(title, body) {
         if (!('Notification' in window)) return;
         
@@ -158,7 +171,6 @@ export default async function initCalendar(container) {
         }
     }
 
-    // Check for upcoming events and send notifications
     function checkForUpcomingEvents(events) {
         for (const event of events) {
             if (isUpcoming(event, notificationMinutes)) {
@@ -190,20 +202,31 @@ export default async function initCalendar(container) {
         content.innerHTML = '<div class="calendar-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading calendar...</div>';
 
         try {
-            const response = await fetch(calendarUrl);
+            const encodedUrl = encodeURIComponent(calendarUrl);
+            const proxyUrl = `/api/calendar-proxy?url=${encodedUrl}`;
+            
+            const response = await fetch(proxyUrl);
+            
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
             const icsText = await response.text();
+            
+            if (!icsText.includes('BEGIN:VCALENDAR')) {
+                throw new Error('Invalid calendar data received');
+            }
+            
             const allEvents = parseICS(icsText);
             
             // Filter today's events
             const todayEvents = allEvents.filter(event => isToday(event.start));
-            // Sort by start time
-            todayEvents.sort((a, b) => (a.start || 0) - (b.start || 0));
+            const tomorrowEvents = allEvents.filter(event => isTomorrow(event.start));
+            todayEvents.sort((a, b) => new Date(a.start || 0) - new Date(b.start || 0));
             
-            // Check for upcoming events (for notifications)
+            lastSyncTime = new Date();
+            
             checkForUpcomingEvents(allEvents);
             
-            renderCalendar(todayEvents);
+            renderCalendar(todayEvents, tomorrowEvents, allEvents.length);
         } catch (err) {
             console.error('Calendar fetch error:', err);
             content.innerHTML = `
@@ -219,51 +242,59 @@ export default async function initCalendar(container) {
         }
     }
 
-    function renderCalendar(events) {
-        if (events.length === 0) {
-            content.innerHTML = `
-                <div class="calendar-empty">
-                    <i class="fa-regular fa-calendar-check"></i>
-                    <p>No events scheduled for today.</p>
-                    <div class="calendar-notification-info">
-                        <i class="fa-regular fa-bell"></i> You'll be notified ${notificationMinutes} minutes before events.
-                    </div>
-                </div>
-            `;
-            return;
-        }
-
+    function renderCalendar(events, tomorrowEvents, totalEvents) {
         let html = `
-            <div class="calendar-today-header">
-                <i class="fa-regular fa-sun"></i> Today's Events
-                <span class="calendar-notification-badge">🔔 ${notificationMinutes} min warning</span>
+            <div class="calendar-today-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 8px 12px; background: #eaf2ff; border-radius: 12px;">
+                <span><i class="fa-regular fa-sun"></i> Today's Events</span>
+                <span class="calendar-notification-badge" style="background: #0047cc; color: white; padding: 4px 8px; border-radius: 20px; font-size: 0.7rem;">🔔 ${notificationMinutes} min warning</span>
             </div>
-            <div class="calendar-events-list">
         `;
 
-        for (const event of events) {
-            const timeStr = formatEventTime(event);
-            const dateStr = formatEventDate(event.start);
-            
+        if (events.length === 0) {
             html += `
-                <div class="calendar-event-card">
-                    <div class="calendar-event-time">
-                        <i class="fa-regular fa-clock"></i> ${escapeHtml(timeStr)}
-                    </div>
-                    <div class="calendar-event-details">
-                        <div class="calendar-event-title">${escapeHtml(event.summary || 'Untitled Event')}</div>
-                        ${event.location ? `<div class="calendar-event-location"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(event.location)}</div>` : ''}
-                        ${event.description ? `<div class="calendar-event-desc">${escapeHtml(event.description.substring(0, 100))}${event.description.length > 100 ? '…' : ''}</div>` : ''}
-                    </div>
-                </div>
+                <div class="calendar-empty" style="text-align: center; padding: 30px; background: white; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <i class="fa-regular fa-calendar-check" style="font-size: 2rem; color: #0047cc;"></i>
+                    <p style="margin-top: 12px;">No events scheduled for today.</p>
             `;
+            
+            if (tomorrowEvents.length > 0) {
+                html += `<p style="margin-top: 8px; font-size: 0.8rem; color: #64748b;">📅 You have ${tomorrowEvents.length} event(s) tomorrow.</p>`;
+            }
+            
+            html += `</div>`;
+        } else {
+            html += `<div class="calendar-events-list" style="max-height: 450px; overflow-y: auto;">`;
+            for (const event of events) {
+                const timeStr = formatEventTime(event);
+                html += `
+                    <div class="calendar-event-card" style="display: flex; gap: 16px; background: white; border: 2px solid #cbd5e1; border-radius: 16px; padding: 16px; margin-bottom: 12px;">
+                        <div class="calendar-event-time" style="min-width: 100px; font-weight: 600; color: #0047cc;">
+                            <i class="fa-regular fa-clock"></i> ${escapeHtml(timeStr)}
+                        </div>
+                        <div class="calendar-event-details" style="flex: 1;">
+                            <div class="calendar-event-title" style="font-weight: 700; font-size: 1rem;">${escapeHtml(event.summary || 'Untitled Event')}</div>
+                            ${event.location ? `<div class="calendar-event-location" style="font-size: 0.8rem; color: #64748b; margin-top: 4px;"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(event.location)}</div>` : ''}
+                            ${event.description ? `<div class="calendar-event-desc" style="font-size: 0.8rem; color: #475569; margin-top: 6px;">${escapeHtml(event.description.substring(0, 100))}${event.description.length > 100 ? '…' : ''}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            html += `</div>`;
         }
-
+        
+        // Sync info and refresh button
         html += `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding: 8px 4px;">
+                <span style="font-size: 0.7rem; color: #64748b;">
+                    <i class="fa-regular fa-clock"></i> Last synced: ${formatSyncTime()}
+                    ${totalEvents > 0 ? ` | ${totalEvents} total events in feed` : ''}
+                </span>
+                <button id="calendarRefreshBtn" class="calendar-refresh-btn" style="padding: 8px 16px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; cursor: pointer; font-weight: 600;">
+                    ⟳ Refresh
+                </button>
             </div>
-            <button id="calendarRefreshBtn" class="calendar-refresh-btn">⟳ Refresh</button>
         `;
-
+        
         content.innerHTML = html;
         
         const refreshBtn = document.getElementById('calendarRefreshBtn');
@@ -275,8 +306,8 @@ export default async function initCalendar(container) {
     function startRefresh() {
         if (refreshIntervalId) clearInterval(refreshIntervalId);
         fetchCalendar();
-        // Refresh every 5 minutes to check for upcoming events
-        refreshIntervalId = setInterval(fetchCalendar, 5 * 60 * 1000);
+        // Refresh every 15 minutes (Proton ICS can take hours to update)
+        refreshIntervalId = setInterval(fetchCalendar, 15 * 60 * 1000);
     }
 
     function escapeHtml(str) {
@@ -284,7 +315,6 @@ export default async function initCalendar(container) {
         return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
     }
 
-    // Request notification permission on load
     if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
     }

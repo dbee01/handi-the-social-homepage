@@ -12,10 +12,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/settings.css">
     <!-- Privacy-friendly analytics by Plausible -->
-    <script async src="https://plausible.io/js/pa-cvqvYb9dRTC-BwuguUIVj.js"></script>
     <script>
-    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-    plausible.init()
+        document.addEventListener('DOMContentLoaded', () => {
+             const isLoggedIn = document.body.classList.contains('logged-in');  
+    
+            if (!isLoggedIn) {
+                // Load Plausible only for visitors
+                const script = document.createElement('script');
+                script.async = true;
+                script.defer = true;
+                script.src = 'https://plausible.io/js/pa-cvqvYb9dRTC-BwuguUIVj.js';
+                document.head.appendChild(script);
+                
+                window.plausible = window.plausible || function() {
+                    (window.plausible.q = window.plausible.q || []).push(arguments);
+                };
+            }
+            
+            });
+        
     </script>
 </head>
 <body>
@@ -147,17 +162,22 @@
         </div>
     </div>
 
-    <!-- Calendar Module -->
+    <!-- Calendar Module (Proton ICS) -->
     <div class="module-card" data-module="calendar">
         <div class="module-header" data-module="calendar">
-            <div class="module-title"><i class="fa-regular fa-calendar"></i><h3>Calendar</h3></div>
+            <div class="module-title"><i class="fa-regular fa-calendar"></i><h3>Calendar (Proton ICS)</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
             <div class="config-field">
-                <label>Public Proton Calendar URL (ICS link):</label>
-                <input type="url" id="calendarUrl" placeholder="https://calendar.proton.me/share/.../calendar.ics">
-                <small>Get this from Proton Calendar → Share → Public link</small>
+                <label>Proton Calendar ICS Link:</label>
+                <input type="url" id="calendarUrl" placeholder="https://calendar.proton.me/api/calendar/v1/url/.../calendar.ics?CacheKey=...&PassphraseKey=...">
+                <small>📖 How to get your ICS link:</small>
+                <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">
+                    1. Go to Proton Calendar → Settings → Calendars<br>
+                    2. Click on your calendar → "Link for viewing"<br>
+                    3. Copy the ICS link and paste it above
+                </div>
             </div>
             <div class="config-field">
                 <label>Notification time before event:</label>
@@ -170,10 +190,6 @@
                     <option value="120">2 hours</option>
                     <option value="1440">1 day</option>
                 </select>
-            </div>
-            <div class="config-field">
-                <label>How it works:</label>
-                <p>• Paste your public Proton Calendar ICS link above<br>• Events for today will appear on your dashboard<br>• Browser notifications will alert you before events start<br>• Calendar refreshes automatically every 5 minutes</p>
             </div>
         </div>
     </div>
@@ -196,38 +212,54 @@
         </div>
     </div>
 
-    <!-- Chat Module -->
+    <!-- Chat Module (Matrix with full authentication) -->
     <div class="module-card" data-module="chat">
         <div class="module-header" data-module="chat">
-            <div class="module-title"><i class="fa-regular fa-message"></i><h3>Chat (Matrix Rooms)</h3></div>
+            <div class="module-title"><i class="fa-regular fa-message"></i><h3>Chat (Matrix)</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
             <div class="config-field">
-                <label>Room 1 URL (matrix.to or room ID):</label>
-                <input type="text" id="chatRoom1" placeholder="e.g., https://matrix.to/#/#room:matrix.org">
-                <small>Public room – guest access must be enabled</small>
+                <label>Homeserver URL:</label>
+                <input type="url" id="chatHomeserver" placeholder="https://matrix.org">
+                <small>Your Matrix server (e.g., https://matrix.org)</small>
+            </div>
+            <div class="config-field">
+                <label>Access Token:</label>
+                <input type="password" id="chatAccessToken" placeholder="syt_...">
+                <small>Generate in Element → Settings → Help & About → Access Token</small>
+            </div>
+            <div class="config-field">
+                <label>User ID:</label>
+                <input type="text" id="chatUserId" placeholder="@username:matrix.org">
+            </div>
+            <div class="config-field">
+                <label>Room 1 URL:</label>
+                <input type="text" id="chatRoom1" placeholder="#room:matrix.org">
             </div>
             <div class="config-field">
                 <label>Room 2 URL:</label>
-                <input type="text" id="chatRoom2" placeholder="e.g., #friends:matrix.org">
+                <input type="text" id="chatRoom2" placeholder="">
             </div>
             <div class="config-field">
                 <label>Room 3 URL:</label>
-                <input type="text" id="chatRoom3" placeholder="e.g., #family:matrix.org">
+                <input type="text" id="chatRoom3" placeholder="">
             </div>
             <div class="config-field">
                 <label>Refresh interval (seconds):</label>
                 <input type="number" id="chatRefreshInterval" min="10" max="300" value="30">
-                <small>How often to check for new messages</small>
             </div>
             <div class="config-field">
-                <label>How to use:</label>
-                <p>1. Create a public Matrix room or use an existing one<br>2. Copy the room URL or ID<br>3. Paste above – guest peek must be enabled in room settings</p>
+                <label>How to get an access token:</label>
+                <p style="font-size:0.8rem; color:#64748b; margin-top: 4px;">
+                    1. Log into Element (app.element.io) or your Matrix client<br>
+                    2. Go to Settings → Help & About<br>
+                    3. Scroll down to "Access Token" → Click  to reveal<br>
+                    4. Copy the token and paste it above
+                </p>
             </div>
         </div>
     </div>
-
 
     <!-- PREMIUM MODULES -->
     <div class="header">
@@ -266,10 +298,9 @@
 
 </div>
 
-
-    <div class="brand" style="text-align: center; padding: 20px; font-size: 14px; color: #64748b;">
-        <span class="subtitle"><a href="https://handihomepage.com/terms">Terms of Service</a> | <a href="https://handihomepage.com/privacy">Privacy Policy</a></span>
-    </div>
+<div class="brand" style="text-align: center; padding: 20px; font-size: 14px; color: #64748b;">
+    <span class="subtitle"><a href="https://handihomepage.com/terms">Terms of Service</a> | <a href="https://handihomepage.com/privacy">Privacy Policy</a></span>
+</div>
 
 <script>
     // URL Parameter Handler – opens the corresponding module configuration
@@ -279,7 +310,7 @@
         
         if (!paramValue) return;
         
-        const validModules = ['gallery', 'music', 'news', 'mastodon', 'phone', 'bus', 'emergency', 'weather', 'chat'];
+        const validModules = ['gallery', 'music', 'news', 'mastodon', 'phone', 'bus', 'emergency', 'weather', 'calendar', 'chat'];
         const targetModule = paramValue.toLowerCase();
         
         if (!validModules.includes(targetModule)) return;

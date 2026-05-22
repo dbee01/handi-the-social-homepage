@@ -2789,3 +2789,61 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================================================
+   FOOTER - Responsive Rows (6 buttons)
+   Desktop: 1 row
+   Mobile: 2 rows of 3 buttons each
+========================================================= */
+
+.footer-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Desktop & Tablet: Single row, evenly spaced */
+@media (min-width: 769px) {
+    .footer-bar {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .footer-icon {
+        flex: 0 0 auto;
+    }
+}
+
+/* Mobile (≤768px): Two rows of 3 buttons each */
+@media (max-width: 768px) {
+    .footer-bar {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        justify-items: center;
+        align-items: center;
+    }
+    
+    .footer-icon {
+        width: 100%;
+        max-width: 80px;
+        min-width: 60px;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+    .footer-bar {
+        gap: 0.5rem;
+    }
+    
+    .footer-icon {
+        min-width: 50px;
+        min-height: 50px;
+        font-size: 1rem;
+    }
+}

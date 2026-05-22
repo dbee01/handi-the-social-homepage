@@ -184,23 +184,26 @@
     </script>
     <!-- Privacy-friendly analytics by Plausible -->
     <script>
-    // Check for the cross-domain login cookie
-    const isLoggedIn = document.cookie.indexOf('wp_logged_in=1') !== -1;
-
-    if (!isLoggedIn) {
-        // Load Plausible only for non-logged-in users
-        const script = document.createElement('script');
-        script.async = true;
-        script.src = 'https://plausible.io/js/pa-cvqvYb9dRTC-BwuguUIVj.js';
-        document.head.appendChild(script);
+        document.addEventListener('DOMContentLoaded', () => {
+             const isLoggedIn = document.body.classList.contains('logged-in');  
+    
+            if (!isLoggedIn) {
+                // Load Plausible only for visitors
+                const script = document.createElement('script');
+                script.async = true;
+                script.defer = true;
+                script.src = 'https://plausible.io/js/pa-cvqvYb9dRTC-BwuguUIVj.js';
+                document.head.appendChild(script);
+                
+                window.plausible = window.plausible || function() {
+                    (window.plausible.q = window.plausible.q || []).push(arguments);
+                };
+            }
+            
+            });
         
-        window.plausible = window.plausible || function() {
-            (plausible.q = plausible.q || []).push(arguments);
-        };
-        plausible.init();
-    }
     </script>
-</head>
+    </head>
 <body>
     <header>
         <div class="site-branding">
@@ -265,9 +268,6 @@
 
     <footer>
         <div class="footer-bar">
-            <button id="footerReorderBtn" class="footer-icon" title="Reorder Dashboard">
-                <i class="fa-solid fa-arrow-up-wide-short"></i>
-            </button>
             <button id="footerMuteBtn" class="footer-icon" title="Mute all audio">
                 <i class="fa-solid fa-volume-high"></i>
             </button>

@@ -21,7 +21,8 @@
             • Shows real‑time or scheduled arrivals for your chosen route.<br>
             • Configure route and stop IDs in <strong>Settings → Bus Tracker</strong>.<br>
             • Data refreshes automatically every 60 seconds.<br>
-            • Click <strong>Refresh</strong> to update manually.
+            • Click <strong>Refresh Times</strong> to update manually.<br>
+            • Use <strong>Switch Direction</strong> to toggle between stops.
         `,
         music: `
             <strong>🎵 Music Player</strong><br><br>
@@ -63,6 +64,27 @@
             • Add contacts with photos in <strong>Settings → Friendly Phone</strong>.<br>
             • The module is <strong>locked by default</strong> – unlock to enable calls.<br>
             • Photos help identify contacts at a glance.
+        `,
+        chat: `
+            <strong>💬 Chat (Matrix)</strong><br><br>
+            • Peek into public Matrix rooms using guest access.<br>
+            • Add room URLs in <strong>Settings → Chat</strong>.<br>
+            • The module checks for new messages every 30 seconds.<br>
+            • Click the room header to expand and view messages.<br>
+            • New message notifications appear as a red badge.
+        `,
+        calendar: `
+            <strong>📅 Calendar (Proton ICS)</strong><br><br>
+            • Shows today's events from your Proton Calendar.<br>
+            • Get your ICS link from Proton Calendar → Settings → Calendars → "Share with anyone" → "Create link".<br>
+            • Paste the ICS link in <strong>Settings → Calendar</strong>.<br>
+            
+            <strong>⚠️ Important limitations (Proton, not this module):</strong><br>
+            • The ICS feed updates <strong>every 4–16 hours</strong> – new events take time to appear.<br>
+            • Recurring events may not appear correctly.<br>
+            
+            <strong>💡 Tips:</strong><br>
+            • If an event doesn't appear, wait a few hours and try again.
         `
     };
 
