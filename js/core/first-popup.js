@@ -40,7 +40,7 @@
     });
     
     popup.innerHTML = `
-        <div style="background:white;border-radius:24px;width:90%;max-width:1000px;max-height:90vh;overflow-y:auto;padding:25px;display:flex;flex-direction:column;">
+        <div style="background:white;border-radius:24px;width:100%;max-width:1000px;max-height:90vh;overflow-y:auto;padding:25px;display:flex;flex-direction:column;">
                 <h2 style="color:#0047cc;text-align:center;margin-bottom:10px;"><i class="fa-solid fa-hand-peace"></i> Welcome to HandiHomepage</h2>
                 <p style="text-align:center;margin-bottom:20px;color:#556d8b;">Choose modules for your dashboard (drag to reorder)</p>
                 
