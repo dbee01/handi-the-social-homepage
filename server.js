@@ -30,13 +30,33 @@ const stopInfo = {
 // -----------------------------------------------------------------------------
 // GENERIC SCHEDULE
 // -----------------------------------------------------------------------------
+// Generic schedule with different offsets for different directions
 function getGenericSchedule(routeId, stopId, direction) {
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     const schedule = [];
+    
+    // Different base offsets for different directions
+    let baseOffset = 0;
+    let interval = 30;
+    
+    if (direction && direction.toLowerCase().includes('dublin')) {
+        // Direction towards Dublin
+        baseOffset = 5;
+        interval = 32;
+    } else if (direction && direction.toLowerCase().includes('cork')) {
+        // Direction towards Cork
+        baseOffset = 10;
+        interval = 28;
+    } else {
+        // Default
+        baseOffset = 0;
+        interval = 30;
+    }
+    
     for (let hour = 6; hour <= 23; hour++) {
-        for (let minute = 0; minute < 60; minute += 30) {
-            const totalMinutes = hour * 60 + minute;
+        for (let minute = 0; minute < 60; minute += interval) {
+            const totalMinutes = hour * 60 + minute + baseOffset;
             if (totalMinutes > currentMinutes) {
                 const minutesAway = totalMinutes - currentMinutes;
                 schedule.push({

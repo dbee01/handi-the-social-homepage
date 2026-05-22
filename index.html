@@ -11,23 +11,25 @@
     <title>HandiHomepage – Your Safe & Simple Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/elderly.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="https://unpkg.com/packery@2.1.2/dist/packery.pkgd.min.js"></script>
     <script src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
     <script type="module">
         import { loadSettings } from './js/core/settings.js';
+        import { startWeatherUpdates } from './js/core/weather.js';
         import initBus from './modules/bus/bus.module.js';
         import initGallery from './modules/gallery/gallery.module.js';
-        import initMusic from './modules/local-player/local-player.module.js';
+        import initMusic from './modules/music/music.module.js';
         import initNews from './modules/news/news.module.js';
         import initMastodon from './modules/mastodon/mastodon.module.js';
         import initRadio from './modules/radio/radio.module.js';
         import initEmergency from './modules/emergency/emergency.module.js';
         import initPhone from './modules/friendly-phone/friendly-phone.module.js';
         import initChat from './modules/chat/chat.module.js';
+        import initCalendar from './modules/calendar/calendar.module.js';
 
         import { initLayout } from './js/core/layout.js';
-        import initCalendar from './modules/calendar/calendar.module.js';
 
         initLayout();
 
@@ -40,25 +42,63 @@
             radio: initRadio,
             emergency: initEmergency,
             phone: initPhone,
-            calendar: initCalendar,
-            chat: initChat
+            chat: initChat,
+            calendar: initCalendar
         };
 
+        // Load settings and apply module visibility
         const settings = loadSettings();
-        const enabledModules = settings.enabledModules || {};
+        const enabledModulesSettings = settings.enabledModules || {};
 
-        // Apply module order before initializing
-        const savedModuleOrder = localStorage.getItem('handiModuleOrder');
-        if (savedModuleOrder) {
-            const moduleOrder = JSON.parse(savedModuleOrder);
-            const grid = document.getElementById('dashboard-grid');
-            if (grid) {
-                moduleOrder.forEach(moduleId => {
-                    const moduleElement = document.getElementById(moduleId);
-                    if (moduleElement) {
-                        grid.appendChild(moduleElement); // Moves to end, preserving order
+        // Get list of enabled modules from settings
+        let enabledModulesList = Object.keys(enabledModulesSettings).filter(id => enabledModulesSettings[id] === true);
+
+        // If nothing is enabled, enable all
+        if (enabledModulesList.length === 0) {
+            enabledModulesList = ['gallery', 'bus', 'music', 'news', 'mastodon', 'radio', 'emergency', 'phone', 'chat', 'calendar'];
+        }
+        // All module IDs in order
+        const allModuleIds = ['gallery', 'bus', 'music', 'news', 'mastodon', 'radio', 'emergency', 'phone', 'chat', 'calendar'];
+
+        // Reorder the DOM based on enabled modules
+        const grid = document.getElementById('dashboard-grid');
+        if (grid) {
+            // First, move enabled modules to top
+            enabledModulesList.forEach(moduleId => {
+                const element = document.getElementById(moduleId);
+                if (element) {
+                    grid.appendChild(element);
+                }
+            });
+            // Then append disabled modules at bottom (they will be hidden anyway)
+            allModuleIds.forEach(moduleId => {
+                if (!enabledModulesList.includes(moduleId)) {
+                    const element = document.getElementById(moduleId);
+                    if (element) {
+                        grid.appendChild(element);
                     }
-                });
+                }
+            });
+        }
+
+        // Show/hide and initialise modules
+        for (const [id, initFn] of Object.entries(modules)) {
+            const element = document.getElementById(id);
+            if (!element) continue;
+            
+            // Check if module should be visible from settings
+            const isEnabled = enabledModulesList.includes(id);
+            element.classList.toggle('hidden', !isEnabled);
+            
+            if (isEnabled) {
+                const container = element.querySelector('.module-content');
+                if (container) {
+                    try {
+                        initFn(container);
+                    } catch (err) {
+                        console.error(`Error initialising ${id}:`, err);
+                    }
+                }
             }
         }
         
@@ -75,14 +115,13 @@
 
             function updateSearchLogo(value) {
                 const logoMap = {
-                    startpage: { label: 'SP', className: 'logo-startpage' },
-                    qwant: { label: 'Q', className: 'logo-qwant' },
-                    ecosia: { label: 'E', className: 'logo-ecosia' },
-                    mojeek: { label: 'M', className: 'logo-mojeek' }
+                    startpage: '/images/startpage.jpg',
+                    qwant: '/images/quant.jpg',
+                    ecosia: '/images/ecosia.jpg',
+                    mojeek: '/images/mojeek.jpg'
                 };
-                const engine = logoMap[value] || logoMap.startpage;
-                searchEngineLogo.className = `search-engine-logo ${engine.className}`;
-                searchEngineLogo.textContent = engine.label;
+                const logoPath = logoMap[value] || logoMap.startpage;
+                searchEngineLogo.src = logoPath;
                 searchEngineLogo.title = searchEngine.options[searchEngine.selectedIndex]?.text || 'Search engine';
             }
 
@@ -129,134 +168,10 @@
             }
         }
 
-        // Call it after modules are initialised
         initializeSearch();
 
-        // Weather widget – now uses saved location from settings
-        // Helper: map WMO weather codes to human‑readable outlook
-        function getWeatherDescription(code) {
-            const codes = {
-                0: "☀️ Clear",
-                1: "🌤️ Mainly clear",
-                2: "⛅ Partly cloudy",
-                3: "☁️ Overcast",
-                45: "🌫️ Fog",
-                48: "🌫️ Fog",
-                51: "🌧️ Drizzle",
-                53: "🌧️ Drizzle",
-                55: "🌧️ Drizzle",
-                61: "🌧️ Light rain",
-                63: "🌧️ Moderate rain",
-                65: "🌧️ Heavy rain",
-                71: "🌨️ Light snow",
-                73: "🌨️ Moderate snow",
-                75: "🌨️ Heavy snow",
-                80: "🌧️ Showers",
-                81: "🌧️ Showers",
-                82: "🌧️ Heavy showers",
-                85: "🌨️ Snow showers",
-                86: "🌨️ Heavy snow showers",
-                95: "⛈️ Thunderstorm"
-            };
-            return codes[code] || "🌡️ Unknown";
-        }
-
-        // Helper: escape HTML to prevent XSS
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, m => {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
-
-        // Weather widget – with debug logging and proper error handling
-        async function updateWeather() {
-            const weatherEl = document.getElementById('weather');
-            if (!weatherEl) {
-                console.error('Weather element not found');
-                return;
-            }
-
-            // Load saved weather settings
-            const settings = loadSettings();
-            let locationName = settings.weather?.location || 'Cork';
-            let countryCode = settings.weather?.country || 'IE';
-            
-            console.log('Weather: Fetching for', locationName, countryCode);
-            
-            // Show loading indicator
-            weatherEl.innerHTML = `<div class="weather-loading"><i class="fa-solid fa-spinner fa-spin"></i> ${locationName}...</div>`;
-            
-            try {
-                // Step 1: Geocode the location
-                const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(locationName)},${countryCode}&format=json&limit=1&addressdetails=1`;
-                console.log('Geocoding URL:', geoUrl);
-                
-                const geoResponse = await fetch(geoUrl, {
-                    headers: { 'User-Agent': 'HandiHomepage/1.0 (https://handihomepage.com)' }
-                });
-                
-                if (!geoResponse.ok) {
-                    throw new Error(`Geocoding failed: ${geoResponse.status}`);
-                }
-                
-                const geoData = await geoResponse.json();
-                console.log('Geocoding result:', geoData);
-                
-                let lat, lon;
-                let displayLocation = locationName;
-                
-                if (geoData && geoData.length > 0) {
-                    lat = parseFloat(geoData[0].lat);
-                    lon = parseFloat(geoData[0].lon);
-                    
-                    const address = geoData[0].address;
-                    if (address) {
-                        displayLocation = address.suburb || address.city || address.town || address.village || address.county || locationName;
-                    }
-                    console.log(`Coordinates: ${lat}, ${lon} for ${displayLocation}`);
-                } else {
-                    throw new Error(`Location "${locationName}" not found`);
-                }
-                
-                // Step 2: Fetch weather using Open-Meteo (no API key needed, no CORS issues)
-                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`;
-                console.log('Weather URL:', weatherUrl);
-                
-                const weatherRes = await fetch(weatherUrl);
-                
-                if (!weatherRes.ok) {
-                    throw new Error(`Weather API failed: ${weatherRes.status}`);
-                }
-                
-                const weatherData = await weatherRes.json();
-                console.log('Weather data:', weatherData);
-                
-                if (weatherData.current_weather) {
-                    const temp = Math.round(weatherData.current_weather.temperature);
-                    const weatherCode = weatherData.current_weather.weathercode;
-                    const outlook = getWeatherDescription(weatherCode);
-                    
-                    weatherEl.innerHTML = `
-                        <div class="weather-location">📍 ${escapeHtml(displayLocation)}</div>
-                        <div class="weather-temp">🌡️ ${temp}°C</div>
-                        <div class="weather-outlook">${outlook}</div>
-                    `;
-                    console.log('Weather updated successfully');
-                } else {
-                    throw new Error('No current_weather in response');
-                }
-            } catch (err) {
-                console.error('Weather error details:', err.message);
-                // Show a friendly error message
-                weatherEl.innerHTML = `<div class="weather-fallback">🌤️ ${escapeHtml(locationName)}: ⚠️ ${err.message}</div>`;
-            }
-        }
-        updateWeather();
-        setInterval(updateWeather, 1800000);
+        // Start weather updates
+        startWeatherUpdates();
 
         // Settings link
         document.getElementById('settingsLink')?.addEventListener('click', () => {
@@ -275,14 +190,14 @@
     <header>
         <div class="site-branding">
             <div class="handi-logo">
-                <a href="https://handihomepage.com" class="logo-link">
+                <a href="/" class="logo-link">
                     <i class="fa-solid fa-hand-peace"></i>
                     <span class="logo-text">HandiHomepage</span>
                 </a>
             </div>
         </div>
         <div class="search-wrapper">
-            <span class="search-engine-logo logo-startpage" id="searchEngineLogo" title="StartPage">SP</span>
+            <img src="/images/startpage.jpg" class="search-engine-logo" id="searchEngineLogo" title="StartPage" alt="StartPage" style="width: 32px; height: 32px; object-fit: contain;">
             <select id="searchEngine" class="search-engine-select">
                 <option value="startpage">StartPage</option>
                 <option value="qwant">Qwant</option>
@@ -298,47 +213,36 @@
         </div>
     </header>
     
-    <script src="js/core/ohdear.js"></script>
     <div class="dashboard-wrapper">
         <main id="dashboard-grid">
-            <div id="radio" class="dashboard-item module" data-module="radio">
-                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
-                <div class="module-content"></div>
-            </div>
-            <div id="news" class="dashboard-item module" data-module="news">
-                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
-                <div class="module-content"></div>
-            </div>
-            <div id="calendar" class="dashboard-item module" data-module="calendar">
-                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
-                <div class="module-content"></div>
-            </div>
-            <div id="chat" class="dashboard-item module" data-module="chat">
-                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
-                <div class="module-content"></div>
-            </div>
-            <div id="phone" class="dashboard-item module" data-module="phone">
-                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
-                <div class="module-content"></div>
-            </div>
             <div id="gallery" class="dashboard-item module" data-module="gallery">
-                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
                 <div class="module-content"></div>
             </div>
             <div id="bus" class="dashboard-item module" data-module="bus">
-                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
                 <div class="module-content"></div>
             </div>
             <div id="music" class="dashboard-item module" data-module="music">
-                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
+                <div class="module-content"></div>
+            </div>
+            <div id="news" class="dashboard-item module" data-module="news">
                 <div class="module-content"></div>
             </div>
             <div id="mastodon" class="dashboard-item module" data-module="mastodon">
-                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
+                <div class="module-content"></div>
+            </div>
+            <div id="radio" class="dashboard-item module" data-module="radio">
                 <div class="module-content"></div>
             </div>
             <div id="emergency" class="dashboard-item module" data-module="emergency">
-                <button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>
+                <div class="module-content"></div>
+            </div>
+            <div id="phone" class="dashboard-item module" data-module="phone">
+                <div class="module-content"></div>
+            </div>
+            <div id="chat" class="dashboard-item module" data-module="chat">
+                <div class="module-content"></div>
+            </div>
+            <div id="calendar" class="dashboard-item module" data-module="calendar">
                 <div class="module-content"></div>
             </div>
         </main>
@@ -358,384 +262,24 @@
             <button id="footerDocsBtn" class="footer-icon" title="Documentation">
                 <i class="fa-solid fa-book"></i>
             </button>
-            <button id="footerEmailBtn" class="footer-icon" title="Contact">
-                <i class="fa-solid fa-envelope"></i>
-            </button>
             <button id="footerCoffeeBtn" class="footer-icon" title="Buy me a pint">
                 <i class="fa-solid fa-beer"></i>
             </button>
-           <button id="footerSettingsBtn" class="footer-icon" title="Settings">
+            <button id="footerEmailBtn" class="footer-icon" title="Contact">
+                <i class="fa-solid fa-envelope"></i>
+            </button>
+            <button id="footerSettingsBtn" class="footer-icon" title="Settings">
                 <i class="fa-solid fa-gear"></i>
             </button>
-
         </div>
     </footer>
 
     <div class="brand">
-        <span class="subtitle"><a href="https://handihomepage.com/terms">Terms of Service</a> | <a href="https://handihomepage.com/privacy">Privacy Policy</a></span>
+        <span class="subtitle"><a href="/terms">Terms of Service</a> | <a href="/privacy">Privacy Policy</a></span>
     </div>
-
-    <!-- Intro Popup (first visit only) --><!-- Module Selection Popup (first visit only) -->
-    <div id="moduleSelectionPopup" class="module-selection-overlay" style="display: none;">
-        <div class="module-selection-container">
-            <div class="module-selection-header">
-                <i class="fa-solid fa-hand-peace"></i> Welcome to HandiHomepage
-            </div>
-            <div class="module-selection-body">
-                <p class="selection-intro">Choose the modules you want to see on your dashboard.<br>Drag to reorder – your first choice will appear at the top!</p>
-                
-                <div class="available-modules">
-                    <h3><i class="fa-solid fa-list"></i> Available Modules</h3>
-                    <div id="availableModulesList" class="module-list available-list">
-                        <div class="module-option" data-module="gallery" data-name="Gallery">
-                            <i class="fa-solid fa-images"></i> Gallery
-                            <button class="add-module-btn">+ Add</button>
-                        </div>
-                        <div class="module-option" data-module="bus" data-name="Bus Tracker">
-                            <i class="fa-solid fa-bus"></i> Bus Tracker
-                            <button class="add-module-btn">+ Add</button>
-                        </div>
-                        <div class="module-option" data-module="music" data-name="Music Player">
-                            <i class="fa-solid fa-music"></i> Music Player
-                            <button class="add-module-btn">+ Add</button>
-                        </div>
-                        <div class="module-option" data-module="news" data-name="News">
-                            <i class="fa-solid fa-newspaper"></i> News
-                            <button class="add-module-btn">+ Add</button>
-                        </div>
-                        <div class="module-option" data-module="mastodon" data-name="Social Media">
-                            <i class="fa-brands fa-mastodon"></i> Social Media
-                            <button class="add-module-btn">+ Add</button>
-                        </div>
-                        <div class="module-option" data-module="radio" data-name="Radio">
-                            <i class="fa-solid fa-radio"></i> Radio
-                            <button class="add-module-btn">+ Add</button>
-                        </div>
-                        <div class="module-option" data-module="emergency" data-name="Emergency">
-                            <i class="fa-solid fa-triangle-exclamation"></i> Emergency
-                            <button class="add-module-btn">+ Add</button>
-                        </div>
-                        <div class="module-option" data-module="phone" data-name="Friendly Phone">
-                            <i class="fa-solid fa-phone"></i> Friendly Phone
-                            <button class="add-module-btn">+ Add</button>
-                        </div>
-                        <div class="module-option" data-module="chat" data-name="Chat">
-                            <i class="fa-regular fa-message"></i> Chat
-                            <button class="add-module-btn">+ Add</button>
-                        </div>
-                        <div class="module-option" data-module="calendar" data-name="Calendar">
-                            <i class="fa-regular fa-calendar"></i> Calendar
-                            <button class="add-module-btn">+ Add</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="selected-modules">
-                    <h3><i class="fa-solid fa-check-circle"></i> Your Dashboard (drag to reorder)</h3>
-                    <div id="selectedModulesList" class="module-list selected-list">
-                        <div class="empty-selection">No modules selected yet. Add from the left column.</div>
-                    </div>
-                </div>
-
-                <div class="intro-checkboxes">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="termsCheckbox"> I agree to the <a href="/terms" id="termsLink">Terms and Conditions</a>
-                    </label>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="privacyCheckbox"> I agree to the <a href="/privacy" id="privacyLink">Privacy Policy</a>
-                    </label>
-                </div>
-            </div>
-            <div class="module-selection-footer">
-                <button id="saveModulesBtn" class="save-modules-btn" disabled>Save & Continue</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Reorder Selection button in footer -->
-    <button id="footerReorderBtn" class="footer-icon" title="Reorder Dashboard">
-        <i class="fa-solid fa-arrow-up-wide-short"></i>
-    </button>
 
     <script src="js/core/module-buttons.js"></script>
     <script src="js/core/footer-controls.js"></script>
-
-    <!-- Intro Popup Controller -->
-    <script>
-    (function() {
-        const POPUP_KEY = 'handiHomepageAgreed';
-        if (localStorage.getItem(POPUP_KEY) === 'true') return;
-
-        const overlay = document.getElementById('introPopup');
-        const termsBox = document.getElementById('termsCheckbox');
-        const privacyBox = document.getElementById('privacyCheckbox');
-        const agreeBtn = document.getElementById('agreeBtn');
-
-        if (!overlay || !termsBox || !privacyBox || !agreeBtn) return;
-
-        overlay.style.display = 'flex';
-
-        function updateAgreeButton() {
-            agreeBtn.disabled = !(termsBox.checked && privacyBox.checked);
-        }
-
-        termsBox.addEventListener('change', updateAgreeButton);
-        privacyBox.addEventListener('change', updateAgreeButton);
-
-        agreeBtn.addEventListener('click', () => {
-            if (termsBox.checked && privacyBox.checked) {
-                localStorage.setItem(POPUP_KEY, 'true');
-                overlay.style.display = 'none';
-            }
-        });
-
-        const termsLink = document.getElementById('termsLink');
-        const privacyLink = document.getElementById('privacyLink');
-        if (termsLink) termsLink.href = 'https://handihomepage.com/terms';
-        if (privacyLink) privacyLink.href = 'https://handihomepage.com/privacy';
-    })();
-    </script>
-<script>
-// COMPLETE WORKING MODULE SELECTION POPUP
-(function() {
-    // Check if already shown
-    if (localStorage.getItem('modulesSelected') === 'true') {
-        // Still need to apply module order
-        const savedOrder = localStorage.getItem('moduleOrder');
-        if (savedOrder) {
-            const order = JSON.parse(savedOrder);
-            const grid = document.getElementById('dashboard-grid');
-            if (grid) {
-                order.forEach(moduleId => {
-                    const el = document.getElementById(moduleId);
-                    if (el) grid.appendChild(el);
-                });
-            }
-        }
-        return;
-    }
-    
-    // All available modules
-    const allModules = [
-        { id: 'gallery', name: 'Gallery', icon: 'fa-images' },
-        { id: 'bus', name: 'Bus Tracker', icon: 'fa-bus' },
-        { id: 'music', name: 'Music Player', icon: 'fa-music' },
-        { id: 'news', name: 'News', icon: 'fa-newspaper' },
-        { id: 'mastodon', name: 'Social Media', icon: 'fa-mastodon' },
-        { id: 'radio', name: 'Radio', icon: 'fa-radio' },
-        { id: 'emergency', name: 'Emergency', icon: 'fa-triangle-exclamation' },
-        { id: 'phone', name: 'Friendly Phone', icon: 'fa-phone' },
-        { id: 'chat', name: 'Chat', icon: 'fa-message' },
-        { id: 'calendar', name: 'Calendar', icon: 'fa-calendar' }
-    ];
-    
-    let selectedModules = [];
-    
-    // Create popup
-    const popup = document.createElement('div');
-    popup.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:999999;display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;';
-    
-    // Build modules HTML
-    let modulesHtml = '';
-    allModules.forEach(module => {
-        modulesHtml += `
-            <div class="module-item" data-id="${module.id}" style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                <span><i class="fa-solid ${module.icon}" style="color:#0047cc;width:25px;"></i> ${module.name}</span>
-                <button class="add-btn" data-id="${module.id}" style="background:#0047cc;color:white;border:none;border-radius:20px;padding:5px 15px;cursor:pointer;">+ Add</button>
-            </div>
-        `;
-    });
-    
-    popup.innerHTML = `
-        <div style="background:white;border-radius:24px;width:90%;max-width:1000px;max-height:85vh;overflow-y:auto;padding:25px;">
-            <h2 style="color:#0047cc;text-align:center;margin-bottom:10px;"><i class="fa-solid fa-hand-peace"></i> Welcome to HandiHomepage</h2>
-            <p style="text-align:center;margin-bottom:20px;color:#556d8b;">Choose modules for your dashboard (drag to reorder)</p>
-            
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-                <!-- Available Modules -->
-                <div>
-                    <h3 style="color:#0047cc;margin-bottom:10px;"><i class="fa-solid fa-list"></i> Available Modules</h3>
-                    <div id="availableList" style="background:#f1f5f9;border-radius:16px;padding:15px;min-height:400px;max-height:500px;overflow-y:auto;">
-                        ${modulesHtml}
-                    </div>
-                </div>
-                
-                <!-- Selected Modules -->
-                <div>
-                    <h3 style="color:#0047cc;margin-bottom:10px;"><i class="fa-solid fa-check-circle"></i> Your Dashboard</h3>
-                    <div id="selectedList" style="background:#f1f5f9;border-radius:16px;padding:15px;min-height:400px;max-height:500px;overflow-y:auto;">
-                        <div style="text-align:center;padding:40px;color:#64748b;">No modules selected yet.<br>Click + Add to add modules.</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="margin:20px 0;padding-top:15px;border-top:1px solid #e2e8f0;">
-                <label style="display:flex;align-items:center;gap:10px;">
-                    <input type="checkbox" id="agreeCheckbox"> I agree to the 
-                    <a href="/terms" target="_blank" style="color:#0047cc;">Terms</a> and 
-                    <a href="/privacy" target="_blank" style="color:#0047cc;">Privacy Policy</a>
-                </label>
-            </div>
-            
-            <button id="saveBtn" style="width:100%;padding:14px;background:#0047cc;color:white;border:none;border-radius:40px;font-size:1.1rem;font-weight:bold;cursor:pointer;transition:background 0.2s;" disabled>Save & Continue</button>
-        </div>
-    `;
-    
-    document.body.appendChild(popup);
-    
-    const availableList = document.getElementById('availableList');
-    const selectedList = document.getElementById('selectedList');
-    const agreeCheckbox = document.getElementById('agreeCheckbox');
-    const saveBtn = document.getElementById('saveBtn');
-    
-    function renderSelected() {
-        if (selectedModules.length === 0) {
-            selectedList.innerHTML = '<div style="text-align:center;padding:40px;color:#64748b;">No modules selected yet.<br>Click + Add to add modules.</div>';
-        } else {
-            selectedList.innerHTML = '';
-            selectedModules.forEach((moduleId, idx) => {
-                const module = allModules.find(m => m.id === moduleId);
-                const div = document.createElement('div');
-                div.className = 'selected-item';
-                div.setAttribute('draggable', 'true');
-                div.setAttribute('data-id', moduleId);
-                div.setAttribute('data-index', idx);
-                div.style.cssText = 'background:#eaf2ff;border:2px solid #0047cc;border-radius:12px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;cursor:grab;';
-                div.innerHTML = `
-                    <span><i class="fa-solid fa-grip-vertical" style="color:#64748b;margin-right:8px;"></i> <i class="fa-solid ${module.icon}" style="color:#0047cc;"></i> ${module.name}</span>
-                    <button class="remove-btn" data-id="${moduleId}" style="background:#cc0000;color:white;border:none;border-radius:20px;padding:5px 15px;cursor:pointer;">✖ Remove</button>
-                `;
-                selectedList.appendChild(div);
-            });
-            
-            // Add drag and drop
-            const items = selectedList.querySelectorAll('.selected-item');
-            items.forEach(item => {
-                item.addEventListener('dragstart', handleDragStart);
-                item.addEventListener('dragend', handleDragEnd);
-            });
-        }
-        
-        // Update save button
-        const anySelected = selectedModules.length > 0;
-        saveBtn.disabled = !(agreeCheckbox.checked && anySelected);
-    }
-    
-    function renderAvailable() {
-        const availableModules = allModules.filter(m => !selectedModules.includes(m.id));
-        availableList.innerHTML = '';
-        availableModules.forEach(module => {
-            const div = document.createElement('div');
-            div.style.cssText = 'background:white;border:2px solid #e2e8f0;border-radius:12px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;';
-            div.innerHTML = `
-                <span><i class="fa-solid ${module.icon}" style="color:#0047cc;"></i> ${module.name}</span>
-                <button class="add-available-btn" data-id="${module.id}" style="background:#0047cc;color:white;border:none;border-radius:20px;padding:5px 15px;cursor:pointer;">+ Add</button>
-            `;
-            availableList.appendChild(div);
-        });
-        
-        // Add event listeners
-        availableList.querySelectorAll('.add-available-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = btn.dataset.id;
-                if (!selectedModules.includes(id)) {
-                    selectedModules.push(id);
-                    renderAvailable();
-                    renderSelected();
-                }
-            });
-        });
-    }
-    
-    // Remove module
-    function handleRemove(id) {
-        selectedModules = selectedModules.filter(m => m !== id);
-        renderAvailable();
-        renderSelected();
-    }
-    
-    // Drag and drop
-    let dragSrc = null;
-    
-    function handleDragStart(e) {
-        const item = e.target.closest('.selected-item');
-        if (!item) return;
-        dragSrc = item;
-        e.dataTransfer.effectAllowed = 'move';
-        item.style.opacity = '0.5';
-    }
-    
-    function handleDragEnd(e) {
-        const item = e.target.closest('.selected-item');
-        if (item) item.style.opacity = '';
-        dragSrc = null;
-    }
-    
-    selectedList.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-    });
-    
-    selectedList.addEventListener('drop', (e) => {
-        e.preventDefault();
-        const target = e.target.closest('.selected-item');
-        if (!target || !dragSrc || target === dragSrc) return;
-        
-        const dragIndex = parseInt(dragSrc.dataset.index);
-        const targetIndex = parseInt(target.dataset.index);
-        
-        if (!isNaN(dragIndex) && !isNaN(targetIndex)) {
-            const draggedId = selectedModules[dragIndex];
-            selectedModules.splice(dragIndex, 1);
-            selectedModules.splice(targetIndex, 0, draggedId);
-            renderSelected();
-        }
-    });
-    
-    // Event delegation for remove buttons
-    selectedList.addEventListener('click', (e) => {
-        const btn = e.target.closest('.remove-btn');
-        if (btn) {
-            handleRemove(btn.dataset.id);
-        }
-    });
-    
-    agreeCheckbox.addEventListener('change', () => {
-        saveBtn.disabled = !(agreeCheckbox.checked && selectedModules.length > 0);
-    });
-    
-    saveBtn.addEventListener('click', () => {
-        if (selectedModules.length === 0) return;
-        
-        localStorage.setItem('modulesSelected', 'true');
-        localStorage.setItem('moduleOrder', JSON.stringify(selectedModules));
-        
-        // Update settings
-        const settings = JSON.parse(localStorage.getItem('pleie_settings') || '{}');
-        if (!settings.enabledModules) settings.enabledModules = {};
-        allModules.forEach(module => {
-            settings.enabledModules[module.id] = selectedModules.includes(module.id);
-        });
-        localStorage.setItem('pleie_settings', JSON.stringify(settings));
-        
-        popup.remove();
-        location.reload();
-    });
-    
-    // Initialize
-    renderAvailable();
-    renderSelected();
-    
-    // Footer reorder button
-    const reorderBtn = document.getElementById('footerReorderBtn');
-    if (reorderBtn) {
-        reorderBtn.addEventListener('click', () => {
-            localStorage.removeItem('modulesSelected');
-            localStorage.removeItem('moduleOrder');
-            location.reload();
-        });
-    }
-})();
-</script>
+    <script src="js/core/first-popup.js"></script>
 </body>
 </html>

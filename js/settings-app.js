@@ -321,11 +321,16 @@ function loadUI() {
         if (document.getElementById('calendarUrl')) document.getElementById('calendarUrl').value = settings.calendar.url || '';
         if (document.getElementById('calendarNotificationMinutes')) document.getElementById('calendarNotificationMinutes').value = settings.calendar.notificationMinutes || 30;
     }
+
+    // After loading all settings, sync with popup selection
+    syncModuleTogglesWithPopup();
 }
 
 // Collect all settings from form
 function collectSettings() {
     const enabledModules = {};
+    
+    // ALWAYS use the current toggle state for settings (ignore popup)
     toggleSwitches.forEach(sw => {
         const moduleId = sw.closest('.module-header').dataset.module;
         enabledModules[moduleId] = sw.classList.contains('active');
@@ -344,10 +349,6 @@ function collectSettings() {
         music: {
             volume: parseInt(document.getElementById('musicVolume')?.value) || 70,
             shuffle: document.getElementById('musicShuffle')?.value === 'true'
-        },
-        calendar: {
-            url: document.getElementById('calendarUrl')?.value || '',
-            notificationMinutes: parseInt(document.getElementById('calendarNotificationMinutes')?.value) || 30
         },
         news: {
             rssUrl: document.getElementById('newsRssUrl')?.value || '',
@@ -377,13 +378,26 @@ function collectSettings() {
                 document.getElementById('chatRoom3')?.value || ''
             ].filter(r => r.trim() !== ''),
             refreshInterval: parseInt(document.getElementById('chatRefreshInterval')?.value) || 30
+        },
+        calendar: {
+            url: document.getElementById('calendarUrl')?.value || '',
+            notificationMinutes: parseInt(document.getElementById('calendarNotificationMinutes')?.value) || 30
         }
     };
 }
-
 function saveAllSettings() {
-    saveSettings(collectSettings());
+    const settings = collectSettings();
+    saveSettings(settings);
+    
+    // DO NOT clear the popup flag - it should stay true forever
+    // Only update the moduleOrder to match settings
+    const enabledList = Object.keys(settings.enabledModules).filter(id => settings.enabledModules[id] === true);
+    if (enabledList.length > 0) {
+        localStorage.setItem('moduleOrder', JSON.stringify(enabledList));
+    }
+    
     alert('Settings saved!');
+    location.reload();
 }
 
 // Expand/collapse
@@ -562,3 +576,20 @@ loadUI();
         moduleCard.style.backgroundColor = '';
     }, 1500);
 })();
+
+// Sync module visibility with the selection popup
+function syncModuleTogglesWithPopup() {
+    const settings = loadSettings();
+    const enabledModules = settings.enabledModules || {};
+    
+    // Update each toggle switch based on saved settings
+    toggleSwitches.forEach(sw => {
+        const moduleId = sw.closest('.module-header').dataset.module;
+        const isEnabled = enabledModules[moduleId] !== false; // Default to true if not set
+        if (isEnabled) {
+            sw.classList.add('active');
+        } else {
+            sw.classList.remove('active');
+        }
+    });
+}

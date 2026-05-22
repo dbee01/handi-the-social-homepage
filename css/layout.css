@@ -513,4 +513,171 @@ footer {
     background: #e2e8f0;
     border-color: #0047cc;
 }
+/* Footer icon breakpoint at 1087px */
+@media (max-width: 1087px) {
+    .footer-icon {
+        font-size: 3.5rem !important;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.5rem;
+    }
+}
 
+@media (max-width: 735px) {
+    .footer-icon {
+        font-size: 2.5rem !important;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.5rem;
+    }
+}
+
+@media (max-width: 350px) {
+    .footer-icon {
+        font-size: 1.5rem !important;
+        min-width: 30px;
+        min-height: 30px;
+        padding: 0.2rem !important;
+    }
+    .footer-bar {
+        gap: 0.2rem !important;  /* Changed from 0 to 0.2rem */
+    }
+    .panel-title {
+        font-size: 1rem !important;
+    }
+}
+.search-engine-logo {
+    width: 45px !important;
+    height: 45px !important;
+    padding: 0 !important;
+    object-fit: contain;
+}
+
+/* Left-align Save & Continue button in popup */
+#saveBtn {
+    width: auto !important;
+    min-width: 180px;
+    margin: 0;
+    text-align: center;
+}
+
+/* Bus Tracker Switch Button */
+.bus-switch-container {
+    margin: 12px 0;
+    text-align: center;
+}
+
+.bus-switch-btn {
+    background: #0047cc;
+    color: white;
+    border: none;
+    border-radius: 40px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.bus-switch-btn:hover {
+    background: #0037a3;
+}
+
+.bus-current-stop {
+    margin-top: 8px;
+}
+
+/* Bus Tracker Styles */
+.bus-switch-container {
+    margin: 12px 0;
+    text-align: center;
+}
+
+.bus-switch-btn {
+    background: #0047cc;
+    color: white;
+    border: none;
+    border-radius: 40px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.bus-switch-btn:hover {
+    background: #0037a3;
+}
+
+.bus-current-stop {
+    margin-top: 8px;
+}
+
+.bus-stop-card {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+}
+
+.bus-stop-title {
+    margin: 0 0 6px;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.bus-direction {
+    margin-bottom: 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.bus-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-top: 1px solid #e2e8f0;
+}
+
+.bus-item:first-of-type {
+    border-top: none;
+}
+
+.bus-route {
+    background: #0047cc;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.bus-arrival {
+    font-weight: 700;
+    color: #1e1e1e;
+}
+
+.module-selection-footer {
+    text-align: left !important;
+}
+
+#moduleSelectionPopup .module-selection-footer,
+#moduleSelectionPopup > div > div:last-child {
+    text-align: left !important;
+}
+
+/* Remove center alignment from footer */
+.save-modules-btn {
+    display: inline-block;
+    width: auto !important;
+    margin: 0 !important;
+}

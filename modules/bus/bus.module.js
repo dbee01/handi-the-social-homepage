@@ -1,8 +1,7 @@
 /*
  * Copyright (c) 2026 Handi Homepage
- * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
- * See the LICENSE file in the repository root for full details.
-*/
+ * This file is part of HandiHomepage and released under the GNU General Public License v3.0.
+ */
 // modules/bus/bus.module.js
 import { loadSettings } from '../../js/core/settings.js';
 
@@ -22,6 +21,8 @@ export default async function initBus(container) {
 
     let refreshInterval = null;
     let isServerDown = false;
+    let currentStopIndex = 0;
+    let stopsDataCache = null;
 
     const settings = loadSettings();
     const savedRouteIds = settings.bus?.routeIds || '30';
@@ -29,56 +30,76 @@ export default async function initBus(container) {
     const routeId = savedRouteIds.split(',')[0].trim();
     const stopIds = savedStopIds.split(',').map(id => id.trim()).join(',');
 
-    // Build static structure once
     function buildStaticStructure() {
         content.innerHTML = `
             <div class="bus-timestamp">
                 <i class="fa-solid fa-sync-alt"></i> <span class="bus-time">--:--:--</span>
                 <span class="bus-footnote"></span>
             </div>
-            <div class="bus-stops-container"></div>
+            <div class="bus-current-stop"></div>
+            <div class="bus-switch-container">
+                <button class="bus-switch-btn" id="busSwitchBtn">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i> Switch Direction
+                </button>
+            </div>
             <button class="bus-refresh-btn">Refresh Times</button>
         `;
+        
         const refreshBtn = content.querySelector('.bus-refresh-btn');
-        refreshBtn.addEventListener('click', () => fetchBusData());
+        if (refreshBtn) refreshBtn.addEventListener('click', () => fetchBusData());
+        
+        const switchBtn = document.getElementById('busSwitchBtn');
+        if (switchBtn) {
+            switchBtn.addEventListener('click', () => {
+                if (stopsDataCache && stopsDataCache.stops && stopsDataCache.stops.length >= 2) {
+                    // Toggle between 0 and 1
+                    currentStopIndex = currentStopIndex === 0 ? 1 : 0;
+                    // Re-render the current stop with cached data
+                    renderCurrentStop();
+                }
+            });
+        }
     }
 
-    // Create stop cards (only once)
-    function createStopCards(stopsData) {
-        const containerDiv = content.querySelector('.bus-stops-container');
-        containerDiv.innerHTML = '';
-        for (const stop of stopsData) {
-            const card = document.createElement('div');
-            card.className = 'bus-stop-card';
-            card.dataset.stopName = stop.stop_name;
-            card.innerHTML = `
+    function renderCurrentStop() {
+        if (!stopsDataCache || !stopsDataCache.stops || stopsDataCache.stops.length === 0) {
+            console.log('No cached data to render');
+            return;
+        }
+        
+        // Make sure currentStopIndex is valid
+        if (currentStopIndex >= stopsDataCache.stops.length) {
+            currentStopIndex = 0;
+        }
+        
+        const stop = stopsDataCache.stops[currentStopIndex];
+        if (!stop) {
+            console.log('Stop not found at index:', currentStopIndex);
+            return;
+        }
+        
+        const containerDiv = content.querySelector('.bus-current-stop');
+        if (!containerDiv) return;
+        
+        // Display up to 3 bus times
+        const buses = stop.buses && stop.buses.length > 0 ? stop.buses.slice(0, 3) : [];
+        
+        containerDiv.innerHTML = `
+            <div class="bus-stop-card">
                 <h3 class="bus-stop-title">📍 ${escapeHtml(stop.stop_name)}</h3>
                 <div class="bus-direction">→ ${escapeHtml(stop.direction)}</div>
-                <div class="bus-buses-list"></div>
-            `;
-            containerDiv.appendChild(card);
-        }
-    }
-
-    // Update existing cards with new bus times
-    function updateStopCards(stopsData) {
-        const cards = content.querySelectorAll('.bus-stop-card');
-        for (let i = 0; i < cards.length; i++) {
-            const stop = stopsData[i];
-            if (!stop) continue;
-            const busesList = cards[i].querySelector('.bus-buses-list');
-            const buses = stop.buses.slice(0, 2);
-            if (!buses || buses.length === 0) {
-                busesList.innerHTML = '<div class="bus-no-buses">No upcoming buses</div>';
-            } else {
-                busesList.innerHTML = buses.map(bus => `
-                    <div class="bus-item">
-                        <span class="bus-route">Route ${bus.route}</span>
-                        <span class="bus-arrival">${bus.arrival_text}</span>
-                    </div>
-                `).join('');
-            }
-        }
+                <div class="bus-buses-list">
+                    ${buses.length === 0 ? '<div class="bus-no-buses">No upcoming buses</div>' :
+                        buses.map(bus => `
+                            <div class="bus-item">
+                                <span class="bus-route">Route ${bus.route}</span>
+                                <span class="bus-arrival">${bus.arrival_text}</span>
+                            </div>
+                        `).join('')
+                    }
+                </div>
+            </div>
+        `;
     }
 
     function renderBusData(data) {
@@ -86,6 +107,14 @@ export default async function initBus(container) {
             content.innerHTML = '<div class="bus-no-data">No bus data available</div>';
             if (window.refreshDashboardLayout) window.refreshDashboardLayout();
             return;
+        }
+
+        // Cache the full stops data
+        stopsDataCache = data;
+        
+        // Reset stop index if needed
+        if (currentStopIndex >= data.stops.length) {
+            currentStopIndex = 0;
         }
 
         const isRealtime = data.stops.some(stop => stop.realtime_data === true);
@@ -96,11 +125,8 @@ export default async function initBus(container) {
         const footnoteSpan = content.querySelector('.bus-footnote');
         if (footnoteSpan) footnoteSpan.textContent = footnote;
 
-        if (content.querySelectorAll('.bus-stop-card').length === 0) {
-            createStopCards(data.stops);
-        } else {
-            updateStopCards(data.stops);
-        }
+        renderCurrentStop();
+        
         if (window.refreshDashboardLayout) window.refreshDashboardLayout();
     }
 
