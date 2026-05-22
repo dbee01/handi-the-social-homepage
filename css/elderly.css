@@ -1093,12 +1093,11 @@ a:focus {
     margin-top: 12px;
 }
 
-.news-list,
 .mastodon-list {
-    max-height: 380px;
-    overflow: hidden;
-    touch-action: none;
-    padding: 0;
+    max-height: none !important;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding: 4px;
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -2054,7 +2053,6 @@ a:focus {
     height: 350px !important;          /* fixed height for exactly 2 items (170px each + 10px gap) */
     max-height: 350px !important;
     overflow-y: auto !important;       /* allow programmatic scrolling by buttons */
-    touch-action: none !important;     /* completely disable touch scrolling */
     scrollbar-width: thin;             /* optional: keep scrollbar visible for feedback */
 }
 
@@ -2353,4 +2351,427 @@ footer {
 .module-controls button i {
     margin: 0;
     font-size: inherit;
+}
+
+/* Chat Module Styles */
+.chat-content {
+    min-height: 200px;
+}
+
+.chat-loading, .chat-empty, .chat-error {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+}
+
+.chat-rooms-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chat-room-card {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+.chat-room-card.has-new {
+    border-color: #cc0000;
+    background: #fff5f5;
+}
+
+.chat-room-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f8fafc;
+    cursor: pointer;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.chat-room-name {
+    font-weight: 700;
+    color: #1e1e1e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.new-badge {
+    background: #cc0000;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+}
+
+.chat-toggle-msgs {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.chat-toggle-msgs:hover {
+    background: #e2e8f0;
+}
+
+.chat-room-messages {
+    padding: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.chat-message {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.chat-sender {
+    font-weight: 700;
+    color: #0047cc;
+    font-size: 0.85rem;
+}
+
+.chat-time {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-left: 8px;
+}
+
+.chat-body {
+    color: #1e1e1e;
+    font-size: 0.85rem;
+    margin-top: 4px;
+    word-break: break-word;
+}
+
+.chat-more {
+    font-size: 0.75rem;
+    color: #64748b;
+    padding: 8px 0;
+    text-align: center;
+}
+
+.chat-refresh-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 12px;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.chat-refresh-btn:hover {
+    background: #e2e8f0;
+    border-color: #0047cc;
+}
+
+/* Calendar Module Styles */
+.calendar-content {
+    min-height: 200px;
+}
+
+.calendar-loading, .calendar-empty, .calendar-error {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+}
+
+.calendar-today-header {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0047cc;
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    background: #eaf2ff;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calendar-notification-badge {
+    font-size: 0.75rem;
+    font-weight: normal;
+    background: #0047cc;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 20px;
+}
+
+.calendar-events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.calendar-event-card {
+    display: flex;
+    gap: 16px;
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 16px;
+    padding: 16px;
+    transition: box-shadow 0.2s;
+}
+
+.calendar-event-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.calendar-event-time {
+    min-width: 100px;
+    font-weight: 600;
+    color: #0047cc;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.calendar-event-details {
+    flex: 1;
+}
+
+.calendar-event-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1e1e1e;
+    margin-bottom: 4px;
+}
+
+.calendar-event-location {
+    font-size: 0.8rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.calendar-event-desc {
+    font-size: 0.8rem;
+    color: #475569;
+    margin-top: 6px;
+}
+
+.calendar-notification-info {
+    margin-top: 16px;
+    padding: 8px;
+    background: #f0fdf4;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: #166534;
+}
+
+.calendar-refresh-btn {
+    width: 100%;
+    padding: 10px;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.calendar-refresh-btn:hover {
+    background: #e2e8f0;
+    border-color: #0047cc;
+}
+
+.calendar-retry-btn {
+    margin-top: 12px;
+    padding: 8px 20px;
+    background: #0047cc;
+    color: white;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+}
+
+@media (max-width: 640px) {
+    .calendar-event-card {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .calendar-event-time {
+        min-width: auto;
+    }
+}
+
+/* Module Selection Popup Styles */
+.module-selection-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.module-selection-container {
+    background: #ffffff;
+    border-radius: 28px;
+    max-width: 1200px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3);
+    border: 3px solid #0047cc;
+}
+
+.module-selection-header {
+    background: #0047cc;
+    color: white;
+    font-size: 1.6rem;
+    font-weight: bold;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    border-radius: 28px 28px 0 0;
+}
+
+.module-selection-body {
+    padding: 1.5rem;
+}
+
+.selection-intro {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #556d8b;
+}
+
+.available-modules, .selected-modules {
+    margin: 1rem 0;
+}
+
+.available-modules h3, .selected-modules h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+    color: #0047cc;
+}
+
+.module-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px;
+    min-height: 150px;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 16px;
+    border: 2px solid #e2e8f0;
+}
+
+.available-list .module-option {
+    background: white;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.selected-list .module-option {
+    background: #eaf2ff;
+    border: 2px solid #0047cc;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: grab;
+    transition: all 0.2s;
+}
+
+.selected-list .module-option:active {
+    cursor: grabbing;
+}
+
+.module-option i {
+    font-size: 1.2rem;
+    color: #0047cc;
+    margin-right: 8px;
+}
+
+.add-module-btn, .remove-module-btn {
+    background: #0047cc;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.remove-module-btn {
+    background: #cc0000;
+}
+
+.drag-handle {
+    cursor: grab;
+    margin-right: 8px;
+    color: #64748b;
+}
+
+.empty-selection {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+    grid-column: 1 / -1;
+}
+
+.module-selection-footer {
+    padding: 1rem 1.5rem 1.5rem;
+    text-align: center;
+}
+
+.save-modules-btn {
+    background: #0047cc;
+    color: white;
+    border: none;
+    border-radius: 48px;
+    padding: 12px 32px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    min-width: 200px;
+}
+
+.save-modules-btn:hover:not(:disabled) {
+    background: #0037a3;
+}
+
+.save-modules-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+    .module-selection-container {
+        width: 95%;
+        max-height: 90vh;
+    }
+    .module-list {
+        grid-template-columns: 1fr;
+    }
 }

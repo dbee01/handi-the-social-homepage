@@ -88,7 +88,7 @@ export default async function initPhone(container) {
         const settingsBtn = content.querySelector('#phoneSettingsBtn');
         if (settingsBtn) {
             settingsBtn.onclick = () => {
-                window.location.href = 'settings.html';
+                window.location.href = 'settings.html?args=phone';
             };
         }
         return;

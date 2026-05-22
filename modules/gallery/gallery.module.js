@@ -42,7 +42,7 @@ export default async function initGallery(container) {
             </div>
         `;
         const settingsBtn = content.querySelector('#gallerySettingsBtn');
-        if (settingsBtn) settingsBtn.onclick = () => location.href = 'settings.html';
+        if (settingsBtn) settingsBtn.onclick = () => location.href = 'settings.html?args=gallery';
         return;
     }
 

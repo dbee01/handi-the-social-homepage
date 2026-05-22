@@ -108,7 +108,7 @@ export default async function initEmergency(container) {
             </div>
         `;
         const settingsBtn = content.querySelector('#emergencySettingsBtn');
-        if (settingsBtn) settingsBtn.onclick = () => location.href = 'settings.html';
+        if (settingsBtn) settingsBtn.onclick = () => location.href = 'settings.html?args=emergency';
         return;
     }
 

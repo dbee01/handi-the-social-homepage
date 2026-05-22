@@ -131,4 +131,12 @@
             window.open('https://buymeacoffee.com/dazrunner', '_blank');
         });
     }
+
+    const reorderBtn = document.getElementById('footerReorderBtn');
+    if (reorderBtn) {
+        reorderBtn.addEventListener('click', () => {
+            localStorage.removeItem('handiHomepageModulesSelected');
+            location.reload();
+        });
+    }
 })();

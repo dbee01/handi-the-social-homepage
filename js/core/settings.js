@@ -13,6 +13,10 @@ const DEFAULT_SETTINGS = {
         music: true,
         news: true,
         mastodon: true,
+        calendar: {
+            url: '',
+            notificationMinutes: 30
+        },
         radio: true,
         emergency: true,
         phone: true
@@ -27,7 +31,11 @@ const DEFAULT_SETTINGS = {
     mastodon: { instanceUrl: 'https://mastodon.ie', limit: 4 },
     bus: { routeIds: '30', stopIds: '330061,240161' },
     phone: { contacts: [], autoDialDelay: 10 },
-    emergency: { contacts: [], checkInterval: 5 }
+    emergency: { contacts: [], checkInterval: 5 },
+    chat: {
+        rooms: [],
+        refreshInterval: 30
+    }
 };
 
 export function loadSettings() {

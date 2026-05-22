@@ -1,4 +1,6 @@
-// modules/news/news.module.js – supports RSS and Atom feeds
+// modules/news/news.module.js – shows exactly 2 articles at a time, scroll for more
+import { loadSettings } from '../../js/core/settings.js';
+
 export default async function initNews(container) {
     const pinBtn = container.querySelector('.pin-btn');
     container.innerHTML = '';
@@ -13,9 +15,11 @@ export default async function initNews(container) {
     content.className = 'news-content';
     container.appendChild(content);
 
-    // Default to Irish Examiner (Atom) – works out of the box
-    const rssUrl = 'https://www.irishexaminer.com/feed/35-top_news.xml';
-    const refreshMinutes = 15;
+    const settings = loadSettings();
+    const rssUrl = settings.news?.rssUrl || 'https://www.irishexaminer.com/feed/35-top_news.xml';
+    const refreshMinutes = settings.news?.refreshInterval || 15;
+    const maxArticles = settings.news?.maxArticles || 10;
+
     let refreshIntervalId = null;
 
     function formatSourceName(url) {
@@ -28,19 +32,15 @@ export default async function initNews(container) {
         }
     }
 
-    // Extract image from various possible tags
     function extractImageFromEntry(entry, description = '') {
-        // Check for <link rel="enclosure" type="image/jpeg">
         const enclosureLink = entry.querySelector('link[rel="enclosure"][type^="image"]');
         if (enclosureLink && enclosureLink.getAttribute('href')) {
             return enclosureLink.getAttribute('href');
         }
-        // Check for <media:content>
         const mediaContent = entry.querySelector('media\\:content, content');
         if (mediaContent && mediaContent.getAttribute('url')) {
             return mediaContent.getAttribute('url');
         }
-        // Try to find an <img> inside description/summary
         if (description) {
             const imgMatch = description.match(/<img[^>]+src="([^">]+)"/);
             if (imgMatch) return imgMatch[1];
@@ -59,19 +59,16 @@ export default async function initNews(container) {
             const parseError = xmlDoc.querySelector('parsererror');
             if (parseError) throw new Error('Invalid XML');
 
-            // Determine feed type
             let channel, items, channelLink, channelTitle;
             const rssChannel = xmlDoc.querySelector('channel');
             const atomFeed = xmlDoc.querySelector('feed');
 
             if (rssChannel) {
-                // RSS 2.0
                 channel = rssChannel;
                 channelLink = channel.querySelector('link')?.textContent?.trim() || '#';
                 channelTitle = channel.querySelector('title')?.textContent?.trim() || 'News';
                 items = xmlDoc.querySelectorAll('item');
             } else if (atomFeed) {
-                // Atom 1.0
                 channelLink = atomFeed.querySelector('link[rel="self"]')?.getAttribute('href') || '#';
                 channelTitle = atomFeed.querySelector('title')?.textContent?.trim() || 'News';
                 items = xmlDoc.querySelectorAll('entry');
@@ -80,31 +77,28 @@ export default async function initNews(container) {
             }
 
             const articles = [];
-            for (let i = 0; i < Math.min(items.length, 2); i++) {
+            const articleLimit = Math.min(items.length, maxArticles);
+            for (let i = 0; i < articleLimit; i++) {
                 const item = items[i];
                 let title, link, pubDateRaw, description, imageUrl;
 
                 if (rssChannel) {
-                    // RSS parsing
                     title = item.querySelector('title')?.textContent?.trim() || 'No title';
                     link = item.querySelector('link')?.textContent?.trim() || '#';
                     pubDateRaw = item.querySelector('pubDate')?.textContent || '';
                     description = item.querySelector('description')?.textContent || '';
                     imageUrl = extractImageFromEntry(item, description);
                 } else {
-                    // Atom parsing
                     title = item.querySelector('title')?.textContent?.trim() || 'No title';
                     const linkElem = item.querySelector('link[rel="alternate"]');
                     link = linkElem ? linkElem.getAttribute('href') : (item.querySelector('link')?.getAttribute('href') || '#');
                     pubDateRaw = item.querySelector('published')?.textContent || item.querySelector('updated')?.textContent || '';
                     description = item.querySelector('summary')?.textContent?.trim() || item.querySelector('content')?.textContent?.trim() || '';
-                    // Remove HTML tags for excerpt
                     const textDesc = description.replace(/<[^>]*>/g, '');
                     description = textDesc;
                     imageUrl = extractImageFromEntry(item, description);
                 }
 
-                // Format date
                 let formattedDate = '';
                 if (pubDateRaw) {
                     const dateObj = new Date(pubDateRaw);
@@ -124,9 +118,7 @@ export default async function initNews(container) {
                     formattedDate = 'Date unknown';
                 }
 
-                // Full excerpt (strip HTML already done for Atom)
-                const fullExcerpt = description.substring(0, 300); // limit to avoid huge text
-
+                const fullExcerpt = description.substring(0, 300);
                 articles.push({
                     title,
                     link,
@@ -148,36 +140,105 @@ export default async function initNews(container) {
             content.innerHTML = '<div class="module-empty">No news available.</div>';
             return;
         }
+
+        // Build the UI with inline styles for guaranteed behavior
         content.innerHTML = `
-            <div class="news-scroll-wrapper">
-                <button id="newsScrollUp" class="news-scroll-btn">▲</button>
-                <div id="newsList" class="news-list"></div>
-                <button id="newsScrollDown" class="news-scroll-btn">▼</button>
+            <div class="news-scroll-wrapper" style="display: flex; flex-direction: column; gap: 8px;">
+                <button id="newsScrollUp" class="news-scroll-btn" style="width: 100%; padding: 12px; background: #e2e8f0; border: none; border-radius: 12px; cursor: pointer; font-size: 1.2rem; font-weight: bold;">▲ Scroll Up</button>
+                <div id="newsList" class="news-list" style="overflow-y: auto; scroll-behavior: smooth; padding: 4px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff;"></div>
+                <button id="newsScrollDown" class="news-scroll-btn" style="width: 100%; padding: 12px; background: #e2e8f0; border: none; border-radius: 12px; cursor: pointer; font-size: 1.2rem; font-weight: bold;">▼ Scroll Down</button>
             </div>
         `;
+        
         const list = document.getElementById('newsList');
         const up = document.getElementById('newsScrollUp');
         const down = document.getElementById('newsScrollDown');
         const sourceDisplay = formatSourceName(channelLink);
 
+        if (!list) return;
+
+        // Add all articles
         for (const article of articles) {
             const articleDiv = document.createElement('div');
             articleDiv.className = 'news-article';
+            articleDiv.style.marginBottom = '16px';
+            articleDiv.style.padding = '16px';
+            articleDiv.style.background = '#ffffff';
+            articleDiv.style.border = '1px solid #e2e8f0';
+            articleDiv.style.borderRadius = '12px';
             articleDiv.innerHTML = `
-                <div class="news-header">
-                    ${article.imageUrl ? `<img class="news-image" src="${article.imageUrl}" alt="" onerror="this.style.display='none'">` : '<div class="news-image-placeholder"></div>'}
-                    <div class="news-meta">
-                        <span class="news-source"><a href="${escapeHtml(channelLink)}" target="_blank" rel="noopener">${escapeHtml(sourceDisplay)}</a></span>
-                        <span class="news-date">${escapeHtml(article.pubDate)}</span>
+                <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                    ${article.imageUrl ? `<img src="${article.imageUrl}" alt="" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" onerror="this.style.display='none'">` : '<div style="width: 60px; height: 60px; background: #e2e8f0; border-radius: 8px;"></div>'}
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; color: #0047cc;">${escapeHtml(sourceDisplay)}</div>
+                        <div style="font-size: 0.75rem; color: #64748b;">${escapeHtml(article.pubDate)}</div>
                     </div>
                 </div>
-                <h3 class="news-title"><a href="${article.link}" target="_blank" rel="noopener">${escapeHtml(article.title)}</a></h3>
-                <p class="news-excerpt">${escapeHtml(article.excerpt)}</p>
+                <h3 style="font-size: 1rem; margin: 8px 0;"><a href="${article.link}" target="_blank" style="color: #1e1e1e; text-decoration: none;">${escapeHtml(article.title)}</a></h3>
+                <p style="color: #475569; font-size: 0.85rem; margin: 0;">${escapeHtml(article.excerpt)}</p>
             `;
             list.appendChild(articleDiv);
         }
-        up.addEventListener('click', () => list.scrollBy({ top: -280, behavior: 'smooth' }));
-        down.addEventListener('click', () => list.scrollBy({ top: 280, behavior: 'smooth' }));
+
+        // Function to set height to exactly fit 2 articles
+        function setExactHeight() {
+            const articleElements = list.querySelectorAll('.news-article');
+            if (articleElements.length >= 2) {
+                // Get the bottom position of the 2nd article
+                const secondArticle = articleElements[1];
+                const heightNeeded = secondArticle.offsetTop + secondArticle.offsetHeight + 20;
+                list.style.maxHeight = `${heightNeeded}px`;
+                console.log(`Set height to ${heightNeeded}px for 2 articles`);
+            } else if (articleElements.length === 1) {
+                list.style.maxHeight = `${articleElements[0].offsetHeight + 30}px`;
+            } else {
+                list.style.maxHeight = '300px';
+            }
+        }
+
+        // Wait for images to load, then set height
+        const images = list.querySelectorAll('img');
+        if (images.length === 0) {
+            setTimeout(setExactHeight, 50);
+        } else {
+            let loadedCount = 0;
+            images.forEach(img => {
+                if (img.complete) {
+                    loadedCount++;
+                } else {
+                    img.addEventListener('load', () => {
+                        loadedCount++;
+                        if (loadedCount === images.length) setExactHeight();
+                    });
+                    img.addEventListener('error', () => {
+                        loadedCount++;
+                        if (loadedCount === images.length) setExactHeight();
+                    });
+                }
+            });
+            setTimeout(setExactHeight, 1000);
+        }
+
+        // Also observe size changes (window resize, font loading)
+        const resizeObserver = new ResizeObserver(() => setExactHeight());
+        resizeObserver.observe(list);
+
+        // Calculate scroll amount (height of one article + margin)
+        const firstArticle = list.querySelector('.news-article');
+        const scrollAmount = firstArticle ? firstArticle.offsetHeight + 16 : 350;
+        
+        // Scroll up (shows previous articles)
+        up.onclick = (e) => {
+            e.preventDefault();
+            list.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
+        };
+        
+        // Scroll down (shows next articles)
+        down.onclick = (e) => {
+            e.preventDefault();
+            list.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+        };
+        
         if (window.refreshDashboardLayout) window.refreshDashboardLayout();
     }
 

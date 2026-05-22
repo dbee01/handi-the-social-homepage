@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2026 Handi Homepage
- * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
- * See the LICENSE file in the repository root for full details.
- */
 // modules/music/music.module.js
 import { loadMusic } from '../../js/core/storage.js';
 
@@ -67,7 +62,7 @@ export default async function initMusic(container) {
             </div>
         `;
         const settingsBtn = content.querySelector('#musicSettingsBtn');
-        if (settingsBtn) settingsBtn.onclick = () => location.href = 'settings.html';
+        if (settingsBtn) settingsBtn.onclick = () => location.href = 'settings.html?args=music';
         return;
     }
 
@@ -75,6 +70,9 @@ export default async function initMusic(container) {
     let currentIndex = -1;
     let isPlaying = false;
     let stopVisualiser = null;
+
+    // Log track URLs for debugging
+    console.log('Loaded tracks:', tracks.map(t => ({ name: t.name, url: t.url?.substring(0, 100) })));
 
     // Global mute
     function applyGlobalMute(muted) {
@@ -179,6 +177,8 @@ export default async function initMusic(container) {
             if (!stopVisualiser) {
                 stopVisualiser = startFakeVisualiser(synthCanvas);
             }
+        } else {
+            stopVisualiserAndClear();
         }
     }
 
@@ -218,43 +218,70 @@ export default async function initMusic(container) {
             return;
         }
         if (index < 0 || index >= tracks.length) return;
+        
+        // If same track and already playing, just return (toggle handled elsewhere)
         if (currentAudio && currentIndex === index && isPlaying) return;
         
-        if (currentAudio) stopCurrentAudio(true);
+        // Stop current audio
+        if (currentAudio) {
+            stopCurrentAudio(true);
+        }
         
         currentIndex = index;
         const track = tracks[currentIndex];
         const displayName = removeFileExtension(track.name);
         trackTitleSpan.innerText = displayName;
-        stateSpan.innerText = 'Playing...';
-        playPauseBtn.innerHTML = '⏸';
         
-        currentAudio = new Audio(track.url);
-        currentAudio.volume = 0.7;
-        currentAudio.muted = localStorage.getItem('globalMute') === 'true';
-        
-        if (autoPlay) {
-            currentAudio.play().catch(err => {
-                console.warn('Play error:', err);
-                stateSpan.innerText = 'Error';
+        // Create audio from blob URL
+        try {
+            currentAudio = new Audio(track.url);
+            currentAudio.volume = 0.7;
+            currentAudio.muted = localStorage.getItem('globalMute') === 'true';
+            
+            // Debug: log if URL is valid
+            console.log('Attempting to play:', displayName, 'URL type:', track.url.startsWith('blob:') ? 'blob' : 'url');
+            
+            if (autoPlay) {
+                const playPromise = currentAudio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        isPlaying = true;
+                        playPauseBtn.innerHTML = '⏸';
+                        stateSpan.innerText = 'Playing...';
+                        updateTrackIconsAndActive();
+                    }).catch(err => {
+                        console.error('Playback failed:', err.message);
+                        stateSpan.innerText = `Error: ${err.message.substring(0, 30)}`;
+                        isPlaying = false;
+                        playPauseBtn.innerHTML = '▶';
+                        updateTrackIconsAndActive();
+                    });
+                }
+            } else {
+                isPlaying = false;
+                playPauseBtn.innerHTML = '▶';
+                stateSpan.innerText = 'Paused';
+                updateTrackIconsAndActive();
+            }
+            
+            currentAudio.onended = () => {
+                console.log('Track ended, playing next');
+                playNext();
+            };
+            currentAudio.onerror = (e) => {
+                console.error('Audio element error:', e);
+                stateSpan.innerText = 'Error - Check file';
                 isPlaying = false;
                 playPauseBtn.innerHTML = '▶';
                 updateTrackIconsAndActive();
-            });
-            isPlaying = true;
-        } else {
-            isPlaying = false;
-            playPauseBtn.innerHTML = '▶';
-            stateSpan.innerText = 'Paused';
-        }
-        
-        currentAudio.onended = () => playNext();
-        currentAudio.onerror = () => {
-            stateSpan.innerText = 'Stream error';
+            };
+        } catch (err) {
+            console.error('Failed to create audio:', err);
+            stateSpan.innerText = 'Error - Invalid file';
             isPlaying = false;
             playPauseBtn.innerHTML = '▶';
             updateTrackIconsAndActive();
-        };
+        }
         
         ensureVisualiserRunning();
         updateTrackIconsAndActive();
@@ -287,37 +314,29 @@ export default async function initMusic(container) {
             stateSpan.innerText = 'Paused';
             updateTrackIconsAndActive();
         } else {
-            currentAudio.play().catch(err => {
-                console.warn('Resume error:', err);
-                stateSpan.innerText = 'Error resuming';
-            });
-            isPlaying = true;
-            playPauseBtn.innerHTML = '⏸';
-            stateSpan.innerText = 'Playing...';
-            updateTrackIconsAndActive();
+            const playPromise = currentAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    isPlaying = true;
+                    playPauseBtn.innerHTML = '⏸';
+                    stateSpan.innerText = 'Playing...';
+                    updateTrackIconsAndActive();
+                }).catch(err => {
+                    console.error('Resume failed:', err);
+                    stateSpan.innerText = 'Cannot resume';
+                });
+            }
         }
     }
 
     function onTrackClick(index) {
         if (isLocked) { stateSpan.innerText = 'Player locked – unlock to play'; return; }
+        
+        // If clicking the currently playing track, toggle pause/play
         if (index === currentIndex && currentAudio) {
-            if (isPlaying) {
-                currentAudio.pause();
-                isPlaying = false;
-                playPauseBtn.innerHTML = '▶';
-                stateSpan.innerText = 'Paused';
-                updateTrackIconsAndActive();
-            } else {
-                currentAudio.play().catch(err => {
-                    console.warn('Resume error:', err);
-                    stateSpan.innerText = 'Error resuming';
-                });
-                isPlaying = true;
-                playPauseBtn.innerHTML = '⏸';
-                stateSpan.innerText = 'Playing...';
-                updateTrackIconsAndActive();
-            }
+            togglePlayPause();
         } else {
+            // Play the new track
             playTrack(index, true);
         }
     }

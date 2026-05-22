@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - ple.ie</title>
+    <title>Settings - Handi Homepage</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/settings.css">
     <!-- Privacy-friendly analytics by Plausible -->
@@ -17,7 +17,6 @@
     window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
     plausible.init()
     </script>
-
 </head>
 <body>
 <div class="settings-container">
@@ -30,8 +29,60 @@
         </div>
     </div>
 
+    <!-- Weather Module -->
+    <div class="module-card" data-module="weather">
+        <div class="module-header" data-module="weather">
+            <div class="module-title"><i class="fa-solid fa-cloud-sun"></i><h3>Weather Location</h3></div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field">
+                <label>Location (city or town):</label>
+                <input type="text" id="weatherLocation" placeholder="e.g., Cork, Dublin, Galway, Limerick" value="Cork">
+                <small style="display: block; margin-top: 6px; color: #64748b;">📍 Use Irish towns/cities for best results. Coordinates will be fetched automatically.</small>
+            </div>
+            <div class="config-field">
+                <label>Country:</label>
+                <select id="weatherCountry">
+                    <option value="IE">Ireland</option>
+                    <option value="GB">United Kingdom</option>
+                    <option value="US">United States</option>
+                    <option value="CA">Canada</option>
+                    <option value="AU">Australia</option>
+                    <option value="NZ">New Zealand</option>
+                    <option value="DE">Germany</option>
+                    <option value="FR">France</option>
+                    <option value="ES">Spain</option>
+                    <option value="IT">Italy</option>
+                    <option value="NL">Netherlands</option>
+                    <option value="BE">Belgium</option>
+                    <option value="PL">Poland</option>
+                    <option value="SE">Sweden</option>
+                    <option value="NO">Norway</option>
+                    <option value="DK">Denmark</option>
+                    <option value="FI">Finland</option>
+                    <option value="PT">Portugal</option>
+                    <option value="CH">Switzerland</option>
+                    <option value="AT">Austria</option>
+                    <option value="CZ">Czech Republic</option>
+                    <option value="HU">Hungary</option>
+                </select>
+            </div>
+            <div class="config-field">
+                <label>Or use current location:</label>
+                <button type="button" id="detectLocationBtn" class="detect-location-btn">
+                    <i class="fa-solid fa-location-dot"></i> Detect My Location
+                </button>
+                <small style="display: block; margin-top: 6px; color: #64748b;">Your browser will ask for permission to access your location.</small>
+            </div>
+            <div id="weatherPreview" class="weather-preview" style="display: none; margin-top: 12px; padding: 12px; background: #eef2ff; border-radius: 12px;">
+                <!-- Preview will be shown here -->
+            </div>
+        </div>
+    </div>
+
     <!-- Gallery Module -->
-    <div class="module-card">
+    <div class="module-card" data-module="gallery">
         <div class="module-header" data-module="gallery">
             <div class="module-title"><i class="fa-solid fa-images"></i><h3>Gallery</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
@@ -44,21 +95,8 @@
         </div>
     </div>
 
-    <!-- Music Player Module -->
-    <div class="module-card">
-        <div class="module-header" data-module="music">
-            <div class="module-title"><i class="fa-solid fa-music"></i><h3>Music Player</h3></div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field"><label>Default volume (%):</label><input type="range" id="musicVolume" min="0" max="100" value="70"><span id="volumeValue">70%</span></div>
-            <div class="config-field"><label>Default shuffle:</label><select id="musicShuffle"><option value="false">Off</option><option value="true">On</option></select></div>
-            <button id="uploadMusicBtn" class="upload-btn">🎵 Upload Music Files</button>
-        </div>
-    </div>
-
     <!-- News Module -->
-    <div class="module-card">
+    <div class="module-card" data-module="news">
         <div class="module-header" data-module="news">
             <div class="module-title"><i class="fa-solid fa-newspaper"></i><h3>News</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
@@ -84,10 +122,23 @@
         </div>
     </div>
 
+    <!-- Music Player Module -->
+    <div class="module-card" data-module="music">
+        <div class="module-header" data-module="music">
+            <div class="module-title"><i class="fa-solid fa-music"></i><h3>Music Player</h3></div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field"><label>Default volume (%):</label><input type="range" id="musicVolume" min="0" max="100" value="70"><span id="volumeValue">70%</span></div>
+            <div class="config-field"><label>Default shuffle:</label><select id="musicShuffle"><option value="false">Off</option><option value="true">On</option></select></div>
+            <button id="uploadMusicBtn" class="upload-btn">🎵 Upload Music Files</button>
+        </div>
+    </div>
+
     <!-- Mastodon Module -->
-    <div class="module-card">
+    <div class="module-card" data-module="mastodon">
         <div class="module-header" data-module="mastodon">
-            <div class="module-title"><i class="fa-brands fa-mastodon"></i><h3>Mastodon Social Media</h3></div>
+            <div class="module-title"><i class="fa-brands fa-mastodon"></i><h3>Social Media</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
@@ -96,8 +147,39 @@
         </div>
     </div>
 
+    <!-- Calendar Module -->
+    <div class="module-card" data-module="calendar">
+        <div class="module-header" data-module="calendar">
+            <div class="module-title"><i class="fa-regular fa-calendar"></i><h3>Calendar</h3></div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field">
+                <label>Public Proton Calendar URL (ICS link):</label>
+                <input type="url" id="calendarUrl" placeholder="https://calendar.proton.me/share/.../calendar.ics">
+                <small>Get this from Proton Calendar → Share → Public link</small>
+            </div>
+            <div class="config-field">
+                <label>Notification time before event:</label>
+                <select id="calendarNotificationMinutes">
+                    <option value="5">5 minutes</option>
+                    <option value="10">10 minutes</option>
+                    <option value="15">15 minutes</option>
+                    <option value="30" selected>30 minutes</option>
+                    <option value="60">1 hour</option>
+                    <option value="120">2 hours</option>
+                    <option value="1440">1 day</option>
+                </select>
+            </div>
+            <div class="config-field">
+                <label>How it works:</label>
+                <p>• Paste your public Proton Calendar ICS link above<br>• Events for today will appear on your dashboard<br>• Browser notifications will alert you before events start<br>• Calendar refreshes automatically every 5 minutes</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Friendly Phone Module -->
-    <div class="module-card">
+    <div class="module-card" data-module="phone">
         <div class="module-header" data-module="phone">
             <div class="module-title"><i class="fa-solid fa-phone"></i><h3>Friendly Phone</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
@@ -114,13 +196,46 @@
         </div>
     </div>
 
+    <!-- Chat Module -->
+    <div class="module-card" data-module="chat">
+        <div class="module-header" data-module="chat">
+            <div class="module-title"><i class="fa-regular fa-message"></i><h3>Chat (Matrix Rooms)</h3></div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field">
+                <label>Room 1 URL (matrix.to or room ID):</label>
+                <input type="text" id="chatRoom1" placeholder="e.g., https://matrix.to/#/#room:matrix.org">
+                <small>Public room – guest access must be enabled</small>
+            </div>
+            <div class="config-field">
+                <label>Room 2 URL:</label>
+                <input type="text" id="chatRoom2" placeholder="e.g., #friends:matrix.org">
+            </div>
+            <div class="config-field">
+                <label>Room 3 URL:</label>
+                <input type="text" id="chatRoom3" placeholder="e.g., #family:matrix.org">
+            </div>
+            <div class="config-field">
+                <label>Refresh interval (seconds):</label>
+                <input type="number" id="chatRefreshInterval" min="10" max="300" value="30">
+                <small>How often to check for new messages</small>
+            </div>
+            <div class="config-field">
+                <label>How to use:</label>
+                <p>1. Create a public Matrix room or use an existing one<br>2. Copy the room URL or ID<br>3. Paste above – guest peek must be enabled in room settings</p>
+            </div>
+        </div>
+    </div>
+
+
     <!-- PREMIUM MODULES -->
     <div class="header">
         <h2>Premium Modules</h2>
     </div>
 
     <!-- Bus Module -->
-    <div class="module-card">
+    <div class="module-card" data-module="bus">
         <div class="module-header" data-module="bus">
             <div class="module-title"><i class="fa-solid fa-bus"></i><h3>Live Bus Tracker</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
@@ -132,7 +247,7 @@
     </div>
 
     <!-- Emergency Module -->
-    <div class="module-card">
+    <div class="module-card" data-module="emergency">
         <div class="module-header" data-module="emergency">
             <div class="module-title"><i class="fa-solid fa-triangle-exclamation"></i><h3>Emergency Location Button</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
@@ -147,13 +262,44 @@
             </div>
             <div class="config-field"><label>Check interval (minutes):</label><input type="number" id="emergencyInterval" min="1" max="60" value="5"></div>
         </div>
-        <div>
-            <div class="brand">
-                <span class="subtitle"><a href="https://handihomepage.com/terms">Terms of Service</a> | <a href="https://handihomepage.com/privacy">Privacy Policy</a></span>
-            </div>
-        </div>
     </div>
+
 </div>
+
+
+    <div class="brand" style="text-align: center; padding: 20px; font-size: 14px; color: #64748b;">
+        <span class="subtitle"><a href="https://handihomepage.com/terms">Terms of Service</a> | <a href="https://handihomepage.com/privacy">Privacy Policy</a></span>
+    </div>
+
+<script>
+    // URL Parameter Handler – opens the corresponding module configuration
+    (function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const paramValue = urlParams.get('args');
+        
+        if (!paramValue) return;
+        
+        const validModules = ['gallery', 'music', 'news', 'mastodon', 'phone', 'bus', 'emergency', 'weather', 'chat'];
+        const targetModule = paramValue.toLowerCase();
+        
+        if (!validModules.includes(targetModule)) return;
+        
+        const moduleCard = document.querySelector(`.module-card[data-module="${targetModule}"]`);
+        if (!moduleCard) return;
+        
+        const configDiv = moduleCard.querySelector('.module-config');
+        if (configDiv) configDiv.classList.add('active');
+        
+        moduleCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        moduleCard.style.transition = 'background-color 0.3s';
+        moduleCard.style.backgroundColor = '#eaf2ff';
+        setTimeout(() => {
+            moduleCard.style.backgroundColor = '';
+        }, 1500);
+    })();
+</script>
+
 <script type="module" src="js/settings-app.js"></script>
 </body>
 </html>

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2026 Handi Homepage
- * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
- * See the LICENSE file in the repository root for full details.
- */
 // js/settings-app.js
 import { loadSettings, saveSettings } from './core/settings.js';
 import { saveMusic, saveGallery } from './core/storage.js';
@@ -18,6 +13,35 @@ let phoneContacts = [];
 function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m]));
+}
+
+// Cache coordinates in localStorage after first geocoding
+async function getCoordinatesForLocation(locationName, countryCode) {
+    const cacheKey = `weather_coords_${locationName}_${countryCode}`;
+    const cached = localStorage.getItem(cacheKey);
+    
+    if (cached) {
+        try {
+            return JSON.parse(cached);
+        } catch(e) {}
+    }
+    
+    const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(locationName)}, ${countryCode}&format=json&limit=1`;
+    const geoResponse = await fetch(geoUrl, {
+        headers: { 'User-Agent': 'HandiHomepage/1.0 (https://handihomepage.com)' }
+    });
+    const geoData = await geoResponse.json();
+    
+    if (geoData && geoData.length > 0) {
+        const coords = {
+            lat: parseFloat(geoData[0].lat),
+            lon: parseFloat(geoData[0].lon),
+            displayName: geoData[0].display_name?.split(',')[0] || locationName
+        };
+        localStorage.setItem(cacheKey, JSON.stringify(coords));
+        return coords;
+    }
+    return null;
 }
 
 // Render both contact lists
@@ -41,7 +65,6 @@ function renderContacts(type) {
         </div>
     `).join('');
 
-    // Attach delete handlers
     document.querySelectorAll('.delete-contact').forEach(btn => {
         btn.onclick = (e) => {
             e.stopPropagation();
@@ -54,53 +77,249 @@ function renderContacts(type) {
     });
 }
 
+// =========================================================
+// WEATHER SETTINGS FUNCTIONS
+// =========================================================
+const weatherLocationInput = document.getElementById('weatherLocation');
+const weatherCountrySelect = document.getElementById('weatherCountry');
+const detectLocationBtn = document.getElementById('detectLocationBtn');
+const weatherPreview = document.getElementById('weatherPreview');
+
+function getWeatherDescription(code) {
+    const codes = {
+        0: "☀️ Clear sky",
+        1: "🌤️ Mainly clear",
+        2: "⛅ Partly cloudy",
+        3: "☁️ Overcast",
+        45: "🌫️ Fog",
+        48: "🌫️ Depositing rime fog",
+        51: "🌧️ Light drizzle",
+        53: "🌧️ Moderate drizzle",
+        55: "🌧️ Dense drizzle",
+        61: "🌧️ Slight rain",
+        63: "🌧️ Moderate rain",
+        65: "🌧️ Heavy rain",
+        71: "🌨️ Slight snow",
+        73: "🌨️ Moderate snow",
+        75: "🌨️ Heavy snow",
+        80: "🌧️ Slight rain showers",
+        81: "🌧️ Moderate rain showers",
+        82: "🌧️ Violent rain showers",
+        85: "🌨️ Slight snow showers",
+        86: "🌨️ Heavy snow showers",
+        95: "⛈️ Thunderstorm"
+    };
+    return codes[code] || "🌡️ Unknown";
+}
+
+async function getCoordinates(location, countryCode) {
+    const query = `${location}, ${countryCode}`;
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&addressdetails=1`;
+    try {
+        const response = await fetch(url, {
+            headers: { 'User-Agent': 'HandiHomepage/1.0 (https://handihomepage.com)' }
+        });
+        const data = await response.json();
+        if (data && data.length > 0) {
+            return {
+                lat: parseFloat(data[0].lat),
+                lon: parseFloat(data[0].lon),
+                displayName: data[0].display_name
+            };
+        }
+        return null;
+    } catch (err) {
+        console.error('Geocoding error:', err);
+        return null;
+    }
+}
+
+async function showWeatherPreview() {
+    if (!weatherPreview) return;
+    const location = weatherLocationInput?.value?.trim();
+    const country = weatherCountrySelect?.value;
+    
+    if (!location) {
+        weatherPreview.style.display = 'none';
+        return;
+    }
+    
+    weatherPreview.style.display = 'block';
+    weatherPreview.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Fetching weather...';
+    
+    try {
+        const coords = await getCoordinates(location, country);
+        if (!coords) {
+            weatherPreview.innerHTML = '<span class="error"><i class="fa-solid fa-exclamation-triangle"></i> Location not found. Try a different town/city.</span>';
+            return;
+        }
+        
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current_weather=true&timezone=auto`;
+        const weatherRes = await fetch(weatherUrl);
+        const weatherData = await weatherRes.json();
+        
+        if (weatherData.current_weather) {
+            const temp = Math.round(weatherData.current_weather.temperature);
+            const weatherCode = weatherData.current_weather.weathercode;
+            const weatherDesc = getWeatherDescription(weatherCode);
+            
+            weatherPreview.innerHTML = `
+                <i class="fa-solid fa-location-dot"></i> <strong>${coords.displayName}</strong><br>
+                <i class="fa-solid fa-temperature-low"></i> ${temp}°C – ${weatherDesc}<br>
+                <small style="color: #64748b;">✓ This location will be used for your dashboard weather widget.</small>
+            `;
+        } else {
+            weatherPreview.innerHTML = '<span class="error"><i class="fa-solid fa-exclamation-triangle"></i> Could not fetch weather data.</span>';
+        }
+    } catch (err) {
+        console.error('Weather preview error:', err);
+        weatherPreview.innerHTML = '<span class="error"><i class="fa-solid fa-exclamation-triangle"></i> Error fetching weather. Please try again.</span>';
+    }
+}
+
+function detectMyLocation() {
+    if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        return;
+    }
+    
+    if (weatherPreview) {
+        weatherPreview.style.display = 'block';
+        weatherPreview.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Detecting your location...';
+    }
+    
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            
+            const reverseUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
+            try {
+                const response = await fetch(reverseUrl, {
+                    headers: { 'User-Agent': 'HandiHomepage/1.0 (https://handihomepage.com)' }
+                });
+                const data = await response.json();
+                
+                let city = '';
+                let countryCode = '';
+                if (data.address) {
+                    city = data.address.city || data.address.town || data.address.village || data.address.county;
+                    countryCode = data.address.country_code?.toUpperCase() || 'IE';
+                }
+                
+                if (city && countryCode) {
+                    if (weatherLocationInput) weatherLocationInput.value = city;
+                    if (weatherCountrySelect) weatherCountrySelect.value = countryCode;
+                    await showWeatherPreview();
+                } else if (weatherPreview) {
+                    weatherPreview.innerHTML = '<span class="error">Could not determine your city. Try typing it manually.</span>';
+                }
+            } catch (err) {
+                console.error('Reverse geocoding error:', err);
+                if (weatherPreview) {
+                    weatherPreview.innerHTML = '<span class="error">Error detecting location. Try typing it manually.</span>';
+                }
+            }
+        },
+        (error) => {
+            let errorMsg = '';
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMsg = 'Location permission denied. Please allow location access or type your city manually.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMsg = 'Location information unavailable. Please type your city manually.';
+                    break;
+                case error.TIMEOUT:
+                    errorMsg = 'Location request timed out. Please try again.';
+                    break;
+                default:
+                    errorMsg = 'An unknown error occurred.';
+            }
+            if (weatherPreview) {
+                weatherPreview.innerHTML = `<span class="error">${errorMsg}</span>`;
+            }
+        }
+    );
+}
+
 // Load UI from localStorage
 function loadUI() {
     const settings = loadSettings();
+    
     // Toggles
     toggleSwitches.forEach(sw => {
         const moduleId = sw.closest('.module-header').dataset.module;
         if (settings.enabledModules?.[moduleId] !== false) sw.classList.add('active');
         else sw.classList.remove('active');
     });
+    
     // Bus
     if (settings.bus) {
         if (document.getElementById('busRouteIds')) document.getElementById('busRouteIds').value = settings.bus.routeIds || '';
         if (document.getElementById('busStopIds')) document.getElementById('busStopIds').value = settings.bus.stopIds || '';
     }
+    
     // Gallery
     if (settings.gallery) {
         if (document.getElementById('gallerySpeed')) document.getElementById('gallerySpeed').value = settings.gallery.speed || 3000;
         if (document.getElementById('galleryAutoStart')) document.getElementById('galleryAutoStart').value = settings.gallery.autoStart ? 'true' : 'false';
     }
+    
     // Music
     if (settings.music) {
         if (document.getElementById('musicVolume')) document.getElementById('musicVolume').value = settings.music.volume || 70;
         if (document.getElementById('volumeValue')) document.getElementById('volumeValue').innerText = settings.music.volume + '%';
         if (document.getElementById('musicShuffle')) document.getElementById('musicShuffle').value = settings.music.shuffle ? 'true' : 'false';
     }
+    
     // News
     if (settings.news) {
         if (document.getElementById('newsRssUrl')) document.getElementById('newsRssUrl').value = settings.news.rssUrl || '';
         if (document.getElementById('newsRefresh')) document.getElementById('newsRefresh').value = settings.news.refresh || 15;
         if (document.getElementById('newsMaxArticles')) document.getElementById('newsMaxArticles').value = settings.news.maxArticles || 4;
     }
+    
     // Mastodon
     if (settings.mastodon) {
         if (document.getElementById('mastodonInstance')) document.getElementById('mastodonInstance').value = settings.mastodon.instance || 'https://mastodon.ie';
         if (document.getElementById('mastodonLimit')) document.getElementById('mastodonLimit').value = settings.mastodon.limit || 4;
     }
+    
+    // Weather
+    if (settings.weather) {
+        if (document.getElementById('weatherLocation')) document.getElementById('weatherLocation').value = settings.weather.location || 'Cork';
+        if (document.getElementById('weatherCountry')) document.getElementById('weatherCountry').value = settings.weather.country || 'IE';
+        // Trigger preview after loading
+        setTimeout(() => showWeatherPreview(), 100);
+    }
+    
     // Emergency
     if (settings.emergency) {
         emergencyContacts = settings.emergency.contacts || [];
         if (document.getElementById('emergencyInterval')) document.getElementById('emergencyInterval').value = settings.emergency.interval || 5;
         renderContacts('emergency');
     }
+    
+    // Chat
+    if (settings.chat) {
+        if (document.getElementById('chatRoom1')) document.getElementById('chatRoom1').value = settings.chat.rooms?.[0] || '';
+        if (document.getElementById('chatRoom2')) document.getElementById('chatRoom2').value = settings.chat.rooms?.[1] || '';
+        if (document.getElementById('chatRoom3')) document.getElementById('chatRoom3').value = settings.chat.rooms?.[2] || '';
+        if (document.getElementById('chatRefreshInterval')) document.getElementById('chatRefreshInterval').value = settings.chat.refreshInterval || 30;
+    }
+
     // Phone
     if (settings.phone) {
         phoneContacts = settings.phone.contacts || [];
         if (document.getElementById('autoDialDelay')) document.getElementById('autoDialDelay').value = settings.phone.autoDialDelay || 10;
         renderContacts('phone');
+    }
+
+    // Calendar
+    if (settings.calendar) {
+        if (document.getElementById('calendarUrl')) document.getElementById('calendarUrl').value = settings.calendar.url || '';
+        if (document.getElementById('calendarNotificationMinutes')) document.getElementById('calendarNotificationMinutes').value = settings.calendar.notificationMinutes || 30;
     }
 }
 
@@ -111,6 +330,7 @@ function collectSettings() {
         const moduleId = sw.closest('.module-header').dataset.module;
         enabledModules[moduleId] = sw.classList.contains('active');
     });
+    
     return {
         enabledModules,
         bus: {
@@ -125,6 +345,10 @@ function collectSettings() {
             volume: parseInt(document.getElementById('musicVolume')?.value) || 70,
             shuffle: document.getElementById('musicShuffle')?.value === 'true'
         },
+        calendar: {
+            url: document.getElementById('calendarUrl')?.value || '',
+            notificationMinutes: parseInt(document.getElementById('calendarNotificationMinutes')?.value) || 30
+        },
         news: {
             rssUrl: document.getElementById('newsRssUrl')?.value || '',
             refresh: parseInt(document.getElementById('newsRefresh')?.value) || 15,
@@ -134,6 +358,10 @@ function collectSettings() {
             instance: document.getElementById('mastodonInstance')?.value || 'https://mastodon.ie',
             limit: parseInt(document.getElementById('mastodonLimit')?.value) || 5
         },
+        weather: {
+            location: document.getElementById('weatherLocation')?.value || 'Cork',
+            country: document.getElementById('weatherCountry')?.value || 'IE'
+        },
         emergency: {
             contacts: emergencyContacts,
             interval: parseInt(document.getElementById('emergencyInterval')?.value) || 5
@@ -141,6 +369,14 @@ function collectSettings() {
         phone: {
             contacts: phoneContacts,
             autoDialDelay: parseInt(document.getElementById('autoDialDelay')?.value) || 10
+        },
+        chat: {
+            rooms: [
+                document.getElementById('chatRoom1')?.value || '',
+                document.getElementById('chatRoom2')?.value || '',
+                document.getElementById('chatRoom3')?.value || ''
+            ].filter(r => r.trim() !== ''),
+            refreshInterval: parseInt(document.getElementById('chatRefreshInterval')?.value) || 30
         }
     };
 }
@@ -157,6 +393,7 @@ moduleHeaders.forEach(header => {
         header.nextElementSibling.classList.toggle('active');
     });
 });
+
 // Toggle switches
 toggleSwitches.forEach(sw => {
     sw.addEventListener('click', (e) => {
@@ -164,6 +401,7 @@ toggleSwitches.forEach(sw => {
         sw.classList.toggle('active');
     });
 });
+
 // Volume slider
 const volSlider = document.getElementById('musicVolume');
 const volSpan = document.getElementById('volumeValue');
@@ -183,6 +421,7 @@ document.getElementById('uploadGalleryBtn')?.addEventListener('click', () => {
     };
     input.click();
 });
+
 document.getElementById('uploadMusicBtn')?.addEventListener('click', () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -197,7 +436,7 @@ document.getElementById('uploadMusicBtn')?.addEventListener('click', () => {
     input.click();
 });
 
-// ----- Helper: add contact with photo (safe) -----
+// Helper: add contact with photo
 function addContact(type, nameField, phoneField, photoField) {
     const name = document.getElementById(nameField)?.value.trim();
     const phone = document.getElementById(phoneField)?.value.trim();
@@ -212,7 +451,6 @@ function addContact(type, nameField, phoneField, photoField) {
         if (type === 'emergency') emergencyContacts.push(contact);
         else phoneContacts.push(contact);
         renderContacts(type);
-        // Clear fields
         document.getElementById(nameField).value = '';
         document.getElementById(phoneField).value = '';
         if (document.getElementById(photoField)) document.getElementById(photoField).value = '';
@@ -220,12 +458,11 @@ function addContact(type, nameField, phoneField, photoField) {
     if (photoFile) {
         reader.readAsDataURL(photoFile);
     } else {
-        // No photo – still add contact
         reader.onload({ target: { result: null } });
     }
 }
 
-// ----- Reset all data (localStorage + IndexedDB) -----
+// Reset all data
 async function resetAllData() {
     const confirmed = confirm(
         '⚠️ WARNING: This will permanently delete ALL of your data:\n\n' +
@@ -277,6 +514,21 @@ document.getElementById('addPhoneInline')?.addEventListener('click', () => {
     addContact('phone', 'phoneName', 'phoneNumber', 'phonePhoto');
 });
 
+// Weather settings event listeners
+if (detectLocationBtn) {
+    detectLocationBtn.addEventListener('click', detectMyLocation);
+}
+if (weatherLocationInput) {
+    let previewTimeout;
+    weatherLocationInput.addEventListener('input', () => {
+        clearTimeout(previewTimeout);
+        previewTimeout = setTimeout(showWeatherPreview, 800);
+    });
+}
+if (weatherCountrySelect) {
+    weatherCountrySelect.addEventListener('change', showWeatherPreview);
+}
+
 // Save & exit buttons
 if (saveBtn) saveBtn.addEventListener('click', saveAllSettings);
 if (exitBtn) exitBtn.addEventListener('click', () => window.location.href = 'index.html');
@@ -284,51 +536,29 @@ if (exitBtn) exitBtn.addEventListener('click', () => window.location.href = 'ind
 // Initialize
 loadUI();
 
-// =========================================================
-// NEW: Auto‑expand module based on URL parameter 'p'
-// =========================================================
-function expandModuleByParameter() {
+// URL Parameter Handler – opens the corresponding module configuration
+(function() {
     const urlParams = new URLSearchParams(window.location.search);
-    let param = urlParams.get('p');
-    if (!param) return;
-
-    // Map friendly names to data-module attribute values
-    const paramMap = {
-        'social_media': 'mastodon',
-        'mastodon': 'mastodon',
-        'phone': 'phone',
-        'friendly_phone': 'phone',
-        'emergency': 'emergency',
-        'news': 'news',
-        'music': 'music',
-        'gallery': 'gallery',
-        'bus': 'bus'
-    };
-
-    const targetModule = paramMap[param.toLowerCase()];
-    if (!targetModule) return;
-
-    // Find the module card with matching data-module
+    const paramValue = urlParams.get('args');
+    
+    if (!paramValue) return;
+    
+    const validModules = ['gallery', 'music', 'news', 'mastodon', 'phone', 'bus', 'emergency', 'weather', 'chat', 'calendar'];    
+    const targetModule = paramValue.toLowerCase();
+    
+    if (!validModules.includes(targetModule)) return;
+    
     const moduleCard = document.querySelector(`.module-card[data-module="${targetModule}"]`);
     if (!moduleCard) return;
-
+    
     const configDiv = moduleCard.querySelector('.module-config');
-    if (!configDiv) return;
-
-    // Expand the config panel (add class 'active')
-    configDiv.classList.add('active');
-
-    // Scroll to the module smoothly
+    if (configDiv) configDiv.classList.add('active');
+    
     moduleCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    // Optional: highlight briefly
+    
     moduleCard.style.transition = 'background-color 0.3s';
     moduleCard.style.backgroundColor = '#eaf2ff';
     setTimeout(() => {
         moduleCard.style.backgroundColor = '';
     }, 1500);
-}
-
-// Run after loadUI to ensure DOM is ready
-// Use a short delay to allow any initial layout
-setTimeout(expandModuleByParameter, 100);
+})();

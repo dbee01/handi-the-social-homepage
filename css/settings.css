@@ -173,6 +173,11 @@ h1 {
     font-size: 0.95rem;
 }
 
+.config-field p {
+    font-size: medium; 
+    color:#64748b;
+}
+
 .config-field input,
 .config-field select {
     width: 100%;
@@ -182,6 +187,7 @@ h1 {
     color: #111827;
     border-radius: 12px;
     font-family: inherit;
+    font-size: medium;
 }
 
 .config-field input[type="range"] {
@@ -341,3 +347,34 @@ h1 {
     background-color: #c82333;
 }
 
+/* Weather settings styles */
+.detect-location-btn {
+    background: #0047cc;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.detect-location-btn:hover {
+    background: #0037a3;
+}
+.weather-preview {
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+.weather-preview i {
+    margin-right: 6px;
+    color: #0047cc;
+}
+.weather-preview .error {
+    color: #cc0000;
+}
+
+.weather-loading, .weather-fallback, .weather-location {
+    min-height: 60px;
+}
