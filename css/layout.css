@@ -532,9 +532,9 @@ footer {
     }
 }
 
-@media (max-width: 350px) {
+@media (max-width: 437px) {
     .footer-icon {
-        font-size: 1.5rem !important;
+        font-size: 2rem !important;
         min-width: 30px;
         min-height: 30px;
         padding: 0.2rem !important;
