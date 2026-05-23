@@ -1,0 +1,68 @@
+/* ============================================
+   WebRTC Module - Main Styles
+   Namespace: webrtc__
+   Base: /modules/webrtc/
+   ============================================ */
+
+.webrtc__app {
+    --webrtc-primary: #1F2B3C;
+    --webrtc-primary-dark: #0f1720;
+    --webrtc-blue: #3B82F6;
+    --webrtc-blue-hover: #2563eb;
+    --webrtc-green: #10B981;
+    --webrtc-red: #EF4444;
+    --webrtc-amber: #F59E0B;
+    --webrtc-purple: #8B5CF6;
+    --webrtc-gray: #F8FAFE;
+    --webrtc-border: #e2e8f0;
+    --webrtc-text: #1e293b;
+    --webrtc-text-muted: #5b6e8c;
+    --webrtc-radius-sm: 0.75rem;
+    --webrtc-radius-md: 1rem;
+    --webrtc-radius-lg: 1.5rem;
+    
+    font-family: system-ui, 'Segoe UI', 'Helvetica Neue', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: linear-gradient(145deg, #e0eafc 0%, #cfdef3 100%);
+    min-height: 100vh;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Layout - Two columns */
+.webrtc__layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* Mobile */
+@media (max-width: 800px) {
+    .webrtc__app {
+        padding: 12px;
+    }
+    .webrtc__layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}

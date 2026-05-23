@@ -6,6 +6,20 @@ function removeFileExtension(filename) {
     return filename.replace(/\.[^/.]+$/, '');
 }
 
+// Helper to validate if a blob URL is still valid
+function isBlobUrlValid(url) {
+    if (!url || !url.startsWith('blob:')) return true; // Not a blob URL, assume valid
+    try {
+        // Try to fetch the blob – if it fails, it's invalid
+        const xhr = new XMLHttpRequest();
+        xhr.open('HEAD', url, false); // Synchronous check
+        xhr.send();
+        return xhr.status !== 404;
+    } catch (e) {
+        return false;
+    }
+}
+
 export default async function initMusic(container) {
     const headerRow = document.createElement('div');
     headerRow.className = 'music-header-row';
@@ -50,15 +64,44 @@ export default async function initMusic(container) {
         parentItem.style.minHeight = '420px';
     }
 
-    const tracks = await loadMusic();
-    if (!tracks.length) {
+    let tracks = [];
+    try {
+        tracks = await loadMusic();
+    } catch (err) {
+        console.error('Failed to load music:', err);
+        content.innerHTML = `
+            <div class="module-empty">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                <p>Failed to load music library.</p>
+                <button id="musicRetryBtn" class="settings-link-btn">
+                    <i class="fa-solid fa-rotate-right"></i> Retry
+                </button>
+            </div>
+        `;
+        const retryBtn = content.querySelector('#musicRetryBtn');
+        if (retryBtn) retryBtn.onclick = () => location.reload();
+        return;
+    }
+
+    // Filter out tracks with invalid URLs
+    const validTracks = tracks.filter(track => {
+        if (!track.url) return false;
+        if (track.url.startsWith('blob:') && !isBlobUrlValid(track.url)) {
+            console.warn('Invalid blob URL for:', track.name);
+            return false;
+        }
+        return true;
+    });
+
+    if (validTracks.length === 0) {
         content.innerHTML = `
             <div class="module-empty">
                 <i class="fa-solid fa-music"></i>
-                <p>No music uploaded.</p>
+                <p>No valid music files found.</p>
                 <button id="musicSettingsBtn" class="settings-link-btn">
                     <i class="fa-solid fa-gear"></i> Add Music in Settings
                 </button>
+                ${tracks.length > 0 ? '<p style="font-size: 0.8rem; margin-top: 12px;">⚠️ Some files appear to be corrupted. Please re-upload them.</p>' : ''}
             </div>
         `;
         const settingsBtn = content.querySelector('#musicSettingsBtn');
@@ -71,8 +114,7 @@ export default async function initMusic(container) {
     let isPlaying = false;
     let stopVisualiser = null;
 
-    // Log track URLs for debugging
-    console.log('Loaded tracks:', tracks.map(t => ({ name: t.name, url: t.url?.substring(0, 100) })));
+    console.log('Loaded tracks:', validTracks.map(t => ({ name: t.name, url: t.url?.substring(0, 100) })));
 
     // Global mute
     function applyGlobalMute(muted) {
@@ -212,34 +254,76 @@ export default async function initMusic(container) {
         if (currentIndex === -1) trackTitleSpan.innerText = '—';
     }
 
+    // Display user-friendly error message
+    function showError(message, isCorrupted = false) {
+        stateSpan.innerText = message;
+        // Clear error after 3 seconds
+        setTimeout(() => {
+            if (stateSpan.innerText === message) {
+                if (currentAudio && isPlaying) {
+                    stateSpan.innerText = 'Playing...';
+                } else if (currentAudio && !isPlaying) {
+                    stateSpan.innerText = 'Paused';
+                } else {
+                    stateSpan.innerText = 'Ready';
+                }
+            }
+        }, 3000);
+    }
+
     function playTrack(index, autoPlay = true) {
         if (isLocked) {
-            stateSpan.innerText = 'Player locked – unlock to play';
+            showError('Player locked – unlock to play');
             return;
         }
-        if (index < 0 || index >= tracks.length) return;
+        if (index < 0 || index >= validTracks.length) return;
         
-        // If same track and already playing, just return (toggle handled elsewhere)
         if (currentAudio && currentIndex === index && isPlaying) return;
         
-        // Stop current audio
         if (currentAudio) {
             stopCurrentAudio(true);
         }
         
         currentIndex = index;
-        const track = tracks[currentIndex];
+        const track = validTracks[currentIndex];
         const displayName = removeFileExtension(track.name);
         trackTitleSpan.innerText = displayName;
         
-        // Create audio from blob URL
         try {
             currentAudio = new Audio(track.url);
             currentAudio.volume = 0.7;
             currentAudio.muted = localStorage.getItem('globalMute') === 'true';
             
-            // Debug: log if URL is valid
             console.log('Attempting to play:', displayName, 'URL type:', track.url.startsWith('blob:') ? 'blob' : 'url');
+            
+            // Add error handling for corrupted files
+            currentAudio.addEventListener('error', (e) => {
+                const error = currentAudio.error;
+                let errorMsg = 'Cannot play file';
+                if (error) {
+                    switch (error.code) {
+                        case MediaError.MEDIA_ERR_ABORTED:
+                            errorMsg = 'Playback aborted';
+                            break;
+                        case MediaError.MEDIA_ERR_NETWORK:
+                            errorMsg = 'Network error - file may be corrupted';
+                            break;
+                        case MediaError.MEDIA_ERR_DECODE:
+                            errorMsg = 'File corrupted or unsupported format';
+                            break;
+                        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                            errorMsg = 'Format not supported or file corrupted';
+                            break;
+                        default:
+                            errorMsg = 'Unknown error playing file';
+                    }
+                }
+                console.error('Audio error:', errorMsg);
+                showError(errorMsg, true);
+                isPlaying = false;
+                playPauseBtn.innerHTML = '▶';
+                updateTrackIconsAndActive();
+            });
             
             if (autoPlay) {
                 const playPromise = currentAudio.play();
@@ -251,7 +335,13 @@ export default async function initMusic(container) {
                         updateTrackIconsAndActive();
                     }).catch(err => {
                         console.error('Playback failed:', err.message);
-                        stateSpan.innerText = `Error: ${err.message.substring(0, 30)}`;
+                        let errorMsg = 'Cannot play';
+                        if (err.message.includes('decode')) {
+                            errorMsg = 'File corrupted – try re-uploading';
+                        } else if (err.message.includes('network')) {
+                            errorMsg = 'Network error – file may be corrupted';
+                        }
+                        showError(errorMsg);
                         isPlaying = false;
                         playPauseBtn.innerHTML = '▶';
                         updateTrackIconsAndActive();
@@ -268,16 +358,9 @@ export default async function initMusic(container) {
                 console.log('Track ended, playing next');
                 playNext();
             };
-            currentAudio.onerror = (e) => {
-                console.error('Audio element error:', e);
-                stateSpan.innerText = 'Error - Check file';
-                isPlaying = false;
-                playPauseBtn.innerHTML = '▶';
-                updateTrackIconsAndActive();
-            };
         } catch (err) {
             console.error('Failed to create audio:', err);
-            stateSpan.innerText = 'Error - Invalid file';
+            showError('Invalid file – please re-upload');
             isPlaying = false;
             playPauseBtn.innerHTML = '▶';
             updateTrackIconsAndActive();
@@ -288,21 +371,21 @@ export default async function initMusic(container) {
     }
 
     function playNext() {
-        if (isLocked) { stateSpan.innerText = 'Player locked – unlock to play'; return; }
-        if (tracks.length === 0) return;
-        const nextIndex = (currentIndex + 1) % tracks.length;
+        if (isLocked) { showError('Player locked – unlock to play'); return; }
+        if (validTracks.length === 0) return;
+        const nextIndex = (currentIndex + 1) % validTracks.length;
         playTrack(nextIndex, true);
     }
 
     function playPrev() {
-        if (isLocked) { stateSpan.innerText = 'Player locked – unlock to play'; return; }
-        if (tracks.length === 0) return;
-        const prevIndex = (currentIndex - 1 + tracks.length) % tracks.length;
+        if (isLocked) { showError('Player locked – unlock to play'); return; }
+        if (validTracks.length === 0) return;
+        const prevIndex = (currentIndex - 1 + validTracks.length) % validTracks.length;
         playTrack(prevIndex, true);
     }
 
     function togglePlayPause() {
-        if (isLocked) { stateSpan.innerText = 'Player locked – unlock to play'; return; }
+        if (isLocked) { showError('Player locked – unlock to play'); return; }
         if (currentIndex === -1 || !currentAudio) {
             playTrack(0, true);
             return;
@@ -323,20 +406,18 @@ export default async function initMusic(container) {
                     updateTrackIconsAndActive();
                 }).catch(err => {
                     console.error('Resume failed:', err);
-                    stateSpan.innerText = 'Cannot resume';
+                    showError('Cannot resume playback');
                 });
             }
         }
     }
 
     function onTrackClick(index) {
-        if (isLocked) { stateSpan.innerText = 'Player locked – unlock to play'; return; }
+        if (isLocked) { showError('Player locked – unlock to play'); return; }
         
-        // If clicking the currently playing track, toggle pause/play
         if (index === currentIndex && currentAudio) {
             togglePlayPause();
         } else {
-            // Play the new track
             playTrack(index, true);
         }
     }
@@ -391,7 +472,7 @@ export default async function initMusic(container) {
         applyLockState();
     });
 
-    tracks.forEach((track, i) => {
+    validTracks.forEach((track, i) => {
         const el = document.createElement('div');
         el.className = 'music-track-item';
         el.dataset.index = i;

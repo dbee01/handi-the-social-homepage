@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC Module | HandiHome</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            background: linear-gradient(145deg, #e0eafc 0%, #cfdef3 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin: 0 0 0.5rem 0;
+            color: #1F2B3C;
+        }
+        .user-badge {
+            background: #3B82F6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 2rem;
+            display: inline-block;
+            font-size: 0.85rem;
+        }
+        input, select, button {
+            padding: 10px 16px;
+            border-radius: 2rem;
+            border: 1px solid #e2e8f0;
+            font-size: 1rem;
+            margin: 5px;
+        }
+        button {
+            background: #3B82F6;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 1rem;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        .connected {
+            background: #d1fae5;
+            color: #059669;
+        }
+        .disconnected {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        .log {
+            background: #1e293b;
+            color: #94a3b8;
+            padding: 1rem;
+            border-radius: 1rem;
+            font-family: monospace;
+            font-size: 12px;
+            height: 250px;
+            overflow-y: auto;
+        }
+        .help-text {
+            background: #fef3c7;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>📱 WebRTC Module Test</h1>
+            <p>Current User: <span id="currentUserDisplay" class="user-badge">Not set</span></p>
+            <hr>
+            
+            <h3>🔧 Configuration</h3>
+            <input type="text" id="userId" placeholder="User ID (e.g., alice)">
+            <input type="text" id="displayName" placeholder="Display Name">
+            <button id="connectBtn">🔌 Connect</button>
+            <div id="connectionStatus" class="status disconnected">⚫ Disconnected</div>
+        </div>
+
+        <div class="card">
+            <h3>📞 Make a Call</h3>
+            <input type="text" id="targetId" placeholder="Call to (e.g., bob)">
+            <select id="callType">
+                <option value="audio">🎵 Audio Only</option>
+                <option value="video">📹 Video Call</option>
+                <option value="room">👥 Room Call</option>
+            </select>
+            <button id="callBtn" disabled>📞 Call</button>
+            <button id="hangupBtn" disabled>❌ Hangup</button>
+        </div>
+
+        <div class="card">
+            <h3>📋 Contacts</h3>
+            <div id="contactsList">
+                <p style="color: #666;">Connect first to see contacts</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📜 Call Log</h3>
+            <div id="log" class="log"></div>
+        </div>
+
+        <div class="help-text">
+            <strong>💡 How to test with multiple users:</strong><br>
+            <strong>Method 1:</strong> Open different browsers with URL parameters:<br>
+            <code>http://localhost:3001/?user=alice&name=Alice</code><br>
+            <code>http://localhost:3001/?user=bob&name=Bob</code><br>
+            <strong>Method 2:</strong> Use incognito/private windows<br>
+            <strong>Method 3:</strong> Use different browser profiles<br><br>
+            <strong>📋 Pre-configured users:</strong> alice, bob, carol
+        </div>
+    </div>
+
+    <script>
+        // Parse URL parameters for auto-login
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlUserId = urlParams.get('user');
+        const urlDisplayName = urlParams.get('name');
+        
+        let currentUserId = null;
+        let currentDisplayName = null;
+        
+        function addLog(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            const colors = {
+                success: '#059669',
+                error: '#dc2626',
+                call: '#3B82F6',
+                info: '#94a3b8'
+            };
+            entry.style.color = colors[type] || colors.info;
+            entry.style.marginBottom = '4px';
+            entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            
+            // Keep last 100 entries
+            while (logDiv.children.length > 100) {
+                logDiv.removeChild(logDiv.firstChild);
+            }
+        }
+        
+        async function loadContacts(userId) {
+            try {
+                const response = await fetch(`/api/webrtc/contacts/${userId}`);
+                const data = await response.json();
+                if (data.success && data.contacts.length > 0) {
+                    const contactsDiv = document.getElementById('contactsList');
+                    contactsDiv.innerHTML = data.contacts.map(c => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #eee;">
+                            <div>
+                                <strong>${c.name}</strong><br>
+                                <small style="color: #666;">${c.webrtcId}</small>
+                            </div>
+                            <button onclick="callContact('${c.webrtcId}')" style="padding: 4px 12px; font-size: 0.8rem;">📞 Call</button>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('contactsList').innerHTML = '<p style="color: #666;">No contacts yet. Add some!</p>';
+                }
+            } catch (error) {
+                console.error('Failed to load contacts:', error);
+            }
+        }
+        
+        window.callContact = function(webrtcId) {
+            document.getElementById('targetId').value = webrtcId;
+            document.getElementById('callBtn').click();
+        };
+        
+        document.getElementById('connectBtn').onclick = async () => {
+            const userId = document.getElementById('userId').value || 'test_user';
+            const displayName = document.getElementById('displayName').value || userId;
+            
+            currentUserId = userId;
+            currentDisplayName = displayName;
+            
+            localStorage.setItem('webrtc_user_id', userId);
+            localStorage.setItem('webrtc_display_name', displayName);
+            document.getElementById('currentUserDisplay').textContent = `${displayName} (${userId})`;
+            document.getElementById('currentUserDisplay').style.background = '#10B981';
+            
+            addLog(`🟢 Connecting as ${displayName} (${userId})...`, 'info');
+            
+            try {
+                const response = await fetch('/api/webrtc/token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, displayName })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    addLog(`✅ Connected successfully!`, 'success');
+                    addLog(`📋 Token: ${data.token.substring(0, 30)}...`, 'info');
+                    
+                    if (data.isMock) {
+                        addLog(`⚠️ Using mock token - Real Infobip API not available`, 'error');
+                    }
+                    
+                    document.getElementById('connectionStatus').className = 'status connected';
+                    document.getElementById('connectionStatus').innerHTML = '🟢 Connected as ' + displayName;
+                    document.getElementById('callBtn').disabled = false;
+                    document.getElementById('hangupBtn').disabled = false;
+                    
+                    // Load contacts
+                    await loadContacts(userId);
+                } else {
+                    addLog(`❌ Connection failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                addLog(`❌ Connection error: ${error.message}`, 'error');
+            }
+        };
+        
+        document.getElementById('callBtn').onclick = () => {
+            const target = document.getElementById('targetId').value;
+            const type = document.getElementById('callType').value;
+            
+            if (!target) {
+                addLog(`⚠️ Please enter a target WebRTC ID`, 'error');
+                return;
+            }
+            
+            addLog(`📞 Initiating ${type} call to ${target}...`, 'call');
+            
+            // Dispatch custom event for WebRTC client
+            window.dispatchEvent(new CustomEvent('webrtc_initiate_call', {
+                detail: { 
+                    contactId: target, 
+                    options: {
+                        video: type === 'video',
+                        isRoomCall: type === 'room',
+                        roomName: type === 'room' ? `room_${Date.now()}` : null
+                    }
+                }
+            }));
+        };
+        
+        document.getElementById('hangupBtn').onclick = () => {
+            addLog(`🔴 Call ended`, 'call');
+            window.dispatchEvent(new CustomEvent('webrtc_hangup'));
+        };
+        
+        // Auto-fill from URL params
+        if (urlUserId) {
+            document.getElementById('userId').value = urlUserId;
+            document.getElementById('displayName').value = urlDisplayName || urlUserId;
+            addLog(`📌 URL param detected: User = ${urlUserId}`, 'success');
+            
+            // Auto-connect after a short delay
+            setTimeout(() => {
+                document.getElementById('connectBtn').click();
+            }, 500);
+        }
+        
+        // Check for saved user ID
+        const savedUserId = localStorage.getItem('webrtc_user_id');
+        if (savedUserId && !urlUserId) {
+            document.getElementById('userId').value = savedUserId;
+            document.getElementById('displayName').value = localStorage.getItem('webrtc_display_name') || savedUserId;
+        }
+        
+        addLog('✨ Ready! Enter a User ID and click Connect, or use URL params.', 'info');
+    </script>
+</body>
+</html>

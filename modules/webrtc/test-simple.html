@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebRTC Test - Correct Events</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a2e; color: white; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .panel { background: #0f0f1a; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; border: none; border-radius: 8px; }
+        .btn-primary { background: #3B82F6; color: white; }
+        .btn-danger { background: #EF4444; color: white; }
+        input, select { padding: 10px; margin: 5px; border-radius: 8px; border: none; }
+        .status { padding: 10px; border-radius: 8px; margin: 10px 0; font-weight: bold; }
+        .status-connected { background: #10B981; color: white; }
+        .status-disconnected { background: #EF4444; color: white; }
+        .status-connecting { background: #F59E0B; color: white; }
+        video { width: 45%; margin: 10px; background: #000; border-radius: 8px; }
+        .logs { background: #0f0f1a; padding: 10px; height: 250px; overflow-y: auto; font-size: 12px; font-family: monospace; border-radius: 8px; margin-top: 10px; }
+        .log-success { color: #10B981; }
+        .log-error { color: #EF4444; }
+        .log-info { color: #3B82F6; }
+        .incoming-modal {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1a1a2e;
+            border: 2px solid #3B82F6;
+            border-radius: 12px;
+            padding: 20px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📹 WebRTC Test - Correct Events</h1>
+        
+        <div class="panel">
+            <h3>🔧 Configuration</h3>
+            <input type="text" id="userId" placeholder="Your ID (alice or bob)" style="width: 200px;">
+            <button id="connectBtn" class="btn-primary">🔌 Connect</button>
+            <div id="statusDisplay" class="status status-disconnected">⚫ Disconnected</div>
+        </div>
+        
+        <div class="panel">
+            <h3>📞 Make Call</h3>
+            <input type="text" id="targetId" placeholder="Call to (alice or bob)" style="width: 200px;">
+            <button id="callBtn" class="btn-primary" disabled>📞 Call</button>
+            <button id="hangupBtn" class="btn-danger" disabled>❌ Hangup</button>
+            <div>
+                <label><input type="checkbox" id="videoCheckbox" checked> Enable Video</label>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h3>📹 Video Streams</h3>
+            <video id="localVideo" autoplay muted playsinline></video>
+            <video id="remoteVideo" autoplay playsinline></video>
+        </div>
+        
+        <div class="panel">
+            <h3>📜 Logs</h3>
+            <div id="logs" class="logs"></div>
+        </div>
+    </div>
+
+    <script src="https://rtc.cdn.infobip.com/2/latest/infobip.rtc.js"></script>
+    <script>
+        let infobipRTC = null;
+        let currentCall = null;
+        let isConnected = false;
+        let localStream = null;
+        
+        function addLog(message, type = 'info') {
+            const logsDiv = document.getElementById('logs');
+            const entry = document.createElement('div');
+            entry.className = `log-${type}`;
+            entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logsDiv.appendChild(entry);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        async function getToken(userId) {
+            addLog(`Getting token for ${userId}...`, 'info');
+            const response = await fetch('/api/webrtc/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, displayName: userId })
+            });
+            const data = await response.json();
+            if (!data.token) {
+                throw new Error('No token received');
+            }
+            addLog(`✅ Token received`, 'success');
+            return data.token;
+        }
+        
+        async function connect() {
+            const userId = document.getElementById('userId').value.trim();
+            if (!userId) {
+                addLog('❌ Please enter a User ID', 'error');
+                return;
+            }
+            
+            addLog(`🟢 Connecting as ${userId}...`, 'info');
+            document.getElementById('statusDisplay').className = 'status status-connecting';
+            document.getElementById('statusDisplay').innerHTML = '🟡 Connecting...';
+            
+            try {
+                const token = await getToken(userId);
+                
+                // Create InfobipRTC client
+                infobipRTC = createInfobipRtc(token, { debug: true });
+                addLog('✅ InfobipRTC client created', 'success');
+                
+                // Set up event handlers (ONLY the ones that exist)
+                infobipRTC.on('connected', (event) => {
+                    isConnected = true;
+                    addLog(`✅ Connected as ${event.identity}`, 'success');
+                    document.getElementById('statusDisplay').className = 'status status-connected';
+                    document.getElementById('statusDisplay').innerHTML = `🟢 Connected as ${event.identity}`;
+                    document.getElementById('callBtn').disabled = false;
+                });
+                
+                infobipRTC.on('disconnected', () => {
+                    isConnected = false;
+                    addLog(`⚠️ Disconnected`, 'warning');
+                    document.getElementById('statusDisplay').className = 'status status-disconnected';
+                    document.getElementById('statusDisplay').innerHTML = '⚫ Disconnected';
+                    document.getElementById('callBtn').disabled = true;
+                    document.getElementById('hangupBtn').disabled = true;
+                });
+                
+                // Incoming call handler
+                infobipRTC.on('incoming-webrtc-call', (event) => {
+                    const incomingCall = event.incomingCall;
+                    const callerId = incomingCall.source().identifier;
+                    addLog(`📞 INCOMING CALL from ${callerId}!`, 'info');
+                    showIncomingCallModal(incomingCall);
+                });
+                
+                // Connect
+                infobipRTC.connect();
+                addLog('🔄 Connecting to Infobip...', 'info');
+                
+            } catch (error) {
+                addLog(`❌ Connection failed: ${error.message}`, 'error');
+                document.getElementById('statusDisplay').className = 'status status-disconnected';
+                document.getElementById('statusDisplay').innerHTML = '⚫ Connection Failed';
+            }
+        }
+        
+        function showIncomingCallModal(incomingCall) {
+            const existing = document.querySelector('.incoming-modal');
+            if (existing) existing.remove();
+            
+            const callerId = incomingCall.source().identifier;
+            const modal = document.createElement('div');
+            modal.className = 'incoming-modal';
+            modal.innerHTML = `
+                <div style="background: #3B82F6; padding: 12px; border-radius: 10px 10px 0 0; text-align: center;">
+                    <strong>📞 Incoming Call</strong>
+                </div>
+                <div style="padding: 20px; text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">📱</div>
+                    <div><strong style="font-size: 18px;">${callerId}</strong></div>
+                    <div style="margin-top: 20px;">
+                        <button id="acceptBtn" style="background: #10B981; color: white; padding: 10px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+                            ✅ Accept
+                        </button>
+                        <button id="declineBtn" style="background: #EF4444; color: white; padding: 10px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+                            ❌ Decline
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('acceptBtn').onclick = () => {
+                addLog(`✅ Accepting call from ${callerId}`, 'success');
+                currentCall = incomingCall;
+                setupCallHandlers(incomingCall);
+                incomingCall.accept();
+                modal.remove();
+            };
+            
+            document.getElementById('declineBtn').onclick = () => {
+                addLog(`❌ Declining call from ${callerId}`, 'error');
+                incomingCall.decline();
+                modal.remove();
+            };
+        }
+        
+        function setupCallHandlers(call) {
+            // ONLY use events that exist in Infobip SDK
+            call.on('established', (event) => {
+                addLog(`✅ CALL ESTABLISHED!`, 'success');
+                document.getElementById('hangupBtn').disabled = false;
+                document.getElementById('callBtn').disabled = true;
+                
+                // The remote stream is available in the 'established' event
+                if (event.stream) {
+                    addLog(`📹 Remote stream received`, 'success');
+                    const remoteVideo = document.getElementById('remoteVideo');
+                    remoteVideo.srcObject = event.stream;
+                }
+            });
+            
+            call.on('hangup', () => {
+                addLog(`🔴 Call ended`, 'info');
+                document.getElementById('remoteVideo').srcObject = null;
+                document.getElementById('hangupBtn').disabled = true;
+                document.getElementById('callBtn').disabled = false;
+                currentCall = null;
+            });
+            
+            call.on('ringing', () => {
+                addLog(`📞 Ringing...`, 'info');
+            });
+        }
+        
+        async function makeCall() {
+            const targetId = document.getElementById('targetId').value.trim();
+            const videoEnabled = document.getElementById('videoCheckbox').checked;
+            
+            if (!targetId) {
+                addLog(`❌ Please enter a target ID`, 'error');
+                return;
+            }
+            
+            if (!infobipRTC || !isConnected) {
+                addLog(`❌ Not connected`, 'error');
+                return;
+            }
+            
+            addLog(`📞 Calling ${targetId} with video=${videoEnabled}...`, 'info');
+            
+            try {
+                // Get local media stream first
+                const constraints = { audio: true };
+                if (videoEnabled) constraints.video = true;
+                
+                localStream = await navigator.mediaDevices.getUserMedia(constraints);
+                addLog(`✅ Local media obtained`, 'success');
+                
+                // Display local video
+                const localVideo = document.getElementById('localVideo');
+                localVideo.srcObject = localStream;
+                
+                // Create call with video option
+                const callOptions = WebrtcCallOptions.builder().setVideo(videoEnabled).build();
+                currentCall = infobipRTC.callWebrtc(targetId, callOptions);
+                setupCallHandlers(currentCall);
+                
+            } catch (error) {
+                addLog(`❌ Call failed: ${error.message}`, 'error');
+                if (error.name === 'NotAllowedError') {
+                    addLog(`💡 Please grant camera/microphone permissions`, 'warning');
+                }
+            }
+        }
+        
+        function hangup() {
+            if (currentCall) {
+                currentCall.hangup();
+            }
+            // Stop local stream
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+        }
+        
+        // Setup buttons
+        document.getElementById('connectBtn').onclick = connect;
+        document.getElementById('callBtn').onclick = makeCall;
+        document.getElementById('hangupBtn').onclick = hangup;
+        
+        addLog('✨ Ready! Open TWO browsers (alice and bob)', 'success');
+        
+        // Auto-fill from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlUser = urlParams.get('user');
+        if (urlUser) {
+            document.getElementById('userId').value = urlUser;
+            addLog(`📌 Auto-filled user: ${urlUser}`, 'info');
+            setTimeout(() => connect(), 500);
+        }
+    </script>
+</body>
+</html>

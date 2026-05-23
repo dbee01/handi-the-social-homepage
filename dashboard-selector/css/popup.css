@@ -1,0 +1,128 @@
+/* ============================================
+   Popup Modal Styles (namespaced)
+   ============================================ */
+
+.hh__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    visibility: visible;
+    opacity: 1;
+    transition: all 0.2s ease;
+    padding: 16px;
+}
+
+.hh__overlay.hh__hidden {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.hh__card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 480px;
+    border-radius: var(--hh-radius-lg, 1.5rem);
+    box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: hh__fadeSlideUp 0.25s ease;
+}
+
+@keyframes hh__fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hh__card-header {
+    padding: 1.25rem 1.5rem 0.5rem 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.hh__card-title {
+    font-size: 1.65rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #1F2B3C, #2C3E50);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    margin: 0;
+}
+
+.hh__drag-note {
+    font-size: 0.7rem;
+    color: #7c8b9c;
+    margin-top: 8px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.hh__drag-note span {
+    background: #eef2f8;
+    padding: 3px 8px;
+    border-radius: 40px;
+    font-size: 0.65rem;
+    font-weight: 500;
+}
+
+.hh__privacy-row {
+    padding: 0.75rem 1.5rem 1rem 1.5rem;
+    border-top: 1px solid #edf2f7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: white;
+}
+
+.hh__agree-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: #334155;
+    cursor: pointer;
+}
+
+.hh__agree-label input {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--hh-blue, #3B82F6);
+    margin: 0;
+}
+
+.hh__confirm-btn {
+    background: var(--hh-primary, #1F2B3C);
+    border: none;
+    padding: 10px 22px;
+    border-radius: 3rem;
+    color: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.hh__confirm-btn:active {
+    transform: scale(0.97);
+}
+
+.hh__confirm-btn.hh__disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}

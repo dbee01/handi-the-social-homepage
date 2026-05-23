@@ -138,6 +138,19 @@ header {
     justify-content: center;
 }
 
+.pin-btn.pinned {
+    background: #e67e22 !important;
+    color: #fff !important;
+    border-color: #d35400 !important;
+    box-shadow: 0 0 8px rgba(230, 126, 34, 0.5);
+    animation: pinGlow 0.3s ease;
+}
+
+@keyframes pinGlow {
+    0% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0.7); }
+    100% { box-shadow: 0 0 8px 4px rgba(230, 126, 34, 0); }
+}
+
 /* =========================================================
    FOOTER
 ========================================================= */
@@ -183,6 +196,17 @@ footer {
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
+    }
+
+    .weather-disabled {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+    }
+    .weather-disabled i {
+        font-size: 2rem;
+        color: #0047cc;
+        margin-bottom: 10px;
     }
 
     .brand,

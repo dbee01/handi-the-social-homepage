@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>HandiHome | Dashboard Selector</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+<div class="hh__app">
+    <!-- Header -->
+    <header class="hh__header">
+        <a href="/" class="hh__logo-link">
+            <i class="fa-solid fa-hand-peace"></i>
+            <span>HandiHomepage</span>
+        </a>
+        
+        <div class="hh__search-wrapper">
+            <input type="text" id="hhSearchInput" class="hh__search-input" placeholder="Search privately..." />
+            <select id="hhSearchEngine" class="hh__search-select">
+                <option value="startpage">🔒 Startpage</option>
+                <option value="qwant">🐦 Qwant</option>
+                <option value="ecosia">🌳 Ecosia</option>
+                <option value="mojeek">🔍 Mojeek</option>
+            </select>
+            <div id="hhSearchEngineLogo" class="hh__search-logo"></div>
+            <button class="hh__search-btn" id="hhSearchButton">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <div class="hh__weather">
+            <i class="fa-solid fa-cloud-sun"></i>
+            <span id="hhWeather">🌤️ 22°C</span>
+        </div>
+    </header>
+
+    <!-- Two-column layout -->
+    <div class="hh__dashboard-layout">
+        <!-- Left: Module Selector -->
+        <div class="hh__selector-panel">
+            <div class="hh__selector-header">
+                <h2><i class="fa-solid fa-puzzle-piece"></i> Dashboard Modules</h2>
+                <p>🖱️ Drag to reorder · 🎨 Numbered colors</p>
+            </div>
+            <div id="hhModuleContainer" class="hh__module-list"></div>
+            <div class="hh__privacy-row">
+                <label class="hh__agree-label">
+                    <input type="checkbox" id="hhPrivacyCheckbox">
+                    <span>I agree to the <a href="/privacy" target="_blank" class="hh__policy-link">Privacy Policy</a> and the <a href="/terms" target="_blank" class="hh__policy-link">Terms & Conditions</a>.</span>
+                </label>
+                <button id="hhConfirmBtn" class="hh__confirm-btn hh__disabled">✔ Apply to dashboard</button>
+            </div>
+        </div>
+
+        <!-- Right: Dashboard Preview -->
+        <div class="hh__dashboard-panel">
+            <div class="hh__dashboard-header">
+                <h2><i class="fa-solid fa-tv"></i> Your Dashboard</h2>
+                <p id="hhActiveCount" class="hh__active-count">0 active modules</p>
+            </div>
+            <div id="hhDashboardPreview" class="hh__dashboard-preview"></div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript Files -->
+<script src="js/search.js"></script>
+<script src="js/modules.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

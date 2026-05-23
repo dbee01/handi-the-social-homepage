@@ -1,0 +1,141 @@
+/* ============================================
+   Phone Module - Contacts List Styles
+   ============================================ */
+
+.webrtc__phone-panel {
+    background: white;
+    border-radius: var(--webrtc-radius-lg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.webrtc__phone-header {
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, var(--webrtc-primary), var(--webrtc-primary-dark));
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.webrtc__phone-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+}
+
+.webrtc__add-contact-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    padding: 6px 14px;
+    border-radius: 2rem;
+    color: white;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.webrtc__add-contact-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.02);
+}
+
+.webrtc__contacts-list {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.webrtc__contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--webrtc-border);
+    transition: background 0.2s;
+}
+
+.webrtc__contact-item:hover {
+    background: var(--webrtc-gray);
+}
+
+.webrtc__contact-avatar {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--webrtc-blue), var(--webrtc-purple));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.3rem;
+}
+
+.webrtc__contact-info {
+    flex: 1;
+}
+
+.webrtc__contact-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--webrtc-text);
+}
+
+.webrtc__contact-id {
+    font-size: 0.7rem;
+    color: var(--webrtc-text-muted);
+    margin-top: 2px;
+}
+
+.webrtc__contact-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.webrtc__call-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.webrtc__audio-call {
+    background: var(--webrtc-green);
+    color: white;
+}
+
+.webrtc__video-call {
+    background: var(--webrtc-blue);
+    color: white;
+}
+
+.webrtc__room-call {
+    background: var(--webrtc-purple);
+    color: white;
+}
+
+.webrtc__call-btn:hover {
+    transform: scale(1.1);
+}
+
+.empty-contacts {
+    text-align: center;
+    padding: 3rem;
+    color: var(--webrtc-text-muted);
+}
+
+@media (max-width: 600px) {
+    .webrtc__contact-item {
+        flex-wrap: wrap;
+    }
+    .webrtc__contact-actions {
+        width: 100%;
+        justify-content: center;
+        margin-top: 8px;
+    }
+}

@@ -26,6 +26,7 @@
     "cors": "^2.8.6",
     "csv-parser": "^3.2.1",
     "express": "^5.2.1",
+    "infobip-rtc": "^2.7.35",
     "matrix-js-sdk": "^35.1.0",
     "vite": "^8.0.14"
   }

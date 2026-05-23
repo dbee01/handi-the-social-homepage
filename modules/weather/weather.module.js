@@ -4,13 +4,150 @@
  * See the LICENSE file in the repository root for full details.
  */
 // modules/weather/weather.module.js
-import M from "./weather.model.js";
-import V from "./weather.view.js";
-import C from "./weather.controller.js";
+import { loadSettings } from '../../js/core/settings.js';
 
-export default (c) => {
-  if (!c) throw new Error("Container is required");
-  const controller = new C(new M(), new V(c));
-  controller.init();
-  return controller;
-};
+export default async function initWeather(container) {
+    const pinBtn = container.querySelector('.pin-btn');
+    container.innerHTML = '';
+    if (pinBtn) container.prepend(pinBtn);
+
+    const title = document.createElement('div');
+    title.className = 'panel-title';
+    title.innerHTML = '<i class="fa-solid fa-cloud-sun"></i> WEATHER';
+    container.appendChild(title);
+
+    const content = document.createElement('div');
+    content.className = 'weather-content';
+    container.appendChild(content);
+
+    let weatherInterval = null;
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
+    }
+
+    function getWeatherDescription(code) {
+        const codes = {
+            0: "☀️ Clear",
+            1: "🌤️ Mainly clear",
+            2: "⛅ Partly cloudy",
+            3: "☁️ Overcast",
+            45: "🌫️ Fog",
+            48: "🌫️ Fog",
+            51: "🌧️ Drizzle",
+            53: "🌧️ Drizzle",
+            55: "🌧️ Drizzle",
+            61: "🌧️ Light rain",
+            63: "🌧️ Moderate rain",
+            65: "🌧️ Heavy rain",
+            71: "🌨️ Light snow",
+            73: "🌨️ Moderate snow",
+            75: "🌨️ Heavy snow",
+            80: "🌧️ Showers",
+            81: "🌧️ Showers",
+            82: "🌧️ Heavy showers",
+            85: "🌨️ Snow showers",
+            86: "🌨️ Heavy snow showers",
+            95: "⛈️ Thunderstorm"
+        };
+        return codes[code] || "🌡️ Unknown";
+    }
+
+    async function getCoordinates(location, countryCode) {
+        const query = `${location}, ${countryCode}`;
+        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&addressdetails=1`;
+        try {
+            const response = await fetch(url, {
+                headers: { 'User-Agent': 'HandiHomepage/1.0' }
+            });
+            const data = await response.json();
+            if (data && data.length > 0) {
+                return {
+                    lat: parseFloat(data[0].lat),
+                    lon: parseFloat(data[0].lon),
+                    displayName: data[0].display_name
+                };
+            }
+            return null;
+        } catch (err) {
+            console.error('Geocoding error:', err);
+            return null;
+        }
+    }
+
+    async function updateWeather() {
+        // Check if weather module is enabled in settings
+        const settings = loadSettings();
+        const isEnabled = settings.enabledModules?.weather !== false;
+        
+        // If module is toggled OFF, show disabled message and don't fetch
+        if (!isEnabled) {
+            content.innerHTML = `
+                <div class="weather-disabled">
+                    <i class="fa-solid fa-cloud-sun"></i>
+                    <p>Weather module disabled.</p>
+                    <small>Enable in Settings → Weather</small>
+                </div>
+            `;
+            if (window.refreshDashboardLayout) window.refreshDashboardLayout();
+            return;
+        }
+        
+        const locationName = settings.weather?.location || 'Cork';
+        const countryCode = settings.weather?.country || 'IE';
+        
+        content.innerHTML = '<div class="weather-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading weather...</div>';
+        
+        try {
+            const coords = await getCoordinates(locationName, countryCode);
+            if (!coords) {
+                content.innerHTML = `<div class="weather-error">⚠️ Location "${escapeHtml(locationName)}" not found</div>`;
+                return;
+            }
+            
+            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current_weather=true&timezone=auto`;
+            const weatherRes = await fetch(weatherUrl);
+            const weatherData = await weatherRes.json();
+            
+            if (weatherData.current_weather) {
+                const temp = Math.round(weatherData.current_weather.temperature);
+                const weatherCode = weatherData.current_weather.weathercode;
+                const outlook = getWeatherDescription(weatherCode);
+                
+                let displayLocation = locationName;
+                if (coords.displayName) {
+                    const parts = coords.displayName.split(',');
+                    displayLocation = parts[0];
+                }
+                
+                content.innerHTML = `
+                    <div class="weather-display">
+                        <div class="weather-location">📍 ${escapeHtml(displayLocation)}</div>
+                        <div class="weather-temp">🌡️ ${temp}°C</div>
+                        <div class="weather-outlook">${outlook}</div>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `<div class="weather-error">⚠️ No weather data available</div>`;
+            }
+        } catch (err) {
+            console.error('Weather fetch error:', err);
+            content.innerHTML = `<div class="weather-error">⚠️ Failed to load weather</div>`;
+        }
+        
+        if (window.refreshDashboardLayout) window.refreshDashboardLayout();
+    }
+
+    function startWeatherUpdates() {
+        if (weatherInterval) clearInterval(weatherInterval);
+        updateWeather(); // This will check the toggle state
+        weatherInterval = setInterval(updateWeather, 30 * 60 * 1000);
+    }
+
+    startWeatherUpdates();
+    
+    return () => {
+        if (weatherInterval) clearInterval(weatherInterval);
+    };
+}

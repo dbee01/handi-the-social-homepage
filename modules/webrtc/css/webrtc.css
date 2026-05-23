@@ -1,0 +1,757 @@
+/* Additional styles for WebRTC Module */
+
+.hh__webrtc-module {
+    background: white;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.hh__webrtc-header {
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #1F2B3C, #2C3E50);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hh__webrtc-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hh__status-connected {
+    color: #2ecc71;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.hh__status-disconnected {
+    color: #95a5a6;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Quick Call */
+.hh__quick-call {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.hh__quick-call input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 2rem;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    outline: none;
+}
+
+.hh__quick-call input:focus {
+    border-color: #3B82F6;
+}
+
+.hh__quick-call-options {
+    display: flex;
+    gap: 8px;
+}
+
+.hh__call-type-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 2rem;
+    background: #f1f5f9;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.hh__call-type-btn:hover {
+    background: #e2e8f0;
+    transform: scale(1.02);
+}
+
+/* Settings Panel */
+.hh__settings-panel,
+.hh__history-panel {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.hh__settings-header,
+.hh__history-header {
+    padding: 0.875rem 1.5rem;
+    background: #f8fafc;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.hh__settings-header:hover,
+.hh__history-header:hover {
+    background: #f1f5f9;
+}
+
+.hh__settings-header .fa-chevron-down,
+.hh__history-header .fa-chevron-down {
+    margin-left: auto;
+    transition: transform 0.2s;
+}
+
+.hh__settings-content,
+.hh__history-content {
+    padding: 1rem 1.5rem;
+}
+
+/* Setting Items */
+.hh__setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.hh__setting-item:last-child {
+    border-bottom: none;
+}
+
+.hh__setting-info {
+    flex: 1;
+}
+
+.hh__setting-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hh__setting-desc {
+    font-size: 0.7rem;
+    color: #5b6e8c;
+    margin-top: 2px;
+}
+
+/* Toggle Switch */
+.hh__toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 26px;
+}
+
+.hh__toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.hh__toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e1;
+    transition: 0.3s;
+    border-radius: 34px;
+}
+
+.hh__toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .hh__toggle-slider {
+    background-color: #3B82F6;
+}
+
+input:checked + .hh__toggle-slider:before {
+    transform: translateX(26px);
+}
+
+/* Device Select */
+.hh__device-select {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 2rem;
+    background: white;
+    font-size: 0.85rem;
+    min-width: 160px;
+}
+
+/* Call History List */
+.hh__call-history-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.hh__history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.hh__history-item:hover {
+    background: #f1f5f9;
+}
+
+.hh__history-icon {
+    width: 40px;
+    height: 40px;
+    background: #e2e8f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hh__history-details {
+    flex: 1;
+}
+
+.hh__history-contact {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.hh__history-meta {
+    display: flex;
+    gap: 8px;
+    font-size: 0.7rem;
+    color: #5b6e8c;
+}
+
+.hh__history-direction {
+    text-transform: capitalize;
+}
+
+.hh__history-status {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hh__history-status.completed {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.hh__history-status.missed {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.hh__history-status.failed {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.hh__empty-history {
+    text-align: center;
+    padding: 2rem;
+    color: #94a3b8;
+}
+
+/* Active Call Indicator */
+.hh__active-call-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background: #d1fae5;
+    border-top: 1px solid #a7f3d0;
+}
+
+.hh__active-call-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.call-active-icon {
+    color: #059669;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.hh__show-call-btn {
+    background: #3B82F6;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 2rem;
+    color: white;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+/* Toast Notifications */
+.hh__toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    background: #1e293b;
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10002;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hh__toast-success {
+    background: #059669;
+}
+
+.hh__toast-error {
+    background: #dc2626;
+}
+
+.hh__toast-warning {
+    background: #d97706;
+}
+
+.hh__toast-hide {
+    animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Additional styles for WebRTC Module */
+
+.hh__webrtc-module {
+    background: white;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.hh__webrtc-header {
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #1F2B3C, #2C3E50);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hh__webrtc-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hh__status-connected {
+    color: #2ecc71;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.hh__status-disconnected {
+    color: #95a5a6;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Quick Call */
+.hh__quick-call {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.hh__quick-call input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 2rem;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    outline: none;
+}
+
+.hh__quick-call input:focus {
+    border-color: #3B82F6;
+}
+
+.hh__quick-call-options {
+    display: flex;
+    gap: 8px;
+}
+
+.hh__call-type-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 2rem;
+    background: #f1f5f9;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.hh__call-type-btn:hover {
+    background: #e2e8f0;
+    transform: scale(1.02);
+}
+
+/* Settings Panel */
+.hh__settings-panel,
+.hh__history-panel {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.hh__settings-header,
+.hh__history-header {
+    padding: 0.875rem 1.5rem;
+    background: #f8fafc;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.hh__settings-header:hover,
+.hh__history-header:hover {
+    background: #f1f5f9;
+}
+
+.hh__settings-header .fa-chevron-down,
+.hh__history-header .fa-chevron-down {
+    margin-left: auto;
+    transition: transform 0.2s;
+}
+
+.hh__settings-content,
+.hh__history-content {
+    padding: 1rem 1.5rem;
+}
+
+/* Setting Items */
+.hh__setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.hh__setting-item:last-child {
+    border-bottom: none;
+}
+
+.hh__setting-info {
+    flex: 1;
+}
+
+.hh__setting-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hh__setting-desc {
+    font-size: 0.7rem;
+    color: #5b6e8c;
+    margin-top: 2px;
+}
+
+/* Toggle Switch */
+.hh__toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 26px;
+}
+
+.hh__toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.hh__toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e1;
+    transition: 0.3s;
+    border-radius: 34px;
+}
+
+.hh__toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .hh__toggle-slider {
+    background-color: #3B82F6;
+}
+
+input:checked + .hh__toggle-slider:before {
+    transform: translateX(26px);
+}
+
+/* Device Select */
+.hh__device-select {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 2rem;
+    background: white;
+    font-size: 0.85rem;
+    min-width: 160px;
+}
+
+/* Call History List */
+.hh__call-history-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.hh__history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.hh__history-item:hover {
+    background: #f1f5f9;
+}
+
+.hh__history-icon {
+    width: 40px;
+    height: 40px;
+    background: #e2e8f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hh__history-details {
+    flex: 1;
+}
+
+.hh__history-contact {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.hh__history-meta {
+    display: flex;
+    gap: 8px;
+    font-size: 0.7rem;
+    color: #5b6e8c;
+}
+
+.hh__history-direction {
+    text-transform: capitalize;
+}
+
+.hh__history-status {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hh__history-status.completed {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.hh__history-status.missed {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.hh__history-status.failed {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.hh__empty-history {
+    text-align: center;
+    padding: 2rem;
+    color: #94a3b8;
+}
+
+/* Active Call Indicator */
+.hh__active-call-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background: #d1fae5;
+    border-top: 1px solid #a7f3d0;
+}
+
+.hh__active-call-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.call-active-icon {
+    color: #059669;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.hh__show-call-btn {
+    background: #3B82F6;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 2rem;
+    color: white;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+/* Toast Notifications */
+.hh__toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    background: #1e293b;
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10002;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hh__toast-success {
+    background: #059669;
+}
+
+.hh__toast-error {
+    background: #dc2626;
+}
+
+.hh__toast-warning {
+    background: #d97706;
+}
+
+.hh__toast-hide {
+    animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}

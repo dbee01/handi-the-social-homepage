@@ -116,16 +116,42 @@
                 return;
             }
 
+            // Use emoji/unicode fallbacks instead of missing image files
             function updateSearchLogo(value) {
                 const logoMap = {
-                    startpage: '/images/startpage.jpg',
-                    qwant: '/images/quant.jpg',
-                    ecosia: '/images/ecosia.jpg',
-                    mojeek: '/images/mojeek.jpg'
+                    startpage: { emoji: '🔒', name: 'Startpage', color: '#4A90E2' },
+                    qwant: { emoji: '🐦', name: 'Qwant', color: '#5C9EFF' },
+                    ecosia: { emoji: '🌳', name: 'Ecosia', color: '#4CAF50' },
+                    mojeek: { emoji: '🔍', name: 'Mojeek', color: '#FF6B35' }
                 };
-                const logoPath = logoMap[value] || logoMap.startpage;
-                searchEngineLogo.src = logoPath;
-                searchEngineLogo.title = searchEngine.options[searchEngine.selectedIndex]?.text || 'Search engine';
+                
+                const engine = logoMap[value] || logoMap.startpage;
+                
+                // Instead of loading missing images, create a styled badge
+                searchEngineLogo.style.display = 'inline-flex';
+                searchEngineLogo.style.alignItems = 'center';
+                searchEngineLogo.style.justifyContent = 'center';
+                searchEngineLogo.style.width = '32px';
+                searchEngineLogo.style.height = '32px';
+                searchEngineLogo.style.borderRadius = '8px';
+                searchEngineLogo.style.backgroundColor = engine.color;
+                searchEngineLogo.style.color = 'white';
+                searchEngineLogo.style.fontSize = '18px';
+                searchEngineLogo.style.fontWeight = 'bold';
+                searchEngineLogo.textContent = engine.emoji;
+                searchEngineLogo.title = engine.name;
+                
+                // If you really want to use images, provide valid URLs:
+                // const validImageUrls = {
+                //     startpage: 'https://www.startpage.com/favicon.ico',
+                //     qwant: 'https://www.qwant.com/favicon.ico',
+                //     ecosia: 'https://ecosia.org/favicon.ico',
+                //     mojeek: 'https://www.mojeek.com/favicon.ico'
+                // };
+                // const img = new Image();
+                // img.src = validImageUrls[value];
+                // img.onerror = () => { searchEngineLogo.textContent = engine.emoji; };
+                // searchEngineLogo.src = validImageUrls[value];
             }
 
             updateSearchLogo(searchEngine.value);
@@ -165,13 +191,38 @@
                 }
             });
 
-            const searchIcon = document.querySelector('.search-wrapper i.fa-arrow-right');
+            // Try multiple selector patterns for the search button
+            const searchIcon = document.querySelector('.search-wrapper i.fa-arrow-right') || 
+                            document.querySelector('.search-icon') ||
+                            document.querySelector('#searchButton') ||
+                            document.querySelector('button[aria-label="Search"]');
+            
             if (searchIcon) {
                 searchIcon.addEventListener('click', performSearch);
+            } else {
+                // Create a search button if none exists
+                const wrapper = document.querySelector('.search-wrapper');
+                if (wrapper && !searchIcon) {
+                    const btn = document.createElement('button');
+                    btn.innerHTML = '🔍';
+                    btn.style.background = '#4A90E2';
+                    btn.style.border = 'none';
+                    btn.style.borderRadius = '8px';
+                    btn.style.padding = '8px 12px';
+                    btn.style.cursor = 'pointer';
+                    btn.style.color = 'white';
+                    btn.addEventListener('click', performSearch);
+                    wrapper.appendChild(btn);
+                }
             }
         }
 
-        initializeSearch();
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeSearch);
+        } else {
+            initializeSearch();
+        }
 
         // Start weather updates
         startWeatherUpdates();
@@ -214,17 +265,17 @@
                 </a>
             </div>
         </div>
-        <div class="search-wrapper">
-            <img src="/images/startpage.jpg" class="search-engine-logo" id="searchEngineLogo" title="StartPage" alt="StartPage" style="width: 32px; height: 32px; object-fit: contain;">
-            <select id="searchEngine" class="search-engine-select">
-                <option value="startpage">StartPage</option>
-                <option value="qwant">Qwant</option>
-                <option value="ecosia">Ecosia</option>
-                <option value="mojeek">Mojeek</option>
-            </select>
-            <input type="text" id="searchInput" placeholder="Safe search">
-            <i class="fa-solid fa-arrow-right"></i>
-        </div>
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" placeholder="Search privately..." />
+                <select id="searchEngine">
+                    <option value="startpage">Startpage</option>
+                    <option value="qwant">Qwant</option>
+                    <option value="ecosia">Ecosia</option>
+                    <option value="mojeek">Mojeek</option>
+                </select>
+                <img id="searchEngineLogo" alt="Search engine logo" style="width:24px;height:24px;" />
+                <i class="fas fa-arrow-right"></i>
+            </div>
         <div class="header-weather">
             <i class="fa-solid fa-cloud-sun"></i>
             <span id="weather">🌤️ --°C</span>

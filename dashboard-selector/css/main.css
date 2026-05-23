@@ -1,0 +1,62 @@
+/* ============================================
+   NAMESPACE: hh__ (HandiHome)
+   Global Styles & Variables
+   ============================================ */
+
+.hh__app {
+    --hh-primary: #1F2B3C;
+    --hh-primary-dark: #0f1720;
+    --hh-blue: #3B82F6;
+    --hh-blue-hover: #2563eb;
+    --hh-green: #10B981;
+    --hh-amber: #F59E0B;
+    --hh-red: #EF4444;
+    --hh-purple: #8B5CF6;
+    --hh-pink: #EC4899;
+    --hh-teal: #14B8A6;
+    --hh-orange: #F97316;
+    --hh-cyan: #06B6D4;
+    --hh-indigo: #6366F1;
+    --hh-gray-bg: #F8FAFE;
+    --hh-border: #e2e8f0;
+    --hh-text: #1e293b;
+    --hh-text-muted: #5b6e8c;
+    --hh-radius-sm: 0.75rem;
+    --hh-radius-md: 1rem;
+    --hh-radius-lg: 1.5rem;
+    --hh-radius-xl: 2rem;
+    
+    font-family: system-ui, 'Segoe UI', 'Helvetica Neue', sans-serif;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    background: linear-gradient(145deg, #e0eafc 0%, #cfdef3 100%);
+    min-height: 100vh;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* Mobile */
+@media (max-width: 800px) {
+    .hh__app {
+        padding: 12px;
+    }
+}
