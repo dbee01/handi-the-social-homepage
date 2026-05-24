@@ -69,7 +69,7 @@
                         <a href="/privacy" target="_blank" style="color:#0047cc;">Privacy Policy</a>
                     </label>
                     
-                    <button id="saveBtn" style="background:#0047cc;color:white;border:none;border-radius:40px;padding:12px 24px;font-size:1rem;font-weight:bold;cursor:pointer;min-width:180px;" disabled>Save & Continue</button>
+                    <button id="saveBtn" style="background:#0047cc;color:white;border:none;border-radius:40px;padding:12px 24px;font-size:1rem;font-weight:bold;cursor:pointer;min-width:180px;" disabled>Click Agree & Continue</button>
                 </div>
             </div>
 `;
