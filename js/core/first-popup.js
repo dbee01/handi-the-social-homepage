@@ -76,6 +76,7 @@
     
     document.body.appendChild(popup);
     
+    
     const availableList = document.getElementById('availableList');
     const selectedList = document.getElementById('selectedList');
     const agreeCheckbox = document.getElementById('agreeCheckbox');
