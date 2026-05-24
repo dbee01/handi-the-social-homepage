@@ -73,7 +73,7 @@ export default async function initGallery(container) {
             <button id="galleryPlayPauseBtn" class="gallery-btn primary">⏸</button>
             <button id="galleryNextBtn" class="gallery-btn primary">Next ❯</button>
         </div>
-        <button id="galleryFullscreenBtn" class="gallery-btn secondary">🖥️ Full Screen Gallery</button>
+        <button id="galleryFullscreenBtn" class="gallery-btn secondary">🖥️ Full Screen</button>
     `;
 
     const thumbsDiv = document.createElement('div');
