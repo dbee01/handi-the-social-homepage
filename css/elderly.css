@@ -50,13 +50,15 @@ header {
 /* Search wrapper */
 .search-wrapper {
     flex: 2;
-    min-width: 240px;
+    max-width: 345px;
+    width: 100%;
     background: #ffffff;
     border: 2px solid #cbd5e1;
     border-radius: 48px;
     display: flex;
     align-items: center;
     padding: 4px 8px;
+    margin: 0 auto;
     transition: border-color 0.2s;
 }
 .search-wrapper:focus-within {

@@ -100,8 +100,6 @@ header {
 
     border: none;
     border-radius: 12px;
-
-    background: #5c6cff;
     color: white;
 
     cursor: pointer;
@@ -402,7 +400,7 @@ header {
 }
 
 .logo-text {
-    font-size: 1.8rem;
+    font-size: 1.2rem;
     font-weight: 700;
     background: linear-gradient(135deg, #1471ff, #8bccff);
     -webkit-background-clip: text;
