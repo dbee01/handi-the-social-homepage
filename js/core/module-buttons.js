@@ -67,8 +67,8 @@
         `,
         chat: `
             <strong>💬 Chat (Matrix)</strong><br><br>
-            • Peek into public Matrix rooms using guest access.<br>
-            • Add room URLs in <strong>Settings → Chat</strong>.<br>
+            • Create your own Matrix account at <a href="https://app.element.io" target="_blank" rel="noopener">Element Matrix</a> to start private family or friend chat rooms.<br>
+            • Add room URLs, access token, user ID in <strong>Settings → Chat</strong>.<br>
             • The module checks for new messages every 30 seconds.<br>
             • Click the room header to expand and view messages.<br>
             • New message notifications appear as a red badge.

@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/settings.css">
     <!-- Privacy-friendly analytics by Plausible -->
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
              const isLoggedIn = document.body.classList.contains('logged-in');  
@@ -29,6 +30,45 @@
             }
         });
     </script>
+    <script>
+        // Force Weather module to be permanently ENABLED (ON)
+        (function() {
+            // Override settings loading to force weather = true
+            const originalFetch = window.fetch;
+            
+            // Ensure weather is enabled when settings are loaded
+            document.addEventListener('DOMContentLoaded', () => {
+                // Disable and set weather toggle to ON position
+                const weatherCard = document.querySelector('.module-card[data-module="weather"]');
+                if (weatherCard) {
+                    const toggle = weatherCard.querySelector('.toggle-switch');
+                    if (toggle) {
+                        // Force toggle to ON state
+                        toggle.classList.add('active');
+                        const slider = toggle.querySelector('.toggle-slider');
+                        if (slider) {
+                            slider.style.transform = 'translateX(26px)';
+                        }
+                        toggle.style.opacity = '0.5';
+                        toggle.style.pointerEvents = 'none';
+                        toggle.title = 'Weather module is permanently enabled';
+                    }
+                }
+            });
+            
+            // Intercept settings saves to always keep weather enabled
+            const originalSetItem = localStorage.setItem;
+            localStorage.setItem = function(key, value) {
+                if (key === 'handiSettings' && value) {
+                    const settings = JSON.parse(value);
+                    if (!settings.enabledModules) settings.enabledModules = {};
+                    settings.enabledModules.weather = true; // Force ON
+                    value = JSON.stringify(settings);
+                }
+                return originalSetItem.call(this, key, value);
+            };
+        })();
+        </script>
 </head>
 <body>
 <div class="settings-container">
@@ -229,7 +269,7 @@
             </div>
             <div class="config-field">
                 <label>Access Token:</label>
-                <input type="password" id="chatAccessToken" placeholder="syt_...">
+                <input type="password" id="chatAccessToken" placeholder="mat_...">
                 <small>Generate in Element → Settings → Help & About → Access Token</small>
             </div>
             <div class="config-field">
