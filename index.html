@@ -9,15 +9,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>HandiHomepage – Your Safe & Simple Dashboard</title>
+
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-    <link rel="stylesheet" href="/css/vendor/fa-7.2.0/webfonts/fa-regular-400.woff2">
-    <link rel="stylesheet" href="/css/vendor/fa-7.2.0/webfonts/fa-solid-900.woff2">
+
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css">
+
+    <!-- Main Styles -->
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/elderly.css">
+
+    <style>
+        .search-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f5f5f5;
+            border-radius: 24px;
+            padding: 10px 14px;
+            max-width: 700px;
+            width: 100%;
+        }
+
+        #searchInput {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 18px;
+        }
+
+        #searchEngine {
+            border-radius: 8px;
+            padding: 6px;
+            border: 1px solid #ccc;
+        }
+
+        /* FIXED LOGO */
+        #searchEngineLogo {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .search-button {
+            border: none;
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .search-button:hover {
+            opacity: 0.9;
+        }
+    </style>
+
     <script src="/js/vendor/his.js@latest"></script>
     <script src="/js/vendor/packery.pkgd.min.js"></script>
     <script src="/js/vendor/Sortable.min.js"></script>
+
     <script type="module">
         import { loadSettings } from './js/core/settings.js';
         import { startWeatherUpdates } from './js/core/weather.js';
@@ -49,31 +104,50 @@
             calendar: initCalendar
         };
 
-        // Load settings and apply module visibility
         const settings = loadSettings();
         const enabledModulesSettings = settings.enabledModules || {};
 
-        // Get list of enabled modules from settings
-        let enabledModulesList = Object.keys(enabledModulesSettings).filter(id => enabledModulesSettings[id] === true);
+        let enabledModulesList = Object.keys(enabledModulesSettings)
+            .filter(id => enabledModulesSettings[id] === true);
 
-        // If nothing is enabled, enable all
         if (enabledModulesList.length === 0) {
-            enabledModulesList = ['gallery', 'bus', 'music', 'news', 'mastodon', 'radio', 'emergency', 'phone', 'chat', 'calendar'];
+            enabledModulesList = [
+                'gallery',
+                'bus',
+                'music',
+                'news',
+                'mastodon',
+                'radio',
+                'emergency',
+                'phone',
+                'chat',
+                'calendar'
+            ];
         }
-        // All module IDs in order
-        const allModuleIds = ['gallery', 'bus', 'music', 'news', 'mastodon', 'radio', 'emergency', 'phone', 'chat', 'calendar'];
 
-        // Reorder the DOM based on enabled modules
+        const allModuleIds = [
+            'gallery',
+            'bus',
+            'music',
+            'news',
+            'mastodon',
+            'radio',
+            'emergency',
+            'phone',
+            'chat',
+            'calendar'
+        ];
+
         const grid = document.getElementById('dashboard-grid');
+
         if (grid) {
-            // First, move enabled modules to top
             enabledModulesList.forEach(moduleId => {
                 const element = document.getElementById(moduleId);
                 if (element) {
                     grid.appendChild(element);
                 }
             });
-            // Then append disabled modules at bottom (they will be hidden anyway)
+
             allModuleIds.forEach(moduleId => {
                 if (!enabledModulesList.includes(moduleId)) {
                     const element = document.getElementById(moduleId);
@@ -84,17 +158,16 @@
             });
         }
 
-        // Show/hide and initialise modules
         for (const [id, initFn] of Object.entries(modules)) {
             const element = document.getElementById(id);
             if (!element) continue;
-            
-            // Check if module should be visible from settings
+
             const isEnabled = enabledModulesList.includes(id);
             element.classList.toggle('hidden', !isEnabled);
-            
+
             if (isEnabled) {
                 const container = element.querySelector('.module-content');
+
                 if (container) {
                     try {
                         initFn(container);
@@ -104,85 +177,114 @@
                 }
             }
         }
-        
-        // ----- Search functionality (European privacy‑friendly engines) -----
+
+        /* =========================================================
+           SEARCH
+        ========================================================= */
+
         function initializeSearch() {
+
             const searchInput = document.getElementById('searchInput');
             const searchEngine = document.getElementById('searchEngine');
             const searchEngineLogo = document.getElementById('searchEngineLogo');
+            const searchButton = document.getElementById('searchButton');
 
             if (!searchInput || !searchEngine || !searchEngineLogo) {
-                console.warn("Search elements not found");
+                console.warn('Search elements missing');
                 return;
             }
 
-            // Use emoji/unicode fallbacks instead of missing image files
+            /* REAL IMAGE URLS */
+            const logoMap = {
+                startpage: {
+                    name: 'Startpage',
+                    url: '/images/startpage.jpg'
+                },
+                qwant: {
+                    name: 'Qwant',
+                    url: '/images/qwant.jpg'
+                },
+                ecosia: {
+                    name: 'Ecosia',
+                    url: '/images/ecosia.jpg'
+                },
+                mojeek: {
+                    name: 'Mojeek',
+                    url: '/images/mojeek.jpg'
+                }
+            };
+
             function updateSearchLogo(value) {
-                const logoMap = {
-                    startpage: { emoji: '🔒', name: 'Startpage', color: '#4A90E2' },
-                    qwant: { emoji: '🐦', name: 'Qwant', color: '#5C9EFF' },
-                    ecosia: { emoji: '🌳', name: 'Ecosia', color: '#4CAF50' },
-                    mojeek: { emoji: '🔍', name: 'Mojeek', color: '#FF6B35' }
-                };
-                
+
                 const engine = logoMap[value] || logoMap.startpage;
-                
-                // Instead of loading missing images, create a styled badge
-                searchEngineLogo.style.display = 'inline-flex';
-                searchEngineLogo.style.alignItems = 'center';
-                searchEngineLogo.style.justifyContent = 'center';
-                searchEngineLogo.style.width = '32px';
-                searchEngineLogo.style.height = '32px';
-                searchEngineLogo.style.borderRadius = '8px';
-                searchEngineLogo.style.backgroundColor = engine.color;
-                searchEngineLogo.style.color = 'white';
-                searchEngineLogo.style.fontSize = '18px';
-                searchEngineLogo.style.fontWeight = 'bold';
-                searchEngineLogo.textContent = engine.emoji;
+
+                searchEngineLogo.src = engine.url;
+                searchEngineLogo.alt = engine.name;
                 searchEngineLogo.title = engine.name;
-                
-                // If you really want to use images, provide valid URLs:
-                // const validImageUrls = {
-                //     startpage: 'https://www.startpage.com/favicon.ico',
-                //     qwant: 'https://www.qwant.com/favicon.ico',
-                //     ecosia: 'https://ecosia.org/favicon.ico',
-                //     mojeek: 'https://www.mojeek.com/favicon.ico'
-                // };
-                // const img = new Image();
-                // img.src = validImageUrls[value];
-                // img.onerror = () => { searchEngineLogo.textContent = engine.emoji; };
-                // searchEngineLogo.src = validImageUrls[value];
+
+                /* fallback if favicon fails */
+                searchEngineLogo.onerror = () => {
+                    searchEngineLogo.src =
+                        'data:image/svg+xml;charset=UTF-8,' +
+                        encodeURIComponent(`
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 width="32"
+                                 height="32">
+                                <rect width="100%" height="100%" rx="8" fill="#5c6cff"/>
+                                <text x="50%" y="55%"
+                                      text-anchor="middle"
+                                      fill="white"
+                                      font-size="18"
+                                      font-family="Arial">
+                                      🔍
+                                </text>
+                            </svg>
+                        `);
+                };
             }
 
             updateSearchLogo(searchEngine.value);
-            searchEngine.addEventListener('change', () => updateSearchLogo(searchEngine.value));
+
+            searchEngine.addEventListener('change', () => {
+                updateSearchLogo(searchEngine.value);
+            });
 
             function performSearch() {
+
                 const query = searchInput.value.trim();
+
                 if (!query) return;
 
-                const engine = searchEngine.value;
                 let searchUrl = '';
 
-                switch (engine) {
+                switch (searchEngine.value) {
+
                     case 'startpage':
-                        searchUrl = `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
+                        searchUrl =
+                            `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
                         break;
+
                     case 'qwant':
-                        searchUrl = `https://www.qwant.com/?q=${encodeURIComponent(query)}`;
+                        searchUrl =
+                            `https://www.qwant.com/?q=${encodeURIComponent(query)}`;
                         break;
+
                     case 'ecosia':
-                        searchUrl = `https://www.ecosia.org/search?q=${encodeURIComponent(query)}`;
+                        searchUrl =
+                            `https://www.ecosia.org/search?q=${encodeURIComponent(query)}`;
                         break;
+
                     case 'mojeek':
-                        searchUrl = `https://www.mojeek.com/search?q=${encodeURIComponent(query)}`;
+                        searchUrl =
+                            `https://www.mojeek.com/search?q=${encodeURIComponent(query)}`;
                         break;
+
                     default:
-                        searchUrl = `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
+                        searchUrl =
+                            `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
                 }
 
                 window.open(searchUrl, '_blank');
-                searchInput.value = '';
             }
 
             searchInput.addEventListener('keypress', (e) => {
@@ -191,189 +293,162 @@
                 }
             });
 
-            // Try multiple selector patterns for the search button
-            const searchIcon = document.querySelector('.search-wrapper i.fa-arrow-right') || 
-                            document.querySelector('.search-icon') ||
-                            document.querySelector('#searchButton') ||
-                            document.querySelector('button[aria-label="Search"]');
-            
-            if (searchIcon) {
-                searchIcon.addEventListener('click', performSearch);
-            } else {
-                // Create a search button if none exists
-                const wrapper = document.querySelector('.search-wrapper');
-                if (wrapper && !searchIcon) {
-                    const btn = document.createElement('button');
-                    btn.innerHTML = '🔍';
-                    btn.style.background = '#4A90E2';
-                    btn.style.border = 'none';
-                    btn.style.borderRadius = '8px';
-                    btn.style.padding = '8px 12px';
-                    btn.style.cursor = 'pointer';
-                    btn.style.color = 'white';
-                    btn.addEventListener('click', performSearch);
-                    wrapper.appendChild(btn);
-                }
+            if (searchButton) {
+                searchButton.addEventListener('click', performSearch);
             }
         }
 
-        // Initialize when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initializeSearch);
         } else {
             initializeSearch();
         }
 
-        // Start weather updates
         startWeatherUpdates();
+    </script>
+</head>
 
-        // Settings link
-        document.getElementById('settingsLink')?.addEventListener('click', () => {
-            window.location.href = 'settings.html';
-        });
-        
-    </script>
-    <!-- Privacy-friendly analytics by Plausible -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-             const isLoggedIn = document.body.classList.contains('logged-in');  
-    
-            if (!isLoggedIn) {
-                // Load Plausible only for visitors
-                const script = document.createElement('script');
-                script.async = true;
-                script.defer = true;
-                script.src = 'https://plausible.io/js/pa-cvqvYb9dRTC-BwuguUIVj.js';
-                document.head.appendChild(script);
-                
-                window.plausible = window.plausible || function() {
-                    (window.plausible.q = window.plausible.q || []).push(arguments);
-                };
-            }
-            
-            });
-        
-    </script>
-    </head>
 <body>
-    <header>
-        <div class="site-branding">
-            <div class="handi-logo">
-                <a href="/" class="logo-link">
-                    <i class="fa-solid fa-hand-peace"></i>
-                    <span class="logo-text">HandiHomepage</span>
-                </a>
-            </div>
+
+<header>
+
+    <div class="site-branding">
+        <div class="handi-logo">
+            <a href="/" class="logo-link">
+                <i class="fa-solid fa-hand-peace"></i>
+                <span class="logo-text">HandiHomepage</span>
+            </a>
         </div>
-        <div class="nav-links"> 
-            <div class="search-wrapper">
-                <input type="text" id="searchInput" placeholder="Search privately..." />
-                <select id="searchEngine">
-                    <option value="startpage">Startpage</option>
-                    <option value="qwant">Qwant</option>
-                    <option value="ecosia">Ecosia</option>
-                    <option value="mojeek">Mojeek</option>
-                </select>
-                <img id="searchEngineLogo" alt="Search engine logo" style="width:24px;height:24px;" />
+    </div>
+
+    <div class="nav-links">
+
+        <div class="search-wrapper">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search privately..."
+            >
+
+            <select id="searchEngine">
+                <option value="startpage">Startpage</option>
+                <option value="qwant">Qwant</option>
+                <option value="ecosia">Ecosia</option>
+                <option value="mojeek">Mojeek</option>
+            </select>
+
+            <img
+                id="searchEngineLogo"
+                src="https://www.startpage.com/sp/cdn/favicons/favicon.ico"
+                alt="Search engine logo"
+            >
+
+            <button id="searchButton" class="search-button">
                 <i class="fas fa-arrow-right"></i>
-            </div>
-                
-        <div class="header-weather">
-            <i class="fa-solid fa-cloud-sun"></i>
-            <span id="weather">🌤️ --°C</span>
+            </button>
+
         </div>
-    </header>
-    
-    <div class="dashboard-wrapper">
-        <main id="dashboard-grid">
-            <div id="gallery" class="dashboard-item module" data-module="gallery">
-                <div class="module-content"></div>
-            </div>
-            <div id="bus" class="dashboard-item module" data-module="bus">
-                <div class="module-content"></div>
-            </div>
-            <div id="music" class="dashboard-item module" data-module="music">
-                <div class="module-content"></div>
-            </div>
-            <div id="news" class="dashboard-item module" data-module="news">
-                <div class="module-content"></div>
-            </div>
-            <div id="mastodon" class="dashboard-item module" data-module="mastodon">
-                <div class="module-content"></div>
-            </div>
-            <div id="radio" class="dashboard-item module" data-module="radio">
-                <div class="module-content"></div>
-            </div>
-            <div id="emergency" class="dashboard-item module" data-module="emergency">
-                <div class="module-content"></div>
-            </div>
-            <div id="phone" class="dashboard-item module" data-module="phone">
-                <div class="module-content"></div>
-            </div>
-            <div id="chat" class="dashboard-item module" data-module="chat">
-                <div class="module-content"></div>
-            </div>
-            <div id="calendar" class="dashboard-item module" data-module="calendar">
-                <div class="module-content"></div>
-            </div>
-            <!-- WebRTC Widget Container - Free & Unlimited Calls (Premium/Admin only) -->
-            <div id="webrtc" class="dashboard-item module" data-module="webrtc" style="display: none;">
-                <div class="module-header">
-                    <div class="module-title">
-                        <i class="fa-solid fa-phone-volume"></i>
-                        <h3>Free & Unlimited Calls</h3>
-                    </div>
-                    <div class="module-controls">
-                        <button class="pin-btn" title="Pin to dashboard">
-                            <i class="fa-solid fa-thumbtack"></i>
-                        </button>
-                        <button class="remove-btn" title="Remove module">
-                            <i class="fa-solid fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="module-content">
-                    <div id="webrtcWidgetContainer"></div>
-                </div>
-            </div>
-        </main>
+
     </div>
 
-    <footer>
-        <div class="footer-bar">
-            <button id="footerMuteBtn" class="footer-icon" title="Mute all audio">
-                <i class="fa-solid fa-volume-high"></i>
-            </button>
-            <button id="footerWakeLockBtn" class="footer-icon" title="Keep screen awake">
-                <i class="fa-solid fa-bed"></i>
-            </button>
-            <button id="footerDocsBtn" class="footer-icon" title="Documentation">
-                <i class="fa-solid fa-book"></i>
-            </button>
-            <button id="footerCoffeeBtn" class="footer-icon" title="Buy me a pint">
-                <i class="fa-solid fa-beer"></i>
-            </button>
-            <button id="footerEmailBtn" class="footer-icon" title="Contact">
-                <i class="fa-solid fa-envelope"></i>
-            </button>
-            <button id="footerSettingsBtn" class="footer-icon" title="Settings">
-                <i class="fa-solid fa-gear"></i>
-            </button>
-        </div>
-    </footer>
-
-    <div class="brand">
-        <span class="subtitle"><a href="/terms">Terms of Service</a> | <a href="/privacy">Privacy Policy</a></span>
+    <div class="header-weather">
+        <i class="fa-solid fa-cloud-sun"></i>
+        <span id="weather">🌤️ --°C</span>
     </div>
 
-    <!-- Admin/Premium Check -->
-    <script src="js/core/admin-check.js"></script>
-    <!-- WebRTC Integration -->
-    <link rel="stylesheet" href="css/webrtc-widget.css">
-    <script src="js/core/webrtc-integration.js"></script>
+</header>
 
-    <script src="js/core/module-buttons.js"></script>
-    <script src="js/core/footer-controls.js"></script>
-    <script src="js/core/first-popup.js"></script>
+<div class="dashboard-wrapper">
+
+    <main id="dashboard-grid">
+
+        <div id="gallery" class="dashboard-item module">
+            <div class="module-content"></div>
+        </div>
+
+        <div id="bus" class="dashboard-item module">
+            <div class="module-content"></div>
+        </div>
+
+        <div id="music" class="dashboard-item module">
+            <div class="module-content"></div>
+        </div>
+
+        <div id="news" class="dashboard-item module">
+            <div class="module-content"></div>
+        </div>
+
+        <div id="mastodon" class="dashboard-item module">
+            <div class="module-content"></div>
+        </div>
+
+        <div id="radio" class="dashboard-item module">
+            <div class="module-content"></div>
+        </div>
+
+        <div id="emergency" class="dashboard-item module">
+            <div class="module-content"></div>
+        </div>
+
+        <div id="phone" class="dashboard-item module">
+            <div class="module-content"></div>
+        </div>
+
+        <div id="chat" class="dashboard-item module">
+            <div class="module-content"></div>
+        </div>
+
+        <div id="calendar" class="dashboard-item module">
+            <div class="module-content"></div>
+        </div>
+
+    </main>
+
+</div>
+
+<footer>
+
+    <div class="footer-bar">
+
+        <button id="footerMuteBtn" class="footer-icon">
+            <i class="fa-solid fa-volume-high"></i>
+        </button>
+
+        <button id="footerWakeLockBtn" class="footer-icon">
+            <i class="fa-solid fa-bed"></i>
+        </button>
+
+        <button id="footerDocsBtn" class="footer-icon">
+            <i class="fa-solid fa-book"></i>
+        </button>
+
+        <button id="footerCoffeeBtn" class="footer-icon">
+            <i class="fa-solid fa-beer"></i>
+        </button>
+
+        <button id="footerEmailBtn" class="footer-icon">
+            <i class="fa-solid fa-envelope"></i>
+        </button>
+
+        <button id="footerSettingsBtn" class="footer-icon">
+            <i class="fa-solid fa-gear"></i>
+        </button>
+
+    </div>
+
+</footer>
+
+<div class="brand">
+    <span class="subtitle">
+        <a href="/terms">Terms of Service</a> |
+        <a href="/privacy">Privacy Policy</a>
+    </span>
+</div>
+
+<script src="js/core/module-buttons.js"></script>
+<script src="js/core/footer-controls.js"></script>
+<script src="js/core/first-popup.js"></script>
+
 </body>
 </html>
