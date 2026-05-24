@@ -46,20 +46,81 @@ header {
     align-items: center;
     gap: 6px;
 }
+/* Make search wrapper take full width */
+.nav-links {
+    flex: 1;
+    min-width: 200px;
+}
 
-/* Search wrapper */
+/* search wrapper */
 .search-wrapper {
-    flex: 2;
-    max-width: 345px;
     width: 100%;
     background: #ffffff;
     border: 2px solid #cbd5e1;
     border-radius: 48px;
     display: flex;
     align-items: center;
-    padding: 4px 8px;
-    margin: 0 auto;
-    transition: border-color 0.2s;
+    gap: 8px;
+    padding: 4px 8px 4px 20px;
+    box-sizing: border-box;
+}
+
+#searchInput {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Mobile: stack everything vertically */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .site-branding {
+        text-align: center;
+    }
+    
+    .nav-links {
+        width: 100%;
+    }
+    
+    .search-wrapper {
+        width: 100%;
+    }
+    
+    .header-weather {
+        text-align: center;
+    }
+}
+
+/* Small phones: wrap search inner elements */
+@media (max-width: 550px) {
+    .search-wrapper {
+        flex-wrap: wrap;
+        border-radius: 28px;
+        padding: 12px;
+    }
+    
+    #searchInput {
+        flex: 1 1 100%;
+        order: 1;
+    }
+    
+    #searchEngine {
+        flex: 1;
+        order: 2;
+    }
+    
+    #searchEngineLogo {
+        order: 3;
+    }
+    
+    .search-button {
+        order: 4;
+        width: 100%;
+        border-radius: 40px;
+    }
 }
 .search-wrapper:focus-within {
     border-color: #0047cc;

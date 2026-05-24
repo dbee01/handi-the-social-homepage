@@ -20,9 +20,34 @@
     <link rel="stylesheet" href="/css/elderly.css">
 
     <style>
+        /* FIX: Make header wrap vertically on mobile */
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            width: 100%;
+        }
+
+        /* FIX: Search wrapper takes full width on mobile */
+        .search-wrapper {
+            flex: 1;
+            min-width: 200px;
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 48px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px 4px 20px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
 
         #searchInput {
             flex: 1;
+            min-width: 0;
             border: none;
             outline: none;
             background: transparent;
@@ -56,6 +81,62 @@
 
         .search-button:hover {
             opacity: 0.9;
+        }
+
+        /* FIX: Mobile responsive - stack everything vertically */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .site-branding {
+                text-align: center;
+            }
+
+            .nav-links {
+                width: 100%;
+            }
+
+            .search-wrapper {
+                width: 100%;
+                flex: none;
+            }
+
+            .header-weather {
+                text-align: center;
+                justify-content: center;
+            }
+        }
+
+        /* FIX: Small phones - wrap search inner elements */
+        @media (max-width: 550px) {
+            .search-wrapper {
+                flex-wrap: wrap;
+                border-radius: 28px;
+                padding: 12px;
+                gap: 8px;
+            }
+
+            #searchInput {
+                flex: 1 1 100%;
+                order: 1;
+            }
+
+            #searchEngine {
+                flex: 1;
+                order: 2;
+            }
+
+            #searchEngineLogo {
+                order: 3;
+            }
+
+            .search-button {
+                order: 4;
+                width: 100%;
+                border-radius: 40px;
+            }
         }
     </style>
 
@@ -299,6 +380,9 @@
 </head>
 
 <body>
+
+<script src="js/core/message.js"></script>
+
 
 <header>
 
