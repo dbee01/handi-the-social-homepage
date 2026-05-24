@@ -91,6 +91,10 @@ header {
     max-width: 1700px;
 
     min-height: 400px;
+    
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 .dashboard-item.hidden {
@@ -98,99 +102,31 @@ header {
 }
 
 /* =========================================================
-   DESKTOP - 3 COLS
+   DEFAULT: 3 COLUMNS (1151px and above)
 ========================================================= */
 
 .dashboard-item {
-
     width: calc((100% - 40px) / 3);
-
     min-height: 200px;
-
     overflow: hidden;
-
     display: block;
 }
 
 /* =========================================================
-   MODULES
+   2 COLUMNS (901px - 1150px)
 ========================================================= */
 
-.module-content {
-    min-height: 150px;
-}
-
-/* =========================================================
-   PIN BUTTON
-========================================================= */
-
-.pin-btn {
-    position: absolute;
-
-    top: 10px;
-    right: 10px;
-
-    width: 34px;
-    height: 34px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.pin-btn.pinned {
-    background: #e67e22 !important;
-    color: #fff !important;
-    border-color: #d35400 !important;
-    box-shadow: 0 0 8px rgba(230, 126, 34, 0.5);
-    animation: pinGlow 0.3s ease;
-}
-
-@keyframes pinGlow {
-    0% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0.7); }
-    100% { box-shadow: 0 0 8px 4px rgba(230, 126, 34, 0); }
-}
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-footer {
-    margin-top: auto;
-
-    padding: 1rem;
-}
-
-.footer-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    flex-wrap: wrap;
-
-    gap: 20px;
-
-    text-align: center;
-}
-
-/* =========================================================
-   TABLET
-========================================================= */
-
-@media (max-width: 1200px) {
-
+@media (max-width: 1150px) {
     .dashboard-item {
-
         width: calc((100% - 20px) / 2);
     }
 }
 
 /* =========================================================
-   MOBILE
+   1 COLUMN (900px and below)
 ========================================================= */
 
 @media (max-width: 900px) {
-
     header {
         padding: 1rem;
         flex-direction: column;
@@ -199,9 +135,9 @@ footer {
     }
 
     .weather-disabled {
-    text-align: center;
-    padding: 20px;
-    color: #64748b;
+        text-align: center;
+        padding: 20px;
+        color: #64748b;
     }
     .weather-disabled i {
         font-size: 2rem;
@@ -247,25 +183,18 @@ footer {
     }
 
     #dashboard-grid {
-
         display: flex;
         flex-direction: column;
-
         gap: 16px;
     }
 
     .dashboard-item {
-
         position: relative !important;
-
         width: 100% !important;
         max-width: 100% !important;
-
         left: auto !important;
         top: auto !important;
-
         transform: none !important;
-
         margin: 0 !important;
     }
 }
@@ -277,9 +206,7 @@ footer {
 @media (max-width: 600px) {
 
     .footer-content {
-
         flex-direction: column;
-
         gap: 10px;
     }
 }
@@ -404,7 +331,7 @@ footer {
 .site-branding {
     display: flex;
     flex-direction: column;
-    gap: 6px;     /* ensures text wraps nicely */
+    gap: 6px;
 }
 
 .handi-logo {
@@ -415,7 +342,7 @@ footer {
 
 .handi-logo i {
     font-size: 2.2rem;
-    color: #1471ff;        /* your accent blue */
+    color: #1471ff;
 }
 
 .logo-text {
@@ -434,7 +361,6 @@ footer {
     margin-top: 4px;
 }
 
-/* Optional: hover effect on logo */
 .handi-logo:hover i {
     color: #0a4bb5;
     transition: color 0.2s;
@@ -445,7 +371,6 @@ footer {
     background-clip: text;
 }
 
-/* Mobile adjustments */
 @media (max-width: 700px) {
     .handi-logo i {
         font-size: 1.8rem;
@@ -458,9 +383,8 @@ footer {
     }
 
     .header-inner {
-        justify-content: space-between; /* default – keeps logo left, menu right */
+        justify-content: space-between;
     }
-    /* If you want both centered, use: */
     .header-inner {
         justify-content: center;
         gap: 2rem;
@@ -468,15 +392,15 @@ footer {
     .site-branding {
         display: flex;
         flex-direction: column;
-        align-items: center;    /* centers children horizontally */
+        align-items: center;
         gap: 6px;
-        text-align: center;     /* ensures text wraps nicely */
+        text-align: center;
     }
 }
 .logo-link {
     text-decoration: none;
 }
-/* Module controls container */
+
 .module-controls {
     position: absolute;
     top: 12px;
@@ -485,7 +409,7 @@ footer {
     gap: 8px;
     z-index: 10;
 }
-/* All buttons inside have same styling (provided by JS) */
+
 .pin-btn.pinned {
     background: #0047cc;
     color: #fff;
@@ -520,7 +444,6 @@ footer {
     }
 }
 
-/* Ensure scroll buttons are visible and clickable */
 .news-scroll-btn {
     width: 100%;
     padding: 12px 0;
@@ -537,7 +460,7 @@ footer {
     background: #e2e8f0;
     border-color: #0047cc;
 }
-/* Footer icon breakpoint at 1087px */
+
 @media (max-width: 1087px) {
     .footer-icon {
         font-size: 3.5rem !important;
@@ -564,12 +487,13 @@ footer {
         padding: 0.2rem !important;
     }
     .footer-bar {
-        gap: 0.2rem !important;  /* Changed from 0 to 0.2rem */
+        gap: 0.2rem !important;
     }
     .panel-title {
         font-size: 1rem !important;
     }
 }
+
 .search-engine-logo {
     width: 45px !important;
     height: 45px !important;
@@ -577,7 +501,6 @@ footer {
     object-fit: contain;
 }
 
-/* Left-align Save & Continue button in popup */
 #saveBtn {
     width: auto !important;
     min-width: 180px;
@@ -585,36 +508,6 @@ footer {
     text-align: center;
 }
 
-/* Bus Tracker Switch Button */
-.bus-switch-container {
-    margin: 12px 0;
-    text-align: center;
-}
-
-.bus-switch-btn {
-    background: #0047cc;
-    color: white;
-    border: none;
-    border-radius: 40px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: bold;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: background 0.2s;
-}
-
-.bus-switch-btn:hover {
-    background: #0037a3;
-}
-
-.bus-current-stop {
-    margin-top: 8px;
-}
-
-/* Bus Tracker Styles */
 .bus-switch-container {
     margin: 12px 0;
     text-align: center;
@@ -699,10 +592,8 @@ footer {
     text-align: left !important;
 }
 
-/* Remove center alignment from footer */
 .save-modules-btn {
     display: inline-block;
     width: auto !important;
     margin: 0 !important;
 }
-

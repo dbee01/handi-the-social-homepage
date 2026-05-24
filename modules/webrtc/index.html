@@ -1,290 +1,347 @@
+<!--
+ Copyright (c) 2026 Handi Homepage
+ This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
+ See the LICENSE file in the repository root for full details.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebRTC Module | HandiHome</title>
-    <style>
-        body {
-            font-family: system-ui, sans-serif;
-            background: linear-gradient(145deg, #e0eafc 0%, #cfdef3 100%);
-            min-height: 100vh;
-            padding: 20px;
-            margin: 0;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .card {
-            background: white;
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        h1 {
-            margin: 0 0 0.5rem 0;
-            color: #1F2B3C;
-        }
-        .user-badge {
-            background: #3B82F6;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 2rem;
-            display: inline-block;
-            font-size: 0.85rem;
-        }
-        input, select, button {
-            padding: 10px 16px;
-            border-radius: 2rem;
-            border: 1px solid #e2e8f0;
-            font-size: 1rem;
-            margin: 5px;
-        }
-        button {
-            background: #3B82F6;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #2563eb;
-        }
-        .status {
-            padding: 10px;
-            border-radius: 1rem;
-            margin: 10px 0;
-            font-weight: 500;
-        }
-        .connected {
-            background: #d1fae5;
-            color: #059669;
-        }
-        .disconnected {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-        .log {
-            background: #1e293b;
-            color: #94a3b8;
-            padding: 1rem;
-            border-radius: 1rem;
-            font-family: monospace;
-            font-size: 12px;
-            height: 250px;
-            overflow-y: auto;
-        }
-        .help-text {
-            background: #fef3c7;
-            padding: 1rem;
-            border-radius: 1rem;
-            margin-top: 1rem;
-            font-size: 0.85rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="card">
-            <h1>📱 WebRTC Module Test</h1>
-            <p>Current User: <span id="currentUserDisplay" class="user-badge">Not set</span></p>
-            <hr>
-            
-            <h3>🔧 Configuration</h3>
-            <input type="text" id="userId" placeholder="User ID (e.g., alice)">
-            <input type="text" id="displayName" placeholder="Display Name">
-            <button id="connectBtn">🔌 Connect</button>
-            <div id="connectionStatus" class="status disconnected">⚫ Disconnected</div>
-        </div>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>HandiHomepage – Your Safe & Simple Dashboard</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="/css/vendor/fa-7.2.0/webfonts/fa-regular-400.woff2">
+    <link rel="stylesheet" href="/css/vendor/fa-7.2.0/webfonts/fa-solid-900.woff2">
+    <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/elderly.css">
+    <link rel="stylesheet" href="/css/webrtc-widget.css">
+    <script src="/js/vendor/his.js@latest"></script>
+    <script src="/js/vendor/packery.pkgd.min.js"></script>
+    <script src="/js/vendor/Sortable.min.js"></script>
+    <script type="module">
+        import { loadSettings } from './js/core/settings.js';
+        import { startWeatherUpdates } from './js/core/weather.js';
+        import initBus from './modules/bus/bus.module.js';
+        import initGallery from './modules/gallery/gallery.module.js';
+        import initMusic from './modules/music/music.module.js';
+        import initNews from './modules/news/news.module.js';
+        import initMastodon from './modules/mastodon/mastodon.module.js';
+        import initRadio from './modules/radio/radio.module.js';
+        import initEmergency from './modules/emergency/emergency.module.js';
+        import initPhone from './modules/friendly-phone/friendly-phone.module.js';
+        import initChat from './modules/chat/chat.module.js';
+        import initCalendar from './modules/calendar/calendar.module.js';
+        import initWebRTC from './modules/webrtc/webrtc.module.js';
 
-        <div class="card">
-            <h3>📞 Make a Call</h3>
-            <input type="text" id="targetId" placeholder="Call to (e.g., bob)">
-            <select id="callType">
-                <option value="audio">🎵 Audio Only</option>
-                <option value="video">📹 Video Call</option>
-                <option value="room">👥 Room Call</option>
-            </select>
-            <button id="callBtn" disabled>📞 Call</button>
-            <button id="hangupBtn" disabled>❌ Hangup</button>
-        </div>
+        import { initLayout } from './js/core/layout.js';
 
-        <div class="card">
-            <h3>📋 Contacts</h3>
-            <div id="contactsList">
-                <p style="color: #666;">Connect first to see contacts</p>
-            </div>
-        </div>
+        initLayout();
 
-        <div class="card">
-            <h3>📜 Call Log</h3>
-            <div id="log" class="log"></div>
-        </div>
-
-        <div class="help-text">
-            <strong>💡 How to test with multiple users:</strong><br>
-            <strong>Method 1:</strong> Open different browsers with URL parameters:<br>
-            <code>http://localhost:3001/?user=alice&name=Alice</code><br>
-            <code>http://localhost:3001/?user=bob&name=Bob</code><br>
-            <strong>Method 2:</strong> Use incognito/private windows<br>
-            <strong>Method 3:</strong> Use different browser profiles<br><br>
-            <strong>📋 Pre-configured users:</strong> alice, bob, carol
-        </div>
-    </div>
-
-    <script>
-        // Parse URL parameters for auto-login
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlUserId = urlParams.get('user');
-        const urlDisplayName = urlParams.get('name');
-        
-        let currentUserId = null;
-        let currentDisplayName = null;
-        
-        function addLog(message, type = 'info') {
-            const logDiv = document.getElementById('log');
-            const entry = document.createElement('div');
-            const colors = {
-                success: '#059669',
-                error: '#dc2626',
-                call: '#3B82F6',
-                info: '#94a3b8'
-            };
-            entry.style.color = colors[type] || colors.info;
-            entry.style.marginBottom = '4px';
-            entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
-            logDiv.appendChild(entry);
-            logDiv.scrollTop = logDiv.scrollHeight;
-            
-            // Keep last 100 entries
-            while (logDiv.children.length > 100) {
-                logDiv.removeChild(logDiv.firstChild);
-            }
-        }
-        
-        async function loadContacts(userId) {
-            try {
-                const response = await fetch(`/api/webrtc/contacts/${userId}`);
-                const data = await response.json();
-                if (data.success && data.contacts.length > 0) {
-                    const contactsDiv = document.getElementById('contactsList');
-                    contactsDiv.innerHTML = data.contacts.map(c => `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #eee;">
-                            <div>
-                                <strong>${c.name}</strong><br>
-                                <small style="color: #666;">${c.webrtcId}</small>
-                            </div>
-                            <button onclick="callContact('${c.webrtcId}')" style="padding: 4px 12px; font-size: 0.8rem;">📞 Call</button>
-                        </div>
-                    `).join('');
-                } else {
-                    document.getElementById('contactsList').innerHTML = '<p style="color: #666;">No contacts yet. Add some!</p>';
-                }
-            } catch (error) {
-                console.error('Failed to load contacts:', error);
-            }
-        }
-        
-        window.callContact = function(webrtcId) {
-            document.getElementById('targetId').value = webrtcId;
-            document.getElementById('callBtn').click();
+        const modules = {
+            gallery: initGallery,
+            bus: initBus,
+            music: initMusic,
+            news: initNews,
+            mastodon: initMastodon,
+            radio: initRadio,
+            emergency: initEmergency,
+            phone: initPhone,
+            chat: initChat,
+            calendar: initCalendar,
+            webrtc: initWebRTC
         };
-        
-        document.getElementById('connectBtn').onclick = async () => {
-            const userId = document.getElementById('userId').value || 'test_user';
-            const displayName = document.getElementById('displayName').value || userId;
-            
-            currentUserId = userId;
-            currentDisplayName = displayName;
-            
-            localStorage.setItem('webrtc_user_id', userId);
-            localStorage.setItem('webrtc_display_name', displayName);
-            document.getElementById('currentUserDisplay').textContent = `${displayName} (${userId})`;
-            document.getElementById('currentUserDisplay').style.background = '#10B981';
-            
-            addLog(`🟢 Connecting as ${displayName} (${userId})...`, 'info');
-            
-            try {
-                const response = await fetch('/api/webrtc/token', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, displayName })
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    addLog(`✅ Connected successfully!`, 'success');
-                    addLog(`📋 Token: ${data.token.substring(0, 30)}...`, 'info');
-                    
-                    if (data.isMock) {
-                        addLog(`⚠️ Using mock token - Real Infobip API not available`, 'error');
+
+        // Load settings and apply module visibility
+        const settings = loadSettings();
+        const enabledModulesSettings = settings.enabledModules || {};
+
+        // Get list of enabled modules from settings
+        let enabledModulesList = Object.keys(enabledModulesSettings).filter(id => enabledModulesSettings[id] === true);
+
+        // FORCE WebRTC to be disabled by default (premium only)
+        // Remove webrtc if it's somehow in the list
+        enabledModulesList = enabledModulesList.filter(id => id !== 'webrtc');
+
+        // If nothing is enabled, enable all (webrtc excluded)
+        if (enabledModulesList.length === 0) {
+            enabledModulesList = ['gallery', 'bus', 'music', 'news', 'mastodon', 'radio', 'emergency', 'phone', 'chat', 'calendar'];
+        }
+
+        // All module IDs in order (webrtc included for ordering but will be hidden)
+        const allModuleIds = ['gallery', 'bus', 'music', 'news', 'mastodon', 'radio', 'emergency', 'phone', 'chat', 'calendar', 'webrtc'];
+
+        // Reorder the DOM based on enabled modules
+        const grid = document.getElementById('dashboard-grid');
+        if (grid) {
+            // First, move enabled modules to top
+            enabledModulesList.forEach(moduleId => {
+                const element = document.getElementById(moduleId);
+                if (element) {
+                    grid.appendChild(element);
+                }
+            });
+            // Then append disabled modules at bottom (they will be hidden anyway)
+            allModuleIds.forEach(moduleId => {
+                if (!enabledModulesList.includes(moduleId)) {
+                    const element = document.getElementById(moduleId);
+                    if (element) {
+                        grid.appendChild(element);
                     }
-                    
-                    document.getElementById('connectionStatus').className = 'status connected';
-                    document.getElementById('connectionStatus').innerHTML = '🟢 Connected as ' + displayName;
-                    document.getElementById('callBtn').disabled = false;
-                    document.getElementById('hangupBtn').disabled = false;
-                    
-                    // Load contacts
-                    await loadContacts(userId);
-                } else {
-                    addLog(`❌ Connection failed: ${data.error}`, 'error');
                 }
-            } catch (error) {
-                addLog(`❌ Connection error: ${error.message}`, 'error');
-            }
-        };
-        
-        document.getElementById('callBtn').onclick = () => {
-            const target = document.getElementById('targetId').value;
-            const type = document.getElementById('callType').value;
+            });
+        }
+
+        // Show/hide and initialise modules
+        for (const [id, initFn] of Object.entries(modules)) {
+            const element = document.getElementById(id);
+            if (!element) continue;
             
-            if (!target) {
-                addLog(`⚠️ Please enter a target WebRTC ID`, 'error');
+            // Check if module should be visible from settings
+            const isEnabled = enabledModulesList.includes(id);
+            element.classList.toggle('hidden', !isEnabled);
+            
+            // CRITICAL: Only initialize if enabled
+            if (isEnabled) {
+                const container = element.querySelector('.module-content');
+                if (container) {
+                    try {
+                        initFn(container);
+                    } catch (err) {
+                        console.error(`Error initialising ${id}:`, err);
+                    }
+                }
+            }
+        }        
+        // ----- Search functionality (European privacy‑friendly engines) -----
+        function initializeSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchEngine = document.getElementById('searchEngine');
+            const searchEngineLogo = document.getElementById('searchEngineLogo');
+
+            if (!searchInput || !searchEngine || !searchEngineLogo) {
+                console.warn("Search elements not found");
                 return;
             }
-            
-            addLog(`📞 Initiating ${type} call to ${target}...`, 'call');
-            
-            // Dispatch custom event for WebRTC client
-            window.dispatchEvent(new CustomEvent('webrtc_initiate_call', {
-                detail: { 
-                    contactId: target, 
-                    options: {
-                        video: type === 'video',
-                        isRoomCall: type === 'room',
-                        roomName: type === 'room' ? `room_${Date.now()}` : null
-                    }
+
+            function updateSearchLogo(value) {
+                const logoMap = {
+                    startpage: { emoji: '🔒', name: 'Startpage', color: '#4A90E2' },
+                    qwant: { emoji: '🐦', name: 'Qwant', color: '#5C9EFF' },
+                    ecosia: { emoji: '🌳', name: 'Ecosia', color: '#4CAF50' },
+                    mojeek: { emoji: '🔍', name: 'Mojeek', color: '#FF6B35' }
+                };
+                
+                const engine = logoMap[value] || logoMap.startpage;
+                
+                searchEngineLogo.style.display = 'inline-flex';
+                searchEngineLogo.style.alignItems = 'center';
+                searchEngineLogo.style.justifyContent = 'center';
+                searchEngineLogo.style.width = '32px';
+                searchEngineLogo.style.height = '32px';
+                searchEngineLogo.style.borderRadius = '8px';
+                searchEngineLogo.style.backgroundColor = engine.color;
+                searchEngineLogo.style.color = 'white';
+                searchEngineLogo.style.fontSize = '18px';
+                searchEngineLogo.style.fontWeight = 'bold';
+                searchEngineLogo.textContent = engine.emoji;
+                searchEngineLogo.title = engine.name;
+            }
+
+            updateSearchLogo(searchEngine.value);
+            searchEngine.addEventListener('change', () => updateSearchLogo(searchEngine.value));
+
+            function performSearch() {
+                const query = searchInput.value.trim();
+                if (!query) return;
+
+                const engine = searchEngine.value;
+                let searchUrl = '';
+
+                switch (engine) {
+                    case 'startpage':
+                        searchUrl = `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
+                        break;
+                    case 'qwant':
+                        searchUrl = `https://www.qwant.com/?q=${encodeURIComponent(query)}`;
+                        break;
+                    case 'ecosia':
+                        searchUrl = `https://www.ecosia.org/search?q=${encodeURIComponent(query)}`;
+                        break;
+                    case 'mojeek':
+                        searchUrl = `https://www.mojeek.com/search?q=${encodeURIComponent(query)}`;
+                        break;
+                    default:
+                        searchUrl = `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
                 }
-            }));
-        };
-        
-        document.getElementById('hangupBtn').onclick = () => {
-            addLog(`🔴 Call ended`, 'call');
-            window.dispatchEvent(new CustomEvent('webrtc_hangup'));
-        };
-        
-        // Auto-fill from URL params
-        if (urlUserId) {
-            document.getElementById('userId').value = urlUserId;
-            document.getElementById('displayName').value = urlDisplayName || urlUserId;
-            addLog(`📌 URL param detected: User = ${urlUserId}`, 'success');
+
+                window.open(searchUrl, '_blank');
+                searchInput.value = '';
+            }
+
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+
+            const searchIcon = document.querySelector('.search-wrapper i.fa-arrow-right') || 
+                            document.querySelector('.search-icon') ||
+                            document.querySelector('#searchButton') ||
+                            document.querySelector('button[aria-label="Search"]');
             
-            // Auto-connect after a short delay
-            setTimeout(() => {
-                document.getElementById('connectBtn').click();
-            }, 500);
+            if (searchIcon) {
+                searchIcon.addEventListener('click', performSearch);
+            } else {
+                const wrapper = document.querySelector('.search-wrapper');
+                if (wrapper && !searchIcon) {
+                    const btn = document.createElement('button');
+                    btn.innerHTML = '🔍';
+                    btn.style.background = '#4A90E2';
+                    btn.style.border = 'none';
+                    btn.style.borderRadius = '8px';
+                    btn.style.padding = '8px 12px';
+                    btn.style.cursor = 'pointer';
+                    btn.style.color = 'white';
+                    btn.addEventListener('click', performSearch);
+                    wrapper.appendChild(btn);
+                }
+            }
         }
-        
-        // Check for saved user ID
-        const savedUserId = localStorage.getItem('webrtc_user_id');
-        if (savedUserId && !urlUserId) {
-            document.getElementById('userId').value = savedUserId;
-            document.getElementById('displayName').value = localStorage.getItem('webrtc_display_name') || savedUserId;
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeSearch);
+        } else {
+            initializeSearch();
         }
+
+        startWeatherUpdates();
+
+        document.getElementById('settingsLink')?.addEventListener('click', () => {
+            window.location.href = 'settings.html';
+        });
         
-        addLog('✨ Ready! Enter a User ID and click Connect, or use URL params.', 'info');
     </script>
+    <!-- Privacy-friendly analytics by Plausible -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+             const isLoggedIn = document.body.classList.contains('logged-in');  
+    
+            if (!isLoggedIn) {
+                const script = document.createElement('script');
+                script.async = true;
+                script.defer = true;
+                script.src = 'https://plausible.io/js/pa-cvqvYb9dRTC-BwuguUIVj.js';
+                document.head.appendChild(script);
+                
+                window.plausible = window.plausible || function() {
+                    (window.plausible.q = window.plausible.q || []).push(arguments);
+                };
+            }
+            
+            });
+        
+    </script>
+</head>
+<body>
+    <header>
+        <div class="site-branding">
+            <div class="handi-logo">
+                <a href="/" class="logo-link">
+                    <i class="fa-solid fa-hand-peace"></i>
+                    <span class="logo-text">HandiHomepage</span>
+                </a>
+            </div>
+        </div>
+        <div class="nav-links"> 
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" placeholder="Search privately..." />
+                <select id="searchEngine">
+                    <option value="startpage">Startpage</option>
+                    <option value="qwant">Qwant</option>
+                    <option value="ecosia">Ecosia</option>
+                    <option value="mojeek">Mojeek</option>
+                </select>
+                <div id="searchEngineLogo" class="search-engine-logo"></div>
+                <i class="fas fa-arrow-right"></i>
+            </div>
+                
+            <div class="header-weather">
+                <i class="fa-solid fa-cloud-sun"></i>
+                <span id="weather">🌤️ --°C</span>
+            </div>
+        </div>
+    </header>
+    
+    <div class="dashboard-wrapper">
+        <main id="dashboard-grid">
+            <div id="gallery" class="dashboard-item module" data-module="gallery">
+                <div class="module-content"></div>
+            </div>
+            <div id="bus" class="dashboard-item module" data-module="bus">
+                <div class="module-content"></div>
+            </div>
+            <div id="music" class="dashboard-item module" data-module="music">
+                <div class="module-content"></div>
+            </div>
+            <div id="news" class="dashboard-item module" data-module="news">
+                <div class="module-content"></div>
+            </div>
+            <div id="mastodon" class="dashboard-item module" data-module="mastodon">
+                <div class="module-content"></div>
+            </div>
+            <div id="radio" class="dashboard-item module" data-module="radio">
+                <div class="module-content"></div>
+            </div>
+            <div id="emergency" class="dashboard-item module" data-module="emergency">
+                <div class="module-content"></div>
+            </div>
+            <div id="phone" class="dashboard-item module" data-module="phone">
+                <div class="module-content"></div>
+            </div>
+            <div id="chat" class="dashboard-item module" data-module="chat">
+                <div class="module-content"></div>
+            </div>
+            <div id="calendar" class="dashboard-item module" data-module="calendar">
+                <div class="module-content"></div>
+            </div>
+            <!-- WebRTC Module - Free & Unlimited Calls (clean like all others) -->
+            <div id="webrtc" class="dashboard-item module" data-module="webrtc">
+                <div class="module-content"></div>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-bar">
+            <button id="footerMuteBtn" class="footer-icon" title="Mute all audio">
+                <i class="fa-solid fa-volume-high"></i>
+            </button>
+            <button id="footerWakeLockBtn" class="footer-icon" title="Keep screen awake">
+                <i class="fa-solid fa-bed"></i>
+            </button>
+            <button id="footerDocsBtn" class="footer-icon" title="Documentation">
+                <i class="fa-solid fa-book"></i>
+            </button>
+            <button id="footerCoffeeBtn" class="footer-icon" title="Buy me a pint">
+                <i class="fa-solid fa-beer"></i>
+            </button>
+            <button id="footerEmailBtn" class="footer-icon" title="Contact">
+                <i class="fa-solid fa-envelope"></i>
+            </button>
+            <button id="footerSettingsBtn" class="footer-icon" title="Settings">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+        </div>
+    </footer>
+    <div class="brand">
+        <span class="subtitle"><a href="/terms">Terms of Service</a> | <a href="/privacy">Privacy Policy</a></span>
+    </div>
+
+    <!-- WebRTC Integration -->
+    <script src="/js/core/webrtc-integration.js"></script>
+    <script src="/js/core/module-buttons.js"></script>
+    <script src="/js/core/footer-controls.js"></script>
+    <script src="/js/core/first-popup.js"></script>
 </body>
 </html>

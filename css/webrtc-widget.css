@@ -1,0 +1,344 @@
+/* css/webrtc-widget.css - WebRTC Widget Styles */
+
+/* Widget Container */
+.webrtc-widget {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}
+
+/* Header */
+.webrtc-widget-header {
+    background: linear-gradient(135deg, #1F2B3C, #2C3E50);
+    color: white;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.webrtc-widget-header i {
+    font-size: 1.2rem;
+}
+
+.webrtc-status {
+    margin-left: auto;
+    font-size: 0.7rem;
+    background: rgba(255,255,255,0.2);
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.webrtc-status.online {
+    background: #10B981;
+}
+
+/* Body */
+.webrtc-widget-body {
+    padding: 1rem;
+}
+
+/* Quick Call */
+.webrtc-quick-call {
+    margin-bottom: 1rem;
+}
+
+.webrtc-quick-call input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 2rem;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.webrtc-call-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.call-btn {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 2rem;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.call-btn.audio {
+    background: #10B981;
+    color: white;
+}
+
+.call-btn.video {
+    background: #3B82F6;
+    color: white;
+}
+
+/* Contacts */
+.webrtc-contacts h4 {
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    color: #64748b;
+}
+
+.contacts-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.contact-item i {
+    font-size: 1.5rem;
+    color: #64748b;
+}
+
+.contact-info {
+    flex: 1;
+}
+
+.contact-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.contact-number {
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+.call-contact-btn {
+    background: #10B981;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+}
+
+.add-contact-btn-sm {
+    width: 100%;
+    margin-top: 8px;
+    padding: 6px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 2rem;
+    cursor: pointer;
+    font-size: 0.75rem;
+}
+
+/* Call Status */
+.webrtc-call-status {
+    padding: 8px;
+    text-align: center;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.webrtc-call-status.calling {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.webrtc-call-status.connected {
+    background: #d1fae5;
+    color: #059669;
+}
+
+/* Remote Video */
+.webrtc-remote-video {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.webrtc-remote-video video {
+    width: 100%;
+    background: #000;
+}
+
+.webrtc-remote-video button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(0,0,0,0.5);
+    border: none;
+    color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+}
+
+/* Upgrade Message */
+.webrtc-upgrade-message {
+    text-align: center;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 1rem;
+}
+
+.webrtc-upgrade-message i {
+    font-size: 2rem;
+    color: #f59e0b;
+    margin-bottom: 0.5rem;
+}
+
+.webrtc-upgrade-message .upgrade-btn {
+    margin-top: 1rem;
+    background: #3B82F6;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 2rem;
+    cursor: pointer;
+}
+
+/* Incoming Call Modal */
+.webrtc-incoming-modal {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    width: 280px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 1001;
+    overflow: hidden;
+}
+
+.incoming-header {
+    background: #3B82F6;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+.incoming-body {
+    padding: 15px;
+    text-align: center;
+}
+
+.caller-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.incoming-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.incoming-actions button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 2rem;
+    cursor: pointer;
+}
+
+.accept-btn {
+    background: #10B981;
+    color: white;
+}
+
+.decline-btn {
+    background: #EF4444;
+    color: white;
+}
+
+/* Notification */
+.webrtc-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    border-radius: 2rem;
+    color: white;
+    z-index: 1002;
+    animation: slideUp 0.3s ease;
+}
+
+.webrtc-notification.success { background: #10B981; }
+.webrtc-notification.error { background: #EF4444; }
+.webrtc-notification.warning { background: #f59e0b; }
+.webrtc-notification.info { background: #3B82F6; }
+
+@keyframes slideUp {
+    from { transform: translateX(-50%) translateY(100%); opacity: 0; }
+    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* webrtc-widget.css - WebRTC module styles */
+.webrtc-module {
+    width: 100%;
+    min-height: 250px;
+}
+
+.webrtc-placeholder {
+    width: 100%;
+    min-height: 200px;
+}
+
+.module-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #64748b;
+}
+
+.module-loading i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.webrtc-interface {
+    padding: 5px;
+}
+
+.call-btn-audio:hover,
+.call-btn-video:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+.contact-chip:hover {
+    background: #e2e8f0 !important;
+    transform: scale(1.02);
+}
+
+.webrtc-upgrade {
+    background: #f8fafc;
+    border-radius: 16px;
+}
+
+.webrtc-error {
+    background: #fef2f2;
+    border-radius: 16px;
+}

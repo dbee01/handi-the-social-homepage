@@ -265,6 +265,7 @@
                 </a>
             </div>
         </div>
+        <div class="nav-links"> 
             <div class="search-wrapper">
                 <input type="text" id="searchInput" placeholder="Search privately..." />
                 <select id="searchEngine">
@@ -276,6 +277,7 @@
                 <img id="searchEngineLogo" alt="Search engine logo" style="width:24px;height:24px;" />
                 <i class="fas fa-arrow-right"></i>
             </div>
+                
         <div class="header-weather">
             <i class="fa-solid fa-cloud-sun"></i>
             <span id="weather">🌤️ --°C</span>
@@ -314,6 +316,26 @@
             <div id="calendar" class="dashboard-item module" data-module="calendar">
                 <div class="module-content"></div>
             </div>
+            <!-- WebRTC Widget Container - Free & Unlimited Calls (Premium/Admin only) -->
+            <div id="webrtc" class="dashboard-item module" data-module="webrtc" style="display: none;">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-phone-volume"></i>
+                        <h3>Free & Unlimited Calls</h3>
+                    </div>
+                    <div class="module-controls">
+                        <button class="pin-btn" title="Pin to dashboard">
+                            <i class="fa-solid fa-thumbtack"></i>
+                        </button>
+                        <button class="remove-btn" title="Remove module">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="module-content">
+                    <div id="webrtcWidgetContainer"></div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -343,6 +365,12 @@
     <div class="brand">
         <span class="subtitle"><a href="/terms">Terms of Service</a> | <a href="/privacy">Privacy Policy</a></span>
     </div>
+
+    <!-- Admin/Premium Check -->
+    <script src="js/core/admin-check.js"></script>
+    <!-- WebRTC Integration -->
+    <link rel="stylesheet" href="css/webrtc-widget.css">
+    <script src="js/core/webrtc-integration.js"></script>
 
     <script src="js/core/module-buttons.js"></script>
     <script src="js/core/footer-controls.js"></script>
