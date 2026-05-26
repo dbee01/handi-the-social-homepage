@@ -375,16 +375,7 @@
             initializeSearch();
         }
 
-        // =========================================================
-        // WEATHER – only start if enabled in settings
-        // =========================================================
-        const weatherEnabled = settings.enabledModules?.weather !== false;
-        if (weatherEnabled) {
-            startWeatherUpdates();
-        } else {
-            const weatherDiv = document.querySelector('.header-weather');
-            if (weatherDiv) weatherDiv.style.display = 'none';
-        }
+        startWeatherUpdates();
     </script>
 </head>
 
@@ -434,10 +425,12 @@
         </div>
 
     </div>
-<div class="header-weather">
-    <i class="fa-solid fa-cloud-sun"></i>
-    <span id="weather" data-packery-exclude="true" data-sortable-exclude="true">🌤️ --°C</span>
-</div>
+
+    <div class="header-weather">
+        <i class="fa-solid fa-cloud-sun"></i>
+        <span id="weather">🌤️ --°C</span>
+    </div>
+
 </header>
 
 <div class="dashboard-wrapper">

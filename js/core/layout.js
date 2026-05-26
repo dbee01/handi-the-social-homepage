@@ -32,7 +32,7 @@ export function initLayout() {
     if (!grid) return;
 
     // Use width only to decide between multi‑column (Packery) or single‑column layout
-    const isNarrow = window.innerWidth <= 900;   // renamed from isMobile
+    const isNarrow = window.innerWidth <= 900;
 
     // ========================================
     // NARROW WIDTH – single column, no Packery, no Sortable
@@ -82,9 +82,10 @@ export function initLayout() {
 
     // -------------------------
     // 1. ALWAYS create Packery (masonry layout)
+    //    EXCLUDE elements with data-packery-exclude
     // -------------------------
     window.packeryInstance = new Packery(grid, {
-        itemSelector: '.dashboard-item',
+        itemSelector: '.dashboard-item:not([data-packery-exclude])',
         gutter: 20,
         percentPosition: false,
         transitionDuration: '0.2s'
@@ -92,13 +93,13 @@ export function initLayout() {
 
     // -------------------------
     // 2. Create Sortable ONLY if the device is NOT a touchscreen
-    //    (drag‑and‑drop is awkward on touch devices)
+    //    EXCLUDE elements with data-sortable-exclude
     // -------------------------
     if (!isTouchscreen()) {
         sortableInstance = new Sortable(grid, {
             animation: 200,
-            handle: '.dashboard-item',
-            draggable: '.dashboard-item',
+            handle: '.dashboard-item:not([data-sortable-exclude])',
+            draggable: '.dashboard-item:not([data-sortable-exclude])',
             onEnd: () => {
                 window.packeryInstance.reloadItems();
                 requestAnimationFrame(() => {
@@ -114,8 +115,8 @@ export function initLayout() {
     });
 
     if (window.packeryInstance) {
-    window.packeryInstance.reloadItems();
-    window.packeryInstance.layout();
+        window.packeryInstance.reloadItems();
+        window.packeryInstance.layout();
     }
 }
 

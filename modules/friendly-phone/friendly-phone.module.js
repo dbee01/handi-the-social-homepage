@@ -81,7 +81,7 @@ export default async function initPhone(container) {
                 <i class="fa-solid fa-address-book"></i>
                 <p>No phone contacts saved.</p>
                 <button id="phoneSettingsBtn" class="settings-link-btn">
-                    <i class="fa-solid fa-gear"></i> Add Contacts in Settings
+                    <i class="fa-solid fa-gear"></i> Add Contacts
                 </button>
             </div>
         `;

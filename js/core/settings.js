@@ -24,7 +24,7 @@ const DEFAULT_SETTINGS = {
     gallery: { slideSpeed: 3000, autoStart: true },
     music: { volume: 70, shuffle: false },
     news: {
-        rssUrl: 'https://www.rte.ie/feeds/rss/?index=/news/',
+        rssUrl: 'https://www.thejournal.ie/feed/', // THE ACTUAL REAL NEWSPAPER SETTINGS
         refreshInterval: 15,
         maxArticles: 2          // only show 2 articles
     },

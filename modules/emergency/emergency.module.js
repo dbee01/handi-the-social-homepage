@@ -103,7 +103,7 @@ export default async function initEmergency(container) {
                 <i class="fa-solid fa-phone"></i>
                 <p>No emergency contacts saved.</p>
                 <button id="emergencySettingsBtn" class="settings-link-btn">
-                    <i class="fa-solid fa-gear"></i> Add Contacts Phone Numbers to Settings
+                    <i class="fa-solid fa-gear"></i> Add Contacts
                 </button>
             </div>
         `;

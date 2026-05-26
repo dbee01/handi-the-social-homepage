@@ -269,7 +269,7 @@ app.get('/api/calendar-proxy', async (req, res) => {
 // NEWS API – FIXED with proper User-Agent and error handling
 // -----------------------------------------------------------------------------
 app.get('/api/news', async (req, res) => {
-    const rssUrl = req.query.url || 'https://www.rte.ie/feeds/rss/?index=/news/';
+    const rssUrl = req.query.url || 'https://www.thejournal.ie/feed/';
     console.log(`📰 Fetching news from: ${rssUrl}`);
     try {
         const response = await axios.get(rssUrl, {

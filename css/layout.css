@@ -651,3 +651,13 @@ header {
     width: auto !important;
     margin: 0 !important;
 }
+
+/* Exclude weather from all layout scripts */
+[data-packery-exclude="true"],
+[data-sortable-exclude="true"] {
+    position: relative !important;
+    transform: none !important;
+    left: auto !important;
+    top: auto !important;
+    order: 9999 !important;
+}
