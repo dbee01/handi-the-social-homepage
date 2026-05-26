@@ -47,24 +47,18 @@ header {
     gap: 6px;
 }
 /* Make search wrapper take full width */
+/* Center the search bar horizontally */
 .nav-links {
+    display: flex;
+    justify-content: center;
     flex: 1;
-    min-width: 200px;
 }
 
-/* search wrapper */
 .search-wrapper {
     width: 100%;
-    background: #ffffff;
-    border: 2px solid #cbd5e1;
-    border-radius: 48px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 8px 4px 20px;
-    box-sizing: border-box;
+    max-width: 600px;   /* adjust width as needed */
+    margin: 0 auto;
 }
-
 #searchInput {
     flex: 1;
     min-width: 0;
