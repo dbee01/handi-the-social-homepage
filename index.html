@@ -1,400 +1,142 @@
-<!--
- Copyright (c) 2026 Handi Homepage
- This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
- See the LICENSE file in the repository root for full details.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>HandiHomepage – Your Safe & Simple Dashboard</title>
-
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>HandiHomepage – Senior Dashboard</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css">
-
-    <!-- Main Styles -->
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/elderly.css">
-
+    
+    <!-- LOCKED DOWN CSS – overrides everything else -->
     <style>
-        /* FIX: Make header wrap vertically on mobile */
+        /* =========================================================
+           ABSOLUTELY LOCKED HEADER – overrides all other CSS
+           ========================================================= */
         header {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            width: 100%;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            flex-wrap: wrap !important;
+            gap: 16px !important;
+            padding: 12px 20px !important;
+            background: #ffffff !important;
+            border-bottom: 3px solid #0047cc !important;
         }
 
-        /* FIX: Search wrapper takes full width on mobile */
+        .site-branding {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            order: 1 !important;
+        }
+
+        .nav-links {
+            flex: 1 !important;
+            display: flex !important;
+            justify-content: center !important;
+            order: 2 !important;
+        }
+
         .search-wrapper {
-            flex: 1;
-            min-width: 200px;
-            background: #ffffff;
-            border: 2px solid #cbd5e1;
-            border-radius: 48px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 4px 8px 4px 20px;
-            transition: border-color 0.2s;
-            box-sizing: border-box;
+            width: 100% !important;
+            max-width: 500px !important;
+            background: #ffffff !important;
+            border: 2px solid #cbd5e1 !important;
+            border-radius: 48px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            padding: 4px 8px 4px 20px !important;
+            box-sizing: border-box !important;
         }
 
-        #searchInput {
-            flex: 1;
-            min-width: 0;
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 18px;
+        .header-weather {
+            flex: 0 0 auto !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-end !important;
+            gap: 8px !important;
+            white-space: nowrap !important;
+            order: 3 !important;
+            background: #eaf2ff !important;
+            padding: 8px 16px !important;
+            border-radius: 48px !important;
         }
 
-        #searchEngine {
-            border-radius: 8px;
-            padding: 6px;
-            border: 1px solid #ccc;
+        #weather {
+            display: inline-block !important;
+            font-size: 1rem !important;
+            font-weight: 500 !important;
+            color: #1e1e1e !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
-        /* FIXED LOGO */
-        #searchEngineLogo {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            object-fit: contain;
-            display: block;
+        .header-weather #weather {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 12px !important;
+            align-items: center !important;
         }
 
-        .search-button {
-            border: none;
-            color: white;
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 18px;
+        .header-weather .weather-location,
+        .header-weather .weather-temp,
+        .header-weather .weather-outlook {
+            display: inline-block !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
-        .search-button:hover {
-            opacity: 0.9;
-        }
-
-        /* FIX: Mobile responsive - stack everything vertically */
+        /* Mobile: stack vertically */
         @media (max-width: 768px) {
             header {
-                flex-direction: column;
-                align-items: stretch;
+                flex-direction: column !important;
+                align-items: stretch !important;
             }
-
-            .site-branding {
-                text-align: center;
+            .site-branding, .nav-links, .header-weather {
+                width: 100% !important;
+                justify-content: center !important;
             }
-
-            .nav-links {
-                width: 100%;
-            }
-
-            .search-wrapper {
-                width: 100%;
-                flex: none;
-            }
-
             .header-weather {
-                text-align: center;
-                justify-content: center;
+                margin-top: 8px !important;
             }
         }
 
-        /* FIX: Small phones - wrap search inner elements */
+        /* Small phones: wrap search inner elements */
         @media (max-width: 550px) {
             .search-wrapper {
-                flex-wrap: wrap;
-                border-radius: 28px;
-                padding: 12px;
-                gap: 8px;
+                flex-wrap: wrap !important;
+                border-radius: 28px !important;
+                padding: 12px !important;
             }
+            #searchInput { flex: 1 1 100% !important; order: 1 !important; }
+            #searchEngine { flex: 1 !important; order: 2 !important; }
+            #searchEngineLogo { order: 3 !important; }
+            .search-button { order: 4 !important; width: 100% !important; border-radius: 40px !important; }
+        }
 
-            #searchInput {
-                flex: 1 1 100%;
-                order: 1;
-            }
-
-            #searchEngine {
-                flex: 1;
-                order: 2;
-            }
-
-            #searchEngineLogo {
-                order: 3;
-            }
-
-            .search-button {
-                order: 4;
-                width: 100%;
-                border-radius: 40px;
-            }
+        /* Dashboard grid – minimal */
+        .dashboard-wrapper { padding: 20px; }
+        #dashboard-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
         }
     </style>
 
-    <script src="/js/vendor/his.js@latest"></script>
     <script src="/js/vendor/packery.pkgd.min.js"></script>
     <script src="/js/vendor/Sortable.min.js"></script>
-
-    <script type="module">
-        import { loadSettings } from './js/core/settings.js';
-        import { startWeatherUpdates } from './js/core/weather.js';
-        import initBus from './modules/bus/bus.module.js';
-        import initGallery from './modules/gallery/gallery.module.js';
-        import initMusic from './modules/music/music.module.js';
-        import initNews from './modules/news/news.module.js';
-        import initMastodon from './modules/mastodon/mastodon.module.js';
-        import initRadio from './modules/radio/radio.module.js';
-        import initEmergency from './modules/emergency/emergency.module.js';
-        import initPhone from './modules/friendly-phone/friendly-phone.module.js';
-        import initChat from './modules/chat/chat.module.js';
-        import initCalendar from './modules/calendar/calendar.module.js';
-
-        import { initLayout } from './js/core/layout.js';
-
-        initLayout();
-
-        const modules = {
-            gallery: initGallery,
-            bus: initBus,
-            music: initMusic,
-            news: initNews,
-            mastodon: initMastodon,
-            radio: initRadio,
-            emergency: initEmergency,
-            phone: initPhone,
-            chat: initChat,
-            calendar: initCalendar
-        };
-
-        const settings = loadSettings();
-        const enabledModulesSettings = settings.enabledModules || {};
-
-        let enabledModulesList = Object.keys(enabledModulesSettings)
-            .filter(id => enabledModulesSettings[id] === true);
-
-        if (enabledModulesList.length === 0) {
-            enabledModulesList = [
-                'gallery',
-                'bus',
-                'music',
-                'news',
-                'mastodon',
-                'radio',
-                'emergency',
-                'phone',
-                'chat',
-                'calendar'
-            ];
-        }
-
-        const allModuleIds = [
-            'gallery',
-            'bus',
-            'music',
-            'news',
-            'mastodon',
-            'radio',
-            'emergency',
-            'phone',
-            'chat',
-            'calendar'
-        ];
-
-        const grid = document.getElementById('dashboard-grid');
-
-        if (grid) {
-            enabledModulesList.forEach(moduleId => {
-                const element = document.getElementById(moduleId);
-                if (element) {
-                    grid.appendChild(element);
-                }
-            });
-
-            allModuleIds.forEach(moduleId => {
-                if (!enabledModulesList.includes(moduleId)) {
-                    const element = document.getElementById(moduleId);
-                    if (element) {
-                        grid.appendChild(element);
-                    }
-                }
-            });
-        }
-
-        for (const [id, initFn] of Object.entries(modules)) {
-            const element = document.getElementById(id);
-            if (!element) continue;
-
-            const isEnabled = enabledModulesList.includes(id);
-            element.classList.toggle('hidden', !isEnabled);
-
-            if (isEnabled) {
-                const container = element.querySelector('.module-content');
-
-                if (container) {
-                    try {
-                        initFn(container);
-                    } catch (err) {
-                        console.error(`Error initialising ${id}:`, err);
-                    }
-                }
-            }
-        }
-
-        /* =========================================================
-           SEARCH
-        ========================================================= */
-
-        function initializeSearch() {
-
-            const searchInput = document.getElementById('searchInput');
-            const searchEngine = document.getElementById('searchEngine');
-            const searchEngineLogo = document.getElementById('searchEngineLogo');
-            const searchButton = document.getElementById('searchButton');
-
-            if (!searchInput || !searchEngine || !searchEngineLogo) {
-                console.warn('Search elements missing');
-                return;
-            }
-
-            /* REAL IMAGE URLS */
-            const logoMap = {
-                startpage: {
-                    name: 'Startpage',
-                    url: '/images/startpage.jpg'
-                },
-                qwant: {
-                    name: 'Qwant',
-                    url: '/images/qwant.jpg'
-                },
-                ecosia: {
-                    name: 'Ecosia',
-                    url: '/images/ecosia.jpg'
-                },
-                mojeek: {
-                    name: 'Mojeek',
-                    url: '/images/mojeek.jpg'
-                }
-            };
-
-            function updateSearchLogo(value) {
-
-                const engine = logoMap[value] || logoMap.startpage;
-
-                searchEngineLogo.src = engine.url;
-                searchEngineLogo.alt = engine.name;
-                searchEngineLogo.title = engine.name;
-
-                /* fallback if favicon fails */
-                searchEngineLogo.onerror = () => {
-                    searchEngineLogo.src =
-                        'data:image/svg+xml;charset=UTF-8,' +
-                        encodeURIComponent(`
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                 width="32"
-                                 height="32">
-                                <rect width="100%" height="100%" rx="8" fill="#5c6cff"/>
-                                <text x="50%" y="55%"
-                                      text-anchor="middle"
-                                      fill="white"
-                                      font-size="18"
-                                      font-family="Arial">
-                                      🔍
-                                </text>
-                            </svg>
-                        `);
-                };
-            }
-
-            updateSearchLogo(searchEngine.value);
-
-            searchEngine.addEventListener('change', () => {
-                updateSearchLogo(searchEngine.value);
-            });
-
-            function performSearch() {
-
-                const query = searchInput.value.trim();
-
-                if (!query) return;
-
-                let searchUrl = '';
-
-                switch (searchEngine.value) {
-
-                    case 'startpage':
-                        searchUrl =
-                            `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
-                        break;
-
-                    case 'qwant':
-                        searchUrl =
-                            `https://www.qwant.com/?q=${encodeURIComponent(query)}`;
-                        break;
-
-                    case 'ecosia':
-                        searchUrl =
-                            `https://www.ecosia.org/search?q=${encodeURIComponent(query)}`;
-                        break;
-
-                    case 'mojeek':
-                        searchUrl =
-                            `https://www.mojeek.com/search?q=${encodeURIComponent(query)}`;
-                        break;
-
-                    default:
-                        searchUrl =
-                            `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
-                }
-
-                window.open(searchUrl, '_blank');
-            }
-
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    performSearch();
-                }
-            });
-
-            if (searchButton) {
-                searchButton.addEventListener('click', performSearch);
-            }
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeSearch);
-        } else {
-            initializeSearch();
-        }
-
-        // =========================================================
-        // WEATHER – only start if enabled in settings
-        // =========================================================
-        const weatherEnabled = settings.enabledModules?.weather !== false;
-        if (weatherEnabled) {
-            startWeatherUpdates();
-        } else {
-            const weatherDiv = document.querySelector('.header-weather');
-            if (weatherDiv) weatherDiv.style.display = 'none';
-        }
-    </script>
 </head>
-
 <body>
 
 <script src="js/core/message.js"></script>
 
-
 <header>
-
     <div class="site-branding">
         <div class="handi-logo">
             <a href="/" class="logo-link">
@@ -403,121 +145,49 @@
             </a>
         </div>
     </div>
-
     <div class="nav-links">
-
         <div class="search-wrapper">
-
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search privately..."
-            >
-
+            <input type="text" id="searchInput" placeholder="Search privately...">
             <select id="searchEngine">
                 <option value="startpage">Startpage</option>
                 <option value="qwant">Qwant</option>
                 <option value="ecosia">Ecosia</option>
                 <option value="mojeek">Mojeek</option>
             </select>
-
-            <img
-                id="searchEngineLogo"
-                src="https://www.startpage.com/sp/cdn/favicons/favicon.ico"
-                alt="Search engine logo"
-            >
-
-            <button id="searchButton" class="search-button">
-                <i class="fas fa-arrow-right"></i>
-            </button>
-
+            <img id="searchEngineLogo" src="/images/startpage.jpg" alt="Startpage">
+            <button id="searchButton" class="search-button"><i class="fas fa-arrow-right"></i></button>
         </div>
-
     </div>
-<div class="header-weather">
-    <i class="fa-solid fa-cloud-sun"></i>
-    <span id="weather" data-packery-exclude="true" data-sortable-exclude="true">🌤️ --°C</span>
-</div>
+    <div class="header-weather">
+        <i class="fa-solid fa-cloud-sun"></i>
+        <span id="weather">🌤️ --°C</span>
+    </div>
 </header>
 
 <div class="dashboard-wrapper">
-
     <main id="dashboard-grid">
-
-        <div id="gallery" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="bus" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="music" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="news" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="mastodon" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="radio" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="emergency" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="phone" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="chat" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="calendar" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
+        <div id="gallery" class="dashboard-item module"><div class="module-content"></div></div>
+        <div id="bus" class="dashboard-item module"><div class="module-content"></div></div>
+        <div id="music" class="dashboard-item module"><div class="module-content"></div></div>
+        <div id="news" class="dashboard-item module"><div class="module-content"></div></div>
+        <div id="mastodon" class="dashboard-item module"><div class="module-content"></div></div>
+        <div id="radio" class="dashboard-item module"><div class="module-content"></div></div>
+        <div id="emergency" class="dashboard-item module"><div class="module-content"></div></div>
+        <div id="phone" class="dashboard-item module"><div class="module-content"></div></div>
+        <div id="chat" class="dashboard-item module"><div class="module-content"></div></div>
+        <div id="calendar" class="dashboard-item module"><div class="module-content"></div></div>
     </main>
-
 </div>
 
 <footer>
-
     <div class="footer-bar">
-
-        <button id="footerMuteBtn" class="footer-icon">
-            <i class="fa-solid fa-volume-high"></i>
-        </button>
-
-        <button id="footerWakeLockBtn" class="footer-icon">
-            <i class="fa-solid fa-bed"></i>
-        </button>
-
-        <button id="footerDocsBtn" class="footer-icon">
-            <i class="fa-solid fa-question"></i>
-        </button>
-
-        <button id="footerCoffeeBtn" class="footer-icon">
-            <i class="fa-solid fa-beer"></i>
-        </button>
-
-        <button id="footerEmailBtn" class="footer-icon">
-            <i class="fa-solid fa-at"></i>
-        </button>
-
-        <button id="footerSettingsBtn" class="footer-icon">
-            <i class="fa-solid fa-gear"></i>
-        </button>
-
+        <button id="footerMuteBtn" class="footer-icon"><i class="fa-solid fa-volume-high"></i></button>
+        <button id="footerWakeLockBtn" class="footer-icon"><i class="fa-solid fa-bed"></i></button>
+        <button id="footerDocsBtn" class="footer-icon"><i class="fa-solid fa-question"></i></button>
+        <button id="footerCoffeeBtn" class="footer-icon"><i class="fa-solid fa-beer"></i></button>
+        <button id="footerEmailBtn" class="footer-icon"><i class="fa-solid fa-at"></i></button>
+        <button id="footerSettingsBtn" class="footer-icon"><i class="fa-solid fa-gear"></i></button>
     </div>
-
 </footer>
 
 <div class="brand">
@@ -527,9 +197,143 @@
     </span>
 </div>
 
+<!-- ========== MODULE INITIALISATION ========== -->
+<script type="module">
+    import { startWeatherUpdates } from './js/core/weather.js';
+    import initBus from './modules/bus/bus.module.js';
+    import initGallery from './modules/gallery/gallery.module.js';
+    import initMusic from './modules/music/music.module.js';
+    import initNews from './modules/news/news.module.js';
+    import initMastodon from './modules/mastodon/mastodon.module.js';
+    import initRadio from './modules/radio/radio.module.js';
+    import initEmergency from './modules/emergency/emergency.module.js';
+    import initPhone from './modules/friendly-phone/friendly-phone.module.js';
+    import initChat from './modules/chat/chat.module.js';
+    import initCalendar from './modules/calendar/calendar.module.js';
+    import { initLayout } from './js/core/layout.js';
+
+    // Initialize all modules
+    const modules = {
+        gallery: initGallery, bus: initBus, music: initMusic, news: initNews,
+        mastodon: initMastodon, radio: initRadio, emergency: initEmergency,
+        phone: initPhone, chat: initChat, calendar: initCalendar
+    };
+    for (const [id, initFn] of Object.entries(modules)) {
+        const element = document.getElementById(id);
+        if (element && element.querySelector('.module-content')) {
+            try { initFn(element.querySelector('.module-content')); } catch(e) {}
+        }
+    }
+    initLayout();
+    startWeatherUpdates();
+
+    // Search functionality (fallback)
+    const searchInput = document.getElementById('searchInput');
+    const searchEngine = document.getElementById('searchEngine');
+    const searchBtn = document.getElementById('searchButton');
+    if (searchInput && searchEngine && searchBtn) {
+        const doSearch = () => {
+            const q = searchInput.value.trim();
+            if (!q) return;
+            const urls = {
+                startpage: `https://www.startpage.com/sp/search?query=${encodeURIComponent(q)}`,
+                qwant: `https://www.qwant.com/?q=${encodeURIComponent(q)}`,
+                ecosia: `https://www.ecosia.org/search?q=${encodeURIComponent(q)}`,
+                mojeek: `https://www.mojeek.com/search?q=${encodeURIComponent(q)}`
+            };
+            window.open(urls[searchEngine.value] || urls.startpage, '_blank');
+        };
+        searchBtn.onclick = doSearch;
+        searchInput.onkeypress = e => { if (e.key === 'Enter') doSearch(); };
+    }
+</script>
+
 <script src="js/core/module-buttons.js"></script>
 <script src="js/core/footer-controls.js"></script>
 <script src="js/core/first-popup.js"></script>
 
+<!-- ========== ONE TIME CLEANUP – removes disabled modules ========== -->
+<script>
+    window.addEventListener('load', function() {
+        try {
+            let s = localStorage.getItem('handiSettings');
+            if (!s) return;
+            let enabled = JSON.parse(s).enabledModules || {};
+            let all = ['gallery','bus','music','news','mastodon','radio','emergency','phone','chat','calendar'];
+            let keep = all.filter(id => enabled[id] === true);
+            let grid = document.getElementById('dashboard-grid');
+            if (!grid) return;
+            for (let id of all) {
+                if (!keep.includes(id)) {
+                    let el = document.getElementById(id);
+                    if (el && el.parentNode === grid) el.remove();
+                }
+            }
+            if (enabled.weather === false) {
+                let w = document.querySelector('.header-weather');
+                if (w) w.style.display = 'none';
+            }
+            console.log('[Cleanup] Kept modules:', keep);
+        } catch(e) {}
+    });
+</script>
+
+<!-- ========== HEADER FIX – ensures correct order after all scripts ========== -->
+<script>
+    window.addEventListener('load', function() {
+        const header = document.querySelector('header');
+        const branding = document.querySelector('.site-branding');
+        const navLinks = document.querySelector('.nav-links');
+        const weather = document.querySelector('.header-weather');
+        if (header && branding && navLinks && weather) {
+            // Remove any inline styles that might have been added
+            branding.style.cssText = '';
+            navLinks.style.cssText = '';
+            weather.style.cssText = '';
+            // Ensure correct order
+            header.appendChild(branding);
+            header.appendChild(navLinks);
+            header.appendChild(weather);
+        }
+    });
+</script>
+
+<!-- Fallback link to the dashboard selector -->
+<div style="text-align: center; margin: 16px;">
+    <a href="/selector.html" style="background: #0047cc; color: white; padding: 10px 20px; border-radius: 40px; text-decoration: none; font-weight: bold;">⚙️ Customize Dashboard</a>
+</div>
+<script>
+    // First visit redirect to selector
+    (function() {
+        if (localStorage.getItem('handiPopupShown') === 'true') return;
+        if (window.location.pathname.includes('/selector.html')) return;
+        localStorage.setItem('handiPopupShown', 'true');
+        window.location.href = '/selector.html';
+    })();
+</script>
+
+<script>
+    // Force dashboard to show only enabled modules
+    (function() {
+        function cleanup() {
+            let s = localStorage.getItem('handiSettings');
+            if (!s) return;
+            let enabled = JSON.parse(s).enabledModules || {};
+            let all = ['gallery','bus','music','news','mastodon','radio','emergency','phone','chat','calendar'];
+            let keep = all.filter(id => enabled[id] === true);
+            let grid = document.getElementById('dashboard-grid');
+            if (!grid) return;
+            for (let id of all) {
+                if (!keep.includes(id)) {
+                    let el = document.getElementById(id);
+                    if (el && el.parentNode === grid) el.remove();
+                }
+            }
+        }
+        window.addEventListener('load', function() {
+            setTimeout(cleanup, 100);
+        });
+    })();
+</script>
 </body>
 </html>

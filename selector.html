@@ -6,271 +6,56 @@
     <title>HandiHomepage – Dashboard Selector</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: #f0f4f8;
-            color: #1e2a3a;
-        }
-        .hh__app {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .hh__header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-            background: white;
-            padding: 12px 24px;
-            border-radius: 60px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .hh__logo-link {
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-decoration: none;
-            color: #0047cc;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .hh__search-wrapper {
-            flex: 1;
-            max-width: 500px;
-            display: flex;
-            background: #f1f5f9;
-            border-radius: 40px;
-            padding: 4px 8px;
-            gap: 8px;
-            align-items: center;
-        }
-        .hh__search-input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            padding: 10px 12px;
-            font-size: 1rem;
-            outline: none;
-        }
-        .hh__search-select {
-            border: none;
-            background: white;
-            padding: 8px;
-            border-radius: 30px;
-            outline: none;
-        }
-        .hh__search-logo {
-            width: 28px;
-            height: 28px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-        .hh__search-btn {
-            background: #0047cc;
-            border: none;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-        }
-        .hh__weather {
-            background: #eaf2ff;
-            padding: 8px 18px;
-            border-radius: 40px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-        }
-        .hh__dashboard-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-        .hh__selector-panel {
-            background: white;
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-        }
-        .hh__selector-header {
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 12px;
-        }
-        .hh__selector-header h2 {
-            font-size: 1.5rem;
-            color: #0047cc;
-        }
-        .hh__module-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-height: 500px;
-            overflow-y: auto;
-            margin-bottom: 24px;
-        }
-        .hh__module-item {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.2s;
-        }
-        .hh__module-item.dragging {
-            opacity: 0.5;
-        }
-        .hh__drag-handle {
-            color: #94a3b8;
-            font-size: 1.2rem;
-            cursor: grab;
-            flex-shrink: 0;
-        }
-        .hh__module-icon {
-            width: 40px;
-            font-size: 1.6rem;
-            text-align: center;
-            color: #0047cc;
-            flex-shrink: 0;
-        }
-        .hh__module-info {
-            flex: 1;
-        }
-        .hh__module-name {
-            font-weight: 700;
-            font-size: 1rem;
-        }
-        .hh__module-desc {
-            font-size: 0.75rem;
-            color: #475569;
-        }
-        .hh__module-toggle {
-            background: #e2e8f0;
-            border: none;
-            border-radius: 40px;
-            width: 44px;
-            height: 44px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-        .hh__module-toggle.active {
-            background: #10b981;
-            color: white;
-        }
-        .hh__module-toggle.inactive {
-            background: #ef4444;
-            color: white;
-        }
-        .hh__module-toggle i {
-            pointer-events: none;
-        }
-        .hh__privacy-row {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-        .hh__agree-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-        .hh__policy-link {
-            color: #0047cc;
-            text-decoration: none;
-        }
-        .hh__confirm-btn {
-            background: #0047cc;
-            color: white;
-            border: none;
-            border-radius: 40px;
-            padding: 12px 28px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .hh__confirm-btn.hh__disabled {
-            background: #cbd5e1;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-        .hh__dashboard-panel {
-            background: white;
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-        }
-        .hh__dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        .hh__dashboard-header h2 {
-            font-size: 1.5rem;
-            color: #0047cc;
-        }
-        .hh__active-count {
-            font-size: 0.9rem;
-            color: #475569;
-        }
-        /* Compact preview cards */
-        .hh__dashboard-preview {
-            gap: 12px;
-        }
-        .hh__preview-card {
-            width: calc(50% - 6px);
-            padding: 12px;
-            border-radius: 16px;
-        }
-        .hh__preview-card h3 {
-            font-size: 1rem;
-            margin-bottom: 4px;
-        }
-        .hh__preview-card p {
-            font-size: 0.8rem;
-            line-height: 1.4;
-        }
-        @media (max-width: 600px) {
-            .hh__preview-card {
-                width: 100%;
-            }
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background:#f0f4f8; color:#1e2a3a; }
+        .hh__app { max-width:1400px; margin:0 auto; padding:20px; }
+        .hh__header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; background:white; padding:12px 24px; border-radius:60px; margin-bottom:30px; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+        .hh__logo-link { font-size:1.5rem; font-weight:bold; text-decoration:none; color:#0047cc; display:flex; align-items:center; gap:8px; }
+        .hh__search-wrapper { flex:1; max-width:500px; display:flex; background:#f1f5f9; border-radius:40px; padding:4px 8px; gap:8px; align-items:center; }
+        .hh__search-input { flex:1; border:none; background:transparent; padding:10px 12px; font-size:1rem; outline:none; }
+        .hh__search-select { border:none; background:white; padding:8px; border-radius:30px; outline:none; }
+        .hh__search-logo { width:28px; height:28px; background-size:contain; background-repeat:no-repeat; background-position:center; }
+        .hh__search-btn { background:#0047cc; border:none; width:38px; height:38px; border-radius:50%; color:white; cursor:pointer; }
+        .hh__weather { background:#eaf2ff; padding:8px 18px; border-radius:40px; display:flex; align-items:center; gap:8px; font-weight:500; }
+        .hh__dashboard-layout { display:grid; grid-template-columns:1fr 1fr; gap:30px; }
+        .hh__selector-panel { background:white; border-radius:24px; padding:24px; box-shadow:0 8px 20px rgba(0,0,0,0.05); }
+        .hh__selector-header { margin-bottom:20px; border-bottom:2px solid #e2e8f0; padding-bottom:12px; }
+        .hh__selector-header h2 { font-size:1.5rem; color:#0047cc; }
+        .hh__module-list { display:flex; flex-direction:column; gap:12px; max-height:500px; overflow-y:auto; margin-bottom:24px; }
+        .hh__module-item { background:#f8fafc; border:2px solid #e2e8f0; border-radius:16px; padding:12px 16px; display:flex; align-items:center; gap:12px; }
+        .hh__module-item.dragging { opacity:0.5; }
+        .hh__drag-handle { color:#94a3b8; font-size:1.2rem; cursor:grab; flex-shrink:0; }
+        .hh__module-icon { width:40px; font-size:1.6rem; text-align:center; color:#0047cc; flex-shrink:0; }
+        .hh__module-info { flex:1; }
+        .hh__module-name { font-weight:700; font-size:1rem; }
+        .hh__module-desc { font-size:0.75rem; color:#475569; }
+        .hh__module-toggle { background:#e2e8f0; border:none; border-radius:40px; width:44px; height:44px; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .hh__module-toggle.active { background:#10b981; color:white; }
+        .hh__module-toggle.inactive { background:#ef4444; color:white; }
+        .hh__module-toggle i { pointer-events:none; }
+        .hh__privacy-row { margin-top:16px; padding-top:16px; border-top:1px solid #e2e8f0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+        .hh__agree-label { display:flex; align-items:center; gap:8px; font-size:0.9rem; }
+        .hh__policy-link { color:#0047cc; text-decoration:none; }
+        .hh__confirm-btn { background:#0047cc; color:white; border:none; border-radius:40px; padding:12px 28px; font-weight:bold; font-size:1rem; cursor:pointer; }
+        .hh__confirm-btn.hh__disabled { background:#cbd5e1; cursor:not-allowed; opacity:0.7; }
+        .hh__reset-btn { background:#ef4444; color:white; border:none; border-radius:40px; padding:10px 20px; font-weight:bold; cursor:pointer; }
+        .hh__dashboard-panel { background:white; border-radius:24px; padding:24px; box-shadow:0 8px 20px rgba(0,0,0,0.05); }
+        .hh__dashboard-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:20px; padding-bottom:12px; border-bottom:2px solid #e2e8f0; }
+        .hh__dashboard-header h2 { font-size:1.5rem; color:#0047cc; }
+        .hh__active-count { font-size:0.9rem; color:#475569; }
+        .hh__dashboard-preview { display:flex; flex-wrap:wrap; gap:12px; min-height:400px; }
+        .hh__preview-card { background:#f8fafc; border:2px solid #e2e8f0; border-radius:16px; padding:12px; width:calc(50% - 6px); }
+        .hh__preview-card h3 { font-size:1rem; margin-bottom:4px; color:#0047cc; }
+        .hh__preview-card h3 i { margin-right:8px; }
+        .hh__preview-card p { color:#475569; font-size:0.8rem; line-height:1.4; }
+        @media (max-width:900px) { .hh__dashboard-layout { grid-template-columns:1fr; } }
+        @media (max-width:600px) { .hh__preview-card { width:100%; } }
     </style>
 </head>
 <body>
 <div class="hh__app">
     <header class="hh__header">
-        <a href="/" class="hh__logo-link">
-            <i class="fa-solid fa-hand-peace"></i>
-            <span>HandiHomepage</span>
-        </a>
+        <a href="/" class="hh__logo-link"><i class="fa-solid fa-hand-peace"></i><span>HandiHomepage</span></a>
         <div class="hh__search-wrapper">
             <input type="text" id="hhSearchInput" class="hh__search-input" placeholder="Search privately..." />
             <select id="hhSearchEngine" class="hh__search-select">
@@ -282,267 +67,170 @@
             <div id="hhSearchEngineLogo" class="hh__search-logo"></div>
             <button class="hh__search-btn" id="hhSearchButton"><i class="fas fa-arrow-right"></i></button>
         </div>
-        <div class="hh__weather">
-            <i class="fa-solid fa-cloud-sun"></i>
-            <span id="hhWeather">🌤️ 22°C</span>
-        </div>
+        <div class="hh__weather"><i class="fa-solid fa-cloud-sun"></i><span id="hhWeather">🌤️ 22°C</span></div>
     </header>
-
     <div class="hh__dashboard-layout">
-        <!-- Left: Module Selector -->
         <div class="hh__selector-panel">
-            <div class="hh__selector-header">
-                <h2><i class="fa-solid fa-puzzle-piece"></i> Dashboard Modules</h2>
-                <p>🖱️ Drag to reorder · ✅ Click + / – to add/remove</p>
-            </div>
+            <div class="hh__selector-header"><h2><i class="fa-solid fa-puzzle-piece"></i> Dashboard Modules</h2><p>🖱️ Drag to reorder · ✅ Click + / – to add/remove</p></div>
             <div id="hhModuleContainer" class="hh__module-list"></div>
             <div class="hh__privacy-row">
-                <label class="hh__agree-label">
-                    <input type="checkbox" id="hhPrivacyCheckbox">
-                    <span>I agree to the <a href="https://handihomepage.com/privacy" target="_blank" class="hh__policy-link">Privacy Policy</a> and the <a href="https://handihomepage.com/terms" target="_blank" class="hh__policy-link">Terms & Conditions</a>.</span>
-                </label>
-                <button id="hhConfirmBtn" class="hh__confirm-btn hh__disabled">✔ Apply to dashboard</button>
+                <label class="hh__agree-label"><input type="checkbox" id="hhPrivacyCheckbox"><span>I agree to the <a href="https://handihomepage.com/privacy" target="_blank" class="hh__policy-link">Privacy Policy</a> and the <a href="https://handihomepage.com/terms" target="_blank" class="hh__policy-link">Terms & Conditions</a>.</span></label>
+                <div style="display:flex; gap:12px;"><button id="hhResetBtn" class="hh__reset-btn">⟳ Reset All</button><button id="hhConfirmBtn" class="hh__confirm-btn hh__disabled">✔ Apply to dashboard</button></div>
             </div>
         </div>
-
-        <!-- Right: Dashboard Preview -->
         <div class="hh__dashboard-panel">
-            <div class="hh__dashboard-header">
-                <h2><i class="fa-solid fa-tv"></i> Your Dashboard</h2>
-                <p id="hhActiveCount" class="hh__active-count">0 active modules</p>
-            </div>
+            <div class="hh__dashboard-header"><h2><i class="fa-solid fa-tv"></i> Your Dashboard</h2><p id="hhActiveCount" class="hh__active-count">0 active modules</p></div>
             <div id="hhDashboardPreview" class="hh__dashboard-preview"></div>
         </div>
     </div>
 </div>
-
 <script>
-    // =========================================================
-    // MODULE DATA (unique IDs, no duplicates)
-    // =========================================================
     const MODULES = [
-        { id: 'gallery', name: 'Gallery', desc: 'Photos & memories', icon: 'fa-images', premium: false },
-        { id: 'bus', name: 'Bus Tracker', desc: 'Live transit times', icon: 'fa-bus', premium: false },
-        { id: 'music', name: 'Music Player', desc: 'Your playlists', icon: 'fa-music', premium: false },
-        { id: 'news', name: 'News', desc: 'Top headlines', icon: 'fa-newspaper', premium: false },
-        { id: 'mastodon', name: 'Social Media', desc: 'Mastodon feed', icon: 'fa-mastodon', premium: false },
-        { id: 'radio', name: 'Radio', desc: 'Live stations', icon: 'fa-radio', premium: false },
-        { id: 'emergency', name: 'Emergency', desc: 'SOS button', icon: 'fa-triangle-exclamation', premium: true },
-        { id: 'phone', name: 'Friendly Phone', desc: 'Contacts & calls', icon: 'fa-phone', premium: false },
-        { id: 'chat', name: 'Chat', desc: 'Matrix messaging', icon: 'fa-message', premium: false },
-        { id: 'calendar', name: 'Calendar', desc: 'Events & reminders', icon: 'fa-calendar', premium: false }
+        { id:'gallery', name:'Gallery', desc:'Photos & memories', icon:'fa-images', premium:false },
+        { id:'bus', name:'Bus Tracker', desc:'Live transit times', icon:'fa-bus', premium:false },
+        { id:'music', name:'Music Player', desc:'Your playlists', icon:'fa-music', premium:false },
+        { id:'news', name:'News', desc:'Top headlines', icon:'fa-newspaper', premium:false },
+        { id:'mastodon', name:'Social Media', desc:'Mastodon feed', icon:'fa-mastodon', premium:false },
+        { id:'radio', name:'Radio', desc:'Live stations', icon:'fa-radio', premium:false },
+        { id:'emergency', name:'Emergency', desc:'SOS button', icon:'fa-triangle-exclamation', premium:true },
+        { id:'phone', name:'Friendly Phone', desc:'Contacts & calls', icon:'fa-phone', premium:false },
+        { id:'chat', name:'Chat', desc:'Matrix messaging', icon:'fa-message', premium:false },
+        { id:'calendar', name:'Calendar', desc:'Events & reminders', icon:'fa-calendar', premium:false }
     ];
-
-    let currentModules = [];          // ordered list of all modules
-    let activeModuleIds = new Set();  // which modules are enabled
+    let currentModules = [];
+    let activeModuleIds = new Set();
     let dragSrcIndex = null;
 
-    // Load saved order and enabled modules from localStorage
     function loadState() {
-        // Load order
         const savedOrder = localStorage.getItem('handiModuleOrder');
         if (savedOrder) {
             try {
                 const order = JSON.parse(savedOrder);
                 const ordered = [];
-                for (let id of order) {
-                    const mod = MODULES.find(m => m.id === id);
-                    if (mod) ordered.push({ ...mod });
-                }
-                for (let mod of MODULES) {
-                    if (!ordered.find(m => m.id === mod.id)) ordered.push({ ...mod });
-                }
+                for (let id of order) { const mod = MODULES.find(m=>m.id===id); if(mod) ordered.push({...mod}); }
+                for (let mod of MODULES) if(!ordered.find(m=>m.id===mod.id)) ordered.push({...mod});
                 currentModules = ordered;
-            } catch(e) {
-                currentModules = MODULES.map(m => ({ ...m }));
-            }
-        } else {
-            currentModules = MODULES.map(m => ({ ...m }));
-        }
-
-        // Load enabled modules – default: ALL OFF (only those explicitly saved as true become active)
+            } catch(e) { currentModules = MODULES.map(m=>({...m})); }
+        } else { currentModules = MODULES.map(m=>({...m})); }
         let settings = {};
-        try {
-            const stored = localStorage.getItem('handiSettings');
-            if (stored) settings = JSON.parse(stored);
-        } catch(e) {}
+        try { const stored = localStorage.getItem('handiSettings'); if(stored) settings = JSON.parse(stored); } catch(e){}
         const enabled = settings.enabledModules || {};
         activeModuleIds.clear();
-        for (let mod of currentModules) {
-            if (enabled[mod.id] === true) {
-                activeModuleIds.add(mod.id);
-            }
-            // No default – modules start disabled
+        for(let mod of currentModules) {
+            if(enabled[mod.id] === true) activeModuleIds.add(mod.id);
         }
     }
-
-    // Save order and active modules
     function saveState() {
-        const order = currentModules.map(m => m.id);
+        const order = currentModules.map(m=>m.id);
         localStorage.setItem('handiModuleOrder', JSON.stringify(order));
         let settings = {};
-        try {
-            const stored = localStorage.getItem('handiSettings');
-            if (stored) settings = JSON.parse(stored);
-        } catch(e) {}
-        if (!settings.enabledModules) settings.enabledModules = {};
-        for (let mod of currentModules) {
-            settings.enabledModules[mod.id] = activeModuleIds.has(mod.id);
-        }
+        try { const stored = localStorage.getItem('handiSettings'); if(stored) settings = JSON.parse(stored); } catch(e){}
+        if(!settings.enabledModules) settings.enabledModules = {};
+        for(let mod of currentModules) settings.enabledModules[mod.id] = activeModuleIds.has(mod.id);
         localStorage.setItem('handiSettings', JSON.stringify(settings));
     }
-
-    // Toggle active status
-    function toggleModule(moduleId) {
-        if (activeModuleIds.has(moduleId)) {
-            activeModuleIds.delete(moduleId);
-        } else {
-            activeModuleIds.add(moduleId);
+    function resetAll() {
+        if(confirm('Reset all module selections? This will turn OFF every module.')) {
+            activeModuleIds.clear();
+            saveState();
+            renderModuleList();
+            renderDashboardPreview();
         }
-        renderModuleList();       // refresh left panel to update toggle buttons
-        renderDashboardPreview(); // refresh preview
     }
-
-    // Render left module list with drag & drop
+    function toggleModule(moduleId) {
+        if(activeModuleIds.has(moduleId)) activeModuleIds.delete(moduleId);
+        else activeModuleIds.add(moduleId);
+        renderModuleList();
+        renderDashboardPreview();
+    }
     function renderModuleList() {
         const container = document.getElementById('hhModuleContainer');
-        if (!container) return;
+        if(!container) return;
         container.innerHTML = '';
-        currentModules.forEach((module, idx) => {
+        currentModules.forEach((module,idx) => {
             const isActive = activeModuleIds.has(module.id);
             const div = document.createElement('div');
             div.className = 'hh__module-item';
             div.draggable = true;
             div.setAttribute('data-index', idx);
-
-            // Drag & drop events
-            div.addEventListener('dragstart', (e) => {
-                dragSrcIndex = idx;
-                e.dataTransfer.effectAllowed = 'move';
-                div.classList.add('dragging');
-            });
-            div.addEventListener('dragend', () => div.classList.remove('dragging'));
-            div.addEventListener('dragover', (e) => e.preventDefault());
-            div.addEventListener('drop', (e) => {
+            div.addEventListener('dragstart', (e)=>{ dragSrcIndex=idx; e.dataTransfer.effectAllowed='move'; div.classList.add('dragging'); });
+            div.addEventListener('dragend', ()=>{ div.classList.remove('dragging'); });
+            div.addEventListener('dragover', e=>e.preventDefault());
+            div.addEventListener('drop', e=>{
                 e.preventDefault();
-                if (dragSrcIndex !== null && dragSrcIndex !== idx) {
+                if(dragSrcIndex!==null && dragSrcIndex!==idx){
                     const moved = currentModules[dragSrcIndex];
-                    currentModules.splice(dragSrcIndex, 1);
-                    currentModules.splice(idx, 0, moved);
+                    currentModules.splice(dragSrcIndex,1);
+                    currentModules.splice(idx,0,moved);
                     saveState();
                     renderModuleList();
                     renderDashboardPreview();
                 }
-                dragSrcIndex = null;
+                dragSrcIndex=null;
             });
-
-            // Drag handle
-            const dragHandle = document.createElement('div');
-            dragHandle.className = 'hh__drag-handle';
-            dragHandle.innerHTML = '<i class="fa-solid fa-grip-vertical"></i>';
-
-            // Module icon
-            const iconDiv = document.createElement('div');
-            iconDiv.className = 'hh__module-icon';
-            iconDiv.innerHTML = `<i class="fa-solid ${module.icon}"></i>`;
-
-            // Info text
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'hh__module-info';
-            infoDiv.innerHTML = `<div class="hh__module-name">${module.name}</div><div class="hh__module-desc">${module.desc}</div>`;
-
-            // Toggle button: red '+' when off, green check when on
+            const dragHandle = document.createElement('div'); dragHandle.className='hh__drag-handle'; dragHandle.innerHTML='<i class="fa-solid fa-grip-vertical"></i>';
+            const iconDiv = document.createElement('div'); iconDiv.className='hh__module-icon'; iconDiv.innerHTML=`<i class="fa-solid ${module.icon}"></i>`;
+            const infoDiv = document.createElement('div'); infoDiv.className='hh__module-info'; infoDiv.innerHTML=`<div class="hh__module-name">${module.name}</div><div class="hh__module-desc">${module.desc}</div>`;
             const toggleBtn = document.createElement('button');
             toggleBtn.className = `hh__module-toggle ${isActive ? 'active' : 'inactive'}`;
             toggleBtn.innerHTML = isActive ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-plus"></i>';
-            toggleBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleModule(module.id);
-            });
-
-            div.appendChild(dragHandle);
-            div.appendChild(iconDiv);
-            div.appendChild(infoDiv);
-            div.appendChild(toggleBtn);
+            toggleBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleModule(module.id); });
+            div.appendChild(dragHandle); div.appendChild(iconDiv); div.appendChild(infoDiv); div.appendChild(toggleBtn);
             container.appendChild(div);
         });
     }
-
-    // Render dashboard preview (only active modules, respecting order)
     function renderDashboardPreview() {
-        const previewContainer = document.getElementById('hhDashboardPreview');
-        const activeCountSpan = document.getElementById('hhActiveCount');
-        if (!previewContainer) return;
-        const activeModules = currentModules.filter(mod => activeModuleIds.has(mod.id));
-        activeCountSpan.textContent = `${activeModules.length} active modules`;
-        if (activeModules.length === 0) {
-            previewContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: #64748b;">No modules selected. Click + on the left to add modules.</div>';
-            return;
-        }
-        previewContainer.innerHTML = '';
-        activeModules.forEach(module => {
-            const card = document.createElement('div');
-            card.className = 'hh__preview-card';
+        const preview = document.getElementById('hhDashboardPreview');
+        const countSpan = document.getElementById('hhActiveCount');
+        if(!preview) return;
+        const active = currentModules.filter(mod=>activeModuleIds.has(mod.id));
+        countSpan.textContent = `${active.length} active modules`;
+        if(active.length===0) { preview.innerHTML='<div style="padding:40px;text-align:center;color:#64748b;">No modules selected. Click + on the left to add modules.</div>'; return; }
+        preview.innerHTML = '';
+        active.forEach(module=>{
+            const card = document.createElement('div'); card.className='hh__preview-card';
             card.innerHTML = `<h3><i class="fa-solid ${module.icon}"></i> ${module.name}</h3><p>${module.desc}</p>`;
-            previewContainer.appendChild(card);
+            preview.appendChild(card);
         });
     }
-
-    // Apply and redirect
     function applyAndRedirect() {
         const checkbox = document.getElementById('hhPrivacyCheckbox');
-        if (!checkbox.checked) {
-            alert('Please agree to the Privacy Policy and Terms & Conditions.');
-            return;
-        }
+        if(!checkbox.checked) { alert('Please agree to the Privacy Policy and Terms & Conditions.'); return; }
         saveState();
         window.location.href = '/';
     }
-
     function updateApplyButton() {
-        const checkbox = document.getElementById('hhPrivacyCheckbox');
+        const cb = document.getElementById('hhPrivacyCheckbox');
         const btn = document.getElementById('hhConfirmBtn');
-        if (checkbox.checked) btn.classList.remove('hh__disabled');
-        else btn.classList.add('hh__disabled');
+        if(cb.checked) btn.classList.remove('hh__disabled'); else btn.classList.add('hh__disabled');
     }
-
-    // Stubs for search & weather (unchanged)
     function initSearch() {
-        const searchInput = document.getElementById('hhSearchInput');
-        const searchEngine = document.getElementById('hhSearchEngine');
-        const searchBtn = document.getElementById('hhSearchButton');
-        const performSearch = () => {
-            const query = searchInput.value.trim();
-            if (!query) return;
+        const input = document.getElementById('hhSearchInput'), engine = document.getElementById('hhSearchEngine'), btn = document.getElementById('hhSearchButton');
+        const search = ()=>{
+            const q = input.value.trim(); if(!q) return;
             let url = '';
-            switch (searchEngine.value) {
-                case 'startpage': url = `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`; break;
-                case 'qwant': url = `https://www.qwant.com/?q=${encodeURIComponent(query)}`; break;
-                case 'ecosia': url = `https://www.ecosia.org/search?q=${encodeURIComponent(query)}`; break;
-                case 'mojeek': url = `https://www.mojeek.com/search?q=${encodeURIComponent(query)}`; break;
-                default: url = `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
+            switch(engine.value){
+                case 'startpage': url=`https://www.startpage.com/sp/search?query=${encodeURIComponent(q)}`; break;
+                case 'qwant': url=`https://www.qwant.com/?q=${encodeURIComponent(q)}`; break;
+                case 'ecosia': url=`https://www.ecosia.org/search?q=${encodeURIComponent(q)}`; break;
+                case 'mojeek': url=`https://www.mojeek.com/search?q=${encodeURIComponent(q)}`; break;
+                default: url=`https://www.startpage.com/sp/search?query=${encodeURIComponent(q)}`;
             }
-            window.open(url, '_blank');
+            window.open(url,'_blank');
         };
-        searchBtn.addEventListener('click', performSearch);
-        searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+        btn.addEventListener('click',search);
+        input.addEventListener('keypress',e=>{if(e.key==='Enter') search();});
     }
-
-    function initWeather() {
-        const weatherSpan = document.getElementById('hhWeather');
-        weatherSpan.innerHTML = '☀️ 22°C';
-    }
-
+    function initWeather() { document.getElementById('hhWeather').innerHTML='☀️ 22°C'; }
     function init() {
         loadState();
         renderModuleList();
         renderDashboardPreview();
         initSearch();
         initWeather();
-        const checkbox = document.getElementById('hhPrivacyCheckbox');
-        if (checkbox) checkbox.addEventListener('change', updateApplyButton);
-        const confirmBtn = document.getElementById('hhConfirmBtn');
-        if (confirmBtn) confirmBtn.addEventListener('click', applyAndRedirect);
+        document.getElementById('hhPrivacyCheckbox').addEventListener('change',updateApplyButton);
+        document.getElementById('hhConfirmBtn').addEventListener('click',applyAndRedirect);
+        document.getElementById('hhResetBtn').addEventListener('click',resetAll);
         updateApplyButton();
     }
     init();

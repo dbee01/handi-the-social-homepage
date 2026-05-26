@@ -1,4 +1,4 @@
-// First visit redirect – opens the standalone selector
+// First visit redirect to the dashboard selector
 (function() {
     if (localStorage.getItem('handiPopupShown') === 'true') return;
     if (window.location.pathname.includes('/selector.html')) return;

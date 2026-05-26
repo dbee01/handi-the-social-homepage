@@ -450,5 +450,55 @@
 </script>
 
 <script type="module" src="js/settings-app.js"></script>
+
+<!-- ========== FIX: Make toggles work directly ========== -->
+<script>
+    (function() {
+        // Wait for DOM and initial scripts to settle
+        setTimeout(function() {
+            // First, sync toggles with stored settings
+            let settings = JSON.parse(localStorage.getItem('handiSettings') || '{}');
+            let enabled = settings.enabledModules || {};
+            
+            document.querySelectorAll('.toggle-switch').forEach(sw => {
+                let moduleCard = sw.closest('.module-card');
+                let moduleId = moduleCard.getAttribute('data-module');
+                if (enabled[moduleId] === true) {
+                    sw.classList.add('active');
+                } else {
+                    sw.classList.remove('active');
+                }
+            });
+            
+            // Then, add click handlers that update localStorage directly
+            document.querySelectorAll('.toggle-switch').forEach(sw => {
+                // Remove any existing listener by cloning
+                const newSw = sw.cloneNode(true);
+                sw.parentNode.replaceChild(newSw, sw);
+                
+                newSw.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    
+                    // Toggle the active class
+                    this.classList.toggle('active');
+                    
+                    // Get module ID
+                    let moduleCard = this.closest('.module-card');
+                    let moduleId = moduleCard.getAttribute('data-module');
+                    
+                    // Update localStorage
+                    let settings = JSON.parse(localStorage.getItem('handiSettings') || '{}');
+                    if (!settings.enabledModules) settings.enabledModules = {};
+                    settings.enabledModules[moduleId] = this.classList.contains('active');
+                    localStorage.setItem('handiSettings', JSON.stringify(settings));
+                    
+                    console.log(`✅ ${moduleId} = ${settings.enabledModules[moduleId]}`);
+                });
+            });
+        }, 500);
+    })();
+</script>
+
 </body>
 </html>

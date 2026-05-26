@@ -8,25 +8,23 @@
 // Default settings for all modules
 const DEFAULT_SETTINGS = {
     enabledModules: {
-        gallery: true,
-        bus: true,
-        music: true,
-        news: true,
-        mastodon: true,
-        calendar: {
-            url: '',
-            notificationMinutes: 30
-        },
-        radio: true,
-        emergency: true,
-        phone: true
+        gallery: false,
+        bus: false,
+        music: false,
+        news: false,
+        mastodon: false,
+        radio: false,
+        emergency: false,
+        phone: false,
+        chat: false,
+        calendar: false
     },
     gallery: { slideSpeed: 3000, autoStart: true },
     music: { volume: 70, shuffle: false },
     news: {
-        rssUrl: 'https://www.thejournal.ie/feed/', // THE ACTUAL REAL NEWSPAPER SETTINGS
+        rssUrl: 'https://www.thejournal.ie/feed/',
         refreshInterval: 15,
-        maxArticles: 2          // only show 2 articles
+        maxArticles: 2
     },
     mastodon: { instanceUrl: 'https://mastodon.ie', limit: 4 },
     bus: { routeIds: '30', stopIds: '330061,240161' },
@@ -38,22 +36,25 @@ const DEFAULT_SETTINGS = {
         homeserver: 'https://matrix.org',
         accessToken: '',
         userId: ''
-    }
+    },
+    weather: { location: 'Cork', country: 'IE' },
+    calendar: { url: '', notificationMinutes: 30 }
 };
 
 export function loadSettings() {
-    const saved = localStorage.getItem('pleie_settings');
+    const saved = localStorage.getItem('handiSettings');
     if (saved) {
         try {
             const parsed = JSON.parse(saved);
             return mergeDeep(DEFAULT_SETTINGS, parsed);
-        } catch(e) { console.error(e); }
+        } catch(e) { console.error('Failed to parse settings', e); }
     }
-    return { ...DEFAULT_SETTINGS };
+    // Return a fresh copy of defaults
+    return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 }
 
 export function saveSettings(settings) {
-    localStorage.setItem('pleie_settings', JSON.stringify(settings));
+    localStorage.setItem('handiSettings', JSON.stringify(settings));
     window.dispatchEvent(new CustomEvent('settingsChanged', { detail: settings }));
 }
 
