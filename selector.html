@@ -1,528 +1,551 @@
-<!--
- Copyright (c) 2026 Handi Homepage
- This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
- See the LICENSE file in the repository root for full details.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>HandiHomepage – Your Safe & Simple Dashboard</title>
-
-    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css">
-
-    <!-- Main Styles -->
-    <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/elderly.css">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>HandiHomepage – Dashboard Selector</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* FIX: Make header wrap vertically on mobile */
-        header {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f0f4f8;
+            color: #1e2a3a;
+        }
+        .hh__app {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .hh__header {
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
             gap: 16px;
-            width: 100%;
+            background: white;
+            padding: 12px 24px;
+            border-radius: 60px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-
-        /* FIX: Search wrapper takes full width on mobile */
-        .search-wrapper {
-            flex: 1;
-            min-width: 200px;
-            background: #ffffff;
-            border: 2px solid #cbd5e1;
-            border-radius: 48px;
+        .hh__logo-link {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: #0047cc;
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 4px 8px 4px 20px;
-            transition: border-color 0.2s;
-            box-sizing: border-box;
         }
-
-        #searchInput {
+        .hh__search-wrapper {
             flex: 1;
-            min-width: 0;
+            max-width: 500px;
+            display: flex;
+            background: #f1f5f9;
+            border-radius: 40px;
+            padding: 4px 8px;
+            gap: 8px;
+            align-items: center;
+        }
+        .hh__search-input {
+            flex: 1;
             border: none;
-            outline: none;
             background: transparent;
-            font-size: 18px;
+            padding: 10px 12px;
+            font-size: 1rem;
+            outline: none;
         }
-
-        #searchEngine {
-            border-radius: 8px;
-            padding: 6px;
-            border: 1px solid #ccc;
-        }
-
-        /* FIXED LOGO */
-        #searchEngineLogo {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            object-fit: contain;
-            display: block;
-        }
-
-        .search-button {
+        .hh__search-select {
             border: none;
+            background: white;
+            padding: 8px;
+            border-radius: 30px;
+            outline: none;
+        }
+        .hh__search-logo {
+            width: 28px;
+            height: 28px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .hh__search-btn {
+            background: #0047cc;
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
             color: white;
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
             cursor: pointer;
-            font-size: 18px;
         }
-
-        .search-button:hover {
-            opacity: 0.9;
+        .hh__weather {
+            background: #eaf2ff;
+            padding: 8px 18px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
         }
-
-        /* FIX: Mobile responsive - stack everything vertically */
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .site-branding {
-                text-align: center;
-            }
-
-            .nav-links {
-                width: 100%;
-            }
-
-            .search-wrapper {
-                width: 100%;
-                flex: none;
-            }
-
-            .header-weather {
-                text-align: center;
-                justify-content: center;
-            }
+        .hh__dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
         }
-
-        /* FIX: Small phones - wrap search inner elements */
-        @media (max-width: 550px) {
-            .search-wrapper {
-                flex-wrap: wrap;
-                border-radius: 28px;
-                padding: 12px;
-                gap: 8px;
-            }
-
-            #searchInput {
-                flex: 1 1 100%;
-                order: 1;
-            }
-
-            #searchEngine {
-                flex: 1;
-                order: 2;
-            }
-
-            #searchEngineLogo {
-                order: 3;
-            }
-
-            .search-button {
-                order: 4;
+        .hh__selector-panel {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+        .hh__selector-header {
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
+        }
+        .hh__selector-header h2 {
+            font-size: 1.5rem;
+            color: #0047cc;
+        }
+        .hh__module-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-bottom: 24px;
+        }
+        .hh__module-item {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+        .hh__module-item.dragging {
+            opacity: 0.5;
+        }
+        .hh__drag-handle {
+            color: #94a3b8;
+            font-size: 1.2rem;
+            cursor: grab;
+            flex-shrink: 0;
+        }
+        .hh__module-icon {
+            width: 40px;
+            font-size: 1.6rem;
+            text-align: center;
+            color: #0047cc;
+            flex-shrink: 0;
+        }
+        .hh__module-info {
+            flex: 1;
+        }
+        .hh__module-name {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .hh__module-desc {
+            font-size: 0.75rem;
+            color: #475569;
+        }
+        .hh__module-toggle {
+            background: #e2e8f0;
+            border: none;
+            border-radius: 40px;
+            width: 44px;
+            height: 44px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .hh__module-toggle.active {
+            background: #10b981;
+            color: white;
+        }
+        .hh__module-toggle.inactive {
+            background: #ef4444;
+            color: white;
+        }
+        .hh__module-toggle i {
+            pointer-events: none;
+        }
+        .hh__privacy-row {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .hh__agree-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        .hh__policy-link {
+            color: #0047cc;
+            text-decoration: none;
+        }
+        .hh__confirm-btn {
+            background: #0047cc;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 28px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .hh__confirm-btn.hh__disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .hh__dashboard-panel {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+        .hh__dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .hh__dashboard-header h2 {
+            font-size: 1.5rem;
+            color: #0047cc;
+        }
+        .hh__active-count {
+            font-size: 0.9rem;
+            color: #475569;
+        }
+        /* Compact preview cards */
+        .hh__dashboard-preview {
+            gap: 12px;
+        }
+        .hh__preview-card {
+            width: calc(50% - 6px);
+            padding: 12px;
+            border-radius: 16px;
+        }
+        .hh__preview-card h3 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .hh__preview-card p {
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        @media (max-width: 600px) {
+            .hh__preview-card {
                 width: 100%;
-                border-radius: 40px;
             }
         }
     </style>
-
-    <script src="/js/vendor/his.js@latest"></script>
-    <script src="/js/vendor/packery.pkgd.min.js"></script>
-    <script src="/js/vendor/Sortable.min.js"></script>
-
-    <script type="module">
-        import { loadSettings } from './js/core/settings.js';
-        import { startWeatherUpdates } from './js/core/weather.js';
-        import initBus from './modules/bus/bus.module.js';
-        import initGallery from './modules/gallery/gallery.module.js';
-        import initMusic from './modules/music/music.module.js';
-        import initNews from './modules/news/news.module.js';
-        import initMastodon from './modules/mastodon/mastodon.module.js';
-        import initRadio from './modules/radio/radio.module.js';
-        import initEmergency from './modules/emergency/emergency.module.js';
-        import initPhone from './modules/friendly-phone/friendly-phone.module.js';
-        import initChat from './modules/chat/chat.module.js';
-        import initCalendar from './modules/calendar/calendar.module.js';
-
-        import { initLayout } from './js/core/layout.js';
-
-        initLayout();
-
-        const modules = {
-            gallery: initGallery,
-            bus: initBus,
-            music: initMusic,
-            news: initNews,
-            mastodon: initMastodon,
-            radio: initRadio,
-            emergency: initEmergency,
-            phone: initPhone,
-            chat: initChat,
-            calendar: initCalendar
-        };
-
-        const settings = loadSettings();
-        const enabledModulesSettings = settings.enabledModules || {};
-
-        let enabledModulesList = Object.keys(enabledModulesSettings)
-            .filter(id => enabledModulesSettings[id] === true);
-
-        if (enabledModulesList.length === 0) {
-            enabledModulesList = [
-                'gallery',
-                'bus',
-                'music',
-                'news',
-                'mastodon',
-                'radio',
-                'emergency',
-                'phone',
-                'chat',
-                'calendar'
-            ];
-        }
-
-        const allModuleIds = [
-            'gallery',
-            'bus',
-            'music',
-            'news',
-            'mastodon',
-            'radio',
-            'emergency',
-            'phone',
-            'chat',
-            'calendar'
-        ];
-
-        const grid = document.getElementById('dashboard-grid');
-
-        if (grid) {
-            enabledModulesList.forEach(moduleId => {
-                const element = document.getElementById(moduleId);
-                if (element) {
-                    grid.appendChild(element);
-                }
-            });
-
-            allModuleIds.forEach(moduleId => {
-                if (!enabledModulesList.includes(moduleId)) {
-                    const element = document.getElementById(moduleId);
-                    if (element) {
-                        grid.appendChild(element);
-                    }
-                }
-            });
-        }
-
-        for (const [id, initFn] of Object.entries(modules)) {
-            const element = document.getElementById(id);
-            if (!element) continue;
-
-            const isEnabled = enabledModulesList.includes(id);
-            element.classList.toggle('hidden', !isEnabled);
-
-            if (isEnabled) {
-                const container = element.querySelector('.module-content');
-
-                if (container) {
-                    try {
-                        initFn(container);
-                    } catch (err) {
-                        console.error(`Error initialising ${id}:`, err);
-                    }
-                }
-            }
-        }
-
-        /* =========================================================
-           SEARCH
-        ========================================================= */
-
-        function initializeSearch() {
-
-            const searchInput = document.getElementById('searchInput');
-            const searchEngine = document.getElementById('searchEngine');
-            const searchEngineLogo = document.getElementById('searchEngineLogo');
-            const searchButton = document.getElementById('searchButton');
-
-            if (!searchInput || !searchEngine || !searchEngineLogo) {
-                console.warn('Search elements missing');
-                return;
-            }
-
-            /* REAL IMAGE URLS */
-            const logoMap = {
-                startpage: {
-                    name: 'Startpage',
-                    url: '/images/startpage.jpg'
-                },
-                qwant: {
-                    name: 'Qwant',
-                    url: '/images/qwant.jpg'
-                },
-                ecosia: {
-                    name: 'Ecosia',
-                    url: '/images/ecosia.jpg'
-                },
-                mojeek: {
-                    name: 'Mojeek',
-                    url: '/images/mojeek.jpg'
-                }
-            };
-
-            function updateSearchLogo(value) {
-
-                const engine = logoMap[value] || logoMap.startpage;
-
-                searchEngineLogo.src = engine.url;
-                searchEngineLogo.alt = engine.name;
-                searchEngineLogo.title = engine.name;
-
-                /* fallback if favicon fails */
-                searchEngineLogo.onerror = () => {
-                    searchEngineLogo.src =
-                        'data:image/svg+xml;charset=UTF-8,' +
-                        encodeURIComponent(`
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                 width="32"
-                                 height="32">
-                                <rect width="100%" height="100%" rx="8" fill="#5c6cff"/>
-                                <text x="50%" y="55%"
-                                      text-anchor="middle"
-                                      fill="white"
-                                      font-size="18"
-                                      font-family="Arial">
-                                      🔍
-                                </text>
-                            </svg>
-                        `);
-                };
-            }
-
-            updateSearchLogo(searchEngine.value);
-
-            searchEngine.addEventListener('change', () => {
-                updateSearchLogo(searchEngine.value);
-            });
-
-            function performSearch() {
-
-                const query = searchInput.value.trim();
-
-                if (!query) return;
-
-                let searchUrl = '';
-
-                switch (searchEngine.value) {
-
-                    case 'startpage':
-                        searchUrl =
-                            `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
-                        break;
-
-                    case 'qwant':
-                        searchUrl =
-                            `https://www.qwant.com/?q=${encodeURIComponent(query)}`;
-                        break;
-
-                    case 'ecosia':
-                        searchUrl =
-                            `https://www.ecosia.org/search?q=${encodeURIComponent(query)}`;
-                        break;
-
-                    case 'mojeek':
-                        searchUrl =
-                            `https://www.mojeek.com/search?q=${encodeURIComponent(query)}`;
-                        break;
-
-                    default:
-                        searchUrl =
-                            `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
-                }
-
-                window.open(searchUrl, '_blank');
-            }
-
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    performSearch();
-                }
-            });
-
-            if (searchButton) {
-                searchButton.addEventListener('click', performSearch);
-            }
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeSearch);
-        } else {
-            initializeSearch();
-        }
-
-        startWeatherUpdates();
-    </script>
 </head>
-
 <body>
-
-<script src="js/core/message.js"></script>
-
-
-<header>
-
-    <div class="site-branding">
-        <div class="handi-logo">
-            <a href="/" class="logo-link">
-                <i class="fa-solid fa-hand-peace"></i>
-                <span class="logo-text">HandiHomepage</span>
-            </a>
-        </div>
-    </div>
-
-    <div class="nav-links">
-
-        <div class="search-wrapper">
-
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search privately..."
-            >
-
-            <select id="searchEngine">
-                <option value="startpage">Startpage</option>
-                <option value="qwant">Qwant</option>
-                <option value="ecosia">Ecosia</option>
-                <option value="mojeek">Mojeek</option>
+<div class="hh__app">
+    <header class="hh__header">
+        <a href="/" class="hh__logo-link">
+            <i class="fa-solid fa-hand-peace"></i>
+            <span>HandiHomepage</span>
+        </a>
+        <div class="hh__search-wrapper">
+            <input type="text" id="hhSearchInput" class="hh__search-input" placeholder="Search privately..." />
+            <select id="hhSearchEngine" class="hh__search-select">
+                <option value="startpage">🔒 Startpage</option>
+                <option value="qwant">🐦 Qwant</option>
+                <option value="ecosia">🌳 Ecosia</option>
+                <option value="mojeek">🔍 Mojeek</option>
             </select>
+            <div id="hhSearchEngineLogo" class="hh__search-logo"></div>
+            <button class="hh__search-btn" id="hhSearchButton"><i class="fas fa-arrow-right"></i></button>
+        </div>
+        <div class="hh__weather">
+            <i class="fa-solid fa-cloud-sun"></i>
+            <span id="hhWeather">🌤️ 22°C</span>
+        </div>
+    </header>
 
-            <img
-                id="searchEngineLogo"
-                src="https://www.startpage.com/sp/cdn/favicons/favicon.ico"
-                alt="Search engine logo"
-            >
-
-            <button id="searchButton" class="search-button">
-                <i class="fas fa-arrow-right"></i>
-            </button>
-
+    <div class="hh__dashboard-layout">
+        <!-- Left: Module Selector -->
+        <div class="hh__selector-panel">
+            <div class="hh__selector-header">
+                <h2><i class="fa-solid fa-puzzle-piece"></i> Dashboard Modules</h2>
+                <p>🖱️ Drag to reorder · ✅ Click + / – to add/remove</p>
+            </div>
+            <div id="hhModuleContainer" class="hh__module-list"></div>
+            <div class="hh__privacy-row">
+                <label class="hh__agree-label">
+                    <input type="checkbox" id="hhPrivacyCheckbox">
+                    <span>I agree to the <a href="https://handihomepage.com/privacy" target="_blank" class="hh__policy-link">Privacy Policy</a> and the <a href="https://handihomepage.com/terms" target="_blank" class="hh__policy-link">Terms & Conditions</a>.</span>
+                </label>
+                <button id="hhConfirmBtn" class="hh__confirm-btn hh__disabled">✔ Apply to dashboard</button>
+            </div>
         </div>
 
+        <!-- Right: Dashboard Preview -->
+        <div class="hh__dashboard-panel">
+            <div class="hh__dashboard-header">
+                <h2><i class="fa-solid fa-tv"></i> Your Dashboard</h2>
+                <p id="hhActiveCount" class="hh__active-count">0 active modules</p>
+            </div>
+            <div id="hhDashboardPreview" class="hh__dashboard-preview"></div>
+        </div>
     </div>
-
-    <div class="header-weather">
-        <i class="fa-solid fa-cloud-sun"></i>
-        <span id="weather">🌤️ --°C</span>
-    </div>
-
-</header>
-
-<div class="dashboard-wrapper">
-
-    <main id="dashboard-grid">
-
-        <div id="gallery" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="bus" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="music" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="news" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="mastodon" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="radio" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="emergency" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="phone" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="chat" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-        <div id="calendar" class="dashboard-item module">
-            <div class="module-content"></div>
-        </div>
-
-    </main>
-
 </div>
 
-<footer>
+<script>
+    // =========================================================
+    // MODULE DATA (unique IDs, no duplicates)
+    // =========================================================
+    const MODULES = [
+        { id: 'gallery', name: 'Gallery', desc: 'Photos & memories', icon: 'fa-images', premium: false },
+        { id: 'bus', name: 'Bus Tracker', desc: 'Live transit times', icon: 'fa-bus', premium: false },
+        { id: 'music', name: 'Music Player', desc: 'Your playlists', icon: 'fa-music', premium: false },
+        { id: 'news', name: 'News', desc: 'Top headlines', icon: 'fa-newspaper', premium: false },
+        { id: 'mastodon', name: 'Social Media', desc: 'Mastodon feed', icon: 'fa-mastodon', premium: false },
+        { id: 'radio', name: 'Radio', desc: 'Live stations', icon: 'fa-radio', premium: false },
+        { id: 'emergency', name: 'Emergency', desc: 'SOS button', icon: 'fa-triangle-exclamation', premium: true },
+        { id: 'phone', name: 'Friendly Phone', desc: 'Contacts & calls', icon: 'fa-phone', premium: false },
+        { id: 'chat', name: 'Chat', desc: 'Matrix messaging', icon: 'fa-message', premium: false },
+        { id: 'calendar', name: 'Calendar', desc: 'Events & reminders', icon: 'fa-calendar', premium: false }
+    ];
 
-    <div class="footer-bar">
+    let currentModules = [];          // ordered list of all modules
+    let activeModuleIds = new Set();  // which modules are enabled
+    let dragSrcIndex = null;
 
-        <button id="footerMuteBtn" class="footer-icon">
-            <i class="fa-solid fa-volume-high"></i>
-        </button>
+    // Load saved order and enabled modules from localStorage
+    function loadState() {
+        // Load order
+        const savedOrder = localStorage.getItem('handiModuleOrder');
+        if (savedOrder) {
+            try {
+                const order = JSON.parse(savedOrder);
+                const ordered = [];
+                for (let id of order) {
+                    const mod = MODULES.find(m => m.id === id);
+                    if (mod) ordered.push({ ...mod });
+                }
+                for (let mod of MODULES) {
+                    if (!ordered.find(m => m.id === mod.id)) ordered.push({ ...mod });
+                }
+                currentModules = ordered;
+            } catch(e) {
+                currentModules = MODULES.map(m => ({ ...m }));
+            }
+        } else {
+            currentModules = MODULES.map(m => ({ ...m }));
+        }
 
-        <button id="footerWakeLockBtn" class="footer-icon">
-            <i class="fa-solid fa-bed"></i>
-        </button>
+        // Load enabled modules – default: ALL OFF (only those explicitly saved as true become active)
+        let settings = {};
+        try {
+            const stored = localStorage.getItem('handiSettings');
+            if (stored) settings = JSON.parse(stored);
+        } catch(e) {}
+        const enabled = settings.enabledModules || {};
+        activeModuleIds.clear();
+        for (let mod of currentModules) {
+            if (enabled[mod.id] === true) {
+                activeModuleIds.add(mod.id);
+            }
+            // No default – modules start disabled
+        }
+    }
 
-        <button id="footerDocsBtn" class="footer-icon">
-            <i class="fa-solid fa-question"></i>
-        </button>
+    // Save order and active modules
+    function saveState() {
+        const order = currentModules.map(m => m.id);
+        localStorage.setItem('handiModuleOrder', JSON.stringify(order));
+        let settings = {};
+        try {
+            const stored = localStorage.getItem('handiSettings');
+            if (stored) settings = JSON.parse(stored);
+        } catch(e) {}
+        if (!settings.enabledModules) settings.enabledModules = {};
+        for (let mod of currentModules) {
+            settings.enabledModules[mod.id] = activeModuleIds.has(mod.id);
+        }
+        localStorage.setItem('handiSettings', JSON.stringify(settings));
+    }
 
-        <button id="footerCoffeeBtn" class="footer-icon">
-            <i class="fa-solid fa-beer"></i>
-        </button>
+    // Toggle active status
+    function toggleModule(moduleId) {
+        if (activeModuleIds.has(moduleId)) {
+            activeModuleIds.delete(moduleId);
+        } else {
+            activeModuleIds.add(moduleId);
+        }
+        renderModuleList();       // refresh left panel to update toggle buttons
+        renderDashboardPreview(); // refresh preview
+    }
 
-        <button id="footerEmailBtn" class="footer-icon">
-            <i class="fa-solid fa-at"></i>
-        </button>
+    // Render left module list with drag & drop
+    function renderModuleList() {
+        const container = document.getElementById('hhModuleContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        currentModules.forEach((module, idx) => {
+            const isActive = activeModuleIds.has(module.id);
+            const div = document.createElement('div');
+            div.className = 'hh__module-item';
+            div.draggable = true;
+            div.setAttribute('data-index', idx);
 
-        <button id="footerSettingsBtn" class="footer-icon">
-            <i class="fa-solid fa-gear"></i>
-        </button>
+            // Drag & drop events
+            div.addEventListener('dragstart', (e) => {
+                dragSrcIndex = idx;
+                e.dataTransfer.effectAllowed = 'move';
+                div.classList.add('dragging');
+            });
+            div.addEventListener('dragend', () => div.classList.remove('dragging'));
+            div.addEventListener('dragover', (e) => e.preventDefault());
+            div.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (dragSrcIndex !== null && dragSrcIndex !== idx) {
+                    const moved = currentModules[dragSrcIndex];
+                    currentModules.splice(dragSrcIndex, 1);
+                    currentModules.splice(idx, 0, moved);
+                    saveState();
+                    renderModuleList();
+                    renderDashboardPreview();
+                }
+                dragSrcIndex = null;
+            });
 
-    </div>
+            // Drag handle
+            const dragHandle = document.createElement('div');
+            dragHandle.className = 'hh__drag-handle';
+            dragHandle.innerHTML = '<i class="fa-solid fa-grip-vertical"></i>';
 
-</footer>
+            // Module icon
+            const iconDiv = document.createElement('div');
+            iconDiv.className = 'hh__module-icon';
+            iconDiv.innerHTML = `<i class="fa-solid ${module.icon}"></i>`;
 
-<div class="brand">
-    <span class="subtitle">
-        <a href="https://handihomepage.com/terms">Terms of Service</a> |
-        <a href="https://handihomepage.com/privacy">Privacy Policy</a>
-    </span>
-</div>
+            // Info text
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'hh__module-info';
+            infoDiv.innerHTML = `<div class="hh__module-name">${module.name}</div><div class="hh__module-desc">${module.desc}</div>`;
 
-<script src="js/core/module-buttons.js"></script>
-<script src="js/core/footer-controls.js"></script>
-<script src="js/core/first-popup.js"></script>
+            // Toggle button: red '+' when off, green check when on
+            const toggleBtn = document.createElement('button');
+            toggleBtn.className = `hh__module-toggle ${isActive ? 'active' : 'inactive'}`;
+            toggleBtn.innerHTML = isActive ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-plus"></i>';
+            toggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleModule(module.id);
+            });
 
+            div.appendChild(dragHandle);
+            div.appendChild(iconDiv);
+            div.appendChild(infoDiv);
+            div.appendChild(toggleBtn);
+            container.appendChild(div);
+        });
+    }
+
+    // Render dashboard preview (only active modules, respecting order)
+    function renderDashboardPreview() {
+        const previewContainer = document.getElementById('hhDashboardPreview');
+        const activeCountSpan = document.getElementById('hhActiveCount');
+        if (!previewContainer) return;
+        const activeModules = currentModules.filter(mod => activeModuleIds.has(mod.id));
+        activeCountSpan.textContent = `${activeModules.length} active modules`;
+        if (activeModules.length === 0) {
+            previewContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: #64748b;">No modules selected. Click + on the left to add modules.</div>';
+            return;
+        }
+        previewContainer.innerHTML = '';
+        activeModules.forEach(module => {
+            const card = document.createElement('div');
+            card.className = 'hh__preview-card';
+            card.innerHTML = `<h3><i class="fa-solid ${module.icon}"></i> ${module.name}</h3><p>${module.desc}</p>`;
+            previewContainer.appendChild(card);
+        });
+    }
+
+    // Apply and redirect
+    function applyAndRedirect() {
+        const checkbox = document.getElementById('hhPrivacyCheckbox');
+        if (!checkbox.checked) {
+            alert('Please agree to the Privacy Policy and Terms & Conditions.');
+            return;
+        }
+        saveState();
+        window.location.href = '/';
+    }
+
+    function updateApplyButton() {
+        const checkbox = document.getElementById('hhPrivacyCheckbox');
+        const btn = document.getElementById('hhConfirmBtn');
+        if (checkbox.checked) btn.classList.remove('hh__disabled');
+        else btn.classList.add('hh__disabled');
+    }
+
+    // Stubs for search & weather (unchanged)
+    function initSearch() {
+        const searchInput = document.getElementById('hhSearchInput');
+        const searchEngine = document.getElementById('hhSearchEngine');
+        const searchBtn = document.getElementById('hhSearchButton');
+        const performSearch = () => {
+            const query = searchInput.value.trim();
+            if (!query) return;
+            let url = '';
+            switch (searchEngine.value) {
+                case 'startpage': url = `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`; break;
+                case 'qwant': url = `https://www.qwant.com/?q=${encodeURIComponent(query)}`; break;
+                case 'ecosia': url = `https://www.ecosia.org/search?q=${encodeURIComponent(query)}`; break;
+                case 'mojeek': url = `https://www.mojeek.com/search?q=${encodeURIComponent(query)}`; break;
+                default: url = `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
+            }
+            window.open(url, '_blank');
+        };
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+    }
+
+    function initWeather() {
+        const weatherSpan = document.getElementById('hhWeather');
+        weatherSpan.innerHTML = '☀️ 22°C';
+    }
+
+    function init() {
+        loadState();
+        renderModuleList();
+        renderDashboardPreview();
+        initSearch();
+        initWeather();
+        const checkbox = document.getElementById('hhPrivacyCheckbox');
+        if (checkbox) checkbox.addEventListener('change', updateApplyButton);
+        const confirmBtn = document.getElementById('hhConfirmBtn');
+        if (confirmBtn) confirmBtn.addEventListener('click', applyAndRedirect);
+        updateApplyButton();
+    }
+    init();
+</script>
 </body>
 </html>
