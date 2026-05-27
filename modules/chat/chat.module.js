@@ -47,6 +47,9 @@ export default async function initChat(container) {
     // Prevent duplicate bot replies
     const processedEvents = new Set();
 
+    // Track open/closed state of rooms (default: open = true)
+    let roomOpenState = {};
+
     // =====================================================
     // SETTINGS CHECK
     // =====================================================
@@ -91,28 +94,42 @@ export default async function initChat(container) {
 
     async function resolveRoom(roomInput) {
         if (!isActive) return null;
+        if (!roomInput || !roomInput.trim()) return null;
         
-        const identifier = parseMatrixIdentifier(roomInput);
-        if (!identifier) return null;
-        if (identifier.startsWith('!')) return identifier;
+        let identifier = roomInput.trim();
+        
+        // Extract room ID from Element URL
+        const elementUrlMatch = identifier.match(/\/#\/room\/(![^:]+:[^\s?&]+)/);
+        if (elementUrlMatch) {
+            identifier = elementUrlMatch[1];
+        }
+        
+        // If it's already a room ID (!room:server)
+        if (identifier.startsWith('!')) {
+            return identifier;
+        }
 
+        // If it's an alias (#room:server)
         if (identifier.startsWith('#')) {
             try {
-                const res = await fetch(
-                    `${homeserver}/_matrix/client/v3/directory/room/${encodeURIComponent(identifier)}`,
-                    { headers: { Authorization: `Bearer ${accessToken}` } }
-                );
+                const encodedAlias = encodeURIComponent(identifier);
+                const url = `${homeserver}/_matrix/client/v3/directory/room/${encodedAlias}`;
+                
+                const res = await fetch(url, {
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                });
+                
                 if (!res.ok) return null;
                 const data = await res.json();
                 return data.room_id;
-            } catch {
+            } catch (err) {
                 return null;
             }
         }
+        
         return null;
     }
 
-    // NEW: Get room name from room ID
     async function getRoomName(roomId) {
         if (roomNameCache[roomId]) return roomNameCache[roomId];
         
@@ -124,24 +141,16 @@ export default async function initChat(container) {
             
             if (res.ok) {
                 const data = await res.json();
-                const roomName = data.name || extractRoomNameFromId(roomId);
-                roomNameCache[roomId] = roomName;
-                return roomName;
+                if (data.name) {
+                    roomNameCache[roomId] = data.name;
+                    return data.name;
+                }
             }
-        } catch (e) {
-            console.warn('Could not fetch room name:', e);
-        }
+        } catch (e) {}
         
-        return extractRoomNameFromId(roomId);
-    }
-    
-    function extractRoomNameFromId(roomId) {
-        // Try to extract a human-readable name from room ID
-        const match = roomId.match(/!([a-zA-Z0-9]+):/);
-        if (match) {
-            return match[1].substring(0, 20);
-        }
-        return 'Chat Room';
+        const shortId = roomId.substring(1, 13);
+        roomNameCache[roomId] = shortId;
+        return shortId;
     }
 
     async function joinRoom(roomId) {
@@ -159,7 +168,7 @@ export default async function initChat(container) {
                 }
             );
             return res.ok || res.status === 403;
-        } catch {
+        } catch (err) {
             return false;
         }
     }
@@ -169,12 +178,12 @@ export default async function initChat(container) {
         
         try {
             const res = await fetch(
-                `${homeserver}/_matrix/client/v3/rooms/${encodeURIComponent(roomId)}/messages?dir=b&limit=20`,
+                `${homeserver}/_matrix/client/v3/rooms/${encodeURIComponent(roomId)}/messages?dir=b&limit=50`,
                 { headers: { Authorization: `Bearer ${accessToken}` } }
             );
             if (!res.ok) return null;
             return await res.json();
-        } catch {
+        } catch (err) {
             return null;
         }
     }
@@ -236,35 +245,54 @@ export default async function initChat(container) {
     // ROOM FETCH
     // =====================================================
 
-    async function fetchRoom(roomUrl) {
-        if (!isActive) return { messages: [], roomName: null };
+    async function fetchRoom(roomUrl, roomIndex) {
+        if (!isActive) return { messages: [], roomName: null, error: null };
         
         try {
             const roomId = await resolveRoom(roomUrl);
-            if (!roomId) return { messages: [], roomName: null };
+            if (!roomId) {
+                return { messages: [], roomName: 'Invalid Room', error: 'Could not resolve room' };
+            }
             
             await joinRoom(roomId);
             
-            // Get the actual room name
             const roomName = await getRoomName(roomId);
             
             const data = await fetchMessages(roomId);
-            if (!data) return { messages: [], roomName };
+            if (!data) {
+                return { messages: [], roomName, error: 'Could not fetch messages' };
+            }
             
+            // Process ALL messages, no filtering
             const messages = (data.chunk || [])
-                .filter(msg => msg.type === 'm.room.message')
-                .map(msg => ({
-                    event_id: msg.event_id,
-                    sender: msg.sender,
-                    origin_server_ts: msg.origin_server_ts,
-                    content: msg.content
-                }));
+                .filter(msg => {
+                    // Only include actual message types, not room state changes
+                    return msg.type === 'm.room.message' || msg.type === 'm.room.encrypted';
+                })
+                .map(msg => {
+                    let body = '';
+                    
+                    if (msg.type === 'm.room.encrypted') {
+                        body = '🔒 Encrypted message';
+                    } else if (msg.content?.body) {
+                        body = msg.content.body;
+                    } else {
+                        return null; // Skip empty messages
+                    }
+                    
+                    return {
+                        event_id: msg.event_id,
+                        sender: msg.sender,
+                        origin_server_ts: msg.origin_server_ts,
+                        content: { body: body }
+                    };
+                })
+                .filter(msg => msg !== null); // Remove skipped messages
             
             await handleBotCommands(roomId, messages);
-            return { messages, roomName };
+            return { messages, roomName, error: null };
         } catch (error) {
-            console.error('Error fetching room:', error);
-            return { messages: [], roomName: null };
+            return { messages: [], roomName: null, error: error.message };
         }
     }
 
@@ -302,7 +330,7 @@ export default async function initChat(container) {
 
     function getSenderName(event) {
         const sender = event.sender || '';
-        const match = sender.match(/^@([^:]+):/);
+        const match = sender.match(/@([^:]+):/);
         return match ? match[1] : sender;
     }
 
@@ -373,19 +401,36 @@ export default async function initChat(container) {
             const roomUrl = roomUrls[i];
             if (!roomUrl?.trim()) continue;
 
-            const { messages, roomName } = await fetchRoom(roomUrl);
+            const { messages, roomName, error } = await fetchRoom(roomUrl, i);
             const hasNew = checkForNewActivity(i, messages);
 
             results.push({
                 index: i,
                 url: roomUrl,
                 messages: messages || [],
-                roomName: roomName || `Room ${i + 1}`,
-                hasNew
+                roomName: roomName || (error ? 'Error' : `Room ${i + 1}`),
+                hasNew,
+                error
             });
         }
 
         renderChat(results);
+    }
+
+    // =====================================================
+    // TOGGLE ROOM (open/close)
+    // =====================================================
+    
+    function toggleRoom(roomIndex) {
+        roomOpenState[roomIndex] = !roomOpenState[roomIndex];
+        const messagesDiv = document.getElementById(`chat-msgs-${roomIndex}`);
+        const toggleBtn = document.querySelector(`.chat-toggle-msgs[data-room="${roomIndex}"]`);
+        if (messagesDiv) {
+            messagesDiv.style.display = roomOpenState[roomIndex] ? 'block' : 'none';
+        }
+        if (toggleBtn) {
+            toggleBtn.textContent = roomOpenState[roomIndex] ? '▲' : '▼';
+        }
     }
 
     // =====================================================
@@ -397,58 +442,73 @@ export default async function initChat(container) {
 
         for (const room of results) {
             const messages = room.messages || [];
+            const isOpen = roomOpenState[room.index] !== false;
+            const toggleIcon = isOpen ? '▲' : '▼';
 
             html += `
                 <div class="chat-room-card ${room.hasNew ? 'has-new' : ''}">
-                    <div class="chat-room-header">
+                    <div class="chat-room-header" data-room="${room.index}" style="cursor: pointer; min-height: 60px;">
                         <div class="chat-room-name">
                             <i class="fa-regular fa-comment"></i>
                             ${escapeHtml(room.roomName)}
                             ${room.hasNew ? '<span class="new-badge">New!</span>' : ''}
+                            ${room.error ? '<span class="error-badge">Error</span>' : ''}
                         </div>
-                        <button class="chat-toggle-msgs" data-room="${room.index}">▼</button>
+                        <button class="chat-toggle-msgs" data-room="${room.index}" style="min-width: 48px; min-height: 48px; font-size: 1.2rem; cursor: pointer; border-radius: 12px; background: #f1f5f9; border: 1px solid #cbd5e1;">${toggleIcon}</button>
                     </div>
-                    <div class="chat-room-messages" id="chat-msgs-${room.index}" style="display:none;">
+                    <div class="chat-room-messages" id="chat-msgs-${room.index}" style="display: ${isOpen ? 'block' : 'none'};">
             `;
 
-            if (messages.length) {
-                for (const msg of messages.slice(0, 10)) {
+            if (room.error) {
+                html += `<div class="chat-error">⚠️ ${escapeHtml(room.error)}</div>`;
+            } else if (messages.length === 0) {
+                html += `<div class="chat-empty">💬 No messages yet</div>`;
+            } else {
+                for (const msg of messages.slice(0, 20)) {
                     const body = msg.content?.body || 'No message content';
                     const sender = getSenderName(msg);
                     const time = formatTime(msg.origin_server_ts);
                     
                     html += `
-                        <div class="chat-message">
-                            <div class="chat-message-header">
+                        <div class="chat-message" style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                            <div class="chat-message-header" style="margin-bottom: 4px;">
                                 <span class="chat-sender"><strong>${escapeHtml(sender)}</strong></span>
-                                <span class="chat-time">${escapeHtml(time)}</span>
+                                <span class="chat-time" style="margin-left: 12px; font-size: 0.75rem; color: #94a3b8;">${escapeHtml(time)}</span>
                             </div>
-                            <div class="chat-body">${escapeHtml(body.substring(0, 500))}</div>
+                            <div class="chat-body" style="font-size: 0.85rem;">${escapeHtml(body.substring(0, 500))}</div>
                         </div>
                     `;
                 }
-            } else {
-                html += `<div class="chat-empty">💬 No messages yet</div>`;
             }
 
             html += `</div></div>`;
         }
 
         html += `</div></div><div style="display:flex; gap:12px; margin-top:16px;">
-            <button id="chatRefreshBtn" class="chat-refresh-btn" style="flex:1;">⟳ Refresh</button>
+            <button id="chatRefreshBtn" class="chat-refresh-btn" style="flex:1; padding: 14px; font-size: 1rem; font-weight: bold;">⟳ Refresh</button>
         </div>`;
 
         content.innerHTML = html;
 
-        // Toggle messages
+        // Add click handlers to the entire header
+        document.querySelectorAll('.chat-room-header').forEach(header => {
+            const roomIdx = header.dataset.room;
+            if (roomIdx !== undefined) {
+                header.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('chat-toggle-msgs')) {
+                        return;
+                    }
+                    toggleRoom(parseInt(roomIdx));
+                });
+            }
+        });
+        
+        // Toggle button click handler
         document.querySelectorAll('.chat-toggle-msgs').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const idx = btn.dataset.room;
-                const el = document.getElementById(`chat-msgs-${idx}`);
-                if (!el) return;
-                const visible = el.style.display === 'block';
-                el.style.display = visible ? 'none' : 'block';
-                btn.textContent = visible ? '▼' : '▲';
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const idx = parseInt(btn.dataset.room);
+                toggleRoom(idx);
             });
         });
 
@@ -466,7 +526,6 @@ export default async function initChat(container) {
     async function startRefresh() {
         if (processedEvents.size > 5000) processedEvents.clear();
         
-        // Only check token if we have credentials
         if (hasValidCredentials()) {
             const valid = await isTokenValid();
             if (!valid) {
