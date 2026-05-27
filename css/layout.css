@@ -779,3 +779,17 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+
+.footer-icon {
+    font-size: 1.8rem !important;
+    min-width: 56px !important;
+    min-height: 56px !important;
+}
+
+@media (max-width: 768px) {
+    .footer-icon {
+        font-size: 1.4rem !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+    }
+}

@@ -1,8 +1,3 @@
-<!--
- Copyright (c) 2026 Handi Homepage
- This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
- See the LICENSE file in the repository root for full details.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,65 +5,227 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - Handi Homepage</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/settings.css">
-    <!-- Privacy-friendly analytics by Plausible -->
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-             const isLoggedIn = document.body.classList.contains('logged-in');  
-    
-            if (!isLoggedIn) {
-                const script = document.createElement('script');
-                script.async = true;
-                script.defer = true;
-                script.src = 'https://plausible.io/js/pa-cvqvYb9dRTC-BwuguUIVj.js';
-                document.head.appendChild(script);
-                
-                window.plausible = window.plausible || function() {
-                    (window.plausible.q = window.plausible.q || []).push(arguments);
-                };
-            }
-        });
-    </script>
-    <script>
-        // Force Weather module to be permanently ENABLED (ON)
-        (function() {
-            // Override settings loading to force weather = true
-            const originalFetch = window.fetch;
-            
-            // Ensure weather is enabled when settings are loaded
-            document.addEventListener('DOMContentLoaded', () => {
-                // Disable and set weather toggle to ON position
-                const weatherCard = document.querySelector('.module-card[data-module="weather"]');
-                if (weatherCard) {
-                    const toggle = weatherCard.querySelector('.toggle-switch');
-                    if (toggle) {
-                        // Force toggle to ON state
-                        toggle.classList.add('active');
-                        const slider = toggle.querySelector('.toggle-slider');
-                        if (slider) {
-                            slider.style.transform = 'translateX(26px)';
-                        }
-                        toggle.style.opacity = '0.5';
-                        toggle.style.pointerEvents = 'none';
-                        toggle.title = 'Weather module is permanently enabled';
-                    }
-                }
-            });
-            
-            // Intercept settings saves to always keep weather enabled
-            const originalSetItem = localStorage.setItem;
-            localStorage.setItem = function(key, value) {
-                if (key === 'handiSettings' && value) {
-                    const settings = JSON.parse(value);
-                    if (!settings.enabledModules) settings.enabledModules = {};
-                    settings.enabledModules.weather = true; // Force ON
-                    value = JSON.stringify(settings);
-                }
-                return originalSetItem.call(this, key, value);
-            };
-        })();
-        </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f6f8fc;
+            padding: 20px;
+        }
+        
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0047cc;
+        }
+        
+        .header h1 {
+            color: #0047cc;
+        }
+        
+        .header h2 {
+            color: #0047cc;
+            font-size: 1.2rem;
+        }
+        
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .save-btn {
+            background: #0047cc;
+            color: white;
+            border: none;
+        }
+        
+        .reset-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+        }
+        
+        .exit-btn {
+            background: #64748b;
+            color: white;
+            border: none;
+        }
+        
+        .module-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            cursor: pointer;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .module-header:hover {
+            background: #f8fafc;
+        }
+        
+        .module-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .module-title i {
+            font-size: 1.2rem;
+            color: #0047cc;
+        }
+        
+        .module-title h3 {
+            font-size: 1rem;
+            color: #1e293b;
+        }
+        
+        .toggle-switch {
+            width: 52px;
+            height: 26px;
+            background: #cbd5e1;
+            border-radius: 34px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .toggle-switch.active {
+            background: #0047cc;
+        }
+        
+        .toggle-slider {
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            transition: transform 0.2s;
+        }
+        
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(24px);
+        }
+        
+        .module-config {
+            display: none;
+            padding: 20px;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .config-field {
+            margin-bottom: 16px;
+        }
+        
+        .config-field label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+        
+        .config-field input,
+        .config-field select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .upload-btn {
+            background: #0047cc;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        
+        .detect-location-btn {
+            background: #0047cc;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 8px;
+            width: 100%;
+        }
+        
+        .weather-preview {
+            margin-top: 12px;
+            padding: 12px;
+            background: #eef2ff;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .brand {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .brand a {
+            color: #0047cc;
+            text-decoration: none;
+        }
+        
+        small {
+            display: block;
+            margin-top: 6px;
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+        
+        .contact-list {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            min-height: 80px;
+            color: #64748b;
+        }
+        
+        .error {
+            color: #dc2626;
+        }
+    </style>
 </head>
 <body>
 <div class="settings-container">
@@ -81,25 +238,20 @@
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- FREE MODULES SECTION (8 modules) -->
-    <!-- ============================================================ -->
     <div class="header">
         <h2>Free Modules</h2>
-        <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">All modules below are free and open source</p>
     </div>
 
-    <!-- 1. Weather Module -->
+    <!-- Weather Module (force enabled) -->
     <div class="module-card" data-module="weather">
-        <div class="module-header" data-module="weather">
+        <div class="module-header">
             <div class="module-title"><i class="fa-solid fa-cloud-sun"></i><h3>Weather Location</h3></div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+            <div class="toggle-switch active" style="opacity:0.5; pointer-events:none;"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
             <div class="config-field">
-                <label>Location (city or town):</label>
-                <input type="text" id="weatherLocation" placeholder="e.g., Cork, Dublin, Galway, Limerick" value="Cork">
-                <small style="display: block; margin-top: 6px; color: #64748b;">📍 Use Irish towns/cities for best results. Coordinates will be fetched automatically.</small>
+                <label>Location:</label>
+                <input type="text" id="weatherLocation" value="Cork">
             </div>
             <div class="config-field">
                 <label>Country:</label>
@@ -107,358 +259,508 @@
                     <option value="IE">Ireland</option>
                     <option value="GB">United Kingdom</option>
                     <option value="US">United States</option>
-                    <option value="CA">Canada</option>
-                    <option value="AU">Australia</option>
-                    <option value="NZ">New Zealand</option>
-                    <option value="DE">Germany</option>
-                    <option value="FR">France</option>
-                    <option value="ES">Spain</option>
-                    <option value="IT">Italy</option>
-                    <option value="NL">Netherlands</option>
-                    <option value="BE">Belgium</option>
-                    <option value="PL">Poland</option>
-                    <option value="SE">Sweden</option>
-                    <option value="NO">Norway</option>
-                    <option value="DK">Denmark</option>
-                    <option value="FI">Finland</option>
-                    <option value="PT">Portugal</option>
-                    <option value="CH">Switzerland</option>
-                    <option value="AT">Austria</option>
-                    <option value="CZ">Czech Republic</option>
-                    <option value="HU">Hungary</option>
                 </select>
             </div>
-            <div class="config-field">
-                <label>Or use current location:</label>
-                <button type="button" id="detectLocationBtn" class="detect-location-btn">
-                    <i class="fa-solid fa-location-dot"></i> Detect My Location
-                </button>
-                <small style="display: block; margin-top: 6px; color: #64748b;">Your browser will ask for permission to access your location.</small>
-            </div>
-            <div id="weatherPreview" class="weather-preview" style="display: none; margin-top: 12px; padding: 12px; background: #eef2ff; border-radius: 12px;"></div>
+            <button id="detectLocationBtn" class="detect-location-btn"><i class="fa-solid fa-location-dot"></i> Detect My Location</button>
+            <div id="weatherPreview" class="weather-preview"></div>
         </div>
     </div>
 
-    <!-- 2. Gallery Module -->
+    <!-- Gallery Module -->
     <div class="module-card" data-module="gallery">
-        <div class="module-header" data-module="gallery">
+        <div class="module-header">
             <div class="module-title"><i class="fa-solid fa-images"></i><h3>Gallery</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
-            <div class="config-field"><label>Slideshow speed (ms):</label><input type="number" id="gallerySpeed" value="8000" step="100"></div>
-            <div class="config-field"><label>Auto-start slideshow:</label><select id="galleryAutoStart"><option value="true">Yes</option><option value="false">No</option></select></div>
-            <button id="uploadGalleryBtn" class="upload-btn">📸 Upload New Images</button>
-            <div class="config-field"><label>Rename image filenames in caption format eg: My+Lovely+Horse.jpg -> displayed as -> My Lovely Horse</label></div>
+            <div class="config-field"><label>Slideshow speed (ms):</label><input type="number" id="gallerySpeed" value="3000"></div>
+            <div class="config-field"><label>Auto-start:</label><select id="galleryAutoStart"><option value="true">Yes</option><option value="false">No</option></select></div>
+            <button class="upload-btn" id="uploadGalleryBtn">📸 Upload Images</button>
+            <small>Rename image filenames in caption format: My+Lovely+Horse.jpg -> My Lovely Horse</small>
         </div>
     </div>
 
-    <!-- 3. News Module -->
-    <div class="module-card" data-module="news">
-        <div class="module-header" data-module="news">
-            <div class="module-title"><i class="fa-solid fa-newspaper"></i><h3>News</h3></div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field">
-                <label>RSS Feed:</label>
-                <select id="newsRssUrl">
-                    <option value="https://www.thejournal.ie/feed/" selected>The Journal</option>
-                    <option value="https://www.irishexaminer.com/feed/35-top_news.xml">Irish Examiner</option>
-                    <option value="https://www.irishnews.com/arc/outboundfeeds/rss/">Irish News</option>
-                    <option value="https://feeds.feedburner.com/bnireland">BreakingNews.ie</option>
-                    <option value="https://www.munster-express.ie/feed/">Munster Express</option>
-                    <option value="https://www.rte.ie/feeds/rss/?index=/news/">RTÉ News</option>
-                    <option value="https://www.donegaldaily.com/feed/">Donegal Daily</option>
-                    <option value="https://www.limerickleader.ie/rss.jsp?sezione=1">Limerick Leader</option>
-                    <option value="https://totallydublin.ie/feed/">Totally Dublin</option>
-                    <option value="https://ittn.ie/feed/">Irish Tech News</option>
-                </select>
-            </div>
-            <div class="config-field"><label>Refresh interval (minutes):</label><input type="number" id="newsRefresh" min="5" max="120" value="15"></div>
-            <div class="config-field"><label>Max articles:</label><input type="number" id="newsMaxArticles" min="4" max="50" value="4"></div>
-        </div>
-    </div>
-
-    <!-- 4. Music Player Module -->
+    <!-- Music Module -->
     <div class="module-card" data-module="music">
-        <div class="module-header" data-module="music">
+        <div class="module-header">
             <div class="module-title"><i class="fa-solid fa-music"></i><h3>Music Player</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
-            <div class="config-field"><label>Default volume (%):</label><input type="range" id="musicVolume" min="0" max="100" value="70"><span id="volumeValue">70%</span></div>
+            <div class="config-field"><label>Default volume:</label><input type="range" id="musicVolume" min="0" max="100" value="70"><span id="volumeValue">70%</span></div>
             <div class="config-field"><label>Default shuffle:</label><select id="musicShuffle"><option value="false">Off</option><option value="true">On</option></select></div>
-            <button id="uploadMusicBtn" class="upload-btn">🎵 Upload Music Files</button>
+            <button class="upload-btn" id="uploadMusicBtn">🎵 Upload Music</button>
         </div>
     </div>
 
-    <!-- 5. Mastodon Module -->
+    <!-- News Module -->
+    <div class="module-card" data-module="news">
+        <div class="module-header">
+            <div class="module-title"><i class="fa-solid fa-newspaper"></i><h3>News</h3></div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field"><label>RSS Feed:</label>
+                <select id="newsRssUrl">
+                    <option value="https://www.thejournal.ie/feed/">The Journal</option>
+                    <option value="https://www.rte.ie/feeds/rss/?index=/news/">RTÉ News</option>
+                    <option value="https://www.irishexaminer.com/feed/35-top_news.xml">Irish Examiner</option>
+                </select>
+            </div>
+            <div class="config-field"><label>Refresh interval (minutes):</label><input type="number" id="newsRefresh" value="15"></div>
+            <div class="config-field"><label>Max articles:</label><input type="number" id="newsMaxArticles" value="4"></div>
+        </div>
+    </div>
+
+    <!-- Mastodon Module -->
     <div class="module-card" data-module="mastodon">
-        <div class="module-header" data-module="mastodon">
+        <div class="module-header">
             <div class="module-title"><i class="fa-brands fa-mastodon"></i><h3>Social Media</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
-            <div class="config-field"><label>Instance URL:</label><input type="url" id="mastodonInstance" placeholder="https://mastodon.ie"></div>
-            <div class="config-field"><label>Trending limit:</label><input type="number" id="mastodonLimit" min="4" max="20" value="4"></div>
+            <div class="config-field"><label>Instance URL:</label><input type="text" id="mastodonInstance" value="https://mastodon.ie"></div>
+            <div class="config-field"><label>Trending limit:</label><input type="number" id="mastodonLimit" value="4"></div>
         </div>
     </div>
 
-    <!-- 6. Calendar Module (Proton ICS) -->
+    <!-- Calendar Module -->
     <div class="module-card" data-module="calendar">
-        <div class="module-header" data-module="calendar">
+        <div class="module-header">
             <div class="module-title"><i class="fa-regular fa-calendar"></i><h3>Calendar (Proton ICS)</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
-            <div class="config-field">
-                <label>Proton Calendar ICS Link:</label>
-                <input type="url" id="calendarUrl" placeholder="https://calendar.proton.me/api/calendar/v1/url/.../calendar.ics?CacheKey=...&PassphraseKey=...">
-                <small>📖 How to get your ICS link:</small>
-                <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">
-                    1. Go to Proton Calendar → Settings → Calendars<br>
-                    2. Click on your calendar → "Link for viewing"<br>
-                    3. Copy the ICS link and paste it above
-                </div>
-            </div>
-            <div class="config-field">
-                <label>Notification time before event:</label>
-                <select id="calendarNotificationMinutes">
-                    <option value="5">5 minutes</option>
-                    <option value="10">10 minutes</option>
-                    <option value="15">15 minutes</option>
-                    <option value="30" selected>30 minutes</option>
-                    <option value="60">1 hour</option>
-                    <option value="120">2 hours</option>
-                    <option value="1440">1 day</option>
-                </select>
-            </div>
+            <div class="config-field"><label>Proton Calendar ICS Link:</label><input type="text" id="calendarUrl" placeholder="Paste your ICS link here"></div>
+            <div class="config-field"><label>Notification time:</label><select id="calendarNotificationMinutes"><option value="30" selected>30 minutes</option></select></div>
+            <small>Get ICS link from Proton Calendar → Settings → Calendars → "Link for viewing"</small>
         </div>
     </div>
 
-    <!-- 7. SIM Phone Module -->
+    <!-- Phone Module -->
     <div class="module-card" data-module="phone">
-        <div class="module-header" data-module="phone">
-            <div class="module-title"><i class="fa-solid fa-sim-card"></i><h3>SIM Phone</h3></div>
+        <div class="module-header">
+            <div class="module-title"><i class="fa-solid fa-phone"></i><h3>SIM Phone</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
-            <div class="config-field"><label>Phone Contacts</label><div id="phoneContactsList" class="contact-list"></div></div>
-            <div style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-                <input type="text" id="phoneName" placeholder="Name" style="flex:1;">
-                <input type="tel" id="phoneNumber" placeholder="Phone" style="flex:1;">
-                <input type="file" id="phonePhoto" accept="image/*" style="flex:0.5;">
-                <button id="addPhoneInline" class="add-contact-btn">+ Add</button>
-            </div>
-            <div class="config-field"><label>Auto-dial warning (seconds):</label><input type="number" id="autoDialDelay" min="5" max="30" value="10"></div>
+            <div class="config-field"><label>Phone Contacts</label><div id="phoneContactsList" class="contact-list">No contacts</div></div>
+            <div class="config-field"><label>Auto-dial delay (sec):</label><input type="number" id="autoDialDelay" value="10"></div>
         </div>
     </div>
 
-    <!-- 8. Chat Module (Matrix) -->
+    <!-- Chat Module -->
     <div class="module-card" data-module="chat">
-        <div class="module-header" data-module="chat">
+        <div class="module-header">
             <div class="module-title"><i class="fa-regular fa-message"></i><h3>Chat (Matrix)</h3></div>
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
-            <div class="config-field">
-                <label>Homeserver URL:</label>
-                <input type="url" id="chatHomeserver" placeholder="https://matrix.org">
-                <small>Your Matrix server (e.g., https://matrix.org)</small>
-            </div>
-            <div class="config-field">
-                <label>Access Token:</label>
-                <input type="password" id="chatAccessToken" placeholder="mat_...">
-                <small>Generate in Element → Settings → Help & About → Access Token</small>
-            </div>
-            <div class="config-field">
-                <label>User ID:</label>
-                <input type="text" id="chatUserId" placeholder="@username:matrix.org">
-            </div>
-            <div class="config-field">
-                <label>Room 1 URL:</label>
-                <input type="text" id="chatRoom1" placeholder="#room:matrix.org">
-            </div>
-            <div class="config-field">
-                <label>Room 2 URL:</label>
-                <input type="text" id="chatRoom2" placeholder="">
-            </div>
-            <div class="config-field">
-                <label>Room 3 URL:</label>
-                <input type="text" id="chatRoom3" placeholder="">
-            </div>
-            <div class="config-field">
-                <label>Refresh interval (seconds):</label>
-                <input type="number" id="chatRefreshInterval" min="10" max="300" value="30">
-            </div>
-            <div class="config-field">
-                <label>How to get an access token:</label>
-                <p style="font-size:0.8rem; color:#64748b; margin-top: 4px;">
-                    1. Log into Element (app.element.io) or your Matrix client<br>
-                    2. Go to Settings → Help & About<br>
-                    3. Scroll down to "Access Token" → Click to reveal<br>
-                    4. Copy the token and paste it above
-                </p>
-            </div>
+            <div class="config-field"><label>Homeserver:</label><input type="text" id="chatHomeserver" value="https://matrix.org"></div>
+            <div class="config-field"><label>Access Token:</label><input type="password" id="chatAccessToken" placeholder="mat_..."></div>
+            <div class="config-field"><label>User ID:</label><input type="text" id="chatUserId" placeholder="@username:matrix.org"></div>
+            <div class="config-field"><label>Room 1:</label><input type="text" id="chatRoom1" placeholder="#room:matrix.org"></div>
+            <div class="config-field"><label>Room 2:</label><input type="text" id="chatRoom2"></div>
+            <div class="config-field"><label>Room 3:</label><input type="text" id="chatRoom3"></div>
+            <div class="config-field"><label>Refresh interval (sec):</label><input type="number" id="chatRefreshInterval" value="30"></div>
         </div>
     </div>
-
-    <!-- ============================================================ -->
-    <!-- PREMIUM MODULES SECTION (All toggles use same structure) -->
-    <!-- ============================================================ -->
-    <div class="header">
-        <h2>Premium Modules <span style="font-size: 0.8rem; background: #e2e8f0; padding: 2px 8px; border-radius: 20px;">🔒 Requires Upgrade</span></h2>
-        <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">Upgrade to Premium to unlock these modules</p>
-    </div>
-
-    <!-- Premium 1: Free & Unlimited Calls -->
-    <div class="module-card" data-module="clicktocall">
-        <div class="module-header" data-module="clicktocall">
-            <div class="module-title">
-                <i class="fa-solid fa-phone-volume"></i>
-                <h3>Free & Unlimited Calls</h3>
-                <span style="font-size: 0.7rem; background: #f59e0b; padding: 2px 8px; border-radius: 12px; margin-left: 8px;">Premium</span>
-            </div>
-            <div style="width: 52px; height: 26px; opacity: 0.5;">
-                <div style="width: 52px; height: 26px; background: #cbd5e1; border-radius: 34px; position: relative;">
-                    <div style="width: 20px; height: 20px; background: white; border-radius: 50%; position: absolute; left: 3px; top: 3px;"></div>
-                </div>
-            </div>
-        </div>
-        <div class="module-config">
-            <div class="config-field">
-                <label>Infobip Base URL:</label>
-                <input type="url" id="infobipBaseUrl" placeholder="https://your-account.api.infobip.com" disabled>
-            </div>
-            <div class="config-field">
-                <label>API Key:</label>
-                <input type="password" id="infobipApiKey" placeholder="Your API Key" disabled>
-            </div>
-            <div class="config-field">
-                <label>Application ID:</label>
-                <input type="text" id="infobipAppId" placeholder="Your Application ID" disabled>
-            </div>
-            <div class="config-field">
-                <label>Caller ID:</label>
-                <input type="tel" id="infobipCallerId" placeholder="+1234567890" disabled>
-            </div>
-            <div style="text-align: center; padding: 10px; background: #fef3c7; border-radius: 12px; margin-top: 10px;">
-                <i class="fa-solid fa-lock"></i> Premium feature - <a href="#" id="upgradeInfobipLink" style="color: #0047cc;">Upgrade to unlock</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Premium 2: Live Bus Tracker -->
-    <div class="module-card" data-module="bus">
-        <div class="module-header" data-module="bus">
-            <div class="module-title">
-                <i class="fa-solid fa-bus"></i>
-                <h3>Live Bus Tracker</h3>
-                <span style="font-size: 0.7rem; background: #f59e0b; padding: 2px 8px; border-radius: 12px; margin-left: 8px;">Premium</span>
-            </div>
-            <div style="width: 52px; height: 26px; opacity: 0.5;">
-                <div style="width: 52px; height: 26px; background: #cbd5e1; border-radius: 34px; position: relative;">
-                    <div style="width: 20px; height: 20px; background: white; border-radius: 50%; position: absolute; left: 3px; top: 3px;"></div>
-                </div>
-            </div>
-        </div>
-        <div class="module-config">
-            <div class="config-field"><label>Route IDs (comma-separated):</label><input type="text" id="busRouteIds" placeholder="e.g., 223, 215" disabled></div>
-            <div class="config-field"><label>Stop IDs (comma-separated):</label><input type="text" id="busStopIds" placeholder="e.g., 242081, 242051" disabled></div>
-            <div style="text-align: center; padding: 10px; background: #fef3c7; border-radius: 12px; margin-top: 10px;">
-                <i class="fa-solid fa-lock"></i> Premium feature - <a href="#" id="upgradeBusLink" style="color: #0047cc;">Upgrade to unlock</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Premium 3: Emergency Location Button -->
-    <div class="module-card" data-module="emergency">
-        <div class="module-header" data-module="emergency">
-            <div class="module-title">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <h3>Emergency Location Button</h3>
-                <span style="font-size: 0.7rem; background: #f59e0b; padding: 2px 8px; border-radius: 12px; margin-left: 8px;">Premium</span>
-            </div>
-            <div style="width: 52px; height: 26px; opacity: 0.5;">
-                <div style="width: 52px; height: 26px; background: #cbd5e1; border-radius: 34px; position: relative;">
-                    <div style="width: 20px; height: 20px; background: white; border-radius: 50%; position: absolute; left: 3px; top: 3px;"></div>
-                </div>
-            </div>
-        </div>
-        <div class="module-config">
-            <div class="config-field"><label>Emergency Contacts</label><div id="emergencyContactsList" class="contact-list"></div></div>
-            <div style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-                <input type="text" id="emergencyName" placeholder="Name" style="flex:1;" disabled>
-                <input type="tel" id="emergencyPhone" placeholder="Phone" style="flex:1;" disabled>
-                <button id="addEmergencyInline" class="add-contact-btn" disabled>+ Add</button>
-            </div>
-            <div style="text-align: center; padding: 10px; background: #fef3c7; border-radius: 12px; margin-top: 10px;">
-                <i class="fa-solid fa-lock"></i> Premium feature - <a href="#" id="upgradeEmergencyLink" style="color: #0047cc;">Upgrade to unlock</a>
-            </div>
-        </div>
-    </div>
-
 </div>
 
-<div class="brand" style="text-align: center; padding: 20px; font-size: 14px; color: #64748b;">
-    <span class="subtitle"><a href="https://handihomepage.com/terms">Terms of Service</a> | <a href="https://handihomepage.com/privacy">Privacy Policy</a></span>
+<div class="brand">
+    <span><a href="/terms">Terms of Service</a> | <a href="/privacy">Privacy Policy</a></span>
 </div>
 
-<script type="module" src="js/settings-app.js"></script>
-
-<!-- ========== URL PARAMETER HANDLER (opens module from ?args=xxx) ========== -->
 <script>
-    (function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const args = urlParams.get('args');
-        
-        if (!args) return;
-        
-        const valid = ['gallery', 'music', 'news', 'mastodon', 'phone', 'weather', 'calendar', 'chat'];
-        const target = args.toLowerCase();
-        
-        if (!valid.includes(target)) return;
-        
-        // Hide all configs
-        document.querySelectorAll('.module-config').forEach(el => {
-            el.style.display = 'none';
-        });
-        
-        // Show target config
-        const card = document.querySelector(`.module-card[data-module="${target}"]`);
-        if (card) {
-            const config = card.querySelector('.module-config');
-            if (config) config.style.display = 'block';
-            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            card.style.backgroundColor = '#eaf2ff';
-            setTimeout(() => card.style.backgroundColor = '', 1500);
+    // ============================================================
+    // STORAGE FUNCTIONS (replaces settings.js)
+    // ============================================================
+    const STORAGE_KEY = 'handiSettings';
+    
+    function loadSettings() {
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) return JSON.parse(stored);
+        } catch(e) {}
+        return { enabledModules: {} };
+    }
+    
+    function saveSettings(settings) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+        window.dispatchEvent(new CustomEvent('settingsChanged', { detail: settings }));
+    }
+    
+    // Gallery storage (IndexedDB)
+    async function saveGallery(images) {
+        const db = await openDB();
+        const tx = db.transaction('gallery', 'readwrite');
+        const store = tx.objectStore('gallery');
+        for (const img of images) {
+            await store.put(img);
         }
-    })();
-</script>
-
-<!-- ========== CLICK HANDLER (opens module when header is clicked) ========== -->
-<script>
-    document.querySelectorAll('.module-header').forEach(header => {
-        header.addEventListener('click', function(e) {
-            // Don't toggle if clicking on the toggle switch itself
-            if (e.target.closest('.toggle-switch')) return;
-            
-            const moduleCard = this.closest('.module-card');
-            const config = moduleCard.querySelector('.module-config');
-            const isOpen = config.style.display === 'block';
-            
-            // Close all configs
-            document.querySelectorAll('.module-config').forEach(c => {
-                c.style.display = 'none';
-            });
-            
-            // Open this one if it wasn't open
-            if (!isOpen) {
-                config.style.display = 'block';
+        await tx.done;
+    }
+    
+    async function loadGallery() {
+        const db = await openDB();
+        const tx = db.transaction('gallery', 'readonly');
+        const store = tx.objectStore('gallery');
+        const images = await store.getAll();
+        await tx.done;
+        return images;
+    }
+    
+    // Music storage (IndexedDB)
+    async function saveMusic(files) {
+        const db = await openDB();
+        const tx = db.transaction('music', 'readwrite');
+        const store = tx.objectStore('music');
+        for (const file of files) {
+            await store.put(file);
+        }
+        await tx.done;
+    }
+    
+    async function loadMusic() {
+        const db = await openDB();
+        const tx = db.transaction('music', 'readonly');
+        const store = tx.objectStore('music');
+        const files = await store.getAll();
+        await tx.done;
+        return files;
+    }
+    
+    function openDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open('HandiHomepage', 1);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => resolve(request.result);
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains('gallery')) {
+                    db.createObjectStore('gallery', { keyPath: 'name' });
+                }
+                if (!db.objectStoreNames.contains('music')) {
+                    db.createObjectStore('music', { keyPath: 'name' });
+                }
+            };
+        });
+    }
+    
+    // ============================================================
+    // MODULE MANAGEMENT
+    // ============================================================
+    const MODULES = ['gallery', 'music', 'news', 'mastodon', 'calendar', 'phone', 'chat'];
+    
+    function applySettingsToToggles() {
+        const settings = loadSettings();
+        const enabled = settings.enabledModules || {};
+        
+        MODULES.forEach(moduleId => {
+            const card = document.querySelector(`.module-card[data-module="${moduleId}"]`);
+            if (card) {
+                const toggle = card.querySelector('.toggle-switch');
+                if (toggle) {
+                    if (enabled[moduleId] === true) {
+                        toggle.classList.add('active');
+                    } else {
+                        toggle.classList.remove('active');
+                    }
+                }
             }
         });
+    }
+    
+    function collectSettings() {
+        const settings = loadSettings();
+        if (!settings.enabledModules) settings.enabledModules = {};
+        
+        MODULES.forEach(moduleId => {
+            const card = document.querySelector(`.module-card[data-module="${moduleId}"]`);
+            if (card) {
+                const toggle = card.querySelector('.toggle-switch');
+                if (toggle) {
+                    settings.enabledModules[moduleId] = toggle.classList.contains('active');
+                }
+            }
+        });
+        
+        // Weather
+        if (!settings.weather) settings.weather = {};
+        settings.weather.location = document.getElementById('weatherLocation')?.value || 'Cork';
+        settings.weather.country = document.getElementById('weatherCountry')?.value || 'IE';
+        
+        // Gallery
+        if (!settings.gallery) settings.gallery = {};
+        settings.gallery.speed = parseInt(document.getElementById('gallerySpeed')?.value) || 3000;
+        settings.gallery.autoStart = document.getElementById('galleryAutoStart')?.value === 'true';
+        
+        // Music
+        if (!settings.music) settings.music = {};
+        settings.music.volume = parseInt(document.getElementById('musicVolume')?.value) || 70;
+        settings.music.shuffle = document.getElementById('musicShuffle')?.value === 'true';
+        
+        // News
+        if (!settings.news) settings.news = {};
+        settings.news.rssUrl = document.getElementById('newsRssUrl')?.value || '';
+        settings.news.refresh = parseInt(document.getElementById('newsRefresh')?.value) || 15;
+        settings.news.maxArticles = parseInt(document.getElementById('newsMaxArticles')?.value) || 4;
+        
+        // Mastodon
+        if (!settings.mastodon) settings.mastodon = {};
+        settings.mastodon.instance = document.getElementById('mastodonInstance')?.value || '';
+        settings.mastodon.limit = parseInt(document.getElementById('mastodonLimit')?.value) || 4;
+        
+        // Calendar
+        if (!settings.calendar) settings.calendar = {};
+        settings.calendar.url = document.getElementById('calendarUrl')?.value || '';
+        settings.calendar.notificationMinutes = parseInt(document.getElementById('calendarNotificationMinutes')?.value) || 30;
+        
+        // Phone
+        if (!settings.phone) settings.phone = {};
+        settings.phone.autoDialDelay = parseInt(document.getElementById('autoDialDelay')?.value) || 10;
+        
+        // Chat
+        if (!settings.chat) settings.chat = {};
+        settings.chat.homeserver = document.getElementById('chatHomeserver')?.value || '';
+        settings.chat.accessToken = document.getElementById('chatAccessToken')?.value || '';
+        settings.chat.userId = document.getElementById('chatUserId')?.value || '';
+        settings.chat.rooms = [
+            document.getElementById('chatRoom1')?.value || '',
+            document.getElementById('chatRoom2')?.value || '',
+            document.getElementById('chatRoom3')?.value || ''
+        ].filter(r => r.trim() !== '');
+        settings.chat.refreshInterval = parseInt(document.getElementById('chatRefreshInterval')?.value) || 30;
+        
+        return settings;
+    }
+    
+    function saveAllSettings() {
+        const settings = collectSettings();
+        saveSettings(settings);
+        alert('Settings saved!');
+        location.reload();
+    }
+    
+    async function resetAllData() {
+        const confirmed = confirm(
+            '⚠️ WARNING: This will permanently delete ALL of your data:\n\n' +
+            '• All uploaded images (gallery)\n' +
+            '• All uploaded music files\n' +
+            '• All module settings\n\n' +
+            'Are you absolutely sure?'
+        );
+        if (!confirmed) return;
+        
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        const dbNames = ['HandiHomepage'];
+        for (const name of dbNames) {
+            try {
+                await new Promise((resolve, reject) => {
+                    const req = indexedDB.deleteDatabase(name);
+                    req.onsuccess = () => resolve();
+                    req.onerror = (e) => reject(e);
+                });
+            } catch(e) {}
+        }
+        
+        alert('All data has been reset. The page will now reload.');
+        location.reload();
+    }
+    
+    // ============================================================
+    // UI HANDLERS
+    // ============================================================
+    
+    function setupToggles() {
+        MODULES.forEach(moduleId => {
+            const card = document.querySelector(`.module-card[data-module="${moduleId}"]`);
+            if (card) {
+                const toggle = card.querySelector('.toggle-switch');
+                if (toggle) {
+                    toggle.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        this.classList.toggle('active');
+                    });
+                }
+            }
+        });
+    }
+    
+    function setupHeaders() {
+        document.querySelectorAll('.module-header').forEach(header => {
+            header.addEventListener('click', function(e) {
+                if (e.target.closest('.toggle-switch')) return;
+                const card = this.closest('.module-card');
+                const config = card.querySelector('.module-config');
+                if (config) {
+                    const isOpen = config.style.display === 'block';
+                    document.querySelectorAll('.module-config').forEach(c => c.style.display = 'none');
+                    if (!isOpen) config.style.display = 'block';
+                }
+            });
+        });
+    }
+    
+    function handleURLParam() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const args = urlParams.get('args');
+        if (args) {
+            const valid = ['gallery', 'music', 'news', 'mastodon', 'phone', 'weather', 'calendar', 'chat'];
+            const target = args.toLowerCase();
+            if (valid.includes(target)) {
+                setTimeout(() => {
+                    document.querySelectorAll('.module-config').forEach(c => c.style.display = 'none');
+                    const card = document.querySelector(`.module-card[data-module="${target}"]`);
+                    if (card) {
+                        const config = card.querySelector('.module-config');
+                        if (config) config.style.display = 'block';
+                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        card.style.backgroundColor = '#eaf2ff';
+                        setTimeout(() => card.style.backgroundColor = '', 1500);
+                    }
+                }, 200);
+            }
+        }
+    }
+    
+    // ============================================================
+    // WEATHER PREVIEW
+    // ============================================================
+    const weatherLocationInput = document.getElementById('weatherLocation');
+    const weatherCountrySelect = document.getElementById('weatherCountry');
+    const detectLocationBtn = document.getElementById('detectLocationBtn');
+    const weatherPreview = document.getElementById('weatherPreview');
+    
+    function getWeatherDescription(code) {
+        const codes = {
+            0: "☀️ Clear", 1: "🌤️ Mainly clear", 2: "⛅ Partly cloudy", 3: "☁️ Overcast",
+            45: "🌫️ Fog", 48: "🌫️ Fog", 51: "🌧️ Drizzle", 53: "🌧️ Drizzle", 55: "🌧️ Drizzle",
+            61: "🌧️ Light rain", 63: "🌧️ Moderate rain", 65: "🌧️ Heavy rain",
+            71: "🌨️ Light snow", 73: "🌨️ Moderate snow", 75: "🌨️ Heavy snow",
+            80: "🌧️ Showers", 81: "🌧️ Showers", 82: "🌧️ Heavy showers",
+            85: "🌨️ Snow showers", 86: "🌨️ Heavy snow showers", 95: "⛈️ Thunderstorm"
+        };
+        return codes[code] || "🌡️";
+    }
+    
+    async function getCoordinates(location, countryCode) {
+        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)},${countryCode}&format=json&limit=1`;
+        try {
+            const response = await fetch(url, { headers: { 'User-Agent': 'HandiHomepage/1.0' } });
+            const data = await response.json();
+            if (data && data.length > 0) return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+            return null;
+        } catch { return null; }
+    }
+    
+    async function showWeatherPreview() {
+        if (!weatherPreview) return;
+        const location = weatherLocationInput?.value?.trim();
+        const country = weatherCountrySelect?.value;
+        if (!location) { weatherPreview.style.display = 'none'; return; }
+        weatherPreview.style.display = 'block';
+        weatherPreview.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Fetching weather...';
+        try {
+            const coords = await getCoordinates(location, country);
+            if (!coords) { weatherPreview.innerHTML = '<span class="error">Location not found.</span>'; return; }
+            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current_weather=true`);
+            const weatherData = await weatherRes.json();
+            if (weatherData.current_weather) {
+                const temp = Math.round(weatherData.current_weather.temperature);
+                const desc = getWeatherDescription(weatherData.current_weather.weathercode);
+                weatherPreview.innerHTML = `<strong>${location}</strong>: ${desc} ${temp}°C <small>✓</small>`;
+            } else { weatherPreview.innerHTML = '<span class="error">No weather data.</span>'; }
+        } catch { weatherPreview.innerHTML = '<span class="error">Error fetching weather.</span>'; }
+    }
+    
+    function detectMyLocation() {
+        if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
+        if (weatherPreview) { weatherPreview.style.display = 'block'; weatherPreview.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Detecting...'; }
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const url = `https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`;
+            try {
+                const response = await fetch(url, { headers: { 'User-Agent': 'HandiHomepage/1.0' } });
+                const data = await response.json();
+                let city = data.address?.city || data.address?.town || data.address?.village;
+                let countryCode = data.address?.country_code?.toUpperCase() || 'IE';
+                if (city && weatherLocationInput) weatherLocationInput.value = city;
+                if (weatherCountrySelect) weatherCountrySelect.value = countryCode;
+                await showWeatherPreview();
+            } catch { weatherPreview.innerHTML = '<span class="error">Could not detect city.</span>'; }
+        }, () => { weatherPreview.innerHTML = '<span class="error">Location permission denied.</span>'; });
+    }
+    
+    // ============================================================
+    // FILE UPLOADS (IndexedDB)
+    // ============================================================
+    document.getElementById('uploadGalleryBtn')?.addEventListener('click', async () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.multiple = true;
+        input.accept = 'image/*';
+        input.onchange = async (e) => {
+            const files = Array.from(e.target.files);
+            const processed = [];
+            for (const file of files) {
+                const reader = new FileReader();
+                const dataUrl = await new Promise((resolve) => {
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(file);
+                });
+                processed.push({ name: file.name, url: dataUrl });
+            }
+            await saveGallery(processed);
+            alert(`Saved ${processed.length} images`);
+        };
+        input.click();
     });
+    
+    document.getElementById('uploadMusicBtn')?.addEventListener('click', async () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.multiple = true;
+        input.accept = 'audio/*';
+        input.onchange = async (e) => {
+            const files = Array.from(e.target.files);
+            const processed = [];
+            for (const file of files) {
+                const reader = new FileReader();
+                const dataUrl = await new Promise((resolve) => {
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(file);
+                });
+                processed.push({ name: file.name, url: dataUrl });
+            }
+            await saveMusic(processed);
+            alert(`Saved ${processed.length} music files`);
+        };
+        input.click();
+    });
+    
+    // ============================================================
+    // INITIALIZATION
+    // ============================================================
+    const volSlider = document.getElementById('musicVolume');
+    const volSpan = document.getElementById('volumeValue');
+    if (volSlider && volSpan) volSlider.addEventListener('input', () => volSpan.innerText = volSlider.value + '%');
+    
+    if (detectLocationBtn) detectLocationBtn.addEventListener('click', detectMyLocation);
+    if (weatherLocationInput) weatherLocationInput.addEventListener('input', () => setTimeout(showWeatherPreview, 800));
+    if (weatherCountrySelect) weatherCountrySelect.addEventListener('change', showWeatherPreview);
+    
+    document.getElementById('saveBtn')?.addEventListener('click', saveAllSettings);
+    document.getElementById('resetBtn')?.addEventListener('click', resetAllData);
+    document.getElementById('exitBtn')?.addEventListener('click', () => window.location.href = '/');
+    
+    applySettingsToToggles();
+    setupToggles();
+    setupHeaders();
+    handleURLParam();
+    
+    console.log('Settings page loaded');
 </script>
 
 </body>
