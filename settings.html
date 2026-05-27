@@ -6,225 +6,39 @@
     <title>Settings - Handi Homepage</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: #f6f8fc;
-            padding: 20px;
-        }
-        
-        .settings-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #0047cc;
-        }
-        
-        .header h1 {
-            color: #0047cc;
-        }
-        
-        .header h2 {
-            color: #0047cc;
-            font-size: 1.2rem;
-        }
-        
-        .header-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        
-        button {
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        .save-btn {
-            background: #0047cc;
-            color: white;
-            border: none;
-        }
-        
-        .reset-btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-        }
-        
-        .exit-btn {
-            background: #64748b;
-            color: white;
-            border: none;
-        }
-        
-        .module-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            overflow: hidden;
-        }
-        
-        .module-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            cursor: pointer;
-            background: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .module-header:hover {
-            background: #f8fafc;
-        }
-        
-        .module-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .module-title i {
-            font-size: 1.2rem;
-            color: #0047cc;
-        }
-        
-        .module-title h3 {
-            font-size: 1rem;
-            color: #1e293b;
-        }
-        
-        .toggle-switch {
-            width: 52px;
-            height: 26px;
-            background: #cbd5e1;
-            border-radius: 34px;
-            position: relative;
-            cursor: pointer;
-            transition: background 0.2s;
-            flex-shrink: 0;
-        }
-        
-        .toggle-switch.active {
-            background: #0047cc;
-        }
-        
-        .toggle-slider {
-            width: 22px;
-            height: 22px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 3px;
-            transition: transform 0.2s;
-        }
-        
-        .toggle-switch.active .toggle-slider {
-            transform: translateX(24px);
-        }
-        
-        .module-config {
-            display: none;
-            padding: 20px;
-            background: #ffffff;
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        .config-field {
-            margin-bottom: 16px;
-        }
-        
-        .config-field label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #1e293b;
-        }
-        
-        .config-field input,
-        .config-field select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-        
-        .upload-btn {
-            background: #0047cc;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-        
-        .detect-location-btn {
-            background: #0047cc;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 8px;
-            width: 100%;
-        }
-        
-        .weather-preview {
-            margin-top: 12px;
-            padding: 12px;
-            background: #eef2ff;
-            border-radius: 12px;
-            font-size: 0.9rem;
-        }
-        
-        .brand {
-            text-align: center;
-            padding: 20px;
-            font-size: 12px;
-            color: #64748b;
-        }
-        
-        .brand a {
-            color: #0047cc;
-            text-decoration: none;
-        }
-        
-        small {
-            display: block;
-            margin-top: 6px;
-            color: #64748b;
-            font-size: 0.75rem;
-        }
-        
-        .contact-list {
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 10px;
-            min-height: 80px;
-            color: #64748b;
-        }
-        
-        .error {
-            color: #dc2626;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background: #f6f8fc; padding: 20px; }
+        .settings-container { max-width: 800px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #0047cc; }
+        .header h1 { color: #0047cc; }
+        .header h2 { color: #0047cc; font-size: 1.2rem; }
+        .header-buttons { display: flex; gap: 10px; }
+        button { padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .save-btn { background: #0047cc; color: white; border: none; }
+        .reset-btn { background: #ef4444; color: white; border: none; }
+        .exit-btn { background: #64748b; color: white; border: none; }
+        .module-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+        .module-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; cursor: pointer; background: #ffffff; border-bottom: 1px solid #e2e8f0; }
+        .module-header:hover { background: #f8fafc; }
+        .module-title { display: flex; align-items: center; gap: 12px; }
+        .module-title i { font-size: 1.2rem; color: #0047cc; }
+        .module-title h3 { font-size: 1rem; color: #1e293b; }
+        .toggle-switch { width: 52px; height: 26px; background: #cbd5e1; border-radius: 34px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+        .toggle-switch.active { background: #0047cc; }
+        .toggle-slider { width: 22px; height: 22px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 3px; transition: transform 0.2s; }
+        .toggle-switch.active .toggle-slider { transform: translateX(24px); }
+        .module-config { display: none; padding: 20px; background: #ffffff; border-top: 1px solid #e2e8f0; }
+        .config-field { margin-bottom: 16px; }
+        .config-field label { display: block; font-weight: 600; margin-bottom: 8px; color: #1e293b; }
+        .config-field input, .config-field select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; }
+        .upload-btn { background: #0047cc; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin-top: 8px; }
+        .detect-location-btn { background: #0047cc; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin-top: 8px; width: 100%; }
+        .weather-preview { margin-top: 12px; padding: 12px; background: #eef2ff; border-radius: 12px; font-size: 0.9rem; }
+        .brand { text-align: center; padding: 20px; font-size: 12px; color: #64748b; }
+        .brand a { color: #0047cc; text-decoration: none; }
+        small { display: block; margin-top: 6px; color: #64748b; font-size: 0.75rem; }
+        .contact-list { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; min-height: 80px; color: #64748b; }
+        .error { color: #dc2626; }
     </style>
 </head>
 <body>
@@ -249,18 +63,8 @@
             <div class="toggle-switch active" style="opacity:0.5; pointer-events:none;"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
-            <div class="config-field">
-                <label>Location:</label>
-                <input type="text" id="weatherLocation" value="Cork">
-            </div>
-            <div class="config-field">
-                <label>Country:</label>
-                <select id="weatherCountry">
-                    <option value="IE">Ireland</option>
-                    <option value="GB">United Kingdom</option>
-                    <option value="US">United States</option>
-                </select>
-            </div>
+            <div class="config-field"><label>Location:</label><input type="text" id="weatherLocation" value="Cork"></div>
+            <div class="config-field"><label>Country:</label><select id="weatherCountry"><option value="IE">Ireland</option><option value="GB">United Kingdom</option><option value="US">United States</option></select></div>
             <button id="detectLocationBtn" class="detect-location-btn"><i class="fa-solid fa-location-dot"></i> Detect My Location</button>
             <div id="weatherPreview" class="weather-preview"></div>
         </div>
@@ -300,13 +104,7 @@
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
-            <div class="config-field"><label>RSS Feed:</label>
-                <select id="newsRssUrl">
-                    <option value="https://www.thejournal.ie/feed/">The Journal</option>
-                    <option value="https://www.rte.ie/feeds/rss/?index=/news/">RTÉ News</option>
-                    <option value="https://www.irishexaminer.com/feed/35-top_news.xml">Irish Examiner</option>
-                </select>
-            </div>
+            <div class="config-field"><label>RSS Feed:</label><select id="newsRssUrl"><option value="https://www.thejournal.ie/feed/">The Journal</option><option value="https://www.rte.ie/feeds/rss/?index=/news/">RTÉ News</option><option value="https://www.irishexaminer.com/feed/35-top_news.xml">Irish Examiner</option></select></div>
             <div class="config-field"><label>Refresh interval (minutes):</label><input type="number" id="newsRefresh" value="15"></div>
             <div class="config-field"><label>Max articles:</label><input type="number" id="newsMaxArticles" value="4"></div>
         </div>
@@ -373,7 +171,66 @@
 
 <script>
     // ============================================================
-    // STORAGE FUNCTIONS (replaces settings.js)
+    // STORAGE FUNCTIONS (EXACT MATCH to storage.js)
+    // ============================================================
+    const DB_NAME = 'pleie_storage';
+    const DB_VERSION = 2;
+    let db = null;
+
+    function initDB() {
+        return new Promise((resolve, reject) => {
+            if (db && db.version === DB_VERSION) {
+                resolve(db);
+                return;
+            }
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                db = request.result;
+                resolve(db);
+            };
+            request.onupgradeneeded = (event) => {
+                const database = event.target.result;
+                if (!database.objectStoreNames.contains('music')) {
+                    database.createObjectStore('music', { keyPath: 'id', autoIncrement: true });
+                }
+                if (!database.objectStoreNames.contains('gallery')) {
+                    database.createObjectStore('gallery', { keyPath: 'id', autoIncrement: true });
+                }
+            };
+        });
+    }
+
+    async function saveMusic(files) {
+        const database = await initDB();
+        return new Promise((resolve, reject) => {
+            const tx = database.transaction(['music'], 'readwrite');
+            const store = tx.objectStore('music');
+            store.clear();
+            files.forEach((file, i) => {
+                store.add({ id: i, name: file.name, type: file.type, file: file.file || file });
+            });
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+        });
+    }
+
+    async function saveGallery(images) {
+        const database = await initDB();
+        return new Promise((resolve, reject) => {
+            const tx = database.transaction(['gallery'], 'readwrite');
+            const store = tx.objectStore('gallery');
+            store.clear();
+            images.forEach((img, i) => {
+                store.add({ id: i, name: img.name, file: img.file });
+            });
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+        });
+    }
+
+    // ============================================================
+    // SETTINGS FUNCTIONS
     // ============================================================
     const STORAGE_KEY = 'handiSettings';
     
@@ -387,64 +244,6 @@
     
     function saveSettings(settings) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-        window.dispatchEvent(new CustomEvent('settingsChanged', { detail: settings }));
-    }
-    
-    // Gallery storage (IndexedDB)
-    async function saveGallery(images) {
-        const db = await openDB();
-        const tx = db.transaction('gallery', 'readwrite');
-        const store = tx.objectStore('gallery');
-        for (const img of images) {
-            await store.put(img);
-        }
-        await tx.done;
-    }
-    
-    async function loadGallery() {
-        const db = await openDB();
-        const tx = db.transaction('gallery', 'readonly');
-        const store = tx.objectStore('gallery');
-        const images = await store.getAll();
-        await tx.done;
-        return images;
-    }
-    
-    // Music storage (IndexedDB)
-    async function saveMusic(files) {
-        const db = await openDB();
-        const tx = db.transaction('music', 'readwrite');
-        const store = tx.objectStore('music');
-        for (const file of files) {
-            await store.put(file);
-        }
-        await tx.done;
-    }
-    
-    async function loadMusic() {
-        const db = await openDB();
-        const tx = db.transaction('music', 'readonly');
-        const store = tx.objectStore('music');
-        const files = await store.getAll();
-        await tx.done;
-        return files;
-    }
-    
-    function openDB() {
-        return new Promise((resolve, reject) => {
-            const request = indexedDB.open('HandiHomepage', 1);
-            request.onerror = () => reject(request.error);
-            request.onsuccess = () => resolve(request.result);
-            request.onupgradeneeded = (e) => {
-                const db = e.target.result;
-                if (!db.objectStoreNames.contains('gallery')) {
-                    db.createObjectStore('gallery', { keyPath: 'name' });
-                }
-                if (!db.objectStoreNames.contains('music')) {
-                    db.createObjectStore('music', { keyPath: 'name' });
-                }
-            };
-        });
     }
     
     // ============================================================
@@ -455,17 +254,13 @@
     function applySettingsToToggles() {
         const settings = loadSettings();
         const enabled = settings.enabledModules || {};
-        
         MODULES.forEach(moduleId => {
             const card = document.querySelector(`.module-card[data-module="${moduleId}"]`);
             if (card) {
                 const toggle = card.querySelector('.toggle-switch');
                 if (toggle) {
-                    if (enabled[moduleId] === true) {
-                        toggle.classList.add('active');
-                    } else {
-                        toggle.classList.remove('active');
-                    }
+                    if (enabled[moduleId] === true) toggle.classList.add('active');
+                    else toggle.classList.remove('active');
                 }
             }
         });
@@ -474,53 +269,42 @@
     function collectSettings() {
         const settings = loadSettings();
         if (!settings.enabledModules) settings.enabledModules = {};
-        
         MODULES.forEach(moduleId => {
             const card = document.querySelector(`.module-card[data-module="${moduleId}"]`);
             if (card) {
                 const toggle = card.querySelector('.toggle-switch');
-                if (toggle) {
-                    settings.enabledModules[moduleId] = toggle.classList.contains('active');
-                }
+                if (toggle) settings.enabledModules[moduleId] = toggle.classList.contains('active');
             }
         });
         
-        // Weather
         if (!settings.weather) settings.weather = {};
         settings.weather.location = document.getElementById('weatherLocation')?.value || 'Cork';
         settings.weather.country = document.getElementById('weatherCountry')?.value || 'IE';
         
-        // Gallery
         if (!settings.gallery) settings.gallery = {};
         settings.gallery.speed = parseInt(document.getElementById('gallerySpeed')?.value) || 3000;
         settings.gallery.autoStart = document.getElementById('galleryAutoStart')?.value === 'true';
         
-        // Music
         if (!settings.music) settings.music = {};
         settings.music.volume = parseInt(document.getElementById('musicVolume')?.value) || 70;
         settings.music.shuffle = document.getElementById('musicShuffle')?.value === 'true';
         
-        // News
         if (!settings.news) settings.news = {};
         settings.news.rssUrl = document.getElementById('newsRssUrl')?.value || '';
         settings.news.refresh = parseInt(document.getElementById('newsRefresh')?.value) || 15;
         settings.news.maxArticles = parseInt(document.getElementById('newsMaxArticles')?.value) || 4;
         
-        // Mastodon
         if (!settings.mastodon) settings.mastodon = {};
         settings.mastodon.instance = document.getElementById('mastodonInstance')?.value || '';
         settings.mastodon.limit = parseInt(document.getElementById('mastodonLimit')?.value) || 4;
         
-        // Calendar
         if (!settings.calendar) settings.calendar = {};
         settings.calendar.url = document.getElementById('calendarUrl')?.value || '';
         settings.calendar.notificationMinutes = parseInt(document.getElementById('calendarNotificationMinutes')?.value) || 30;
         
-        // Phone
         if (!settings.phone) settings.phone = {};
         settings.phone.autoDialDelay = parseInt(document.getElementById('autoDialDelay')?.value) || 10;
         
-        // Chat
         if (!settings.chat) settings.chat = {};
         settings.chat.homeserver = document.getElementById('chatHomeserver')?.value || '';
         settings.chat.accessToken = document.getElementById('chatAccessToken')?.value || '';
@@ -543,29 +327,16 @@
     }
     
     async function resetAllData() {
-        const confirmed = confirm(
-            '⚠️ WARNING: This will permanently delete ALL of your data:\n\n' +
-            '• All uploaded images (gallery)\n' +
-            '• All uploaded music files\n' +
-            '• All module settings\n\n' +
-            'Are you absolutely sure?'
-        );
-        if (!confirmed) return;
-        
+        if (!confirm('⚠️ WARNING: This will permanently delete ALL of your data. Are you sure?')) return;
         localStorage.clear();
         sessionStorage.clear();
-        
-        const dbNames = ['HandiHomepage'];
-        for (const name of dbNames) {
-            try {
-                await new Promise((resolve, reject) => {
-                    const req = indexedDB.deleteDatabase(name);
-                    req.onsuccess = () => resolve();
-                    req.onerror = (e) => reject(e);
-                });
-            } catch(e) {}
-        }
-        
+        try {
+            await new Promise((resolve, reject) => {
+                const req = indexedDB.deleteDatabase(DB_NAME);
+                req.onsuccess = () => resolve();
+                req.onerror = (e) => reject(e);
+            });
+        } catch(e) {}
         alert('All data has been reset. The page will now reload.');
         location.reload();
     }
@@ -694,7 +465,7 @@
     }
     
     // ============================================================
-    // FILE UPLOADS (IndexedDB)
+    // FILE UPLOADS (using EXACT storage.js API)
     // ============================================================
     document.getElementById('uploadGalleryBtn')?.addEventListener('click', async () => {
         const input = document.createElement('input');
@@ -703,17 +474,9 @@
         input.accept = 'image/*';
         input.onchange = async (e) => {
             const files = Array.from(e.target.files);
-            const processed = [];
-            for (const file of files) {
-                const reader = new FileReader();
-                const dataUrl = await new Promise((resolve) => {
-                    reader.onload = () => resolve(reader.result);
-                    reader.readAsDataURL(file);
-                });
-                processed.push({ name: file.name, url: dataUrl });
-            }
+            const processed = files.map(f => ({ name: f.name, file: f }));
             await saveGallery(processed);
-            alert(`Saved ${processed.length} images`);
+            alert(`Saved ${processed.length} images to gallery`);
         };
         input.click();
     });
@@ -725,15 +488,7 @@
         input.accept = 'audio/*';
         input.onchange = async (e) => {
             const files = Array.from(e.target.files);
-            const processed = [];
-            for (const file of files) {
-                const reader = new FileReader();
-                const dataUrl = await new Promise((resolve) => {
-                    reader.onload = () => resolve(reader.result);
-                    reader.readAsDataURL(file);
-                });
-                processed.push({ name: file.name, url: dataUrl });
-            }
+            const processed = files.map(f => ({ name: f.name, file: f }));
             await saveMusic(processed);
             alert(`Saved ${processed.length} music files`);
         };
