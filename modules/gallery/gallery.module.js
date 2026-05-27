@@ -69,9 +69,9 @@ export default async function initGallery(container) {
     controlsDiv.className = 'gallery-controls';
     controlsDiv.innerHTML = `
         <div class="gallery-control-group">
-            <button id="galleryPrevBtn" class="gallery-btn primary">❮ Prev</button>
+            <button id="galleryPrevBtn" class="gallery-btn primary">❮</button>
             <button id="galleryPlayPauseBtn" class="gallery-btn primary">⏸</button>
-            <button id="galleryNextBtn" class="gallery-btn primary">Next ❯</button>
+            <button id="galleryNextBtn" class="gallery-btn primary">❯</button>
         </div>
         <button id="galleryFullscreenBtn" class="gallery-btn secondary">🖥️ Full Screen</button>
     `;

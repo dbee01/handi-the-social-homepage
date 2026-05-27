@@ -405,99 +405,60 @@
     <span class="subtitle"><a href="https://handihomepage.com/terms">Terms of Service</a> | <a href="https://handihomepage.com/privacy">Privacy Policy</a></span>
 </div>
 
-<script>
-    // URL Parameter Handler – opens the corresponding module configuration
-    (function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const paramValue = urlParams.get('args');
-        
-        if (!paramValue) return;
-        
-        const validFreeModules = ['gallery', 'music', 'news', 'mastodon', 'phone', 'weather', 'calendar', 'chat'];
-        const validPremiumModules = ['clicktocall', 'bus', 'emergency'];
-        const targetModule = paramValue.toLowerCase();
-        
-        if (validPremiumModules.includes(targetModule)) {
-            alert('This is a premium module. Upgrade to access it.');
-            return;
-        }
-        
-        if (!validFreeModules.includes(targetModule)) return;
-        
-        const moduleCard = document.querySelector(`.module-card[data-module="${targetModule}"]`);
-        if (!moduleCard) return;
-        
-        const configDiv = moduleCard.querySelector('.module-config');
-        if (configDiv) configDiv.classList.add('active');
-        
-        moduleCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        
-        moduleCard.style.transition = 'background-color 0.3s';
-        moduleCard.style.backgroundColor = '#eaf2ff';
-        setTimeout(() => {
-            moduleCard.style.backgroundColor = '';
-        }, 1500);
-    })();
-
-    // Upgrade links for premium modules
-    const upgradeLinks = ['upgradeInfobipLink', 'upgradeBusLink', 'upgradeEmergencyLink'];
-    upgradeLinks.forEach(linkId => {
-        document.getElementById(linkId)?.addEventListener('click', (e) => {
-            e.preventDefault();
-            alert('Premium upgrade coming soon! Contact support@handihomepage.com for early access.');
-        });
-    });
-</script>
-
 <script type="module" src="js/settings-app.js"></script>
 
-<!-- ========== FIX: Make toggles work directly ========== -->
+<!-- ========== URL PARAMETER HANDLER (opens module from ?args=xxx) ========== -->
 <script>
     (function() {
-        // Wait for DOM and initial scripts to settle
-        setTimeout(function() {
-            // First, sync toggles with stored settings
-            let settings = JSON.parse(localStorage.getItem('handiSettings') || '{}');
-            let enabled = settings.enabledModules || {};
-            
-            document.querySelectorAll('.toggle-switch').forEach(sw => {
-                let moduleCard = sw.closest('.module-card');
-                let moduleId = moduleCard.getAttribute('data-module');
-                if (enabled[moduleId] === true) {
-                    sw.classList.add('active');
-                } else {
-                    sw.classList.remove('active');
-                }
-            });
-            
-            // Then, add click handlers that update localStorage directly
-            document.querySelectorAll('.toggle-switch').forEach(sw => {
-                // Remove any existing listener by cloning
-                const newSw = sw.cloneNode(true);
-                sw.parentNode.replaceChild(newSw, sw);
-                
-                newSw.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    
-                    // Toggle the active class
-                    this.classList.toggle('active');
-                    
-                    // Get module ID
-                    let moduleCard = this.closest('.module-card');
-                    let moduleId = moduleCard.getAttribute('data-module');
-                    
-                    // Update localStorage
-                    let settings = JSON.parse(localStorage.getItem('handiSettings') || '{}');
-                    if (!settings.enabledModules) settings.enabledModules = {};
-                    settings.enabledModules[moduleId] = this.classList.contains('active');
-                    localStorage.setItem('handiSettings', JSON.stringify(settings));
-                    
-                    console.log(`✅ ${moduleId} = ${settings.enabledModules[moduleId]}`);
-                });
-            });
-        }, 500);
+        const urlParams = new URLSearchParams(window.location.search);
+        const args = urlParams.get('args');
+        
+        if (!args) return;
+        
+        const valid = ['gallery', 'music', 'news', 'mastodon', 'phone', 'weather', 'calendar', 'chat'];
+        const target = args.toLowerCase();
+        
+        if (!valid.includes(target)) return;
+        
+        // Hide all configs
+        document.querySelectorAll('.module-config').forEach(el => {
+            el.style.display = 'none';
+        });
+        
+        // Show target config
+        const card = document.querySelector(`.module-card[data-module="${target}"]`);
+        if (card) {
+            const config = card.querySelector('.module-config');
+            if (config) config.style.display = 'block';
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.style.backgroundColor = '#eaf2ff';
+            setTimeout(() => card.style.backgroundColor = '', 1500);
+        }
     })();
+</script>
+
+<!-- ========== CLICK HANDLER (opens module when header is clicked) ========== -->
+<script>
+    document.querySelectorAll('.module-header').forEach(header => {
+        header.addEventListener('click', function(e) {
+            // Don't toggle if clicking on the toggle switch itself
+            if (e.target.closest('.toggle-switch')) return;
+            
+            const moduleCard = this.closest('.module-card');
+            const config = moduleCard.querySelector('.module-config');
+            const isOpen = config.style.display === 'block';
+            
+            // Close all configs
+            document.querySelectorAll('.module-config').forEach(c => {
+                c.style.display = 'none';
+            });
+            
+            // Open this one if it wasn't open
+            if (!isOpen) {
+                config.style.display = 'block';
+            }
+        });
+    });
 </script>
 
 </body>

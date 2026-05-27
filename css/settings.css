@@ -379,3 +379,10 @@ h1 {
     min-height: 60px;
 }
 
+.module-config {
+    display: none;
+}
+
+.module-config.active {
+    display: block !important;
+}
