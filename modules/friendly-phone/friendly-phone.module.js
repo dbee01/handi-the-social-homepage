@@ -53,7 +53,7 @@ export default async function initPhone(container) {
     if (originalPinBtn) {
         pinBtn = originalPinBtn.cloneNode(true);
         pinBtn.classList.add('pin-btn-clone');
-        originalPinBtn.style.display = 'none'; // hide original
+        originalPinBtn.style.display = 'none';
         headerActions.appendChild(pinBtn);
     }
 
@@ -74,14 +74,14 @@ export default async function initPhone(container) {
     const settings = loadSettings();
     const contacts = settings.phone?.contacts || [];
 
-    // Empty state with Settings button
+    // Empty state with Settings button (like Chat module)
     if (!contacts.length) {
         content.innerHTML = `
             <div class="module-empty">
                 <i class="fa-solid fa-address-book"></i>
                 <p>No phone contacts saved.</p>
                 <button id="phoneSettingsBtn" class="settings-link-btn">
-                    <i class="fa-solid fa-gear"></i> Add Contacts
+                    <i class="fa-solid fa-gear"></i> Add Contacts in Settings
                 </button>
             </div>
         `;
@@ -94,21 +94,19 @@ export default async function initPhone(container) {
         return;
     }
 
+    // Contacts exist - display them
     content.innerHTML = `
-        <div class="phone-grid">
+        <div class="phone-list">
             ${contacts.map(c => `
                 <div class="phone-card">
-                    ${c.photo
+                    ${c.photo 
                         ? `<img class="phone-avatar" src="${c.photo}" alt="">`
-                        : `<div class="phone-avatar placeholder">
-                              <i class="fa-solid fa-user"></i>
-                           </div>`
+                        : `<div class="phone-avatar placeholder"><i class="fa-solid fa-user"></i></div>`
                     }
                     <div class="phone-name">${escapeHtml(c.name)}</div>
                     <div class="phone-number">${escapeHtml(c.number)}</div>
                     <a class="phone-call" href="tel:${c.number}">
                         <i class="fa-solid fa-phone"></i>
-                        Call
                     </a>
                 </div>
             `).join('')}
