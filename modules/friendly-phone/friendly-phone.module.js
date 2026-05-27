@@ -104,7 +104,6 @@ export default async function initPhone(container) {
                         : `<div class="phone-avatar placeholder"><i class="fa-solid fa-user"></i></div>`
                     }
                     <div class="phone-name">${escapeHtml(c.name)}</div>
-                    <div class="phone-number">${escapeHtml(c.number)}</div>
                     <a class="phone-call" href="tel:${c.number}">
                         <i class="fa-solid fa-phone"></i>
                     </a>
