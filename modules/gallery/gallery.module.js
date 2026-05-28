@@ -203,10 +203,10 @@ export default async function initGallery(container) {
         isPlaying = !isPlaying;
         const btn = controlsDiv.querySelector('#galleryPlayPauseBtn');
         if (isPlaying) {
-            btn.textContent = '⏸ Pause';
+            btn.textContent = '⏸';
             startAuto();
         } else {
-            btn.textContent = '▶ Play';
+            btn.textContent = '▶';
             stopAuto();
             stopLightboxAuto();
         }
