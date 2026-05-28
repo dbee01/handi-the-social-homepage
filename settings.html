@@ -106,6 +106,37 @@
         </div>
     </div>
 
+    <!-- Radio Module -->
+    <div class="module-card" data-module="radio">
+        <div class="module-header">
+            <div class="module-title"><i class="fa-solid fa-radio"></i><h3>Radio</h3></div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field">
+                <label>Default Station:</label>
+                <select id="radioDefaultStation">
+                    <option value="0">RTÉ Radio 1</option>
+                    <option value="1">Today FM</option>
+                    <option value="2">Newstalk</option>
+                    <option value="3">RTÉ Lyric FM</option>
+                    <option value="4">RTÉ 2FM</option>
+                    <option value="5">Cork 96FM</option>
+                    <option value="6">Dublin FM 104</option>
+                    <option value="7">Galway Bay FM</option>
+                    <option value="8">Classic FM</option>
+                    <option value="9">Live 95 (Limerick)</option>
+                </select>
+                <small>Choose your preferred station. Radio will start playing when unlocked.</small>
+            </div>
+            <div class="config-field">
+                <label>Default Volume:</label>
+                <input type="range" id="radioVolume" min="0" max="100" value="70">
+                <span id="radioVolumeValue">70%</span>
+            </div>
+        </div>
+    </div>
+
     <!-- News Module -->
     <div class="module-card" data-module="news">
         <div class="module-header">
@@ -341,7 +372,7 @@
     // ============================================================
     // MODULE MANAGEMENT
     // ============================================================
-    const MODULES = ['gallery', 'music', 'news', 'mastodon', 'calendar', 'phone', 'chat'];
+    const MODULES = ['gallery', 'music', 'radio', 'news', 'mastodon', 'calendar', 'phone', 'chat'];
     
     function applySettingsToToggles() {
         const settings = loadSettings();
@@ -364,6 +395,18 @@
         }
         if (document.getElementById('autoDialDelay') && settings.phone?.autoDialDelay) {
             document.getElementById('autoDialDelay').value = settings.phone.autoDialDelay;
+        }
+        
+        // Load radio settings
+        if (settings.radio) {
+            if (document.getElementById('radioDefaultStation')) {
+                document.getElementById('radioDefaultStation').value = settings.radio.defaultStation || '0';
+            }
+            if (document.getElementById('radioVolume')) {
+                document.getElementById('radioVolume').value = settings.radio.volume || 70;
+                const volSpan = document.getElementById('radioVolumeValue');
+                if (volSpan) volSpan.innerText = (settings.radio.volume || 70) + '%';
+            }
         }
     }
     
@@ -390,6 +433,10 @@
         if (!settings.music) settings.music = {};
         settings.music.volume = parseInt(document.getElementById('musicVolume')?.value) || 85;
         settings.music.shuffle = document.getElementById('musicShuffle')?.value === 'true';
+        
+        if (!settings.radio) settings.radio = {};
+        settings.radio.defaultStation = document.getElementById('radioDefaultStation')?.value || '0';
+        settings.radio.volume = parseInt(document.getElementById('radioVolume')?.value) || 70;
         
         if (!settings.news) settings.news = {};
         settings.news.rssUrl = document.getElementById('newsRssUrl')?.value || '';
@@ -482,7 +529,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const args = urlParams.get('args');
         if (args) {
-            const valid = ['gallery', 'music', 'news', 'mastodon', 'phone', 'weather', 'calendar', 'chat'];
+            const valid = ['gallery', 'music', 'radio', 'news', 'mastodon', 'phone', 'weather', 'calendar', 'chat'];
             const target = args.toLowerCase();
             if (valid.includes(target)) {
                 setTimeout(() => {
@@ -565,6 +612,17 @@
                 await showWeatherPreview();
             } catch { weatherPreview.innerHTML = '<span class="error">Could not detect city.</span>'; }
         }, () => { weatherPreview.innerHTML = '<span class="error">Location permission denied.</span>'; });
+    }
+    
+    // ============================================================
+    // RADIO VOLUME SLIDER
+    // ============================================================
+    const radioVolumeSlider = document.getElementById('radioVolume');
+    const radioVolumeSpan = document.getElementById('radioVolumeValue');
+    if (radioVolumeSlider && radioVolumeSpan) {
+        radioVolumeSlider.addEventListener('input', () => {
+            radioVolumeSpan.innerText = radioVolumeSlider.value + '%';
+        });
     }
     
     // ============================================================
