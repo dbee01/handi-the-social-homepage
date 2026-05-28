@@ -32,7 +32,7 @@
         window.dispatchEvent(new CustomEvent('globalMuteToggle', { detail: { muted: isMuted } }));
     }
 
-    // --- Wake Lock (swapped icons: sun = awake, bed = sleep) ---
+    // --- Wake Lock (Orange Sun for active, Blue Sun for inactive) ---
     let wakeLock = null;
     const wakeLockBtn = document.getElementById('footerWakeLockBtn');
     let wakeLockActive = localStorage.getItem('wakeLockActive') === 'true';
@@ -79,10 +79,12 @@
         if (!wakeLockBtn) return;
         const icon = wakeLockBtn.querySelector('i');
         if (wakeLockActive) {
-            icon.className = 'fa-solid fa-bed';          // ☀️ screen awake
+            icon.className = 'fa-solid fa-sun';
+            wakeLockBtn.style.color = '#f59e0b';  // Orange for active
             wakeLockBtn.title = 'Screen awake – click to allow sleep';
         } else {
-            icon.className = 'fa-solid fa-sun';          // 💤 screen may sleep
+            icon.className = 'fa-solid fa-sun';
+            wakeLockBtn.style.color = '#0047cc';  // Blue for inactive
             wakeLockBtn.title = 'Screen may sleep – click to keep awake';
         }
     }

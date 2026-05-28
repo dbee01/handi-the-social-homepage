@@ -31,12 +31,12 @@
         .config-field { margin-bottom: 16px; }
         .config-field label { display: block; font-weight: 600; margin-bottom: 8px; color: #1e293b; }
         .config-field input, .config-field select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; }
-        .upload-btn { background: #0047cc; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin-top: 8px; }
+        .upload-btn { background: #0047cc; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin: 8px 0; }
         .detect-location-btn { background: #0047cc; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin-top: 8px; width: 100%; }
         .weather-preview { margin-top: 12px; padding: 12px; background: #eef2ff; border-radius: 12px; font-size: 0.9rem; }
         .brand { text-align: center; padding: 20px; font-size: 12px; color: #64748b; }
         .brand a { color: #0047cc; text-decoration: none; }
-        small { display: block; margin-top: 6px; color: #64748b; font-size: 0.75rem; }
+        small { display: block; margin-top: 6px; color: #64748b; font-size: 1rem; }
         .contact-list { border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; min-height: 120px; max-height: 300px; overflow-y: auto; }
         .contact-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-bottom: 1px solid #e2e8f0; }
         .contact-item:last-child { border-bottom: none; }
@@ -86,9 +86,9 @@
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
-            <div class="config-field"><label>Slideshow speed (ms):</label><input type="number" id="gallerySpeed" value="3000"></div>
+            <div class="config-field"><label>Slideshow speed (ms):</label><input type="number" id="gallerySpeed" value="8000"></div>
             <div class="config-field"><label>Auto-start:</label><select id="galleryAutoStart"><option value="true">Yes</option><option value="false">No</option></select></div>
-            <button class="upload-btn" id="uploadGalleryBtn">📸 Upload Images</button>
+            <button class="upload-btn" id="uploadGalleryBtn">📸 Load Images</button>
             <small>Rename image filenames in caption format: My+Lovely+Horse.jpg -> My Lovely Horse</small>
         </div>
     </div>
@@ -100,9 +100,9 @@
             <div class="toggle-switch"><div class="toggle-slider"></div></div>
         </div>
         <div class="module-config">
-            <div class="config-field"><label>Default volume:</label><input type="range" id="musicVolume" min="0" max="100" value="70"><span id="volumeValue">70%</span></div>
+            <div class="config-field"><label>Default volume:</label><input type="range" id="musicVolume" min="0" max="100" value="85"><span id="volumeValue">85%</span></div>
             <div class="config-field"><label>Default shuffle:</label><select id="musicShuffle"><option value="false">Off</option><option value="true">On</option></select></div>
-            <button class="upload-btn" id="uploadMusicBtn">🎵 Upload Music</button>
+            <button class="upload-btn" id="uploadMusicBtn">🎵 Load Music</button>
         </div>
     </div>
 
@@ -384,11 +384,11 @@
         settings.weather.country = document.getElementById('weatherCountry')?.value || 'IE';
         
         if (!settings.gallery) settings.gallery = {};
-        settings.gallery.speed = parseInt(document.getElementById('gallerySpeed')?.value) || 3000;
+        settings.gallery.speed = parseInt(document.getElementById('gallerySpeed')?.value) || 8000;
         settings.gallery.autoStart = document.getElementById('galleryAutoStart')?.value === 'true';
         
         if (!settings.music) settings.music = {};
-        settings.music.volume = parseInt(document.getElementById('musicVolume')?.value) || 70;
+        settings.music.volume = parseInt(document.getElementById('musicVolume')?.value) || 85;
         settings.music.shuffle = document.getElementById('musicShuffle')?.value === 'true';
         
         if (!settings.news) settings.news = {};

@@ -144,9 +144,9 @@ export default async function initNews(container) {
         // Build the UI with inline styles for guaranteed behavior
         content.innerHTML = `
             <div class="news-scroll-wrapper" style="display: flex; flex-direction: column; gap: 8px;">
-                <button id="newsScrollUp" class="news-scroll-btn" style="width: 100%; padding: 12px; background: #e2e8f0; border: none; border-radius: 12px; cursor: pointer; font-size: 1.2rem; font-weight: bold;">▲ Scroll Up</button>
+                <button id="newsScrollUp" class="news-scroll-btn" style="width: 100%; padding: 12px; background: #e2e8f0; border: none; border-radius: 12px; cursor: pointer; font-size: 1rem; font-weight: bold;">▲ Scroll Up</button>
                 <div id="newsList" class="news-list" style="overflow-y: auto; scroll-behavior: smooth; padding: 4px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff;"></div>
-                <button id="newsScrollDown" class="news-scroll-btn" style="width: 100%; padding: 12px; background: #e2e8f0; border: none; border-radius: 12px; cursor: pointer; font-size: 1.2rem; font-weight: bold;">▼ Scroll Down</button>
+                <button id="newsScrollDown" class="news-scroll-btn" style="width: 100%; padding: 12px; background: #e2e8f0; border: none; border-radius: 12px; cursor: pointer; font-size: 1rem; font-weight: bold;">▼ Scroll Down</button>
             </div>
         `;
         

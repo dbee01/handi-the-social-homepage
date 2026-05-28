@@ -65,9 +65,9 @@ export default async function initRadio(container) {
         </div>
         <div class="radio-now-playing" id="now-playing">No station playing</div>
         <div class="radio-scroll-wrapper">
-            <button id="radio-up" class="radio-scroll-btn">▲</button>
+            <button id="radio-up" class="radio-scroll-btn">▲ Scroll Up</button>
             <div id="stations-list" class="radio-list"></div>
-            <button id="radio-down" class="radio-scroll-btn">▼</button>
+            <button id="radio-down" class="radio-scroll-btn">▼ Scroll Down</button>
         </div>
         <div class="radio-error" id="radio-error"></div>
     `;
@@ -86,11 +86,10 @@ export default async function initRadio(container) {
     let activeStationItem = null;
     let activeStationName = null;
 
-    // --- GLOBAL MUTE (no pause, only toggle muted) ---
+    // --- GLOBAL MUTE ---
     function applyGlobalMute(muted) {
         if (currentAudio) {
             currentAudio.muted = muted;
-            // Do NOT pause – audio continues silently
         }
     }
 
@@ -101,7 +100,7 @@ export default async function initRadio(container) {
     const initialMute = localStorage.getItem('globalMute') === 'true';
     applyGlobalMute(initialMute);
 
-    // --- Visualiser (unchanged) ---
+    // --- Visualiser ---
     function startFakeVisualiser(canvas) {
         if (!canvas) return null;
         canvas.style.display = 'block';
@@ -165,41 +164,58 @@ export default async function initRadio(container) {
         nowPlaying.innerText = 'No station playing';
         error.innerText = '';
         if (resetIcon && activeStationItem) {
-            const iconSpan = activeStationItem.querySelector('.station-icon');
-            if (iconSpan) iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
+            const playBtn = activeStationItem.querySelector('.radio-play-btn');
+            if (playBtn) {
+                playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                playBtn.classList.remove('playing');
+            }
             activeStationItem.classList.remove('active-station');
             activeStationItem = null;
             activeStationName = null;
         }
     }
 
-    function playStation(url, name, stationItem) {
+    function playStation(url, name, stationItem, playButton) {
         if (isLocked) {
             error.innerText = 'Radio is locked – unlock to play';
             return;
         }
-        if (currentAudio && activeStationName === name) return;
+        if (currentAudio && activeStationName === name && currentAudio && !currentAudio.paused) {
+            // Same station playing, pause it
+            currentAudio.pause();
+            nowPlaying.innerText = `⏸ Paused: ${name}`;
+            if (playButton) {
+                playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
+                playButton.classList.remove('playing');
+            }
+            stopVisualiserAndClear();
+            return;
+        }
+        
         if (currentAudio) stopPlayback(true);
 
         nowPlaying.innerText = `Connecting to ${name}...`;
         error.innerText = '';
+        
         try {
             currentAudio = new Audio(url);
-            // Apply current global mute state
             currentAudio.muted = localStorage.getItem('globalMute') === 'true';
             currentAudio.play()
                 .then(() => {
                     nowPlaying.innerText = `▶ Now playing: ${name}`;
                     document.querySelectorAll('.radio-station').forEach(item => {
-                        const iconSpan = item.querySelector('.station-icon');
-                        if (item === stationItem) {
-                            iconSpan.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
-                            item.classList.add('active-station');
-                        } else {
-                            iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
-                            item.classList.remove('active-station');
+                        const btn = item.querySelector('.radio-play-btn');
+                        if (btn) {
+                            btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                            btn.classList.remove('playing');
                         }
+                        item.classList.remove('active-station');
                     });
+                    if (playButton) {
+                        playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                        playButton.classList.add('playing');
+                    }
+                    stationItem.classList.add('active-station');
                     activeStationItem = stationItem;
                     activeStationName = name;
                     if (!isLocked) stopVisualiser = startFakeVisualiser(synthCanvas);
@@ -219,20 +235,6 @@ export default async function initRadio(container) {
             console.error(err);
             error.innerText = 'Unable to play stream';
             stopPlayback(true);
-        }
-    }
-
-    function toggleStation(station) {
-        if (isLocked) {
-            error.innerText = 'Radio is locked – unlock to play';
-            return;
-        }
-        const { url, name } = station;
-        const stationDiv = station.element;
-        if (activeStationItem === stationDiv && currentAudio && !currentAudio.paused) {
-            stopPlayback(true);
-        } else {
-            playStation(url, name, stationDiv);
         }
     }
 
@@ -283,23 +285,38 @@ export default async function initRadio(container) {
         applyLockState();
     });
 
+    // Create station rows with play button inline
     stations.forEach((station) => {
         const stationDiv = document.createElement('div');
         stationDiv.className = 'radio-station';
-        const iconSpan = document.createElement('span');
-        iconSpan.className = 'station-icon';
-        iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
+        
+        // Play button (inline)
+        const playBtn = document.createElement('button');
+        playBtn.className = 'radio-play-btn';
+        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+        playBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playStation(station.url, station.name, stationDiv, playBtn);
+        });
+        
+        // Station name
         const nameSpan = document.createElement('span');
         nameSpan.textContent = station.name;
-        stationDiv.appendChild(iconSpan);
+        
+        stationDiv.appendChild(playBtn);
         stationDiv.appendChild(nameSpan);
-        stationDiv.stationData = { url: station.url, name: station.name, element: stationDiv };
-        stationDiv.addEventListener('click', () => toggleStation(stationDiv.stationData));
+        stationDiv.stationData = { url: station.url, name: station.name, element: stationDiv, playBtn: playBtn };
+        
         list.appendChild(stationDiv);
     });
 
+    // Scroll buttons with text
+    up.innerHTML = '▲ Scroll Up';
+    down.innerHTML = '▼ Scroll Down';
+    
     up.addEventListener('click', () => list.scrollBy({ top: -300, behavior: 'smooth' }));
     down.addEventListener('click', () => list.scrollBy({ top: 300, behavior: 'smooth' }));
+    
     applyLockState();
 
     return () => {

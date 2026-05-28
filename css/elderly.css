@@ -92,7 +92,7 @@ header {
 }
 
 .pin-btn.pinned {
-    background: #0047cc;
+    background: orange;
     border-color: #0047cc;
     color: white;
 }
@@ -250,7 +250,7 @@ header {
 
 #music-synth {
     width: 100%;
-    height: 100%;
+    height: 100px;
 }
 
 #musicScrollUp, #musicScrollDown {
@@ -343,6 +343,7 @@ header {
     align-items: center;
     gap: 8px;
     margin-top: 16px;
+    font-size: medium;
     padding: 10px 20px;
     background: #0047cc;
     color: white;
@@ -502,6 +503,10 @@ footer {
     border-top: 2px solid #e2e8f0;
 }
 
+.footer-bar button i {
+    font-size: 3rem;
+}
+
 .footer-icon {
     color: #0047cc;
 }
@@ -521,4 +526,19 @@ input:focus {
 
 .settings-link-btn i {
     color: white !important;
+}
+
+/* Wake lock button states */
+#footerWakeLockBtn i.fa-sun {
+    transition: color 0.2s;
+}
+
+#footerWakeLockBtn i.fa-sun[style*="color: #f59e0b"],
+#footerWakeLockBtn .active-sun {
+    color: #f59e0b !important;
+    border: unset;
+}
+
+#footerWakeLockBtn i.fa-sun[style*="color: #0047cc"] {
+    color: #0047cc !important;
 }

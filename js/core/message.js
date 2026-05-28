@@ -2,13 +2,13 @@
 (function() {
     // Simple message box - no external requests, no permissions
     const messages = [        
-        "❤️ We love Proton - the safe, European email provider. Learn why you should too: <a href=\"https://www.jdoqocy.com/click-101722909-13792584\">click here</a> <sup>(sponsored)</sup>",
+        "❤️ We love Proton - the safe, European email provider. Learn why you should too: <a href=\"https://www.jdoqocy.com/click-101722909-13792584\">visit Proton</a> <sup>(sponsored)</sup>",
         "🔒 Handi Homepage is still in BETA. Apologies for any bugs: <a href=\"mailto:true.cork.rebel@proton.me\">true.cork.rebel@proton.me</a>",
         "🚌 Bus tracker uses scheduled times when real-time data is unavailable.",
+        "🔒 Incognito Mode is NOT <i>incognito</i>! Surf the Web securely with the <a href='https://www.tkqlhce.com/click-101722909-13792632'>reputable Proton VPN</a> <sup>(sponsored)</sup>",
         "📻 Turn off all audio channels by pressing the speaker icon (left of page footer at bottom of your screen).",
         "📚 Check out our support documentation at <a href=\"https://handihomepage.com/docs.html\">handihomepage.com/docs</a>.",
-        "📧 Show your support; purchase a safe Handi Tablet device; or simply buy us a <a href=\"https://buymeacoffee.com/dazrunner\">pint</a>.",
-        "📧 Email <a href=\"mailto:true.cork.rebel@proton.me\">true.cork.rebel@proton.me</a> for support."
+        "📧 Show your support; purchase a safe Handi Tablet device; or simply buy us a <a href=\"https://buymeacoffee.com/dazrunner\">pint</a>."
     ];
 
     let currentIndex = 0;

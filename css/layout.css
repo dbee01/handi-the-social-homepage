@@ -282,6 +282,11 @@ header {
 
 .gallery-caption {
     margin-top: 12px;
+    text-align: center;
+}
+
+.upload-btn {
+    margin-bottom: 5px;
 }
 
 .gallery-controls {
@@ -305,6 +310,10 @@ header {
     cursor: pointer;
     white-space: nowrap;
     font-size: 2rem;
+}
+
+.secondary {
+    font-size: larger;
 }
 
 .gallery-thumbs {
@@ -421,6 +430,125 @@ header {
     max-height: 420px;
     overflow-y: auto;
     border-radius: 12px;
+}
+
+#radio-synth {
+  display: block;
+  width: 100%;
+  height: 100px;
+}
+
+/* Radio player controls */
+/* Radio list - matching music player scroll bar */
+.radio-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+/* Custom scroll bar (same as music player) */
+.radio-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.radio-list::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.radio-list::-webkit-scrollbar-thumb {
+    background: #0047cc;
+    border-radius: 10px;
+}
+
+.radio-list::-webkit-scrollbar-thumb:hover {
+    background: #0037a3;
+}
+
+/* Radio station row with inline play button */
+.radio-station {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.radio-station:hover {
+    background: #f8fafc;
+}
+
+.radio-station.active-station {
+    background: #eaf2ff;
+    border-left: 4px solid #0047cc;
+}
+
+/* Play button inline */
+.radio-play-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.radio-play-btn.playing {
+    background: #008000;
+}
+
+.radio-play-btn.playing:hover {
+    background: #006400;
+}
+
+.radio-station span:last-child {
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+/* Radio scroll buttons */
+.radio-scroll-btn {
+    width: 100%;
+    padding: 12px 0;
+    margin: 8px 0;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.radio-scroll-btn:hover {
+    background: #e2e8f0;
+    border-color: #0047cc;
+}
+
+.radio-scroll-btn:active {
+    transform: scale(0.98);
+}
+
+/* Disabled state for locked radio */
+.radio-scroll-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #1e293b;
 }
 
 /* =========================================================

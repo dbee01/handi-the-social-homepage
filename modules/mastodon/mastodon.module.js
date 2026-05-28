@@ -36,9 +36,9 @@ export default async function initMastodon(container) {
     // Loading state
     content.innerHTML = `
         <div class="mastodon-scroll-wrapper" style="display: flex; flex-direction: column; gap: 8px;">
-            <button id="mastodon-up" class="news-scroll-btn" style="width: 100%; padding: 12px; background: #e2e8f0; border: none; border-radius: 12px; cursor: pointer; font-size: 1.2rem; font-weight: bold;">▲ Scroll Up</button>
+            <button id="mastodon-up" class="news-scroll-btn" style="width: 100%; padding: 12px; background: #e2e8f0; border: none; border-radius: 12px; cursor: pointer; font-size: 1rem; font-weight: bold;">▲ Scroll Up</button>
             <div id="mastodon-list" class="mastodon-list" style="overflow-y: auto; scroll-behavior: smooth; padding: 4px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff;"></div>
-            <button id="mastodon-down" class="news-scroll-btn" style="width: 100%; padding: 12px; background: #e2e8f0; border: none; border-radius: 12px; cursor: pointer; font-size: 1.2rem; font-weight: bold;">▼ Scroll Down</button>
+            <button id="mastodon-down" class="news-scroll-btn" style="width: 100%; padding: 12px; background: #e2e8f0; border: none; border-radius: 12px; cursor: pointer; font-size: 1rem; font-weight: bold;">▼ Scroll Down</button>
         </div>
     `;
 

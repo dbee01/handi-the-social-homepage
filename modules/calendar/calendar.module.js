@@ -16,8 +16,16 @@ export default async function initCalendar(container) {
     container.appendChild(content);
 
     const settings = loadSettings();
-    const calendarUrl = settings.calendar?.url || '';
-    const notificationMinutes = settings.calendar?.notificationMinutes || 30;
+    
+    // Load existing calendar URL - preserve existing if new input is blank
+    let calendarUrl = '';
+    let notificationMinutes = 30;
+    
+    if (settings.calendar) {
+        // Only use the stored URL if it exists and is not empty
+        calendarUrl = settings.calendar.url || '';
+        notificationMinutes = settings.calendar.notificationMinutes || 30;
+    }
     
     let refreshIntervalId = null;
     let notifiedEventIds = new Set();

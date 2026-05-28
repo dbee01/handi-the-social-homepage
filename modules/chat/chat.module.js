@@ -29,7 +29,8 @@ export default async function initChat(container) {
 
     let settings = loadSettings();
 
-    let roomUrls = settings.chat?.rooms || ['', '', ''];
+    // Load existing settings, but don't overwrite with blanks
+    let roomUrls = (settings.chat?.rooms && settings.chat.rooms.length) ? settings.chat.rooms : ['', '', ''];
     let refreshSeconds = settings.chat?.refreshInterval || 30;
     let homeserver = settings.chat?.homeserver || 'https://matrix.org';
     let accessToken = settings.chat?.accessToken || '';
