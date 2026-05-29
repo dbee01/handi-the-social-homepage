@@ -61,6 +61,13 @@ export default async function initGallery(container) {
 
     const slideImg = document.createElement('img');
     slideImg.className = 'gallery-slide-img';
+    
+    // Force correct display - prevent cropping
+    slideImg.style.maxWidth = '100%';
+    slideImg.style.maxHeight = '100%';
+    slideImg.style.width = 'auto';
+    slideImg.style.height = 'auto';
+    slideImg.style.objectFit = 'contain';
 
     const captionDiv = document.createElement('div');
     captionDiv.className = 'gallery-caption';
@@ -92,7 +99,14 @@ export default async function initGallery(container) {
     slideshowDiv.appendChild(thumbsDiv);
     content.appendChild(slideshowDiv);
 
+    // Force layout after image loads
     slideImg.onload = () => {
+        // Ensure image is properly displayed
+        slideImg.style.maxWidth = '100%';
+        slideImg.style.maxHeight = '100%';
+        slideImg.style.width = 'auto';
+        slideImg.style.height = 'auto';
+        slideImg.style.objectFit = 'contain';
         if (window.refreshDashboardLayout) window.refreshDashboardLayout();
     };
 
@@ -125,13 +139,21 @@ export default async function initGallery(container) {
         openLightbox(slideIndex);
     });
 
-    // ----- Slideshow & Lightbox logic (unchanged) -----
     function updateSlide() {
         const img = images[slideIndex];
         if (!img) return;
         slideImg.src = img.url;
-        captionDiv.textContent = (img.name || '').replace(/\+|\..*/g, ' ');
+        captionDiv.textContent = (img.name || '').replace(/\+|\..*/g, ' ').trim();
         [...thumbsDiv.children].forEach((t, i) => t.classList.toggle('active', i === slideIndex));
+        
+        // Re-apply styles after src change
+        setTimeout(() => {
+            slideImg.style.maxWidth = '100%';
+            slideImg.style.maxHeight = '100%';
+            slideImg.style.width = 'auto';
+            slideImg.style.height = 'auto';
+            slideImg.style.objectFit = 'contain';
+        }, 10);
     }
 
     function goToSlide(i) {
@@ -150,7 +172,7 @@ export default async function initGallery(container) {
         const img = images[lightboxIndex];
         if (!img) return;
         lbImg.src = img.url;
-        lbCaption.textContent = (img.name || '').replace(/\+|\..*/g, ' ');
+        lbCaption.textContent = (img.name || '').replace(/\+|\..*/g, ' ').trim();
     }
 
     function openLightbox(i) {
@@ -203,16 +225,15 @@ export default async function initGallery(container) {
         isPlaying = !isPlaying;
         const btn = controlsDiv.querySelector('#galleryPlayPauseBtn');
         if (isPlaying) {
-            btn.textContent = '⏸';
+            btn.textContent = '⏸ Pause';
             startAuto();
         } else {
-            btn.textContent = '▶';
+            btn.textContent = '▶ Play';
             stopAuto();
             stopLightboxAuto();
         }
     }
 
-    // Event listeners
     controlsDiv.querySelector('#galleryPrevBtn').onclick = prevSlide;
     controlsDiv.querySelector('#galleryNextBtn').onclick = nextSlide;
     controlsDiv.querySelector('#galleryPlayPauseBtn').onclick = togglePlay;

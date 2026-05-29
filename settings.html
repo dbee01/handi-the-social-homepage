@@ -448,23 +448,61 @@
         settings.mastodon.limit = parseInt(document.getElementById('mastodonLimit')?.value) || 4;
         
         if (!settings.calendar) settings.calendar = {};
-        settings.calendar.url = document.getElementById('calendarUrl')?.value || '';
+        const calendarUrl = document.getElementById('calendarUrl')?.value.trim();
+        if (calendarUrl !== '') {
+            settings.calendar.url = calendarUrl;
+        }
+        // If blank, keep existing URL (don't overwrite)
         settings.calendar.notificationMinutes = parseInt(document.getElementById('calendarNotificationMinutes')?.value) || 30;
         
         if (!settings.phone) settings.phone = {};
         settings.phone.contacts = phoneContacts;
         settings.phone.autoDialDelay = parseInt(document.getElementById('autoDialDelay')?.value) || 10;
         
+        // ============================================================
+        // CHAT SETTINGS - PRESERVE EXISTING CREDENTIALS IF INPUTS ARE BLANK
+        // ============================================================
         if (!settings.chat) settings.chat = {};
-        settings.chat.homeserver = document.getElementById('chatHomeserver')?.value || '';
-        settings.chat.accessToken = document.getElementById('chatAccessToken')?.value || '';
-        settings.chat.userId = document.getElementById('chatUserId')?.value || '';
-        settings.chat.rooms = [
-            document.getElementById('chatRoom1')?.value || '',
-            document.getElementById('chatRoom2')?.value || '',
-            document.getElementById('chatRoom3')?.value || ''
-        ].filter(r => r.trim() !== '');
-        settings.chat.refreshInterval = parseInt(document.getElementById('chatRefreshInterval')?.value) || 30;
+        
+        // Get current form values
+        const newHomeserver = document.getElementById('chatHomeserver')?.value.trim();
+        const newAccessToken = document.getElementById('chatAccessToken')?.value.trim();
+        const newUserId = document.getElementById('chatUserId')?.value.trim();
+        const newRoom1 = document.getElementById('chatRoom1')?.value.trim();
+        const newRoom2 = document.getElementById('chatRoom2')?.value.trim();
+        const newRoom3 = document.getElementById('chatRoom3')?.value.trim();
+        const newRefreshInterval = parseInt(document.getElementById('chatRefreshInterval')?.value) || 30;
+        
+        // Only update homeserver if a new value was provided (not blank)
+        if (newHomeserver !== '') {
+            settings.chat.homeserver = newHomeserver;
+        } else if (!settings.chat.homeserver) {
+            // Only set default if no existing value AND no new value provided
+            settings.chat.homeserver = 'https://matrix.org';
+        }
+        // If newHomeserver is blank AND existing value exists, keep existing value (do nothing)
+        
+        // Only update access token if a new value was provided (not blank)
+        if (newAccessToken !== '') {
+            settings.chat.accessToken = newAccessToken;
+        }
+        // If blank, keep existing token (do nothing)
+        
+        // Only update user ID if a new value was provided (not blank)
+        if (newUserId !== '') {
+            settings.chat.userId = newUserId;
+        }
+        // If blank, keep existing user ID (do nothing)
+        
+        // Handle rooms - only update if at least one room is provided
+        const newRooms = [newRoom1, newRoom2, newRoom3].filter(r => r !== '');
+        if (newRooms.length > 0) {
+            settings.chat.rooms = newRooms;
+        }
+        // If all rooms are blank, keep existing rooms (do nothing)
+        
+        // Always update refresh interval (has a default)
+        settings.chat.refreshInterval = newRefreshInterval;
         
         return settings;
     }
