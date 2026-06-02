@@ -1,8 +1,91 @@
 {
-  "name": "ple.ie",
-  "short_name": "ple",
-  "start_url": ".",
+  "name": "HandiHomepage Senior",
+  "short_name": "HandiHome",
+  "description": "Safe & simple dashboard for seniors",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#020617",
-  "theme_color": "#22c55e"
+  "background_color": "#f6f8fc",
+  "theme_color": "#0047cc",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/favicon.ico",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/favicon.ico",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/favicon.ico",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/favicon.ico",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/favicon.ico",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/favicon.ico",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/favicon.ico",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/favicon.ico",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/dashboard.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpg",
+      "form_factor": "wide",
+      "label": "HandiHomepage Dashboard"
+    },
+    {
+      "src": "/images/dashboard.jpg",
+      "sizes": "750x1334",
+      "type": "image/jpg",
+      "form_factor": "narrow",
+      "label": "Mobile View"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Settings",
+      "short_name": "Settings",
+      "description": "Open settings",
+      "url": "/settings.html",
+      "icons": [{ "src": "/images/favicon.ico", "sizes": "96x96" }]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Home",
+      "description": "Back to dashboard",
+      "url": "/",
+      "icons": [{ "src": "/images/favicon.ico", "sizes": "96x96" }]
+    }
+  ],
+  "categories": ["productivity", "utilities", "health"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false
 }
