@@ -229,6 +229,81 @@
             <div class="config-field"><label>Refresh interval (sec):</label><input type="number" id="chatRefreshInterval" value="30"></div>
         </div>
     </div>
+
+    <!-- ============================================================ -->
+    <!-- PREMIUM MODULES SECTION (ENABLED TOGGLES - NO DISABLED STYLES) -->
+    <!-- ============================================================ -->
+    <div class="header">
+        <h2>Premium Modules <span style="font-size: 0.8rem; background: #e2e8f0; padding: 2px 8px; border-radius: 20px;">🔒 Premium Features</span></h2>
+        <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">Enable premium features below</p>
+    </div>
+
+    <!-- Premium 1: Free & Unlimited Calls (Infobip) -->
+    <div class="module-card" data-module="clicktocall">
+        <div class="module-header">
+            <div class="module-title">
+                <i class="fa-solid fa-phone-volume"></i>
+                <h3>Free & Unlimited Calls</h3>
+                <span style="font-size: 0.7rem; background: #f59e0b; padding: 2px 8px; border-radius: 12px; margin-left: 8px;">Premium</span>
+            </div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field">
+                <label>Infobip Base URL:</label>
+                <input type="url" id="infobipBaseUrl" placeholder="https://your-account.api.infobip.com">
+            </div>
+            <div class="config-field">
+                <label>API Key:</label>
+                <input type="password" id="infobipApiKey" placeholder="Your API Key">
+            </div>
+            <div class="config-field">
+                <label>Application ID:</label>
+                <input type="text" id="infobipAppId" placeholder="Your Application ID">
+            </div>
+            <div class="config-field">
+                <label>Caller ID:</label>
+                <input type="tel" id="infobipCallerId" placeholder="+1234567890">
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium 2: Live Bus Tracker -->
+    <div class="module-card" data-module="bus">
+        <div class="module-header">
+            <div class="module-title">
+                <i class="fa-solid fa-bus"></i>
+                <h3>Live Bus Tracker</h3>
+                <span style="font-size: 0.7rem; background: #f59e0b; padding: 2px 8px; border-radius: 12px; margin-left: 8px;">Premium</span>
+            </div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field"><label>Route IDs (comma-separated):</label><input type="text" id="busRouteIds" placeholder="e.g., 223, 215"></div>
+            <div class="config-field"><label>Stop IDs (comma-separated):</label><input type="text" id="busStopIds" placeholder="e.g., 242081,242051"></div>
+        </div>
+    </div>
+
+    <!-- Premium 3: Emergency Location Button -->
+    <div class="module-card" data-module="emergency">
+        <div class="module-header">
+            <div class="module-title">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <h3>Emergency Location Button</h3>
+                <span style="font-size: 0.7rem; background: #f59e0b; padding: 2px 8px; border-radius: 12px; margin-left: 8px;">Premium</span>
+            </div>
+            <div class="toggle-switch"><div class="toggle-slider"></div></div>
+        </div>
+        <div class="module-config">
+            <div class="config-field"><label>Emergency Contacts</label><div id="emergencyContactsList" class="contact-list"></div></div>
+            <div style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+                <input type="text" id="emergencyName" placeholder="Name" style="flex:1;">
+                <input type="tel" id="emergencyPhone" placeholder="Phone" style="flex:1;">
+                <button id="addEmergencyInline" class="add-contact-btn">+ Add</button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <div class="brand">
@@ -243,6 +318,7 @@
     const DB_VERSION = 2;
     let db = null;
     let phoneContacts = [];
+    let emergencyContacts = [];
 
     function initDB() {
         return new Promise((resolve, reject) => {
@@ -381,11 +457,61 @@
             if (document.getElementById('phonePhoto')) document.getElementById('phonePhoto').value = '';
         }
     }
+
+    // ============================================================
+    // EMERGENCY CONTACTS MANAGEMENT
+    // ============================================================
+    function renderEmergencyContacts() {
+        const container = document.getElementById('emergencyContactsList');
+        if (!container) return;
+        if (emergencyContacts.length === 0) {
+            container.innerHTML = '<div style="padding: 20px; text-align: center; color: #64748b;">No emergency contacts saved. Add a contact below.</div>';
+            return;
+        }
+        container.innerHTML = emergencyContacts.map((c, i) => `
+            <div class="contact-item">
+                <div class="contact-photo">
+                    ${c.photo ? `<img src="${c.photo}" alt="">` : '<i class="fa-solid fa-user"></i>'}
+                </div>
+                <div class="contact-info">
+                    <strong>${escapeHtml(c.name)}</strong><br>
+                    <small>${escapeHtml(c.number)}</small>
+                </div>
+                <button class="delete-emergency-contact" data-index="${i}">✖ Delete</button>
+            </div>
+        `).join('');
+        
+        document.querySelectorAll('.delete-emergency-contact').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(btn.dataset.index);
+                emergencyContacts.splice(idx, 1);
+                renderEmergencyContacts();
+            });
+        });
+    }
+
+    function addEmergencyContact() {
+        const nameInput = document.getElementById('emergencyName');
+        const numberInput = document.getElementById('emergencyPhone');
+        
+        const name = nameInput?.value.trim();
+        const number = numberInput?.value.trim();
+        
+        if (!name || !number) {
+            alert('Please enter both name and phone number');
+            return;
+        }
+        
+        emergencyContacts.push({ name, number, photo: null });
+        renderEmergencyContacts();
+        nameInput.value = '';
+        numberInput.value = '';
+    }
     
     // ============================================================
     // MODULE MANAGEMENT
     // ============================================================
-    const MODULES = ['gallery', 'music', 'radio', 'news', 'mastodon', 'calendar', 'phone', 'chat'];
+    const MODULES = ['gallery', 'music', 'radio', 'news', 'mastodon', 'calendar', 'phone', 'chat', 'clicktocall', 'bus', 'emergency'];
     
     function applySettingsToToggles() {
         const settings = loadSettings();
@@ -408,6 +534,12 @@
         }
         if (document.getElementById('autoDialDelay') && settings.phone?.autoDialDelay) {
             document.getElementById('autoDialDelay').value = settings.phone.autoDialDelay;
+        }
+        
+        // Load emergency contacts
+        if (settings.emergency?.contacts) {
+            emergencyContacts = settings.emergency.contacts;
+            renderEmergencyContacts();
         }
         
         // Load radio settings
@@ -465,19 +597,20 @@
         if (calendarUrl !== '') {
             settings.calendar.url = calendarUrl;
         }
-        // If blank, keep existing URL (don't overwrite)
         settings.calendar.notificationMinutes = parseInt(document.getElementById('calendarNotificationMinutes')?.value) || 30;
         
         if (!settings.phone) settings.phone = {};
         settings.phone.contacts = phoneContacts;
         settings.phone.autoDialDelay = parseInt(document.getElementById('autoDialDelay')?.value) || 10;
         
+        if (!settings.emergency) settings.emergency = {};
+        settings.emergency.contacts = emergencyContacts;
+        
         // ============================================================
         // CHAT SETTINGS - PRESERVE EXISTING CREDENTIALS IF INPUTS ARE BLANK
         // ============================================================
         if (!settings.chat) settings.chat = {};
         
-        // Get current form values
         const newHomeserver = document.getElementById('chatHomeserver')?.value.trim();
         const newAccessToken = document.getElementById('chatAccessToken')?.value.trim();
         const newUserId = document.getElementById('chatUserId')?.value.trim();
@@ -486,35 +619,25 @@
         const newRoom3 = document.getElementById('chatRoom3')?.value.trim();
         const newRefreshInterval = parseInt(document.getElementById('chatRefreshInterval')?.value) || 30;
         
-        // Only update homeserver if a new value was provided (not blank)
         if (newHomeserver !== '') {
             settings.chat.homeserver = newHomeserver;
         } else if (!settings.chat.homeserver) {
-            // Only set default if no existing value AND no new value provided
             settings.chat.homeserver = 'https://matrix.org';
         }
-        // If newHomeserver is blank AND existing value exists, keep existing value (do nothing)
         
-        // Only update access token if a new value was provided (not blank)
         if (newAccessToken !== '') {
             settings.chat.accessToken = newAccessToken;
         }
-        // If blank, keep existing token (do nothing)
         
-        // Only update user ID if a new value was provided (not blank)
         if (newUserId !== '') {
             settings.chat.userId = newUserId;
         }
-        // If blank, keep existing user ID (do nothing)
         
-        // Handle rooms - only update if at least one room is provided
         const newRooms = [newRoom1, newRoom2, newRoom3].filter(r => r !== '');
         if (newRooms.length > 0) {
             settings.chat.rooms = newRooms;
         }
-        // If all rooms are blank, keep existing rooms (do nothing)
         
-        // Always update refresh interval (has a default)
         settings.chat.refreshInterval = newRefreshInterval;
         
         return settings;
@@ -580,7 +703,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const args = urlParams.get('args');
         if (args) {
-            const valid = ['gallery', 'music', 'radio', 'news', 'mastodon', 'phone', 'weather', 'calendar', 'chat'];
+            const valid = ['gallery', 'music', 'radio', 'news', 'mastodon', 'phone', 'weather', 'calendar', 'chat', 'clicktocall', 'bus', 'emergency'];
             const target = args.toLowerCase();
             if (valid.includes(target)) {
                 setTimeout(() => {
@@ -722,6 +845,7 @@
     document.getElementById('resetBtn')?.addEventListener('click', resetAllData);
     document.getElementById('exitBtn')?.addEventListener('click', () => window.location.href = '/');
     document.getElementById('addPhoneInline')?.addEventListener('click', addPhoneContact);
+    document.getElementById('addEmergencyInline')?.addEventListener('click', addEmergencyContact);
     
     applySettingsToToggles();
     setupToggles();

@@ -25,8 +25,8 @@ export default async function initBus(container) {
     let stopsDataCache = null;
 
     const settings = loadSettings();
-    const savedRouteIds = settings.bus?.routeIds || '30';
-    const savedStopIds = settings.bus?.stopIds || '330061,240161';
+    const savedRouteIds = settings.bus?.routeIds || '223';
+    const savedStopIds = settings.bus?.stopIds || '8380B246051,8370B2420501';
     const routeId = savedRouteIds.split(',')[0].trim();
     const stopIds = savedStopIds.split(',').map(id => id.trim()).join(',');
 
@@ -52,9 +52,7 @@ export default async function initBus(container) {
         if (switchBtn) {
             switchBtn.addEventListener('click', () => {
                 if (stopsDataCache && stopsDataCache.stops && stopsDataCache.stops.length >= 2) {
-                    // Toggle between 0 and 1
                     currentStopIndex = currentStopIndex === 0 ? 1 : 0;
-                    // Re-render the current stop with cached data
                     renderCurrentStop();
                 }
             });
@@ -63,25 +61,25 @@ export default async function initBus(container) {
 
     function renderCurrentStop() {
         if (!stopsDataCache || !stopsDataCache.stops || stopsDataCache.stops.length === 0) {
-            console.log('No cached data to render');
             return;
         }
         
-        // Make sure currentStopIndex is valid
         if (currentStopIndex >= stopsDataCache.stops.length) {
             currentStopIndex = 0;
         }
         
         const stop = stopsDataCache.stops[currentStopIndex];
-        if (!stop) {
-            console.log('Stop not found at index:', currentStopIndex);
-            return;
-        }
+        if (!stop) return;
         
         const containerDiv = content.querySelector('.bus-current-stop');
         if (!containerDiv) return;
         
-        // Display up to 3 bus times
+        // Update the footnote based on THIS stop's realtime_data flag
+        const footnoteSpan = content.querySelector('.bus-footnote');
+        if (footnoteSpan) {
+            footnoteSpan.textContent = stop.realtime_data ? '🔴 Real‑time data' : '📅 Scheduled times';
+        }
+        
         const buses = stop.buses && stop.buses.length > 0 ? stop.buses.slice(0, 3) : [];
         
         containerDiv.innerHTML = `
@@ -89,11 +87,12 @@ export default async function initBus(container) {
                 <h3 class="bus-stop-title">📍 ${escapeHtml(stop.stop_name)}</h3>
                 <div class="bus-direction">→ ${escapeHtml(stop.direction)}</div>
                 <div class="bus-buses-list">
-                    ${buses.length === 0 ? '<div class="bus-no-buses">No upcoming buses</div>' :
+                    ${buses.length === 0 ? 
+                        '<div class="bus-no-buses">⚠️ No upcoming buses</div>' :
                         buses.map(bus => `
                             <div class="bus-item">
                                 <span class="bus-route">Route ${bus.route}</span>
-                                <span class="bus-arrival">${bus.arrival_text}</span>
+                                <span class="bus-arrival ${bus.realtime ? 'realtime-arrival' : 'scheduled-arrival'}">${bus.arrival_text}</span>
                             </div>
                         `).join('')
                     }
@@ -109,22 +108,17 @@ export default async function initBus(container) {
             return;
         }
 
-        // Cache the full stops data
         stopsDataCache = data;
         
-        // Reset stop index if needed
         if (currentStopIndex >= data.stops.length) {
             currentStopIndex = 0;
         }
 
-        const isRealtime = data.stops.some(stop => stop.realtime_data === true);
-        const footnote = isRealtime ? 'Real‑time data' : 'Scheduled times';
-
+        // Update timestamp (don't set global footnote here)
         const timeSpan = content.querySelector('.bus-time');
         if (timeSpan) timeSpan.textContent = new Date(data.last_updated).toLocaleTimeString();
-        const footnoteSpan = content.querySelector('.bus-footnote');
-        if (footnoteSpan) footnoteSpan.textContent = footnote;
-
+        
+        // Render the current stop (this will set the correct footnote per stop)
         renderCurrentStop();
         
         if (window.refreshDashboardLayout) window.refreshDashboardLayout();
@@ -135,7 +129,7 @@ export default async function initBus(container) {
         const timeSpan = content.querySelector('.bus-time');
         if (timeSpan) timeSpan.textContent = 'Loading...';
         try {
-            const url = `/api/bus-realtime?route=${encodeURIComponent(routeId)}&stops=${encodeURIComponent(stopIds)}`;
+            const url = `/api/bus-realtime?route=${encodeURIComponent(routeId)}&stops=${encodeURIComponent(stopIds)}&refresh=true`;
             const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();

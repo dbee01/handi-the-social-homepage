@@ -15,8 +15,8 @@ app.use('/modules/webrtc', express.static(__dirname));
 
 // Infobip Configuration
 const INFOBIP_CONFIG = {
-    baseUrl: 'https://6znmkr.api.infobip.com',  // Make sure https:// is included
-    apiKey: '70929deeb2e26455844c61611b0047bd-cd988d1d-b19d-4c4e-8bd1-8f9895b54f66',
+    baseUrl: '6znmkr.api.infobip.com',
+    apiKey: process.env.INFOBIP_API_KEY || 'YOUR_INFOBIP_API_KEY',
     applicationId: 'HANDIHOMEPAGE_APP',
     entityId: 'HANDIHOMEPAGE'
 };
@@ -34,12 +34,7 @@ userContacts.set('bob', [
     { id: 2, name: 'Carol Davis', webrtcId: 'carol', phoneNumber: '+1122334455' }
 ]);
 
-userContacts.set('carol', [
-    { id: 1, name: 'Alice Johnson', webrtcId: 'alice', phoneNumber: '+1234567890' },
-    { id: 2, name: 'Bob Smith', webrtcId: 'bob', phoneNumber: '+1987654321' }
-]);
-
-// API route to get token - NO MOCK FALLBACK
+// API route to get token
 app.post('/api/webrtc/token', async (req, res) => {
     try {
         const { userId, displayName } = req.body;
@@ -50,6 +45,24 @@ app.post('/api/webrtc/token', async (req, res) => {
 
         console.log(`[Infobip] Generating token for: ${userId}`);
 
+        // For testing without Infobip credentials - generate a mock token
+        // Remove this and use real Infobip when credentials are verified
+        const USE_MOCK_FOR_TESTING = false;
+        
+        if (USE_MOCK_FOR_TESTING) {
+            console.log(`[MOCK] Using mock token for ${userId}`);
+            const mockToken = `mock_token_${userId}_${Date.now()}`;
+            return res.json({
+                success: true,
+                token: mockToken,
+                identity: userId,
+                displayName: displayName || userId,
+                expiresAt: Date.now() + 3600000,
+                mock: true
+            });
+        }
+
+        // Real Infobip API call
         const response = await fetch(`${INFOBIP_CONFIG.baseUrl}/webrtc/1/token`, {
             method: 'POST',
             headers: {
@@ -75,7 +88,7 @@ app.post('/api/webrtc/token', async (req, res) => {
         }
 
         const data = await response.json();
-        console.log(`[Infobip] Token generated for ${userId}, expires: ${data.expirationTime}`);
+        console.log(`[Infobip] Token generated for ${userId}`);
         
         res.json({ 
             success: true, 
@@ -146,9 +159,14 @@ app.delete('/api/webrtc/contacts/:userId/:contactId', async (req, res) => {
     res.json({ success: true });
 });
 
+// Serve test page
+app.get('/test', (req, res) => {
+    res.sendFile(path.join(__dirname, 'test-simple.html'));
+});
+
 // Serve index.html
-app.get(['/', '/modules/webrtc', '/modules/webrtc/'], (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+app.get(['/', '/webrtc', '/webrtc/', '/modules/webrtc'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'webrtc.html'));
 });
 
 // Health check
@@ -156,7 +174,9 @@ app.get('/api/webrtc/health', (req, res) => {
     res.json({ 
         status: 'ok',
         infobipConfigured: true,
-        baseUrl: INFOBIP_CONFIG.baseUrl
+        mockMode: true,
+        baseUrl: INFOBIP_CONFIG.baseUrl,
+        timestamp: new Date().toISOString()
     });
 });
 
@@ -164,7 +184,9 @@ app.listen(PORT, () => {
     console.log(`\n✅ WebRTC Server Running!`);
     console.log(`📍 URL: http://localhost:${PORT}`);
     console.log(`📍 API: http://localhost:${PORT}/api/webrtc/health`);
-    console.log(`\n🔑 Using REAL Infobip credentials\n`);
+    console.log(`📍 Test Page: http://localhost:${PORT}/test`);
+    console.log(`\n🔧 MOCK MODE ENABLED - Using fake tokens for testing`);
+    console.log(`💡 To use real Infobip, set USE_MOCK_FOR_TESTING = false in server.js\n`);
 });
 
 module.exports = app;

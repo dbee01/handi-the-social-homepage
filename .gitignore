@@ -5,6 +5,7 @@ uploads/*
 gallery/*
 music/*
 node_modules/
+modules/webrtc/node_modules/
 npm-debug.log
 yarn-error.log
 .env
