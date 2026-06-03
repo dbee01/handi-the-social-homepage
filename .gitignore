@@ -1,1 +1,9 @@
 .env
+*.mp4
+*.zip
+uploads/*
+gallery/*
+music/*
+node_modules/
+npm-debug.log
+yarn-error.log
