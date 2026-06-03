@@ -3,209 +3,326 @@
  This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
  See the LICENSE file in the repository root for full details.
 -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HandiHomepage – Documentation</title>
-    <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>HandiHomepage – Documentation</title>
+        <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
 
-    <!-- Cache Control Headers for PWA -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
+        <!-- Cache Control Headers for PWA -->
+        <meta
+            http-equiv="Cache-Control"
+            content="no-cache, no-store, must-revalidate"
+        />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
 
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0047cc">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="HandiHome">
-    <link rel="apple-touch-icon" href="/images/favicon.ico">
-    
-    <style>
-        /* =========================================================
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#0047cc" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="black-translucent"
+        />
+        <meta name="apple-mobile-web-app-title" content="HandiHome" />
+        <link rel="apple-touch-icon" href="/images/favicon.png" />
+
+        <style>
+            /* =========================================================
            SIMPLE ELDERLY STYLE (matching the main theme)
         ========================================================= */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f6f8fc;
-            color: #1e1e1e;
-            font-size: 20px;
-            line-height: 1.8;
-            padding: 2rem;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            border: 2px solid #cbd5e1;
-            border-radius: 24px;
-            padding: 2rem;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        }
-        h1 {
-            font-size: 2rem;
-            color: #0047cc;
-            border-bottom: 3px solid #0047cc;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.2rem;
-        }
-        h2 {
-            font-size: 1.6rem;
-            color: #0047cc;
-            margin: 1.5rem 0 0.8rem 0;
-        }
-        h3 {
-            font-size: 1.3rem;
-            margin: 1rem 0 0.5rem;
-            color: #1e1e1e;
-        }
-        p, li {
-            margin-bottom: 0.8rem;
-        }
-        ul, ol {
-            margin-left: 2rem;
-            margin-bottom: 1rem;
-        }
-        .icon-list {
-            list-style: none;
-            margin-left: 0;
-        }
-        .icon-list li {
-            margin-bottom: 0.75rem;
-        }
-        .icon-list i {
-            width: 2rem;
-            color: #0047cc;
-            margin-right: 0.75rem;
-        }
-        a {
-            color: #0047cc;
-            font-weight: 700;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .button-group {
-            display: flex;
-            gap: 1rem;
-            margin: 2rem 0 1rem;
-            flex-wrap: wrap;
-        }
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #ffffff;
-            border: 2px solid #0047cc;
-            padding: 12px 24px;
-            border-radius: 48px;
-            font-size: 1rem;
-            font-weight: bold;
-            color: #0047cc;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-primary {
-            background: #0047cc;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #0037a3;
-            text-decoration: none;
-        }
-        .btn:hover {
-            background: #eaf2ff;
-            text-decoration: none;
-        }
-        hr {
-            margin: 2rem 0;
-            border: 1px solid #cbd5e1;
-        }
-        .footer-note {
-            font-size: 0.9rem;
-            color: #64748b;
-            text-align: center;
-            margin-top: 2rem;
-        }
-        @media (max-width: 640px) {
-            body { padding: 1rem; }
-            .container { padding: 1.25rem; }
-            h1 { font-size: 1.6rem; }
-            h2 { font-size: 1.3rem; }
-            .btn { padding: 10px 16px; font-size: 0.9rem; }
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1><i class="fa-solid fa-hand-peace"></i> HandiHomepage – Documentation</h1>
-    <p>Welcome to <strong>HandiHomepage</strong> – a simple, accessible dashboard designed for elderly and low‑vision users. Everything is large, touch‑friendly, and easy to navigate.</p>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background: #f6f8fc;
+                color: #1e1e1e;
+                font-size: 20px;
+                line-height: 1.8;
+                padding: 2rem;
+            }
+            .container {
+                max-width: 1000px;
+                margin: 0 auto;
+                background: white;
+                border: 2px solid #cbd5e1;
+                border-radius: 24px;
+                padding: 2rem;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            }
+            h1 {
+                font-size: 2rem;
+                color: #0047cc;
+                border-bottom: 3px solid #0047cc;
+                padding-bottom: 0.5rem;
+                margin-bottom: 1.2rem;
+            }
+            h2 {
+                font-size: 1.6rem;
+                color: #0047cc;
+                margin: 1.5rem 0 0.8rem 0;
+            }
+            h3 {
+                font-size: 1.3rem;
+                margin: 1rem 0 0.5rem;
+                color: #1e1e1e;
+            }
+            p,
+            li {
+                margin-bottom: 0.8rem;
+            }
+            ul,
+            ol {
+                margin-left: 2rem;
+                margin-bottom: 1rem;
+            }
+            .icon-list {
+                list-style: none;
+                margin-left: 0;
+            }
+            .icon-list li {
+                margin-bottom: 0.75rem;
+            }
+            .icon-list i {
+                width: 2rem;
+                color: #0047cc;
+                margin-right: 0.75rem;
+            }
+            a {
+                color: #0047cc;
+                font-weight: 700;
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            .button-group {
+                display: flex;
+                gap: 1rem;
+                margin: 2rem 0 1rem;
+                flex-wrap: wrap;
+            }
+            .btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                background: #ffffff;
+                border: 2px solid #0047cc;
+                padding: 12px 24px;
+                border-radius: 48px;
+                font-size: 1rem;
+                font-weight: bold;
+                color: #0047cc;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            .btn-primary {
+                background: #0047cc;
+                color: white;
+            }
+            .btn-primary:hover {
+                background: #0037a3;
+                text-decoration: none;
+            }
+            .btn:hover {
+                background: #eaf2ff;
+                text-decoration: none;
+            }
+            hr {
+                margin: 2rem 0;
+                border: 1px solid #cbd5e1;
+            }
+            .footer-note {
+                font-size: 0.9rem;
+                color: #64748b;
+                text-align: center;
+                margin-top: 2rem;
+            }
+            @media (max-width: 640px) {
+                body {
+                    padding: 1rem;
+                }
+                .container {
+                    padding: 1.25rem;
+                }
+                h1 {
+                    font-size: 1.6rem;
+                }
+                h2 {
+                    font-size: 1.3rem;
+                }
+                .btn {
+                    padding: 10px 16px;
+                    font-size: 0.9rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>
+                <i class="fa-solid fa-hand-peace"></i> HandiHomepage –
+                Documentation
+            </h1>
+            <p>
+                Welcome to <strong>HandiHomepage</strong> – a simple, accessible
+                dashboard designed for elderly and low‑vision users. Everything
+                is large, touch‑friendly, and easy to navigate.
+            </p>
 
-    <h2>📌 Getting Started</h2>
-    <p>On the main dashboard you will see several <strong>modules</strong> (boxes). Each module is a separate tool:</p>
-    <ul class="icon-list">
-        <li><i class="fa-solid fa-phone"></i> <strong>Friendly Phone</strong> – one‑tap calls to your saved contacts (lockable to prevent accidental dialling).</li>
-        <li><i class="fa-solid fa-music"></i> <strong>Music Player</strong> – upload your own music files, play/pause, and enjoy a visualiser (lockable).</li>
-        <li><i class="fa-solid fa-radio"></i> <strong>Radio</strong> – live Irish radio stations with a sound synthesiser (lockable).</li>
-        <li><i class="fa-solid fa-bus"></i> <strong>Bus Tracker</strong> – real‑time or scheduled bus arrivals (requires location).</li>
-        <li><i class="fa-solid fa-images"></i> <strong>Gallery</strong> – slideshow of family photos, with lightbox and screen‑wake option.</li>
-        <li><i class="fa-solid fa-triangle-exclamation"></i> <strong>Emergency</strong> – sends your location to emergency contacts with one press (lockable).</li>
-        <li><i class="fa-solid fa-newspaper"></i> <strong>News</strong> – latest headlines from Irish RSS feeds (scroll with ▲/▼ buttons).</li>
-        <li><i class="fa-brands fa-mastodon"></i> <strong>Mastodon Social</strong> – trending posts from Mastodon (scroll with ▲/▼ buttons).</li>
-    </ul>
+            <h2>📌 Getting Started</h2>
+            <p>
+                On the main dashboard you will see several
+                <strong>modules</strong> (boxes). Each module is a separate
+                tool:
+            </p>
+            <ul class="icon-list">
+                <li>
+                    <i class="fa-solid fa-phone"></i>
+                    <strong>Friendly Phone</strong> – one‑tap calls to your
+                    saved contacts (lockable to prevent accidental dialling).
+                </li>
+                <li>
+                    <i class="fa-solid fa-music"></i>
+                    <strong>Music Player</strong> – upload your own music files,
+                    play/pause, and enjoy a visualiser (lockable).
+                </li>
+                <li>
+                    <i class="fa-solid fa-radio"></i> <strong>Radio</strong> –
+                    live Irish radio stations with a sound synthesiser
+                    (lockable).
+                </li>
+                <li>
+                    <i class="fa-solid fa-bus"></i>
+                    <strong>Bus Tracker</strong> – real‑time or scheduled bus
+                    arrivals (requires location).
+                </li>
+                <li>
+                    <i class="fa-solid fa-images"></i>
+                    <strong>Gallery</strong> – slideshow of family photos, with
+                    lightbox and screen‑wake option.
+                </li>
+                <li>
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <strong>Emergency</strong> – sends your location to
+                    emergency contacts with one press (lockable).
+                </li>
+                <li>
+                    <i class="fa-solid fa-newspaper"></i>
+                    <strong>News</strong> – latest headlines from Irish RSS
+                    feeds (scroll with ▲/▼ buttons).
+                </li>
+                <li>
+                    <i class="fa-brands fa-mastodon"></i>
+                    <strong>Mastodon Social</strong> – trending posts from
+                    Mastodon (scroll with ▲/▼ buttons).
+                </li>
+            </ul>
 
-    <h2>🔒 Locking Modules</h2>
-    <p>Each module has a <strong>red lock button</strong> (🔒) next to the pin. When locked, the module becomes unclickable – perfect for preventing accidental calls or music changes. Click the lock to turn it green (🔓) and unlock.</p>
+            <h2>🔒 Locking Modules</h2>
+            <p>
+                Each module has a <strong>red lock button</strong> (🔒) next to
+                the pin. When locked, the module becomes unclickable – perfect
+                for preventing accidental calls or music changes. Click the lock
+                to turn it green (🔓) and unlock.
+            </p>
 
-    <h2>📍 Pinning Modules</h2>
-    <p>Use the <strong>pin button</strong> (📌) on any module to keep it at the top of your dashboard. Pinned modules stay above others, even after page reload.</p>
+            <h2>📍 Pinning Modules</h2>
+            <p>
+                Use the <strong>pin button</strong> (📌) on any module to keep
+                it at the top of your dashboard. Pinned modules stay above
+                others, even after page reload.
+            </p>
 
-    <h2>⚙️ Settings & Customisation</h2>
-    <p>Click the <strong>Settings</strong> icon (⚙️) in the footer bar to:</p>
-    <ul>
-        <li>Upload images for the Gallery</li>
-        <li>Upload music files for the Music Player</li>
-        <li>Add / edit phone and emergency contacts</li>
-        <li>Choose news RSS feeds</li>
-        <li>Configure module visibility (enable/disable modules)</li>
-    </ul>
+            <h2>⚙️ Settings & Customisation</h2>
+            <p>
+                Click the <strong>Settings</strong> icon (⚙️) in the footer bar
+                to:
+            </p>
+            <ul>
+                <li>Upload images for the Gallery</li>
+                <li>Upload music files for the Music Player</li>
+                <li>Add / edit phone and emergency contacts</li>
+                <li>Choose news RSS feeds</li>
+                <li>Configure module visibility (enable/disable modules)</li>
+            </ul>
 
-    <h2>🔊 Global Mute & Screen Wake</h2>
-    <p>The <strong>footer bar</strong> (always at the bottom of the screen) gives you two important controls:</p>
-    <ul class="icon-list">
-        <li><i class="fa-solid fa-volume-high"></i> / <i class="fa-solid fa-volume-mute"></i> – <strong>Mute/Unmute</strong> all audio (radio and music) without stopping playback.</li>
-        <li><i class="fa-solid fa-sun"></i> / <i class="fa-solid fa-bed"></i> – <strong>Screen Wake Lock</strong>. Sun = screen stays awake; bed = screen may sleep. (Requires browser permission.)</li>
-    </ul>
-    <p>Other footer icons: <strong>Settings</strong> (⚙️), <strong>Documentation</strong> (📄) – this page, and <strong>Email</strong> (✉️) to contact support.</p>
+            <h2>🔊 Global Mute & Screen Wake</h2>
+            <p>
+                The <strong>footer bar</strong> (always at the bottom of the
+                screen) gives you two important controls:
+            </p>
+            <ul class="icon-list">
+                <li>
+                    <i class="fa-solid fa-volume-high"></i> /
+                    <i class="fa-solid fa-volume-mute"></i> –
+                    <strong>Mute/Unmute</strong> all audio (radio and music)
+                    without stopping playback.
+                </li>
+                <li>
+                    <i class="fa-solid fa-sun"></i> /
+                    <i class="fa-solid fa-bed"></i> –
+                    <strong>Screen Wake Lock</strong>. Sun = screen stays awake;
+                    bed = screen may sleep. (Requires browser permission.)
+                </li>
+            </ul>
+            <p>
+                Other footer icons: <strong>Settings</strong> (⚙️),
+                <strong>Documentation</strong> (📄) – this page, and
+                <strong>Email</strong> (✉️) to contact support.
+            </p>
 
-    <h2>📱 Touch & Mobile</h2>
-    <p>On touchscreens, drag‑and‑drop is disabled (to avoid accidental moves), but <strong>Packery</strong> still arranges modules in multiple columns if the screen is wide enough (e.g., tablets in landscape). On narrow phones, all modules stack vertically.</p>
+            <h2>📱 Touch & Mobile</h2>
+            <p>
+                On touchscreens, drag‑and‑drop is disabled (to avoid accidental
+                moves), but <strong>Packery</strong> still arranges modules in
+                multiple columns if the screen is wide enough (e.g., tablets in
+                landscape). On narrow phones, all modules stack vertically.
+            </p>
 
-    <h2>🚨 Emergency Button</h2>
-    <p>The big red emergency button uses your device’s location and sends a text message (SMS) to all emergency contacts with an OpenStreetMap link. <strong>Always test with your own number first</strong> to ensure it works.</p>
+            <h2>🚨 Emergency Button</h2>
+            <p>
+                The big red emergency button uses your device’s location and
+                sends a text message (SMS) to all emergency contacts with an
+                OpenStreetMap link.
+                <strong>Always test with your own number first</strong> to
+                ensure it works.
+            </p>
 
-    <hr>
+            <hr />
 
-    <div class="button-group">
-        <a href="index.html" class="btn"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
-        <a href="settings.html" class="btn btn-primary"><i class="fa-solid fa-gear"></i> Open Settings</a>
-        <a href="mailto:true.cork.rebel@proton.me" class="btn"><i class="fa-solid fa-envelope"></i> Contact Support</a>
-    </div>
+            <div class="button-group">
+                <a href="index.html" class="btn"
+                    ><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a
+                >
+                <a href="settings.html" class="btn btn-primary"
+                    ><i class="fa-solid fa-gear"></i> Open Settings</a
+                >
+                <a href="mailto:true.cork.rebel@proton.me" class="btn"
+                    ><i class="fa-solid fa-envelope"></i> Contact Support</a
+                >
+            </div>
 
-    <div>
-        <div class="brand" style="text-align: center; padding: 0.5rem; margin-top: 1rem;">
-            <span class="subtitle"><a href="/terms">Terms of Service</a> | <a href="/privacy">Privacy Policy</a></span>
+            <div>
+                <div
+                    class="brand"
+                    style="
+                        text-align: center;
+                        padding: 0.5rem;
+                        margin-top: 1rem;
+                    "
+                >
+                    <span class="subtitle"
+                        ><a href="/terms">Terms of Service</a> |
+                        <a href="/privacy">Privacy Policy</a></span
+                    >
+                </div>
+            </div>
         </div>
-    </div>
-
-</div>
-</body>
+    </body>
 </html>

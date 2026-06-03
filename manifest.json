@@ -9,44 +9,44 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/images/favicon.ico",
+      "src": "/images/favicon.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/favicon.ico",
+      "src": "/images/favicon.png",
       "sizes": "96x96",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.ico",
+      "src": "/images/favicon.png",
       "sizes": "128x128",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.ico",
+      "src": "/images/favicon.png",
       "sizes": "144x144",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.ico",
+      "src": "/images/favicon.png",
       "sizes": "152x152",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.ico",
+      "src": "/images/favicon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/favicon.ico",
+      "src": "/images/favicon.png",
       "sizes": "384x384",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.ico",
+      "src": "/images/favicon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -56,14 +56,14 @@
     {
       "src": "/images/dashboard.jpg",
       "sizes": "1280x720",
-      "type": "image/jpg",
+      "type": "image/jpeg",
       "form_factor": "wide",
       "label": "HandiHomepage Dashboard"
     },
     {
       "src": "/images/dashboard.jpg",
       "sizes": "750x1334",
-      "type": "image/jpg",
+      "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "Mobile View"
     }
@@ -74,14 +74,14 @@
       "short_name": "Settings",
       "description": "Open settings",
       "url": "/settings.html",
-      "icons": [{ "src": "/images/favicon.ico", "sizes": "96x96" }]
+      "icons": [{ "src": "/images/favicon.png", "sizes": "96x96" }]
     },
     {
       "name": "Dashboard",
       "short_name": "Home",
       "description": "Back to dashboard",
       "url": "/",
-      "icons": [{ "src": "/images/favicon.ico", "sizes": "96x96" }]
+      "icons": [{ "src": "/images/favicon.png", "sizes": "96x96" }]
     }
   ],
   "categories": ["productivity", "utilities", "health"],

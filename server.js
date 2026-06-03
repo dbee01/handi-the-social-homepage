@@ -261,14 +261,20 @@ app.get('/api/bus-realtime', async (req, res) => {
             }
             
             buses.sort((a, b) => a.minutes_away - b.minutes_away);
-            
+    
+            // In server.js, update the results builder:
+            const hasAnyRealtimeBus = buses.some(bus => bus.realtime === true);
+            const hasAnyScheduledBus = buses.some(bus => bus.scheduled === true);
+
             results.push({
                 stop_name: stopData.stop_name,
                 direction: stopData.direction,
                 stop_id: stopId,
                 buses: buses.slice(0, 4),
-                realtime_data: isRealtime
+                realtime_data: hasAnyRealtimeBus,  // ← TRUE if ANY real-time bus exists
+                mixed_data: hasAnyRealtimeBus && hasAnyScheduledBus  // ← optional flag for mixed
             });
+
         }
 
         // Check if ANY bus across ANY stop is real-time

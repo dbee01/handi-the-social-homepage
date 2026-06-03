@@ -1,410 +1,1050 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - Handi Homepage</title>
-    <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Settings - Handi Homepage</title>
+        <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
 
-    <!-- Cache Control Headers for PWA -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
+        <!-- Cache Control Headers for PWA -->
+        <meta
+            http-equiv="Cache-Control"
+            content="no-cache, no-store, must-revalidate"
+        />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
 
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0047cc">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="HandiHome">
-    <link rel="apple-touch-icon" href="/images/favicon.ico">
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#0047cc" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="black-translucent"
+        />
+        <meta name="apple-mobile-web-app-title" content="HandiHome" />
+        <link rel="apple-touch-icon" href="/images/favicon.png" />
 
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background: #f6f8fc; padding: 20px; }
-        .settings-container { max-width: 800px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #0047cc; }
-        .header h1 { color: #0047cc; }
-        .header h2 { color: #0047cc; font-size: 1.2rem; }
-        .header-buttons { display: flex; gap: 10px; }
-        button { padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .save-btn { background: #0047cc; color: white; border: none; }
-        .reset-btn { background: #ef4444; color: white; border: none; }
-        .exit-btn { background: #64748b; color: white; border: none; }
-        .module-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
-        .module-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; cursor: pointer; background: #ffffff; border-bottom: 1px solid #e2e8f0; }
-        .module-header:hover { background: #f8fafc; }
-        .module-title { display: flex; align-items: center; gap: 12px; }
-        .module-title i { font-size: 1.2rem; color: #0047cc; }
-        .module-title h3 { font-size: 1rem; color: #1e293b; }
-        .toggle-switch { width: 52px; height: 26px; background: #cbd5e1; border-radius: 34px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
-        .toggle-switch.active { background: #0047cc; }
-        .toggle-slider { width: 22px; height: 22px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 3px; transition: transform 0.2s; }
-        .toggle-switch.active .toggle-slider { transform: translateX(24px); }
-        .module-config { display: none; padding: 20px; background: #ffffff; border-top: 1px solid #e2e8f0; }
-        .config-field { margin-bottom: 16px; }
-        .config-field label { display: block; font-weight: 600; margin-bottom: 8px; color: #1e293b; }
-        .config-field input, .config-field select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; }
-        .upload-btn { background: #0047cc; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin: 8px 0; }
-        .detect-location-btn { background: #0047cc; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin-top: 8px; width: 100%; }
-        .weather-preview { margin-top: 12px; padding: 12px; background: #eef2ff; border-radius: 12px; font-size: 0.9rem; }
-        .brand { text-align: center; padding: 20px; font-size: 12px; color: #64748b; }
-        .brand a { color: #0047cc; text-decoration: none; }
-        small { display: block; margin-top: 6px; color: #64748b; font-size: 1rem; }
-        .contact-list { border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; min-height: 120px; max-height: 300px; overflow-y: auto; }
-        .contact-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-bottom: 1px solid #e2e8f0; }
-        .contact-item:last-child { border-bottom: none; }
-        .contact-photo { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #e2e8f0; display: flex; align-items: center; justify-content: center; }
-        .contact-photo img { width: 100%; height: 100%; object-fit: cover; }
-        .contact-info { flex: 1; }
-        .contact-info strong { font-size: 0.9rem; }
-        .contact-info small { font-size: 0.75rem; color: #64748b; margin-top: 2px; }
-        .delete-contact { background: #ef4444; color: white; border: none; border-radius: 8px; padding: 6px 12px; cursor: pointer; font-size: 0.8rem; }
-        .delete-contact:hover { background: #dc2626; }
-        .error { color: #dc2626; }
-    </style>
-</head>
-<body>
-<div class="settings-container">
-    <div class="header">
-        <h1>Settings</h1>
-        <div class="header-buttons">
-            <button class="save-btn" id="saveBtn">Save Settings</button>
-            <button class="reset-btn" id="resetBtn">⟳ Reset All</button>
-            <button class="exit-btn" id="exitBtn">Exit</button>
-        </div>
-    </div>
-
-    <div class="header">
-        <h2>Free Modules</h2>
-    </div>
-
-    <!-- Weather Module (force enabled) -->
-    <div class="module-card" data-module="weather">
-        <div class="module-header">
-            <div class="module-title"><i class="fa-solid fa-cloud-sun"></i><h3>Weather Location</h3></div>
-            <div class="toggle-switch active" style="opacity:0.5; pointer-events:none;"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field"><label>Location:</label><input type="text" id="weatherLocation" value="Cork"></div>
-            <div class="config-field"><label>Country:</label><select id="weatherCountry"><option value="IE">Ireland</option><option value="GB">United Kingdom</option><option value="US">United States</option></select></div>
-            <button id="detectLocationBtn" class="detect-location-btn"><i class="fa-solid fa-location-dot"></i> Detect My Location</button>
-            <div id="weatherPreview" class="weather-preview"></div>
-        </div>
-    </div>
-
-    <!-- Gallery Module -->
-    <div class="module-card" data-module="gallery">
-        <div class="module-header">
-            <div class="module-title"><i class="fa-solid fa-images"></i><h3>Gallery</h3></div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field"><label>Slideshow speed (ms):</label><input type="number" id="gallerySpeed" value="8000"></div>
-            <div class="config-field"><label>Auto-start:</label><select id="galleryAutoStart"><option value="true">Yes</option><option value="false">No</option></select></div>
-            <button class="upload-btn" id="uploadGalleryBtn">📸 Load Images</button>
-            <small>Rename image filenames in caption format: My+Lovely+Horse.jpg -> My Lovely Horse</small>
-        </div>
-    </div>
-
-    <!-- Music Module -->
-    <div class="module-card" data-module="music">
-        <div class="module-header">
-            <div class="module-title"><i class="fa-solid fa-music"></i><h3>Music Player</h3></div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field"><label>Default volume:</label><input type="range" id="musicVolume" min="0" max="100" value="85"><span id="volumeValue">85%</span></div>
-            <div class="config-field"><label>Default shuffle:</label><select id="musicShuffle"><option value="false">Off</option><option value="true">On</option></select></div>
-            <button class="upload-btn" id="uploadMusicBtn">🎵 Load Music</button>
-        </div>
-    </div>
-
-    <!-- Radio Module -->
-    <div class="module-card" data-module="radio">
-        <div class="module-header">
-            <div class="module-title"><i class="fa-solid fa-radio"></i><h3>Radio</h3></div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field">
-                <label>Default Station:</label>
-                <select id="radioDefaultStation">
-                    <option value="0">RTÉ Radio 1</option>
-                    <option value="1">Today FM</option>
-                    <option value="2">Newstalk</option>
-                    <option value="3">RTÉ Lyric FM</option>
-                    <option value="4">RTÉ 2FM</option>
-                    <option value="5">Cork 96FM</option>
-                    <option value="6">Dublin FM 104</option>
-                    <option value="7">Galway Bay FM</option>
-                    <option value="8">Classic FM</option>
-                    <option value="9">Live 95 (Limerick)</option>
-                </select>
-                <small>Choose your preferred station. Radio will start playing when unlocked.</small>
-            </div>
-            <div class="config-field">
-                <label>Default Volume:</label>
-                <input type="range" id="radioVolume" min="0" max="100" value="70">
-                <span id="radioVolumeValue">70%</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- News Module -->
-    <div class="module-card" data-module="news">
-        <div class="module-header">
-            <div class="module-title"><i class="fa-solid fa-newspaper"></i><h3>News</h3></div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field"><label>RSS Feed:</label><select id="newsRssUrl"><option value="https://www.thejournal.ie/feed/">The Journal</option><option value="https://www.rte.ie/feeds/rss/?index=/news/">RTÉ News</option><option value="https://www.irishexaminer.com/feed/35-top_news.xml">Irish Examiner</option></select></div>
-            <div class="config-field"><label>Refresh interval (minutes):</label><input type="number" id="newsRefresh" value="15"></div>
-            <div class="config-field"><label>Max articles:</label><input type="number" id="newsMaxArticles" value="4"></div>
-        </div>
-    </div>
-
-    <!-- Mastodon Module -->
-    <div class="module-card" data-module="mastodon">
-        <div class="module-header">
-            <div class="module-title"><i class="fa-brands fa-mastodon"></i><h3>Social Media</h3></div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field"><label>Instance URL:</label><input type="text" id="mastodonInstance" value="https://mastodon.ie"></div>
-            <div class="config-field"><label>Trending limit:</label><input type="number" id="mastodonLimit" value="4"></div>
-        </div>
-    </div>
-
-    <!-- Calendar Module -->
-    <div class="module-card" data-module="calendar">
-        <div class="module-header">
-            <div class="module-title"><i class="fa-regular fa-calendar"></i><h3>Calendar (Proton ICS)</h3></div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field"><label>Proton Calendar ICS Link:</label><input type="text" id="calendarUrl" placeholder="Paste your ICS link here"></div>
-            <div class="config-field"><label>Notification time:</label><select id="calendarNotificationMinutes"><option value="30" selected>30 minutes</option></select></div>
-            <small>Get ICS link from Proton Calendar → Settings → Calendars → "Link for viewing"</small>
-        </div>
-    </div>
-
-    <!-- SIM Phone Module -->
-    <div class="module-card" data-module="phone">
-        <div class="module-header">
-            <div class="module-title"><i class="fa-solid fa-phone"></i><h3>SIM Phone</h3></div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field">
-                <label>Phone Contacts</label>
-                <div id="phoneContactsList" class="contact-list"></div>
-            </div>
-            <div style="display: flex; gap: 12px; margin-top: 16px; margin-bottom: 16px; flex-wrap: wrap;">
-                <input type="text" id="phoneName" placeholder="Contact Name" style="flex: 2;">
-                <input type="tel" id="phoneNumber" placeholder="Phone Number" style="flex: 2;">
-                <input type="file" id="phonePhoto" accept="image/*" style="flex: 1;">
-                <button id="addPhoneInline" class="upload-btn" style="margin: 0;">+ Add Contact</button>
-            </div>
-            <div class="config-field">
-                <label>Auto-dial warning (seconds):</label>
-                <input type="number" id="autoDialDelay" min="5" max="30" value="10">
-                <small>⚠️ Warning: Calls will be placed immediately when unlocked. Keep locked unless making a call.</small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Chat Module -->
-    <div class="module-card" data-module="chat">
-        <div class="module-header">
-            <div class="module-title"><i class="fa-regular fa-message"></i><h3>Chat (Matrix)</h3></div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field"><label>Homeserver:</label><input type="text" id="chatHomeserver" value="https://matrix.org"></div>
-            <div class="config-field"><label>Access Token:</label><input type="password" id="chatAccessToken" placeholder="mat_..."></div>
-            <div class="config-field"><label>User ID:</label><input type="text" id="chatUserId" placeholder="@username:matrix.org"></div>
-            <div class="config-field"><label>Room 1:</label><input type="text" id="chatRoom1" placeholder="#room:matrix.org"></div>
-            <div class="config-field"><label>Room 2:</label><input type="text" id="chatRoom2"></div>
-            <div class="config-field"><label>Room 3:</label><input type="text" id="chatRoom3"></div>
-            <div class="config-field"><label>Refresh interval (sec):</label><input type="number" id="chatRefreshInterval" value="30"></div>
-        </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- PREMIUM MODULES SECTION (ENABLED TOGGLES - NO DISABLED STYLES) -->
-    <!-- ============================================================ -->
-    <div class="header">
-        <h2>Premium Modules <span style="font-size: 0.8rem; background: #e2e8f0; padding: 2px 8px; border-radius: 20px;">🔒 Premium Features</span></h2>
-        <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">Enable premium features below</p>
-    </div>
-
-    <!-- Premium 1: Free & Unlimited Calls (Infobip) -->
-    <div class="module-card" data-module="clicktocall">
-        <div class="module-header">
-            <div class="module-title">
-                <i class="fa-solid fa-phone-volume"></i>
-                <h3>Free & Unlimited Calls</h3>
-                <span style="font-size: 0.7rem; background: #f59e0b; padding: 2px 8px; border-radius: 12px; margin-left: 8px;">Premium</span>
-            </div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field">
-                <label>Infobip Base URL:</label>
-                <input type="url" id="infobipBaseUrl" placeholder="https://your-account.api.infobip.com">
-            </div>
-            <div class="config-field">
-                <label>API Key:</label>
-                <input type="password" id="infobipApiKey" placeholder="Your API Key">
-            </div>
-            <div class="config-field">
-                <label>Application ID:</label>
-                <input type="text" id="infobipAppId" placeholder="Your Application ID">
-            </div>
-            <div class="config-field">
-                <label>Caller ID:</label>
-                <input type="tel" id="infobipCallerId" placeholder="+1234567890">
-            </div>
-        </div>
-    </div>
-
-    <!-- Premium 2: Live Bus Tracker -->
-    <div class="module-card" data-module="bus">
-        <div class="module-header">
-            <div class="module-title">
-                <i class="fa-solid fa-bus"></i>
-                <h3>Live Bus Tracker</h3>
-                <span style="font-size: 0.7rem; background: #f59e0b; padding: 2px 8px; border-radius: 12px; margin-left: 8px;">Premium</span>
-            </div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field"><label>Route IDs (comma-separated):</label><input type="text" id="busRouteIds" placeholder="e.g., 223, 215"></div>
-            <div class="config-field"><label>Stop IDs (comma-separated):</label><input type="text" id="busStopIds" placeholder="e.g., 242081,242051"></div>
-        </div>
-    </div>
-
-    <!-- Premium 3: Emergency Location Button -->
-    <div class="module-card" data-module="emergency">
-        <div class="module-header">
-            <div class="module-title">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <h3>Emergency Location Button</h3>
-                <span style="font-size: 0.7rem; background: #f59e0b; padding: 2px 8px; border-radius: 12px; margin-left: 8px;">Premium</span>
-            </div>
-            <div class="toggle-switch"><div class="toggle-slider"></div></div>
-        </div>
-        <div class="module-config">
-            <div class="config-field"><label>Emergency Contacts</label><div id="emergencyContactsList" class="contact-list"></div></div>
-            <div style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-                <input type="text" id="emergencyName" placeholder="Name" style="flex:1;">
-                <input type="tel" id="emergencyPhone" placeholder="Phone" style="flex:1;">
-                <button id="addEmergencyInline" class="add-contact-btn">+ Add</button>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<div class="brand">
-    <span><a href="/terms">Terms of Service</a> | <a href="/privacy">Privacy Policy</a></span>
-</div>
-
-<script>
-    // ============================================================
-    // STORAGE FUNCTIONS (EXACT MATCH to storage.js)
-    // ============================================================
-    const DB_NAME = 'pleie_storage';
-    const DB_VERSION = 2;
-    let db = null;
-    let phoneContacts = [];
-    let emergencyContacts = [];
-
-    function initDB() {
-        return new Promise((resolve, reject) => {
-            if (db && db.version === DB_VERSION) {
-                resolve(db);
-                return;
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-            request.onerror = () => reject(request.error);
-            request.onsuccess = () => {
-                db = request.result;
-                resolve(db);
-            };
-            request.onupgradeneeded = (event) => {
-                const database = event.target.result;
-                if (!database.objectStoreNames.contains('music')) {
-                    database.createObjectStore('music', { keyPath: 'id', autoIncrement: true });
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    Arial, sans-serif;
+                background: #f6f8fc;
+                padding: 20px;
+            }
+            .settings-container {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #0047cc;
+            }
+            .header h1 {
+                color: #0047cc;
+            }
+            .header h2 {
+                color: #0047cc;
+                font-size: 1.2rem;
+            }
+            .header-buttons {
+                display: flex;
+                gap: 10px;
+            }
+            button {
+                padding: 8px 16px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .save-btn {
+                background: #0047cc;
+                color: white;
+                border: none;
+            }
+            .reset-btn {
+                background: #ef4444;
+                color: white;
+                border: none;
+            }
+            .exit-btn {
+                background: #64748b;
+                color: white;
+                border: none;
+            }
+            .module-card {
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                margin-bottom: 16px;
+                overflow: hidden;
+            }
+            .module-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 20px;
+                cursor: pointer;
+                background: #ffffff;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .module-header:hover {
+                background: #f8fafc;
+            }
+            .module-title {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .module-title i {
+                font-size: 1.2rem;
+                color: #0047cc;
+            }
+            .module-title h3 {
+                font-size: 1rem;
+                color: #1e293b;
+            }
+            .toggle-switch {
+                width: 52px;
+                height: 26px;
+                background: #cbd5e1;
+                border-radius: 34px;
+                position: relative;
+                cursor: pointer;
+                transition: background 0.2s;
+                flex-shrink: 0;
+            }
+            .toggle-switch.active {
+                background: #0047cc;
+            }
+            .toggle-slider {
+                width: 22px;
+                height: 22px;
+                background: white;
+                border-radius: 50%;
+                position: absolute;
+                top: 2px;
+                left: 3px;
+                transition: transform 0.2s;
+            }
+            .toggle-switch.active .toggle-slider {
+                transform: translateX(24px);
+            }
+            .module-config {
+                display: none;
+                padding: 20px;
+                background: #ffffff;
+                border-top: 1px solid #e2e8f0;
+            }
+            .config-field {
+                margin-bottom: 16px;
+            }
+            .config-field label {
+                display: block;
+                font-weight: 600;
+                margin-bottom: 8px;
+                color: #1e293b;
+            }
+            .config-field input,
+            .config-field select {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #cbd5e1;
+                border-radius: 8px;
+                font-size: 0.9rem;
+            }
+            .upload-btn {
+                background: #0047cc;
+                color: white;
+                border: none;
+                padding: 10px 16px;
+                border-radius: 8px;
+                cursor: pointer;
+                margin: 8px 0;
+            }
+            .detect-location-btn {
+                background: #0047cc;
+                color: white;
+                border: none;
+                padding: 10px 16px;
+                border-radius: 8px;
+                cursor: pointer;
+                margin-top: 8px;
+                width: 100%;
+            }
+            .weather-preview {
+                margin-top: 12px;
+                padding: 12px;
+                background: #eef2ff;
+                border-radius: 12px;
+                font-size: 0.9rem;
+            }
+            .brand {
+                text-align: center;
+                padding: 20px;
+                font-size: 12px;
+                color: #64748b;
+            }
+            .brand a {
+                color: #0047cc;
+                text-decoration: none;
+            }
+            small {
+                display: block;
+                margin-top: 6px;
+                color: #64748b;
+                font-size: 1rem;
+            }
+            .contact-list {
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                padding: 12px;
+                min-height: 120px;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            .contact-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .contact-item:last-child {
+                border-bottom: none;
+            }
+            .contact-photo {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                overflow: hidden;
+                background: #e2e8f0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .contact-photo img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .contact-info {
+                flex: 1;
+            }
+            .contact-info strong {
+                font-size: 0.9rem;
+            }
+            .contact-info small {
+                font-size: 0.75rem;
+                color: #64748b;
+                margin-top: 2px;
+            }
+            .delete-contact {
+                background: #ef4444;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 6px 12px;
+                cursor: pointer;
+                font-size: 0.8rem;
+            }
+            .delete-contact:hover {
+                background: #dc2626;
+            }
+            .error {
+                color: #dc2626;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="settings-container">
+            <div class="header">
+                <h1>Settings</h1>
+                <div class="header-buttons">
+                    <button class="save-btn" id="saveBtn">Save Settings</button>
+                    <button class="reset-btn" id="resetBtn">⟳ Reset All</button>
+                    <button class="exit-btn" id="exitBtn">Exit</button>
+                </div>
+            </div>
+
+            <div class="header">
+                <h2>Free Modules</h2>
+            </div>
+
+            <!-- Weather Module (force enabled) -->
+            <div class="module-card" data-module="weather">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-cloud-sun"></i>
+                        <h3>Weather Location</h3>
+                    </div>
+                    <div
+                        class="toggle-switch active"
+                        style="opacity: 0.5; pointer-events: none"
+                    >
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Location:</label
+                        ><input type="text" id="weatherLocation" value="Cork" />
+                    </div>
+                    <div class="config-field">
+                        <label>Country:</label
+                        ><select id="weatherCountry">
+                            <option value="IE">Ireland</option>
+                            <option value="GB">United Kingdom</option>
+                            <option value="US">United States</option>
+                        </select>
+                    </div>
+                    <button id="detectLocationBtn" class="detect-location-btn">
+                        <i class="fa-solid fa-location-dot"></i> Detect My
+                        Location
+                    </button>
+                    <div id="weatherPreview" class="weather-preview"></div>
+                </div>
+            </div>
+
+            <!-- Gallery Module -->
+            <div class="module-card" data-module="gallery">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-images"></i>
+                        <h3>Gallery</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Slideshow speed (ms):</label
+                        ><input type="number" id="gallerySpeed" value="8000" />
+                    </div>
+                    <div class="config-field">
+                        <label>Auto-start:</label
+                        ><select id="galleryAutoStart">
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                    <button class="upload-btn" id="uploadGalleryBtn">
+                        📸 Load Images
+                    </button>
+                    <small
+                        >Rename image filenames in caption format:
+                        My+Lovely+Horse.jpg -> My Lovely Horse</small
+                    >
+                </div>
+            </div>
+
+            <!-- Music Module -->
+            <div class="module-card" data-module="music">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-music"></i>
+                        <h3>Music Player</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Default volume:</label
+                        ><input
+                            type="range"
+                            id="musicVolume"
+                            min="0"
+                            max="100"
+                            value="85"
+                        /><span id="volumeValue">85%</span>
+                    </div>
+                    <div class="config-field">
+                        <label>Default shuffle:</label
+                        ><select id="musicShuffle">
+                            <option value="false">Off</option>
+                            <option value="true">On</option>
+                        </select>
+                    </div>
+                    <button class="upload-btn" id="uploadMusicBtn">
+                        🎵 Load Music
+                    </button>
+                </div>
+            </div>
+
+            <!-- Radio Module -->
+            <div class="module-card" data-module="radio">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-radio"></i>
+                        <h3>Radio</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Default Station:</label>
+                        <select id="radioDefaultStation">
+                            <option value="0">RTÉ Radio 1</option>
+                            <option value="1">Today FM</option>
+                            <option value="2">Newstalk</option>
+                            <option value="3">RTÉ Lyric FM</option>
+                            <option value="4">RTÉ 2FM</option>
+                            <option value="5">Cork 96FM</option>
+                            <option value="6">Dublin FM 104</option>
+                            <option value="7">Galway Bay FM</option>
+                            <option value="8">Classic FM</option>
+                            <option value="9">Live 95 (Limerick)</option>
+                        </select>
+                        <small
+                            >Choose your preferred station. Radio will start
+                            playing when unlocked.</small
+                        >
+                    </div>
+                    <div class="config-field">
+                        <label>Default Volume:</label>
+                        <input
+                            type="range"
+                            id="radioVolume"
+                            min="0"
+                            max="100"
+                            value="70"
+                        />
+                        <span id="radioVolumeValue">70%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News Module -->
+            <div class="module-card" data-module="news">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-newspaper"></i>
+                        <h3>News</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>RSS Feed:</label
+                        ><select id="newsRssUrl">
+                            <option value="https://www.thejournal.ie/feed/">
+                                The Journal
+                            </option>
+                            <option
+                                value="https://www.rte.ie/feeds/rss/?index=/news/"
+                            >
+                                RTÉ News
+                            </option>
+                            <option
+                                value="https://www.irishexaminer.com/feed/35-top_news.xml"
+                            >
+                                Irish Examiner
+                            </option>
+                        </select>
+                    </div>
+                    <div class="config-field">
+                        <label>Refresh interval (minutes):</label
+                        ><input type="number" id="newsRefresh" value="15" />
+                    </div>
+                    <div class="config-field">
+                        <label>Max articles:</label
+                        ><input type="number" id="newsMaxArticles" value="4" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mastodon Module -->
+            <div class="module-card" data-module="social">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-brands fa-mastodon"></i>
+                        <h3>Social Media</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Instance URL:</label
+                        ><input
+                            type="text"
+                            id="mastodonInstance"
+                            value="https://mastodon.ie"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Trending limit:</label
+                        ><input type="number" id="mastodonLimit" value="4" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Module -->
+            <div class="module-card" data-module="calendar">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-regular fa-calendar"></i>
+                        <h3>Calendar (Proton ICS)</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Proton Calendar ICS Link:</label
+                        ><input
+                            type="text"
+                            id="calendarUrl"
+                            placeholder="Paste your ICS link here"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Notification time:</label
+                        ><select id="calendarNotificationMinutes">
+                            <option value="30" selected>30 minutes</option>
+                        </select>
+                    </div>
+                    <small
+                        >Get ICS link from Proton Calendar → Settings →
+                        Calendars → "Link for viewing"</small
+                    >
+                </div>
+            </div>
+
+            <!-- SIM Phone Module -->
+            <div class="module-card" data-module="phone">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-phone"></i>
+                        <h3>SIM Phone</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Phone Contacts</label>
+                        <div id="phoneContactsList" class="contact-list"></div>
+                    </div>
+                    <div
+                        style="
+                            display: flex;
+                            gap: 12px;
+                            margin-top: 16px;
+                            margin-bottom: 16px;
+                            flex-wrap: wrap;
+                        "
+                    >
+                        <input
+                            type="text"
+                            id="phoneName"
+                            placeholder="Contact Name"
+                            style="flex: 2"
+                        />
+                        <input
+                            type="tel"
+                            id="phoneNumber"
+                            placeholder="Phone Number"
+                            style="flex: 2"
+                        />
+                        <input
+                            type="file"
+                            id="phonePhoto"
+                            accept="image/png,image/jpeg,image/webp"
+                            style="flex: 1"
+                        />
+                        <button
+                            id="addPhoneInline"
+                            class="upload-btn"
+                            style="margin: 0"
+                        >
+                            + Add Contact
+                        </button>
+                    </div>
+                    <div class="config-field">
+                        <label>Auto-dial warning (seconds):</label>
+                        <input
+                            type="number"
+                            id="autoDialDelay"
+                            min="5"
+                            max="30"
+                            value="10"
+                        />
+                        <small
+                            >⚠️ Warning: Calls will be placed immediately when
+                            unlocked. Keep locked unless making a call.</small
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Module -->
+            <div class="module-card" data-module="chat">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-regular fa-message"></i>
+                        <h3>Chat (Matrix)</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Homeserver:</label
+                        ><input
+                            type="text"
+                            id="chatHomeserver"
+                            value="https://matrix.org"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Access Token:</label
+                        ><input
+                            type="password"
+                            id="chatAccessToken"
+                            placeholder="mat_..."
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>User ID:</label
+                        ><input
+                            type="text"
+                            id="chatUserId"
+                            placeholder="@username:matrix.org"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Room 1:</label
+                        ><input
+                            type="text"
+                            id="chatRoom1"
+                            placeholder="#room:matrix.org"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Room 2:</label
+                        ><input type="text" id="chatRoom2" />
+                    </div>
+                    <div class="config-field">
+                        <label>Room 3:</label
+                        ><input type="text" id="chatRoom3" />
+                    </div>
+                    <div class="config-field">
+                        <label>Refresh interval (sec):</label
+                        ><input
+                            type="number"
+                            id="chatRefreshInterval"
+                            value="30"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- PREMIUM MODULES SECTION (ENABLED TOGGLES - NO DISABLED STYLES) -->
+            <!-- ============================================================ -->
+            <div class="header">
+                <h2>
+                    Premium Modules
+                    <span
+                        style="
+                            font-size: 0.8rem;
+                            background: #e2e8f0;
+                            padding: 2px 8px;
+                            border-radius: 20px;
+                        "
+                        >🔒 Premium Features</span
+                    >
+                </h2>
+                <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px">
+                    Enable premium features below
+                </p>
+            </div>
+
+            <!-- Premium 1: Free & Unlimited Calls (Infobip) -->
+            <div class="module-card" data-module="webrtc">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-phone-volume"></i>
+                        <h3>Free & Unlimited Calls</h3>
+                        <span
+                            style="
+                                font-size: 0.7rem;
+                                background: #f59e0b;
+                                padding: 2px 8px;
+                                border-radius: 12px;
+                                margin-left: 8px;
+                            "
+                            >Premium</span
+                        >
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Infobip Base URL:</label>
+                        <input
+                            type="url"
+                            id="infobipBaseUrl"
+                            placeholder="https://your-account.api.infobip.com"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>API Key:</label>
+                        <input
+                            type="password"
+                            id="infobipApiKey"
+                            placeholder="Your API Key"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Application ID:</label>
+                        <input
+                            type="text"
+                            id="infobipAppId"
+                            placeholder="Your Application ID"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Caller ID:</label>
+                        <input
+                            type="tel"
+                            id="infobipCallerId"
+                            placeholder="+1234567890"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium 2: Live Bus Tracker -->
+            <div class="module-card" data-module="live_bus">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-bus"></i>
+                        <h3>Live Bus Tracker</h3>
+                        <span
+                            style="
+                                font-size: 0.7rem;
+                                background: #f59e0b;
+                                padding: 2px 8px;
+                                border-radius: 12px;
+                                margin-left: 8px;
+                            "
+                            >Premium</span
+                        >
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Route IDs (comma-separated):</label
+                        ><input
+                            type="text"
+                            id="busRouteIds"
+                            placeholder="e.g., 223, 215"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Stop IDs (comma-separated):</label
+                        ><input
+                            type="text"
+                            id="busStopIds"
+                            placeholder="e.g., 242081,242051"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium 3: Emergency Location Button -->
+            <div class="module-card" data-module="emergency_alert">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <h3>Emergency Location Button</h3>
+                        <span
+                            style="
+                                font-size: 0.7rem;
+                                background: #f59e0b;
+                                padding: 2px 8px;
+                                border-radius: 12px;
+                                margin-left: 8px;
+                            "
+                            >Premium</span
+                        >
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Emergency Contacts</label>
+                        <div
+                            id="emergencyContactsList"
+                            class="contact-list"
+                        ></div>
+                    </div>
+                    <div
+                        style="
+                            display: flex;
+                            gap: 8px;
+                            margin-top: 8px;
+                            margin-bottom: 16px;
+                            flex-wrap: wrap;
+                        "
+                    >
+                        <input
+                            type="text"
+                            id="emergencyName"
+                            placeholder="Name"
+                            style="flex: 1"
+                        />
+                        <input
+                            type="tel"
+                            id="emergencyPhone"
+                            placeholder="Phone"
+                            style="flex: 1"
+                        />
+                        <button id="addEmergencyInline" class="add-contact-btn">
+                            + Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="brand">
+            <span
+                ><a href="/terms">Terms of Service</a> |
+                <a href="/privacy">Privacy Policy</a></span
+            >
+        </div>
+
+        <script>
+            // ============================================================
+            // STORAGE FUNCTIONS (EXACT MATCH to storage.js)
+            // ============================================================
+            const DB_NAME = "pleie_storage";
+            const DB_VERSION = 2;
+            let db = null;
+            let phoneContacts = [];
+            let emergencyContacts = [];
+
+            function initDB() {
+                return new Promise((resolve, reject) => {
+                    if (db && db.version === DB_VERSION) {
+                        resolve(db);
+                        return;
+                    }
+                    const request = indexedDB.open(DB_NAME, DB_VERSION);
+                    request.onerror = () => reject(request.error);
+                    request.onsuccess = () => {
+                        db = request.result;
+                        resolve(db);
+                    };
+                    request.onupgradeneeded = (event) => {
+                        const database = event.target.result;
+                        if (!database.objectStoreNames.contains("music")) {
+                            database.createObjectStore("music", {
+                                keyPath: "id",
+                                autoIncrement: true,
+                            });
+                        }
+                        if (!database.objectStoreNames.contains("gallery")) {
+                            database.createObjectStore("gallery", {
+                                keyPath: "id",
+                                autoIncrement: true,
+                            });
+                        }
+                    };
+                });
+            }
+
+            async function saveMusic(files) {
+                const database = await initDB();
+                return new Promise((resolve, reject) => {
+                    const tx = database.transaction(["music"], "readwrite");
+                    const store = tx.objectStore("music");
+                    store.clear();
+                    files.forEach((file, i) => {
+                        store.add({
+                            id: i,
+                            name: file.name,
+                            type: file.type,
+                            file: file.file || file,
+                        });
+                    });
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject(tx.error);
+                });
+            }
+
+            async function saveGallery(images) {
+                const database = await initDB();
+                return new Promise((resolve, reject) => {
+                    const tx = database.transaction(["gallery"], "readwrite");
+                    const store = tx.objectStore("gallery");
+                    store.clear();
+                    images.forEach((img, i) => {
+                        store.add({ id: i, name: img.name, file: img.file });
+                    });
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject(tx.error);
+                });
+            }
+
+            // ============================================================
+            // SETTINGS FUNCTIONS
+            // ============================================================
+            const STORAGE_KEY = "handiSettings";
+
+            function loadSettings() {
+                try {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) {
+                        const parsed = JSON.parse(stored);
+                        // Merge with defaults so missing keys get proper values
+                        const defaults = {
+                            enabledModules: {
+                                gallery: false,
+                                music: false,
+                                radio: false,
+                                news: false,
+                                social: false,
+                                calendar: false,
+                                phone: false,
+                                chat: false,
+                                webrtc: false,
+                                live_bus: false,
+                                emergency_alert: false,
+                            },
+                            gallery: { speed: 8000, autoStart: true },
+                            music: { volume: 85, shuffle: false },
+                            radio: { defaultStation: "0", volume: 70 },
+                            news: { rssUrl: "", refresh: 15, maxArticles: 4 },
+                            social: {
+                                instance: "https://mastodon.ie",
+                                limit: 4,
+                            },
+                            calendar: { url: "", notificationMinutes: 30 },
+                            phone: { contacts: [], autoDialDelay: 10 },
+                            live_bus: { routeIds: "", stopIds: "" },
+                            chat: {
+                                homeserver: "https://matrix.org",
+                                accessToken: "",
+                                userId: "",
+                                rooms: [],
+                                refreshInterval: 30,
+                            },
+                            emergency_alert: { contacts: [] },
+                            weather: { location: "Cork", country: "IE" },
+                            webrtc: {},
+                        };
+                        // Deep merge parsed into defaults
+                        for (const key of Object.keys(defaults)) {
+                            if (parsed[key] !== undefined) {
+                                if (
+                                    typeof defaults[key] === "object" &&
+                                    defaults[key] !== null &&
+                                    !Array.isArray(defaults[key])
+                                ) {
+                                    defaults[key] = {
+                                        ...defaults[key],
+                                        ...parsed[key],
+                                    };
+                                } else {
+                                    defaults[key] = parsed[key];
+                                }
+                            }
+                        }
+                        return defaults;
+                    }
+                } catch (e) {}
+                return {
+                    enabledModules: {
+                        gallery: false,
+                        music: false,
+                        radio: false,
+                        news: false,
+                        social: false,
+                        calendar: false,
+                        phone: false,
+                        chat: false,
+                        webrtc: false,
+                        live_bus: false,
+                        emergency_alert: false,
+                    },
+                    gallery: { speed: 8000, autoStart: true },
+                    music: { volume: 85, shuffle: false },
+                    radio: { defaultStation: "0", volume: 70 },
+                    news: { rssUrl: "", refresh: 15, maxArticles: 4 },
+                    social: { instance: "https://mastodon.ie", limit: 4 },
+                    calendar: { url: "", notificationMinutes: 30 },
+                    phone: { contacts: [], autoDialDelay: 10 },
+                    live_bus: { routeIds: "", stopIds: "" },
+                    chat: {
+                        homeserver: "https://matrix.org",
+                        accessToken: "",
+                        userId: "",
+                        rooms: [],
+                        refreshInterval: 30,
+                    },
+                    emergency_alert: { contacts: [] },
+                    weather: { location: "Cork", country: "IE" },
+                    webrtc: {},
+                };
+            }
+
+            function saveSettings(settings) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+            }
+
+            // ============================================================
+            // PHONE CONTACTS MANAGEMENT
+            // ============================================================
+            function escapeHtml(str) {
+                if (!str) return "";
+                return str.replace(
+                    /[&<>]/g,
+                    (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m],
+                );
+            }
+
+            function renderPhoneContacts() {
+                const container = document.getElementById("phoneContactsList");
+                if (!container) return;
+                if (phoneContacts.length === 0) {
+                    container.innerHTML =
+                        '<div style="padding: 20px; text-align: center; color: #64748b;">No contacts saved. Add a contact below.</div>';
+                    return;
                 }
-                if (!database.objectStoreNames.contains('gallery')) {
-                    database.createObjectStore('gallery', { keyPath: 'id', autoIncrement: true });
-                }
-            };
-        });
-    }
-
-    async function saveMusic(files) {
-        const database = await initDB();
-        return new Promise((resolve, reject) => {
-            const tx = database.transaction(['music'], 'readwrite');
-            const store = tx.objectStore('music');
-            store.clear();
-            files.forEach((file, i) => {
-                store.add({ id: i, name: file.name, type: file.type, file: file.file || file });
-            });
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
-        });
-    }
-
-    async function saveGallery(images) {
-        const database = await initDB();
-        return new Promise((resolve, reject) => {
-            const tx = database.transaction(['gallery'], 'readwrite');
-            const store = tx.objectStore('gallery');
-            store.clear();
-            images.forEach((img, i) => {
-                store.add({ id: i, name: img.name, file: img.file });
-            });
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
-        });
-    }
-
-    // ============================================================
-    // SETTINGS FUNCTIONS
-    // ============================================================
-    const STORAGE_KEY = 'handiSettings';
-    
-    function loadSettings() {
-        try {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) return JSON.parse(stored);
-        } catch(e) {}
-        return { enabledModules: {} };
-    }
-    
-    function saveSettings(settings) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    }
-    
-    // ============================================================
-    // PHONE CONTACTS MANAGEMENT
-    // ============================================================
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
-    }
-
-    function renderPhoneContacts() {
-        const container = document.getElementById('phoneContactsList');
-        if (!container) return;
-        if (phoneContacts.length === 0) {
-            container.innerHTML = '<div style="padding: 20px; text-align: center; color: #64748b;">No contacts saved. Add a contact below.</div>';
-            return;
-        }
-        container.innerHTML = phoneContacts.map((c, i) => `
+                container.innerHTML = phoneContacts
+                    .map(
+                        (c, i) => `
             <div class="contact-item">
                 <div class="contact-photo">
                     ${c.photo ? `<img src="${c.photo}" alt="">` : '<i class="fa-solid fa-user"></i>'}
@@ -415,60 +1055,80 @@
                 </div>
                 <button class="delete-contact" data-index="${i}">✖ Delete</button>
             </div>
-        `).join('');
-        
-        document.querySelectorAll('.delete-contact').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const idx = parseInt(btn.dataset.index);
-                phoneContacts.splice(idx, 1);
-                renderPhoneContacts();
-            });
-        });
-    }
+        `,
+                    )
+                    .join("");
 
-    function addPhoneContact() {
-        const nameInput = document.getElementById('phoneName');
-        const numberInput = document.getElementById('phoneNumber');
-        const photoFile = document.getElementById('phonePhoto')?.files[0];
-        
-        const name = nameInput?.value.trim();
-        const number = numberInput?.value.trim();
-        
-        if (!name || !number) {
-            alert('Please enter both name and phone number');
-            return;
-        }
-        
-        if (photoFile) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                phoneContacts.push({ name, number, photo: e.target.result });
-                renderPhoneContacts();
-                nameInput.value = '';
-                numberInput.value = '';
-                document.getElementById('phonePhoto').value = '';
-            };
-            reader.readAsDataURL(photoFile);
-        } else {
-            phoneContacts.push({ name, number, photo: null });
-            renderPhoneContacts();
-            nameInput.value = '';
-            numberInput.value = '';
-            if (document.getElementById('phonePhoto')) document.getElementById('phonePhoto').value = '';
-        }
-    }
+                document.querySelectorAll(".delete-contact").forEach((btn) => {
+                    btn.addEventListener("click", (e) => {
+                        const idx = parseInt(btn.dataset.index);
+                        phoneContacts.splice(idx, 1);
+                        renderPhoneContacts();
+                    });
+                });
+            }
 
-    // ============================================================
-    // EMERGENCY CONTACTS MANAGEMENT
-    // ============================================================
-    function renderEmergencyContacts() {
-        const container = document.getElementById('emergencyContactsList');
-        if (!container) return;
-        if (emergencyContacts.length === 0) {
-            container.innerHTML = '<div style="padding: 20px; text-align: center; color: #64748b;">No emergency contacts saved. Add a contact below.</div>';
-            return;
-        }
-        container.innerHTML = emergencyContacts.map((c, i) => `
+            function addPhoneContact() {
+                const nameInput = document.getElementById("phoneName");
+                const numberInput = document.getElementById("phoneNumber");
+                const photoFile =
+                    document.getElementById("phonePhoto")?.files[0];
+
+                const name = nameInput?.value.trim();
+                const number = numberInput?.value.trim();
+
+                if (!name || !number) {
+                    alert("Please enter both name and phone number");
+                    return;
+                }
+
+                if (photoFile) {
+                    const MAX_SIZE = 2 * 1024 * 1024; // 2 MB
+                    if (photoFile.size > MAX_SIZE) {
+                        alert(
+                            "Contact photo must be under 2 MB. Please choose a smaller image.",
+                        );
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        phoneContacts.push({
+                            name,
+                            number,
+                            photo: e.target.result,
+                        });
+                        renderPhoneContacts();
+                        nameInput.value = "";
+                        numberInput.value = "";
+                        document.getElementById("phonePhoto").value = "";
+                    };
+                    reader.readAsDataURL(photoFile);
+                } else {
+                    phoneContacts.push({ name, number, photo: null });
+                    renderPhoneContacts();
+                    nameInput.value = "";
+                    numberInput.value = "";
+                    if (document.getElementById("phonePhoto"))
+                        document.getElementById("phonePhoto").value = "";
+                }
+            }
+
+            // ============================================================
+            // EMERGENCY CONTACTS MANAGEMENT
+            // ============================================================
+            function renderEmergencyContacts() {
+                const container = document.getElementById(
+                    "emergencyContactsList",
+                );
+                if (!container) return;
+                if (emergencyContacts.length === 0) {
+                    container.innerHTML =
+                        '<div style="padding: 20px; text-align: center; color: #64748b;">No emergency contacts saved. Add a contact below.</div>';
+                    return;
+                }
+                container.innerHTML = emergencyContacts
+                    .map(
+                        (c, i) => `
             <div class="contact-item">
                 <div class="contact-photo">
                     ${c.photo ? `<img src="${c.photo}" alt="">` : '<i class="fa-solid fa-user"></i>'}
@@ -479,381 +1139,640 @@
                 </div>
                 <button class="delete-emergency-contact" data-index="${i}">✖ Delete</button>
             </div>
-        `).join('');
-        
-        document.querySelectorAll('.delete-emergency-contact').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const idx = parseInt(btn.dataset.index);
-                emergencyContacts.splice(idx, 1);
-                renderEmergencyContacts();
-            });
-        });
-    }
+        `,
+                    )
+                    .join("");
 
-    function addEmergencyContact() {
-        const nameInput = document.getElementById('emergencyName');
-        const numberInput = document.getElementById('emergencyPhone');
-        
-        const name = nameInput?.value.trim();
-        const number = numberInput?.value.trim();
-        
-        if (!name || !number) {
-            alert('Please enter both name and phone number');
-            return;
-        }
-        
-        emergencyContacts.push({ name, number, photo: null });
-        renderEmergencyContacts();
-        nameInput.value = '';
-        numberInput.value = '';
-    }
-    
-    // ============================================================
-    // MODULE MANAGEMENT
-    // ============================================================
-    const MODULES = ['gallery', 'music', 'radio', 'news', 'mastodon', 'calendar', 'phone', 'chat', 'clicktocall', 'bus', 'emergency'];
-    
-    function applySettingsToToggles() {
-        const settings = loadSettings();
-        const enabled = settings.enabledModules || {};
-        MODULES.forEach(moduleId => {
-            const card = document.querySelector(`.module-card[data-module="${moduleId}"]`);
-            if (card) {
-                const toggle = card.querySelector('.toggle-switch');
-                if (toggle) {
-                    if (enabled[moduleId] === true) toggle.classList.add('active');
-                    else toggle.classList.remove('active');
-                }
-            }
-        });
-        
-        // Load phone contacts
-        if (settings.phone?.contacts) {
-            phoneContacts = settings.phone.contacts;
-            renderPhoneContacts();
-        }
-        if (document.getElementById('autoDialDelay') && settings.phone?.autoDialDelay) {
-            document.getElementById('autoDialDelay').value = settings.phone.autoDialDelay;
-        }
-        
-        // Load emergency contacts
-        if (settings.emergency?.contacts) {
-            emergencyContacts = settings.emergency.contacts;
-            renderEmergencyContacts();
-        }
-        
-        // Load radio settings
-        if (settings.radio) {
-            if (document.getElementById('radioDefaultStation')) {
-                document.getElementById('radioDefaultStation').value = settings.radio.defaultStation || '0';
-            }
-            if (document.getElementById('radioVolume')) {
-                document.getElementById('radioVolume').value = settings.radio.volume || 70;
-                const volSpan = document.getElementById('radioVolumeValue');
-                if (volSpan) volSpan.innerText = (settings.radio.volume || 70) + '%';
-            }
-        }
-    }
-    
-    function collectSettings() {
-        const settings = loadSettings();
-        if (!settings.enabledModules) settings.enabledModules = {};
-        
-        MODULES.forEach(moduleId => {
-            const card = document.querySelector(`.module-card[data-module="${moduleId}"]`);
-            if (card) {
-                const toggle = card.querySelector('.toggle-switch');
-                if (toggle) settings.enabledModules[moduleId] = toggle.classList.contains('active');
-            }
-        });
-        
-        if (!settings.weather) settings.weather = {};
-        settings.weather.location = document.getElementById('weatherLocation')?.value || 'Cork';
-        settings.weather.country = document.getElementById('weatherCountry')?.value || 'IE';
-        
-        if (!settings.gallery) settings.gallery = {};
-        settings.gallery.speed = parseInt(document.getElementById('gallerySpeed')?.value) || 8000;
-        settings.gallery.autoStart = document.getElementById('galleryAutoStart')?.value === 'true';
-        
-        if (!settings.music) settings.music = {};
-        settings.music.volume = parseInt(document.getElementById('musicVolume')?.value) || 85;
-        settings.music.shuffle = document.getElementById('musicShuffle')?.value === 'true';
-        
-        if (!settings.radio) settings.radio = {};
-        settings.radio.defaultStation = document.getElementById('radioDefaultStation')?.value || '0';
-        settings.radio.volume = parseInt(document.getElementById('radioVolume')?.value) || 70;
-        
-        if (!settings.news) settings.news = {};
-        settings.news.rssUrl = document.getElementById('newsRssUrl')?.value || '';
-        settings.news.refresh = parseInt(document.getElementById('newsRefresh')?.value) || 15;
-        settings.news.maxArticles = parseInt(document.getElementById('newsMaxArticles')?.value) || 4;
-        
-        if (!settings.mastodon) settings.mastodon = {};
-        settings.mastodon.instance = document.getElementById('mastodonInstance')?.value || '';
-        settings.mastodon.limit = parseInt(document.getElementById('mastodonLimit')?.value) || 4;
-        
-        if (!settings.calendar) settings.calendar = {};
-        const calendarUrl = document.getElementById('calendarUrl')?.value.trim();
-        if (calendarUrl !== '') {
-            settings.calendar.url = calendarUrl;
-        }
-        settings.calendar.notificationMinutes = parseInt(document.getElementById('calendarNotificationMinutes')?.value) || 30;
-        
-        if (!settings.phone) settings.phone = {};
-        settings.phone.contacts = phoneContacts;
-        settings.phone.autoDialDelay = parseInt(document.getElementById('autoDialDelay')?.value) || 10;
-        
-        if (!settings.emergency) settings.emergency = {};
-        settings.emergency.contacts = emergencyContacts;
-        
-        // ============================================================
-        // CHAT SETTINGS - PRESERVE EXISTING CREDENTIALS IF INPUTS ARE BLANK
-        // ============================================================
-        if (!settings.chat) settings.chat = {};
-        
-        const newHomeserver = document.getElementById('chatHomeserver')?.value.trim();
-        const newAccessToken = document.getElementById('chatAccessToken')?.value.trim();
-        const newUserId = document.getElementById('chatUserId')?.value.trim();
-        const newRoom1 = document.getElementById('chatRoom1')?.value.trim();
-        const newRoom2 = document.getElementById('chatRoom2')?.value.trim();
-        const newRoom3 = document.getElementById('chatRoom3')?.value.trim();
-        const newRefreshInterval = parseInt(document.getElementById('chatRefreshInterval')?.value) || 30;
-        
-        if (newHomeserver !== '') {
-            settings.chat.homeserver = newHomeserver;
-        } else if (!settings.chat.homeserver) {
-            settings.chat.homeserver = 'https://matrix.org';
-        }
-        
-        if (newAccessToken !== '') {
-            settings.chat.accessToken = newAccessToken;
-        }
-        
-        if (newUserId !== '') {
-            settings.chat.userId = newUserId;
-        }
-        
-        const newRooms = [newRoom1, newRoom2, newRoom3].filter(r => r !== '');
-        if (newRooms.length > 0) {
-            settings.chat.rooms = newRooms;
-        }
-        
-        settings.chat.refreshInterval = newRefreshInterval;
-        
-        return settings;
-    }
-    
-    function saveAllSettings() {
-        const settings = collectSettings();
-        saveSettings(settings);
-        alert('Settings saved!');
-        location.reload();
-    }
-    
-    async function resetAllData() {
-        if (!confirm('⚠️ WARNING: This will permanently delete ALL of your data. Are you sure?')) return;
-        localStorage.clear();
-        sessionStorage.clear();
-        try {
-            await new Promise((resolve, reject) => {
-                const req = indexedDB.deleteDatabase(DB_NAME);
-                req.onsuccess = () => resolve();
-                req.onerror = (e) => reject(e);
-            });
-        } catch(e) {}
-        alert('All data has been reset. The page will now reload.');
-        location.reload();
-    }
-    
-    // ============================================================
-    // UI HANDLERS
-    // ============================================================
-    
-    function setupToggles() {
-        MODULES.forEach(moduleId => {
-            const card = document.querySelector(`.module-card[data-module="${moduleId}"]`);
-            if (card) {
-                const toggle = card.querySelector('.toggle-switch');
-                if (toggle) {
-                    toggle.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        this.classList.toggle('active');
+                document
+                    .querySelectorAll(".delete-emergency-contact")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", (e) => {
+                            const idx = parseInt(btn.dataset.index);
+                            emergencyContacts.splice(idx, 1);
+                            renderEmergencyContacts();
+                        });
                     });
-                }
             }
-        });
-    }
-    
-    function setupHeaders() {
-        document.querySelectorAll('.module-header').forEach(header => {
-            header.addEventListener('click', function(e) {
-                if (e.target.closest('.toggle-switch')) return;
-                const card = this.closest('.module-card');
-                const config = card.querySelector('.module-config');
-                if (config) {
-                    const isOpen = config.style.display === 'block';
-                    document.querySelectorAll('.module-config').forEach(c => c.style.display = 'none');
-                    if (!isOpen) config.style.display = 'block';
-                }
-            });
-        });
-    }
-    
-    function handleURLParam() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const args = urlParams.get('args');
-        if (args) {
-            const valid = ['gallery', 'music', 'radio', 'news', 'mastodon', 'phone', 'weather', 'calendar', 'chat', 'clicktocall', 'bus', 'emergency'];
-            const target = args.toLowerCase();
-            if (valid.includes(target)) {
-                setTimeout(() => {
-                    document.querySelectorAll('.module-config').forEach(c => c.style.display = 'none');
-                    const card = document.querySelector(`.module-card[data-module="${target}"]`);
-                    if (card) {
-                        const config = card.querySelector('.module-config');
-                        if (config) config.style.display = 'block';
-                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        card.style.backgroundColor = '#eaf2ff';
-                        setTimeout(() => card.style.backgroundColor = '', 1500);
-                    }
-                }, 200);
-            }
-        }
-    }
-    
-    // ============================================================
-    // WEATHER PREVIEW
-    // ============================================================
-    const weatherLocationInput = document.getElementById('weatherLocation');
-    const weatherCountrySelect = document.getElementById('weatherCountry');
-    const detectLocationBtn = document.getElementById('detectLocationBtn');
-    const weatherPreview = document.getElementById('weatherPreview');
-    
-    function getWeatherDescription(code) {
-        const codes = {
-            0: "☀️ Clear", 1: "🌤️ Mainly clear", 2: "⛅ Partly cloudy", 3: "☁️ Overcast",
-            45: "🌫️ Fog", 48: "🌫️ Fog", 51: "🌧️ Drizzle", 53: "🌧️ Drizzle", 55: "🌧️ Drizzle",
-            61: "🌧️ Light rain", 63: "🌧️ Moderate rain", 65: "🌧️ Heavy rain",
-            71: "🌨️ Light snow", 73: "🌨️ Moderate snow", 75: "🌨️ Heavy snow",
-            80: "🌧️ Showers", 81: "🌧️ Showers", 82: "🌧️ Heavy showers",
-            85: "🌨️ Snow showers", 86: "🌨️ Heavy snow showers", 95: "⛈️ Thunderstorm"
-        };
-        return codes[code] || "🌡️";
-    }
-    
-    async function getCoordinates(location, countryCode) {
-        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)},${countryCode}&format=json&limit=1`;
-        try {
-            const response = await fetch(url, { headers: { 'User-Agent': 'HandiHomepage/1.0' } });
-            const data = await response.json();
-            if (data && data.length > 0) return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
-            return null;
-        } catch { return null; }
-    }
-    
-    async function showWeatherPreview() {
-        if (!weatherPreview) return;
-        const location = weatherLocationInput?.value?.trim();
-        const country = weatherCountrySelect?.value;
-        if (!location) { weatherPreview.style.display = 'none'; return; }
-        weatherPreview.style.display = 'block';
-        weatherPreview.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Fetching weather...';
-        try {
-            const coords = await getCoordinates(location, country);
-            if (!coords) { weatherPreview.innerHTML = '<span class="error">Location not found.</span>'; return; }
-            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current_weather=true`);
-            const weatherData = await weatherRes.json();
-            if (weatherData.current_weather) {
-                const temp = Math.round(weatherData.current_weather.temperature);
-                const desc = getWeatherDescription(weatherData.current_weather.weathercode);
-                weatherPreview.innerHTML = `<strong>${location}</strong>: ${desc} ${temp}°C <small>✓</small>`;
-            } else { weatherPreview.innerHTML = '<span class="error">No weather data.</span>'; }
-        } catch { weatherPreview.innerHTML = '<span class="error">Error fetching weather.</span>'; }
-    }
-    
-    function detectMyLocation() {
-        if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
-        if (weatherPreview) { weatherPreview.style.display = 'block'; weatherPreview.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Detecting...'; }
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const url = `https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`;
-            try {
-                const response = await fetch(url, { headers: { 'User-Agent': 'HandiHomepage/1.0' } });
-                const data = await response.json();
-                let city = data.address?.city || data.address?.town || data.address?.village;
-                let countryCode = data.address?.country_code?.toUpperCase() || 'IE';
-                if (city && weatherLocationInput) weatherLocationInput.value = city;
-                if (weatherCountrySelect) weatherCountrySelect.value = countryCode;
-                await showWeatherPreview();
-            } catch { weatherPreview.innerHTML = '<span class="error">Could not detect city.</span>'; }
-        }, () => { weatherPreview.innerHTML = '<span class="error">Location permission denied.</span>'; });
-    }
-    
-    // ============================================================
-    // RADIO VOLUME SLIDER
-    // ============================================================
-    const radioVolumeSlider = document.getElementById('radioVolume');
-    const radioVolumeSpan = document.getElementById('radioVolumeValue');
-    if (radioVolumeSlider && radioVolumeSpan) {
-        radioVolumeSlider.addEventListener('input', () => {
-            radioVolumeSpan.innerText = radioVolumeSlider.value + '%';
-        });
-    }
-    
-    // ============================================================
-    // FILE UPLOADS (using EXACT storage.js API)
-    // ============================================================
-    document.getElementById('uploadGalleryBtn')?.addEventListener('click', async () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.multiple = true;
-        input.accept = 'image/*';
-        input.onchange = async (e) => {
-            const files = Array.from(e.target.files);
-            const processed = files.map(f => ({ name: f.name, file: f }));
-            await saveGallery(processed);
-            alert(`Saved ${processed.length} images to gallery`);
-        };
-        input.click();
-    });
-    
-    document.getElementById('uploadMusicBtn')?.addEventListener('click', async () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.multiple = true;
-        input.accept = 'audio/*';
-        input.onchange = async (e) => {
-            const files = Array.from(e.target.files);
-            const processed = files.map(f => ({ name: f.name, file: f }));
-            await saveMusic(processed);
-            alert(`Saved ${processed.length} music files`);
-        };
-        input.click();
-    });
-    
-    // ============================================================
-    // INITIALIZATION
-    // ============================================================
-    const volSlider = document.getElementById('musicVolume');
-    const volSpan = document.getElementById('volumeValue');
-    if (volSlider && volSpan) volSlider.addEventListener('input', () => volSpan.innerText = volSlider.value + '%');
-    
-    if (detectLocationBtn) detectLocationBtn.addEventListener('click', detectMyLocation);
-    if (weatherLocationInput) weatherLocationInput.addEventListener('input', () => setTimeout(showWeatherPreview, 800));
-    if (weatherCountrySelect) weatherCountrySelect.addEventListener('change', showWeatherPreview);
-    
-    document.getElementById('saveBtn')?.addEventListener('click', saveAllSettings);
-    document.getElementById('resetBtn')?.addEventListener('click', resetAllData);
-    document.getElementById('exitBtn')?.addEventListener('click', () => window.location.href = '/');
-    document.getElementById('addPhoneInline')?.addEventListener('click', addPhoneContact);
-    document.getElementById('addEmergencyInline')?.addEventListener('click', addEmergencyContact);
-    
-    applySettingsToToggles();
-    setupToggles();
-    setupHeaders();
-    handleURLParam();
-    
-    console.log('Settings page loaded');
-</script>
 
-</body>
+            function addEmergencyContact() {
+                const nameInput = document.getElementById("emergencyName");
+                const numberInput = document.getElementById("emergencyPhone");
+
+                const name = nameInput?.value.trim();
+                const number = numberInput?.value.trim();
+
+                if (!name || !number) {
+                    alert("Please enter both name and phone number");
+                    return;
+                }
+
+                emergencyContacts.push({ name, number, photo: null });
+                renderEmergencyContacts();
+                nameInput.value = "";
+                numberInput.value = "";
+            }
+
+            // ============================================================
+            // MODULE MANAGEMENT
+            // ============================================================
+            const MODULES = [
+                "gallery",
+                "music",
+                "radio",
+                "news",
+                "social",
+                "calendar",
+                "phone",
+                "chat",
+                "webrtc",
+                "live_bus",
+                "emergency_alert",
+            ];
+
+            function applySettingsToToggles() {
+                const settings = loadSettings();
+                const enabled = settings.enabledModules || {};
+                MODULES.forEach((moduleId) => {
+                    const card = document.querySelector(
+                        `.module-card[data-module="${moduleId}"]`,
+                    );
+                    if (card) {
+                        const toggle = card.querySelector(".toggle-switch");
+                        if (toggle) {
+                            if (enabled[moduleId] === true)
+                                toggle.classList.add("active");
+                            else toggle.classList.remove("active");
+                        }
+                    }
+                });
+
+                // Load phone contacts
+                if (settings.phone?.contacts) {
+                    phoneContacts = settings.phone.contacts;
+                    renderPhoneContacts();
+                }
+                if (
+                    document.getElementById("autoDialDelay") &&
+                    settings.phone?.autoDialDelay
+                ) {
+                    document.getElementById("autoDialDelay").value =
+                        settings.phone.autoDialDelay;
+                }
+
+                // Load emergency contacts
+                if (settings.emergency_alert?.contacts) {
+                    emergencyContacts = settings.emergency_alert.contacts;
+                    renderEmergencyContacts();
+                }
+
+                // Load bus settings
+                if (settings.live_bus) {
+                    if (document.getElementById("busRouteIds")) {
+                        document.getElementById("busRouteIds").value =
+                            settings.live_bus.routeIds || "";
+                    }
+                    if (document.getElementById("busStopIds")) {
+                        document.getElementById("busStopIds").value =
+                            settings.live_bus.stopIds || "";
+                    }
+                }
+
+                // Load radio settings
+                if (settings.radio) {
+                    if (document.getElementById("radioDefaultStation")) {
+                        document.getElementById("radioDefaultStation").value =
+                            settings.radio.defaultStation || "0";
+                    }
+                    if (document.getElementById("radioVolume")) {
+                        document.getElementById("radioVolume").value =
+                            settings.radio.volume || 70;
+                        const volSpan =
+                            document.getElementById("radioVolumeValue");
+                        if (volSpan)
+                            volSpan.innerText =
+                                (settings.radio.volume || 70) + "%";
+                    }
+                }
+            }
+
+            function collectSettings() {
+                const settings = loadSettings();
+                if (!settings.enabledModules) settings.enabledModules = {};
+
+                MODULES.forEach((moduleId) => {
+                    const card = document.querySelector(
+                        `.module-card[data-module="${moduleId}"]`,
+                    );
+                    if (card) {
+                        const toggle = card.querySelector(".toggle-switch");
+                        if (toggle)
+                            settings.enabledModules[moduleId] =
+                                toggle.classList.contains("active");
+                    }
+                });
+
+                if (!settings.weather) settings.weather = {};
+                settings.weather.location =
+                    document.getElementById("weatherLocation")?.value || "Cork";
+                settings.weather.country =
+                    document.getElementById("weatherCountry")?.value || "IE";
+
+                if (!settings.gallery) settings.gallery = {};
+                settings.gallery.speed =
+                    parseInt(document.getElementById("gallerySpeed")?.value) ||
+                    8000;
+                settings.gallery.autoStart =
+                    document.getElementById("galleryAutoStart")?.value ===
+                    "true";
+
+                if (!settings.music) settings.music = {};
+                settings.music.volume =
+                    parseInt(document.getElementById("musicVolume")?.value) ||
+                    85;
+                settings.music.shuffle =
+                    document.getElementById("musicShuffle")?.value === "true";
+
+                if (!settings.radio) settings.radio = {};
+                settings.radio.defaultStation =
+                    document.getElementById("radioDefaultStation")?.value ||
+                    "0";
+                settings.radio.volume =
+                    parseInt(document.getElementById("radioVolume")?.value) ||
+                    70;
+
+                if (!settings.news) settings.news = {};
+                settings.news.rssUrl =
+                    document.getElementById("newsRssUrl")?.value || "";
+                settings.news.refresh =
+                    parseInt(document.getElementById("newsRefresh")?.value) ||
+                    15;
+                settings.news.maxArticles =
+                    parseInt(
+                        document.getElementById("newsMaxArticles")?.value,
+                    ) || 4;
+
+                if (!settings.social) settings.social = {};
+                settings.social.instance =
+                    document.getElementById("mastodonInstance")?.value || "";
+                settings.social.limit =
+                    parseInt(document.getElementById("mastodonLimit")?.value) ||
+                    4;
+
+                if (!settings.calendar) settings.calendar = {};
+                const calendarUrl = document
+                    .getElementById("calendarUrl")
+                    ?.value.trim();
+                if (calendarUrl !== "") {
+                    settings.calendar.url = calendarUrl;
+                }
+                settings.calendar.notificationMinutes =
+                    parseInt(
+                        document.getElementById("calendarNotificationMinutes")
+                            ?.value,
+                    ) || 30;
+
+                if (!settings.phone) settings.phone = {};
+                settings.phone.contacts = phoneContacts;
+                settings.phone.autoDialDelay =
+                    parseInt(document.getElementById("autoDialDelay")?.value) ||
+                    10;
+
+                if (!settings.emergency_alert) settings.emergency_alert = {};
+                settings.emergency_alert.contacts = emergencyContacts;
+
+                // ============================================================
+                // BUS TRACKER SETTINGS
+                // ============================================================
+                if (document.getElementById("busRouteIds")) {
+                    if (!settings.live_bus) settings.live_bus = {};
+                    settings.live_bus.routeIds =
+                        document.getElementById("busRouteIds")?.value || "";
+                    settings.live_bus.stopIds =
+                        document.getElementById("busStopIds")?.value || "";
+                }
+
+                // ============================================================
+                // CHAT SETTINGS - PRESERVE EXISTING CREDENTIALS IF INPUTS ARE BLANK
+                // ============================================================
+                if (!settings.chat) settings.chat = {};
+
+                const newHomeserver = document
+                    .getElementById("chatHomeserver")
+                    ?.value.trim();
+                const newAccessToken = document
+                    .getElementById("chatAccessToken")
+                    ?.value.trim();
+                const newUserId = document
+                    .getElementById("chatUserId")
+                    ?.value.trim();
+                const newRoom1 = document
+                    .getElementById("chatRoom1")
+                    ?.value.trim();
+                const newRoom2 = document
+                    .getElementById("chatRoom2")
+                    ?.value.trim();
+                const newRoom3 = document
+                    .getElementById("chatRoom3")
+                    ?.value.trim();
+                const newRefreshInterval =
+                    parseInt(
+                        document.getElementById("chatRefreshInterval")?.value,
+                    ) || 30;
+
+                if (newHomeserver !== "") {
+                    settings.chat.homeserver = newHomeserver;
+                } else if (!settings.chat.homeserver) {
+                    settings.chat.homeserver = "https://matrix.org";
+                }
+
+                if (newAccessToken !== "") {
+                    settings.chat.accessToken = newAccessToken;
+                }
+
+                if (newUserId !== "") {
+                    settings.chat.userId = newUserId;
+                }
+
+                const newRooms = [newRoom1, newRoom2, newRoom3].filter(
+                    (r) => r !== "",
+                );
+                if (newRooms.length > 0) {
+                    settings.chat.rooms = newRooms;
+                }
+
+                settings.chat.refreshInterval = newRefreshInterval;
+
+                return settings;
+            }
+
+            function saveAllSettings() {
+                const settings = collectSettings();
+                saveSettings(settings);
+                alert("Settings saved!");
+                location.reload();
+            }
+
+            async function resetAllData() {
+                if (
+                    !confirm(
+                        "⚠️ WARNING: This will permanently delete ALL of your data. Are you sure?",
+                    )
+                )
+                    return;
+                localStorage.clear();
+                sessionStorage.clear();
+                try {
+                    await new Promise((resolve, reject) => {
+                        const req = indexedDB.deleteDatabase(DB_NAME);
+                        req.onsuccess = () => resolve();
+                        req.onerror = (e) => reject(e);
+                    });
+                } catch (e) {}
+                alert("All data has been reset. The page will now reload.");
+                location.reload();
+            }
+
+            // ============================================================
+            // UI HANDLERS
+            // ============================================================
+
+            function setupToggles() {
+                MODULES.forEach((moduleId) => {
+                    const card = document.querySelector(
+                        `.module-card[data-module="${moduleId}"]`,
+                    );
+                    if (card) {
+                        const toggle = card.querySelector(".toggle-switch");
+                        if (toggle) {
+                            toggle.addEventListener("click", function (e) {
+                                e.stopPropagation();
+                                this.classList.toggle("active");
+                            });
+                        }
+                    }
+                });
+            }
+
+            function setupHeaders() {
+                document
+                    .querySelectorAll(".module-header")
+                    .forEach((header) => {
+                        header.addEventListener("click", function (e) {
+                            if (e.target.closest(".toggle-switch")) return;
+                            const card = this.closest(".module-card");
+                            const config = card.querySelector(".module-config");
+                            if (config) {
+                                const isOpen = config.style.display === "block";
+                                document
+                                    .querySelectorAll(".module-config")
+                                    .forEach((c) => (c.style.display = "none"));
+                                if (!isOpen) config.style.display = "block";
+                            }
+                        });
+                    });
+            }
+
+            function handleURLParam() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const args = urlParams.get("args");
+                if (args) {
+                    const valid = [
+                        "gallery",
+                        "music",
+                        "radio",
+                        "news",
+                        "social",
+                        "phone",
+                        "weather",
+                        "calendar",
+                        "chat",
+                        "webrtc",
+                        "live_bus",
+                        "emergency_alert",
+                    ];
+                    const target = args.toLowerCase();
+                    if (valid.includes(target)) {
+                        setTimeout(() => {
+                            document
+                                .querySelectorAll(".module-config")
+                                .forEach((c) => (c.style.display = "none"));
+                            const card = document.querySelector(
+                                `.module-card[data-module="${target}"]`,
+                            );
+                            if (card) {
+                                const config =
+                                    card.querySelector(".module-config");
+                                if (config) config.style.display = "block";
+                                card.scrollIntoView({
+                                    behavior: "smooth",
+                                    block: "center",
+                                });
+                                card.style.backgroundColor = "#eaf2ff";
+                                setTimeout(
+                                    () => (card.style.backgroundColor = ""),
+                                    1500,
+                                );
+                            }
+                        }, 200);
+                    }
+                }
+            }
+
+            // ============================================================
+            // WEATHER PREVIEW
+            // ============================================================
+            const weatherLocationInput =
+                document.getElementById("weatherLocation");
+            const weatherCountrySelect =
+                document.getElementById("weatherCountry");
+            const detectLocationBtn =
+                document.getElementById("detectLocationBtn");
+            const weatherPreview = document.getElementById("weatherPreview");
+
+            function getWeatherDescription(code) {
+                const codes = {
+                    0: "☀️ Clear",
+                    1: "🌤️ Mainly clear",
+                    2: "⛅ Partly cloudy",
+                    3: "☁️ Overcast",
+                    45: "🌫️ Fog",
+                    48: "🌫️ Fog",
+                    51: "🌧️ Drizzle",
+                    53: "🌧️ Drizzle",
+                    55: "🌧️ Drizzle",
+                    61: "🌧️ Light rain",
+                    63: "🌧️ Moderate rain",
+                    65: "🌧️ Heavy rain",
+                    71: "🌨️ Light snow",
+                    73: "🌨️ Moderate snow",
+                    75: "🌨️ Heavy snow",
+                    80: "🌧️ Showers",
+                    81: "🌧️ Showers",
+                    82: "🌧️ Heavy showers",
+                    85: "🌨️ Snow showers",
+                    86: "🌨️ Heavy snow showers",
+                    95: "⛈️ Thunderstorm",
+                };
+                return codes[code] || "🌡️";
+            }
+
+            async function getCoordinates(location, countryCode) {
+                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)},${countryCode}&format=json&limit=1`;
+                try {
+                    const response = await fetch(url, {
+                        headers: { "User-Agent": "HandiHomepage/1.0" },
+                    });
+                    const data = await response.json();
+                    if (data && data.length > 0)
+                        return {
+                            lat: parseFloat(data[0].lat),
+                            lon: parseFloat(data[0].lon),
+                        };
+                    return null;
+                } catch {
+                    return null;
+                }
+            }
+
+            async function showWeatherPreview() {
+                if (!weatherPreview) return;
+                const location = weatherLocationInput?.value?.trim();
+                const country = weatherCountrySelect?.value;
+                if (!location) {
+                    weatherPreview.style.display = "none";
+                    return;
+                }
+                weatherPreview.style.display = "block";
+                weatherPreview.innerHTML =
+                    '<i class="fa-solid fa-spinner fa-spin"></i> Fetching weather...';
+                try {
+                    const coords = await getCoordinates(location, country);
+                    if (!coords) {
+                        weatherPreview.innerHTML =
+                            '<span class="error">Location not found.</span>';
+                        return;
+                    }
+                    const weatherRes = await fetch(
+                        `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current_weather=true`,
+                    );
+                    const weatherData = await weatherRes.json();
+                    if (weatherData.current_weather) {
+                        const temp = Math.round(
+                            weatherData.current_weather.temperature,
+                        );
+                        const desc = getWeatherDescription(
+                            weatherData.current_weather.weathercode,
+                        );
+                        weatherPreview.innerHTML = `<strong>${location}</strong>: ${desc} ${temp}°C <small>✓</small>`;
+                    } else {
+                        weatherPreview.innerHTML =
+                            '<span class="error">No weather data.</span>';
+                    }
+                } catch {
+                    weatherPreview.innerHTML =
+                        '<span class="error">Error fetching weather.</span>';
+                }
+            }
+
+            function detectMyLocation() {
+                if (!navigator.geolocation) {
+                    alert("Geolocation not supported.");
+                    return;
+                }
+                if (weatherPreview) {
+                    weatherPreview.style.display = "block";
+                    weatherPreview.innerHTML =
+                        '<i class="fa-solid fa-spinner fa-spin"></i> Detecting...';
+                }
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const url = `https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`;
+                        try {
+                            const response = await fetch(url, {
+                                headers: { "User-Agent": "HandiHomepage/1.0" },
+                            });
+                            const data = await response.json();
+                            let city =
+                                data.address?.city ||
+                                data.address?.town ||
+                                data.address?.village;
+                            let countryCode =
+                                data.address?.country_code?.toUpperCase() ||
+                                "IE";
+                            if (city && weatherLocationInput)
+                                weatherLocationInput.value = city;
+                            if (weatherCountrySelect)
+                                weatherCountrySelect.value = countryCode;
+                            await showWeatherPreview();
+                        } catch {
+                            weatherPreview.innerHTML =
+                                '<span class="error">Could not detect city.</span>';
+                        }
+                    },
+                    () => {
+                        weatherPreview.innerHTML =
+                            '<span class="error">Location permission denied.</span>';
+                    },
+                );
+            }
+
+            // ============================================================
+            // RADIO VOLUME SLIDER
+            // ============================================================
+            const radioVolumeSlider = document.getElementById("radioVolume");
+            const radioVolumeSpan = document.getElementById("radioVolumeValue");
+            if (radioVolumeSlider && radioVolumeSpan) {
+                radioVolumeSlider.addEventListener("input", () => {
+                    radioVolumeSpan.innerText = radioVolumeSlider.value + "%";
+                });
+            }
+
+            // ============================================================
+            // FILE UPLOADS (using EXACT storage.js API)
+            // ============================================================
+            document
+                .getElementById("uploadGalleryBtn")
+                ?.addEventListener("click", async () => {
+                    const input = document.createElement("input");
+                    input.type = "file";
+                    input.multiple = true;
+                    input.accept = "image/png,image/jpeg,image/webp";
+                    input.onchange = async (e) => {
+                        const files = Array.from(e.target.files);
+                        const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+                        const oversized = files.filter(
+                            (f) => f.size > MAX_SIZE,
+                        );
+                        if (oversized.length > 0) {
+                            alert(
+                                `Some images exceed the 10 MB limit:\n${oversized.map((f) => f.name).join("\n")}`,
+                            );
+                            return;
+                        }
+                        const processed = files.map((f) => ({
+                            name: f.name,
+                            file: f,
+                        }));
+                        await saveGallery(processed);
+                        alert(`Saved ${processed.length} images to gallery`);
+                    };
+                    input.click();
+                });
+
+            document
+                .getElementById("uploadMusicBtn")
+                ?.addEventListener("click", async () => {
+                    const input = document.createElement("input");
+                    input.type = "file";
+                    input.multiple = true;
+                    input.accept = "audio/mpeg,audio/mp3,audio/wav,audio/x-wav";
+                    input.onchange = async (e) => {
+                        const files = Array.from(e.target.files);
+                        const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
+                        const oversized = files.filter(
+                            (f) => f.size > MAX_SIZE,
+                        );
+                        if (oversized.length > 0) {
+                            alert(
+                                `Some music files exceed the 50 MB limit:\n${oversized.map((f) => f.name).join("\n")}`,
+                            );
+                            return;
+                        }
+                        const processed = files.map((f) => ({
+                            name: f.name,
+                            file: f,
+                        }));
+                        await saveMusic(processed);
+                        alert(`Saved ${processed.length} music files`);
+                    };
+                    input.click();
+                });
+
+            // ============================================================
+            // INITIALIZATION
+            // ============================================================
+            const volSlider = document.getElementById("musicVolume");
+            const volSpan = document.getElementById("volumeValue");
+            if (volSlider && volSpan)
+                volSlider.addEventListener(
+                    "input",
+                    () => (volSpan.innerText = volSlider.value + "%"),
+                );
+
+            if (detectLocationBtn)
+                detectLocationBtn.addEventListener("click", detectMyLocation);
+            if (weatherLocationInput)
+                weatherLocationInput.addEventListener("input", () =>
+                    setTimeout(showWeatherPreview, 800),
+                );
+            if (weatherCountrySelect)
+                weatherCountrySelect.addEventListener(
+                    "change",
+                    showWeatherPreview,
+                );
+
+            document
+                .getElementById("saveBtn")
+                ?.addEventListener("click", saveAllSettings);
+            document
+                .getElementById("resetBtn")
+                ?.addEventListener("click", resetAllData);
+            document
+                .getElementById("exitBtn")
+                ?.addEventListener("click", () => (window.location.href = "/"));
+            document
+                .getElementById("addPhoneInline")
+                ?.addEventListener("click", addPhoneContact);
+            document
+                .getElementById("addEmergencyInline")
+                ?.addEventListener("click", addEmergencyContact);
+
+            applySettingsToToggles();
+            setupToggles();
+            setupHeaders();
+            handleURLParam();
+
+            console.log("Settings page loaded");
+        </script>
+    </body>
 </html>
