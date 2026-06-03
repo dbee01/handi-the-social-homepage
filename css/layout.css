@@ -1440,6 +1440,7 @@ body {
         height: 260px !important;
         min-height: 260px !important;
         max-height: 260px !important;
+        overflow: auto !important;
     }
     
     .gallery-slide-img {
