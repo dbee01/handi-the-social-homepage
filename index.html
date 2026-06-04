@@ -202,6 +202,9 @@
                 <div id="radio" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
+                <div id="phone" class="dashboard-item module">
+                    <div class="module-content"></div>
+                </div>
 
                 <!-- PREMIUM MODULES -->
                 <div id="live_bus" class="dashboard-item module">
@@ -261,6 +264,7 @@
             import initCalendar from "./modules/calendar/calendar.module.js";
             import initBus from "./modules/bus/bus.module.js";
             import initRadio from "./modules/radio/radio.module.js";
+            import initPhone from "./modules/friendly-phone/friendly-phone.module.js";
 
             import initWebRTC from "./modules/webrtc/webrtc.module.js";
             import initEmergency from "./modules/emergency/emergency.module.js";
@@ -272,6 +276,7 @@
                 music: initMusic,
                 news: initNews,
                 calendar: initCalendar,
+                phone: initPhone,
                 live_bus: initBus,
                 webrtc: initWebRTC,
                 chat: initChat,
@@ -351,6 +356,7 @@
                             "social",
                             "calendar",
                             "chat",
+                            "phone",
                             "live_bus",
                             "webrtc",
                             "emergency_alert",
