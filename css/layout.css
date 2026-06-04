@@ -1431,18 +1431,19 @@ body {
 /* Fix tablet landscape gallery cutoff */
 @media (orientation: landscape) and (max-width: 1200px) {
     .dashboard-item[data-module="gallery"] {
-        min-height: 380px !important;
+        min-height: auto !important;
+        height: auto !important;
     }
 
     .gallery-slideshow {
-        height: 260px !important;
-        min-height: 260px !important;
-        max-height: 260px !important;
-        overflow: auto !important;
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
     }
 
     .gallery-slide-img {
-        max-height: 220px !important;
+        max-height: 240px !important;
         height: auto !important;
     }
 }
