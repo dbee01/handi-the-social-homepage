@@ -15,27 +15,29 @@ const PORT = process.env.PORT || 8080;
 
 app.use(cors());
 
-const REALTIME_URL = "https://api.nationaltransport.ie/gtfsr/v2/gtfsr";
+const REALTIME_URL = "https://api.nationaltransport.ie/gtfsr/v2/TripUpdates";
+const VEHICLES_URL = "https://api.nationaltransport.ie/gtfsr/v2/Vehicles";
 const API_KEY = process.env.BUS_API_KEY || "";
 
 // -----------------------------------------------------------------------------
 // STOP INFO (name + direction)
 // -----------------------------------------------------------------------------
 const stopInfo = {
-  // Route 223 stops
+  // Route 223 stops (Cork)
+  // 8380B246051 = eastbound (Haulbowline), 8380B2420801 = westbound (City Centre / South Mall)
   "8380B246051": { name: "Rochestown Rise", direction: "City Centre" },
+  "8380B2420801": { name: "Rochestown Rise", direction: "City Centre" },
   "8370B2420501": { name: "South Mall", direction: "Rochestown" },
-  // Route 220 stops (Cork city orbital)
-  "8220DB001578": {
-    name: "Cork Bus Station (Parnell Pl)",
-    direction: "City Centre",
-  },
-  "8240DB004687": { name: "Mercy Hospital", direction: "City Centre" },
+  // Route 19 / E1 stops (Dublin Bus)
+  "8220DB000092": { name: "Ballymun Library", direction: "Northwood" },
+  // Route 202 stops (Cork)
+  "8370B248621": { name: "Merchants Quay", direction: "Knocknaheeny" },
+  "8370B2365901": { name: "Knocknaheeny Ave", direction: "City" },
   // Map short-form IDs to long-form
   242081: {
     name: "Rochestown Rise",
     direction: "City Centre",
-    longId: "8380B246051",
+    longId: "8380B2420801",
   },
   242051: {
     name: "South Mall",
@@ -85,8 +87,8 @@ app.get("/", (req, res) => {
 // -----------------------------------------------------------------------------
 app.get("/api/bus-realtime", async (req, res) => {
   const now = Date.now();
-  const routeId = req.query.route || "223";
-  const stopsParam = req.query.stops || "8380B246051,8370B2420501";
+  const routeId = req.query.route || "19";
+  const stopsParam = req.query.stops || "8220DB000092";
   const requestedStopIds = stopsParam.split(",").map((s) => s.trim());
   const forceRefresh = req.query.refresh === "true";
 
@@ -206,7 +208,56 @@ app.get("/api/bus-realtime", async (req, res) => {
           const departure = update.departure;
           const arrivalTime = arrival?.time;
           const departureTime = departure?.time;
-          const relevantTime = arrivalTime || departureTime;
+          const delay = arrival?.delay || departure?.delay || 0;
+          let relevantTime = arrivalTime || departureTime;
+
+          // If no absolute time but we have a delay, estimate from GTFS scheduled time
+          if (!relevantTime && delay && gtfs.scheduleData) {
+            const scheduled = gtfs.getScheduledTimes(routeId, stopId);
+            if (scheduled && scheduled.length > 0) {
+              const scheduledMinutes = scheduled[0].minutes_away;
+              const adjustedMinutes = Math.max(
+                0,
+                scheduledMinutes + Math.round(delay / 60),
+              );
+              if (adjustedMinutes <= 60) {
+                if (!realtimePredictions.has(stopId)) {
+                  realtimePredictions.set(stopId, []);
+                }
+                realtimePredictions.get(stopId).push({
+                  route: routeId,
+                  minutes_away: adjustedMinutes,
+                  arrival_text:
+                    adjustedMinutes <= 1
+                      ? "Due"
+                      : `${adjustedMinutes} min${adjustedMinutes !== 1 ? "s" : ""}`,
+                  delay,
+                  realtime: true,
+                });
+              }
+            } else {
+              // No GTFS scheduled time either, but the bus is actively reporting
+              // this stop. Use a rough estimate: if the bus has a delay update
+              // it's likely arriving within 30 minutes.
+              const estimateMins = Math.min(
+                30,
+                Math.max(1, Math.round(delay / 60)),
+              );
+              if (!realtimePredictions.has(stopId)) {
+                realtimePredictions.set(stopId, []);
+              }
+              realtimePredictions.get(stopId).push({
+                route: routeId,
+                minutes_away: estimateMins,
+                arrival_text:
+                  estimateMins <= 1
+                    ? "Due"
+                    : `${estimateMins} min${estimateMins !== 1 ? "s" : ""}`,
+                delay,
+                realtime: true,
+              });
+            }
+          }
 
           if (relevantTime) {
             const timeMs = Number(relevantTime) * 1000;
@@ -223,7 +274,7 @@ app.get("/api/bus-realtime", async (req, res) => {
                   minutesAway <= 1
                     ? "Due"
                     : `${minutesAway} min${minutesAway !== 1 ? "s" : ""}`,
-                delay: arrival?.delay || departure?.delay || 0,
+                delay,
                 realtime: true,
               });
 
@@ -371,6 +422,163 @@ app.get("/api/bus-realtime", async (req, res) => {
       source: "fallback",
       error: error.message,
     });
+  }
+});
+
+// -----------------------------------------------------------------------------
+// VEHICLE POSITIONS - Live GPS positions from NTA for accurate real-time ETA
+// -----------------------------------------------------------------------------
+// Fetches live vehicle positions and trip updates, then estimates arrival
+// at requested stops by matching trip_id between both feeds.
+app.get("/api/bus-vehicles", async (req, res) => {
+  const routeId = req.query.route || "19";
+  const stopsParam = req.query.stops || "8220DB000092";
+  const requestedStopIds = stopsParam.split(",").map((s) => s.trim());
+
+  try {
+    const [vehicleRes, tripRes] = await Promise.all([
+      axios.get(VEHICLES_URL, {
+        params: { format: "json" },
+        headers: { "x-api-key": API_KEY, "Cache-Control": "no-cache" },
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        timeout: 15000,
+      }),
+      axios.get(REALTIME_URL, {
+        params: { format: "json" },
+        headers: { "x-api-key": API_KEY, "Cache-Control": "no-cache" },
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        timeout: 15000,
+      }),
+    ]);
+
+    const now = Date.now();
+    const vehicles = vehicleRes.data.entity || [];
+    const tripUpdates = tripRes.data.entity || [];
+
+    // Build map: trip_id -> stop_time_updates
+    const tripUpdateMap = new Map();
+    for (const entity of tripUpdates) {
+      if (!entity.trip_update) continue;
+      const trip = entity.trip_update.trip;
+      if (!trip) continue;
+      tripUpdateMap.set(
+        trip.trip_id,
+        entity.trip_update.stop_time_update || [],
+      );
+    }
+
+    function haversineKm(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = ((lat2 - lat1) * Math.PI) / 180;
+      const dLon = ((lon2 - lon1) * Math.PI) / 180;
+      const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos((lat1 * Math.PI) / 180) *
+          Math.cos((lat2 * Math.PI) / 180) *
+          Math.sin(dLon / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    const stopData = {};
+    for (const stopId of requestedStopIds) {
+      const info = gtfs.scheduleData.stops.get(stopId) || {};
+      const nameInfo = stopInfo[stopId];
+      stopData[stopId] = {
+        name: nameInfo?.name || info.name || stopId,
+        direction: nameInfo?.direction || "Unknown",
+        lat: parseFloat(info.lat),
+        lon: parseFloat(info.lon),
+      };
+    }
+
+    const predictions = {};
+
+    for (const entity of vehicles) {
+      if (!entity.vehicle) continue;
+      const v = entity.vehicle;
+      const trip = v.trip;
+      if (!trip) continue;
+
+      const apiRouteId = trip.route_id || "";
+      const apiRouteParts = apiRouteId.split(" ");
+      const apiShortName =
+        apiRouteParts.length >= 3 ? apiRouteParts[1] : apiRouteId;
+      if (apiShortName !== routeId) continue;
+
+      const position = v.position;
+      if (!position || position.latitude == null) continue;
+
+      const vehLat = position.latitude;
+      const vehLon = position.longitude;
+      const vehTimestamp = v.timestamp
+        ? Number(v.timestamp) * 1000
+        : entity.vehicle?.timestamp
+          ? Number(entity.vehicle.timestamp) * 1000
+          : now;
+      const vehicleId = v.vehicle?.id || entity.id || "unknown";
+      const tripId = trip.trip_id;
+
+      const stopUpdates = tripUpdateMap.get(tripId) || [];
+
+      for (const update of stopUpdates) {
+        const stopId = update.stop_id;
+        if (!stopData[stopId]) continue;
+
+        const stopLat = stopData[stopId].lat;
+        const stopLon = stopData[stopId].lon;
+        if (!stopLat || !stopLon) continue;
+
+        const distKm = haversineKm(vehLat, vehLon, stopLat, stopLon);
+        const minutesAway = Math.max(1, Math.round(distKm / 0.5));
+        if (distKm > 15) continue;
+
+        if (!predictions[stopId]) predictions[stopId] = [];
+        predictions[stopId].push({
+          vehicle_id: vehicleId,
+          minutes_away: minutesAway,
+          arrival_text:
+            minutesAway <= 1
+              ? "Due"
+              : `${minutesAway} min${minutesAway !== 1 ? "s" : ""}`,
+          distance_km: Math.round(distKm * 10) / 10,
+          position: {
+            lat: vehLat,
+            lon: vehLon,
+            bearing: position.bearing || null,
+            updated: new Date(vehTimestamp).toISOString(),
+          },
+          headsign: trip.trip_headsign || null,
+          realtime: true,
+        });
+      }
+    }
+
+    const results = [];
+    let anyRealtime = false;
+    for (const stopId of requestedStopIds) {
+      const buses = (predictions[stopId] || [])
+        .sort((a, b) => a.minutes_away - b.minutes_away)
+        .slice(0, 4);
+      if (buses.some((b) => b.realtime)) anyRealtime = true;
+      results.push({
+        stop_name: stopData[stopId].name,
+        direction: stopData[stopId].direction,
+        stop_id: stopId,
+        buses,
+        realtime_data: buses.some((b) => b.realtime),
+      });
+    }
+
+    res.json({
+      success: true,
+      last_updated: new Date().toISOString(),
+      route: routeId,
+      stops: results,
+      source: anyRealtime ? "vehicle_realtime" : "no_vehicles",
+    });
+  } catch (error) {
+    console.error("Vehicle API error:", error.message);
+    res.json({ success: false, error: error.message });
   }
 });
 

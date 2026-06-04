@@ -25,8 +25,8 @@ export default async function initBus(container) {
   let stopsDataCache = null;
 
   const settings = loadSettings();
-  const savedRouteIds = settings.live_bus?.routeIds || "223";
-  const savedStopIds = settings.live_bus?.stopIds || "8380B246051,8370B2420501";
+  const savedRouteIds = settings.live_bus?.routeIds || "19";
+  const savedStopIds = settings.live_bus?.stopIds || "8220DB000092";
   const routeId = savedRouteIds.split(",")[0].trim();
   const stopIds = savedStopIds
     .split(",")

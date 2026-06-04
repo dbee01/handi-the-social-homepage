@@ -432,6 +432,11 @@ async function initGTFS() {
   // Download and parse from scratch (takes ~20s)
   try {
     await loadGTFS(GTFS_URLS.busEireann);
+    console.log(`   → Bus Éireann loaded`);
+    await loadGTFS(GTFS_URLS.dublinBus);
+    console.log(`   → Dublin Bus loaded`);
+    await loadGTFS(GTFS_URLS.goAhead);
+    console.log(`   → Go-Ahead loaded`);
     saveCache();
     return true;
   } catch (err) {
