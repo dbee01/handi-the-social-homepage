@@ -25,6 +25,7 @@
     "axios": "^1.16.0",
     "cors": "^2.8.6",
     "csv-parser": "^3.2.1",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "infobip-rtc": "^2.7.35",
     "matrix-js-sdk": "^35.1.0",
