@@ -28,6 +28,34 @@
         <meta name="apple-mobile-web-app-title" content="HandiHome" />
         <link rel="apple-touch-icon" href="/images/favicon.png" />
 
+        <!-- Privacy-friendly analytics by Plausible (third-party only) -->
+        <script>
+            // Only enable Plausible for third-party users (not the developer)
+            if (
+                window.location.hostname !== "localhost" &&
+                window.location.hostname !== "127.0.0.1" &&
+                !window.location.hostname.startsWith("192.168.") &&
+                !window.location.hostname.startsWith("10.")
+            ) {
+                if (localStorage.getItem("plausible_ignore") !== "true") {
+                    document.write(
+                        '<script async src="https://plausible.io/js/pa-9hIAZWciwh0HAPpXKcKMy.js"><\/script>',
+                    );
+                    ((window.plausible =
+                        window.plausible ||
+                        function () {
+                            (plausible.q = plausible.q || []).push(arguments);
+                        }),
+                        (plausible.init =
+                            plausible.init ||
+                            function (i) {
+                                plausible.o = i || {};
+                            }));
+                    plausible.init();
+                }
+            }
+        </script>
+
         <style>
             header {
                 display: flex !important;
