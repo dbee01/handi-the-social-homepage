@@ -261,40 +261,12 @@ header {
 }
 
 /* =========================================================
-   GALLERY LAYOUT
+   GALLERY LAYOUT - STABLE
 ========================================================= */
 
-/* =========================================================
-   GALLERY LAYOUT - FIXED
-========================================================= */
-
-.gallery-content {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-/* Fixed height container for images */
-.gallery-slideshow {
-    height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative;
-}
-
-/* Image styling - maintains aspect ratio, no width constraints */
-/* =========================================================
-   GALLERY LAYOUT - FIXED DISPLAY
-   DO NOT CHANGE - LOCKED VERSION
-========================================================= */
-
-/* Gallery module container */
+/* Gallery module container - height reflects content, no image jumps */
 .dashboard-item[data-module="gallery"] {
-    min-height: 520px !important;
+    min-height: unset !important;
     height: auto !important;
     display: flex !important;
     flex-direction: column !important;
@@ -302,17 +274,17 @@ header {
 
 /* Gallery content area */
 .gallery-content {
-    flex: 1 !important;
+    flex: 0 1 auto !important;
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
 }
 
-/* Fixed height image container - NO JUMPING */
+/* Gallery slideshow - height determined by content, not fixed */
 .gallery-slideshow {
-    height: 650px !important;
-    min-height: 650px !important;
-    max-height: 650px !important;
+    height: auto !important;
+    min-height: unset !important;
+    max-height: unset !important;
     width: 100% !important;
     background: unset;
     border-radius: 16px !important;
@@ -320,15 +292,15 @@ header {
     align-items: center !important;
     justify-content: center !important;
     overflow: hidden !important;
+    position: relative !important;
     flex-shrink: 0 !important;
     flex-direction: column;
 }
 
-/* Gallery image - maintain aspect ratio, no cropping */
+/* Gallery image - fixed height, variable width, aspect ratio preserved */
 .gallery-slide-img {
-    max-width: 100% !important;
-    max-height: 280px !important;
     width: auto !important;
+    max-width: 100% !important;
     height: 280px !important;
     object-fit: contain !important;
     border: 3px solid #0047cc !important;
@@ -352,11 +324,15 @@ header {
     background: transparent !important;
 }
 
-/* Controls wrapper */
+/* Controls wrapper - full screen on its own row */
 .gallery-controls {
     margin: 10px 0 !important;
     flex-shrink: 0 !important;
     width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 12px !important;
 }
 
 /* Button group - horizontal row */
@@ -384,14 +360,21 @@ header {
     white-space: nowrap !important;
 }
 
-.gallery-btn.secondary {
-    background: #475569 !important;
-    width: auto !important;
-    min-width: 120px !important;
-}
-
 .gallery-btn:hover {
     opacity: 0.9 !important;
+}
+
+/* Full Screen button - big and prominent for elderly */
+.gallery-btn.fullscreen {
+    background: #059669 !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    padding: 12px 32px !important;
+    min-width: 180px !important;
+    border: 2px solid white !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    width: auto !important;
+    order: -1 !important;
 }
 
 /* Thumbnails row */
@@ -427,45 +410,6 @@ header {
 .gallery-thumb.active {
     border-color: #0047cc !important;
     box-shadow: 0 0 0 2px rgba(0, 71, 204, 0.3) !important;
-}
-
-/* Fix Full Screen button */
-.gallery-btn.secondary {
-    width: auto !important;
-    min-width: 140px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin-top: 8px !important;
-}
-
-/* Ensure button group doesn't force it full width */
-.gallery-control-group {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 12px !important;
-    width: auto !important;
-}
-
-/* Full Screen button on its own row */
-.gallery-controls {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 12px !important;
-}
-
-/* Keep the three buttons together */
-.gallery-control-group {
-    display: flex !important;
-    flex-direction: row !important;
-}
-
-/* Full Screen button separate */
-.gallery-btn.secondary {
-    margin: 0 auto !important;
 }
 
 /* =========================================================
@@ -608,8 +552,10 @@ header {
         min-width: 60px !important;
     }
 
-    .gallery-btn.secondary {
-        min-width: 100px !important;
+    .gallery-btn.fullscreen {
+        min-width: 140px !important;
+        font-size: 1rem !important;
+        padding: 10px 24px !important;
     }
 
     .gallery-thumb {
