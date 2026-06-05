@@ -6,8 +6,6 @@ const path = require("path");
 const fs = require("fs");
 const https = require("https");
 
-require("dotenv").config();
-
 const gtfs = require("./gtfs-schedule.js");
 
 const app = express();
