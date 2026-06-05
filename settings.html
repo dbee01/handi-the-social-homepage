@@ -682,6 +682,7 @@
             </div>
 
             <!-- Premium 1: Free & Unlimited Calls (Infobip) -->
+            <!--
             <div class="module-card" data-module="webrtc">
                 <div class="module-header">
                     <div class="module-title">
@@ -737,8 +738,10 @@
                     </div>
                 </div>
             </div>
+            -->
 
             <!-- Premium 2: Live Bus Tracker -->
+            <!--
             <div class="module-card" data-module="live_bus">
                 <div class="module-header">
                     <div class="module-title">
@@ -778,8 +781,10 @@
                     </div>
                 </div>
             </div>
+            -->
 
             <!-- Premium 3: Emergency Location Button -->
+            <!--
             <div class="module-card" data-module="emergency_alert">
                 <div class="module-header">
                     <div class="module-title">
@@ -835,6 +840,7 @@
                     </div>
                 </div>
             </div>
+            -->
         </div>
 
         <div class="brand">
@@ -938,9 +944,6 @@
                                 calendar: false,
                                 phone: false,
                                 chat: false,
-                                webrtc: false,
-                                live_bus: false,
-                                emergency_alert: false,
                             },
                             gallery: { speed: 8000, autoStart: true },
                             music: { volume: 85, shuffle: false },
@@ -952,7 +955,6 @@
                             },
                             calendar: { url: "", notificationMinutes: 30 },
                             phone: { contacts: [], autoDialDelay: 10 },
-                            live_bus: { routeIds: "", stopIds: "" },
                             chat: {
                                 homeserver: "https://matrix.org",
                                 accessToken: "",
@@ -960,9 +962,7 @@
                                 rooms: [],
                                 refreshInterval: 30,
                             },
-                            emergency_alert: { contacts: [] },
                             weather: { location: "Cork", country: "IE" },
-                            webrtc: {},
                         };
                         // Deep merge parsed into defaults
                         for (const key of Object.keys(defaults)) {
@@ -994,9 +994,6 @@
                         calendar: false,
                         phone: false,
                         chat: false,
-                        webrtc: false,
-                        live_bus: false,
-                        emergency_alert: false,
                     },
                     gallery: { speed: 8000, autoStart: true },
                     music: { volume: 85, shuffle: false },
@@ -1005,7 +1002,6 @@
                     social: { instance: "https://mastodon.ie", limit: 4 },
                     calendar: { url: "", notificationMinutes: 30 },
                     phone: { contacts: [], autoDialDelay: 10 },
-                    live_bus: { routeIds: "", stopIds: "" },
                     chat: {
                         homeserver: "https://matrix.org",
                         accessToken: "",
@@ -1013,9 +1009,7 @@
                         rooms: [],
                         refreshInterval: 30,
                     },
-                    emergency_alert: { contacts: [] },
                     weather: { location: "Cork", country: "IE" },
-                    webrtc: {},
                 };
             }
 
@@ -1184,9 +1178,9 @@
                 "calendar",
                 "phone",
                 "chat",
-                "webrtc",
-                "live_bus",
-                "emergency_alert",
+                // "webrtc",
+                // "live_bus",
+                // "emergency_alert",
             ];
 
             function applySettingsToToggles() {
