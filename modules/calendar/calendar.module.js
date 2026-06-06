@@ -24,7 +24,7 @@ export default async function initCalendar(container) {
   if (settings.calendar) {
     // Only use the stored URL if it exists and is not empty
     calendarUrl = settings.calendar.url || "";
-    notificationMinutes = settings.calendar.notificationMinutes || 30;
+    notificationMinutes = settings.calendar.notificationMinutes || 15;
   }
 
   let refreshIntervalId = null;
@@ -41,13 +41,15 @@ export default async function initCalendar(container) {
     }
   }
 
-  // Parse iCal (ICS) format
+  // Parse iCal (ICS) format with recurrence expansion
   function parseICS(icsText) {
     const events = [];
+    const rawEvents = [];
     const lines = icsText.split(/\r?\n/);
     let currentEvent = null;
     let inEvent = false;
 
+    // First pass: collect all VEVENT data (including raw rule strings)
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
 
@@ -56,14 +58,16 @@ export default async function initCalendar(container) {
         currentEvent = {};
       } else if (line === "END:VEVENT") {
         if (currentEvent && currentEvent.summary) {
-          events.push(currentEvent);
+          rawEvents.push(currentEvent);
         }
         inEvent = false;
         currentEvent = null;
       } else if (inEvent && line) {
         const colonIndex = line.indexOf(":");
         if (colonIndex > 0) {
-          const key = line.substring(0, colonIndex);
+          const rawKey = line.substring(0, colonIndex);
+          // Extract the base property name (before any semicolons with params)
+          const key = rawKey.split(";")[0];
           let value = line.substring(colonIndex + 1);
 
           while (i + 1 < lines.length && lines[i + 1].startsWith(" ")) {
@@ -79,9 +83,11 @@ export default async function initCalendar(container) {
               break;
             case "DTSTART":
               currentEvent.start = parseICalDate(value);
+              currentEvent._dtstartRaw = value;
               break;
             case "DTEND":
               currentEvent.end = parseICalDate(value);
+              currentEvent._dtendRaw = value;
               break;
             case "DESCRIPTION":
               currentEvent.description = safeDecode(
@@ -94,10 +100,68 @@ export default async function initCalendar(container) {
             case "UID":
               currentEvent.uid = value;
               break;
+            case "RRULE":
+              currentEvent.rruleStr = value;
+              break;
+            case "EXDATE":
+              if (!currentEvent.exdateStrs) currentEvent.exdateStrs = [];
+              currentEvent.exdateStrs.push(value);
+              break;
+            case "RDATE":
+              if (!currentEvent.rdateStrs) currentEvent.rdateStrs = [];
+              currentEvent.rdateStrs.push(value);
+              break;
           }
         }
       }
     }
+
+    // Second pass: expand recurring events using rrule.js
+    for (const ev of rawEvents) {
+      if (ev.rruleStr && window.rrule && window.rrule.RRule) {
+        try {
+          const RRule = window.rrule.RRule;
+          const rruleStr =
+            "DTSTART:" + ev._dtstartRaw + "\nRRULE:" + ev.rruleStr;
+          const rule = RRule.fromString(rruleStr);
+
+          // Compute a reasonable end date for expansion (next 6 months)
+          const untilDate = new Date();
+          untilDate.setMonth(untilDate.getMonth() + 6);
+
+          const occurrences = rule.between(new Date(0), untilDate, true);
+
+          if (occurrences.length <= 1) {
+            // Only the original date, no real recurrence — push as-is
+            events.push(ev);
+          } else {
+            const duration =
+              ev.end && ev.start
+                ? ev.end.getTime() - ev.start.getTime()
+                : 3600000; // default 1 hour
+
+            for (const occDate of occurrences) {
+              const expanded = {
+                summary: ev.summary,
+                description: ev.description,
+                location: ev.location,
+                uid: ev.uid + "_" + occDate.getTime(),
+                start: new Date(occDate),
+                end: new Date(occDate.getTime() + duration),
+                _recurring: true,
+              };
+              events.push(expanded);
+            }
+          }
+        } catch (e) {
+          console.warn("Failed to expand recurring event:", ev.summary, e);
+          events.push(ev);
+        }
+      } else {
+        events.push(ev);
+      }
+    }
+
     return events;
   }
 
@@ -112,7 +176,11 @@ export default async function initCalendar(container) {
       const hour = parseInt(clean.substring(9, 11));
       const minute = parseInt(clean.substring(11, 13));
       const second = parseInt(clean.substring(13, 15)) || 0;
-      return new Date(Date.UTC(year, month, day, hour, minute, second));
+      // If the date ended with Z (UTC), use UTC; otherwise treat as local
+      if (dateStr.endsWith("Z")) {
+        return new Date(Date.UTC(year, month, day, hour, minute, second));
+      }
+      return new Date(year, month, day, hour, minute, second);
     } else {
       const year = parseInt(clean.substring(0, 4));
       const month = parseInt(clean.substring(4, 6)) - 1;
@@ -173,29 +241,194 @@ export default async function initCalendar(container) {
     return lastSyncTime.toLocaleTimeString();
   }
 
-  function sendNotification(title, body) {
-    if (!("Notification" in window)) return;
+  // Alert audio context (lazy-initialized on user interaction)
+  let alertAudioCtx = null;
+  let alertOsc = null;
+  let alertGain = null;
 
-    if (Notification.permission === "granted") {
-      new Notification(title, { body, icon: "/images/favicon.png" });
-    } else if (Notification.permission !== "denied") {
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          new Notification(title, { body, icon: "/images/favicon.png" });
+  function initAlertAudio() {
+    if (alertAudioCtx) return alertAudioCtx;
+    try {
+      alertAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+      console.warn("AudioContext not available for calendar alerts");
+      return null;
+    }
+    return alertAudioCtx;
+  }
+
+  function startAlertBeep() {
+    const ctx = initAlertAudio();
+    if (!ctx) return;
+    // Resume if suspended (needed after browser autoplay policy)
+    if (ctx.state === "suspended") {
+      ctx.resume().catch(() => {});
+    }
+    // Create a beeping oscillator: 880Hz square wave, pulsing for 10 seconds
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "square";
+    osc.frequency.value = 880;
+    gain.gain.value = 0.15;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+
+    // Pulse: alternate on/off every 500ms for 10 seconds
+    const startTime = ctx.currentTime;
+    const beepDuration = 10;
+    for (let t = 0; t < beepDuration; t += 0.5) {
+      const isOn = Math.floor(t / 0.5) % 2 === 0;
+      gain.gain.setValueAtTime(isOn ? 0.15 : 0, startTime + t);
+    }
+    gain.gain.setValueAtTime(0, startTime + beepDuration);
+    osc.stop(startTime + beepDuration);
+
+    alertOsc = osc;
+    alertGain = gain;
+
+    // Clean up references after beep ends
+    setTimeout(
+      () => {
+        try {
+          osc.stop();
+        } catch (e) {
+          /* already stopped */
         }
-      });
+        alertOsc = null;
+        alertGain = null;
+      },
+      (beepDuration + 0.5) * 1000,
+    );
+  }
+
+  function stopAlertBeep() {
+    if (alertOsc) {
+      try {
+        alertOsc.stop();
+      } catch (e) {
+        /* already stopped */
+      }
+      alertOsc = null;
+    }
+    if (alertGain) {
+      alertGain.disconnect();
+      alertGain = null;
     }
   }
 
+  // Screen flash element (red flashing overlay until dismissed)
+  let flashOverlay = null;
+  let flashInterval = null;
+  let flashDismissHandler = null;
+  const FLASH_COLORS = ["rgba(220, 0, 0, 0.25)", "rgba(220, 0, 0, 0.50)"];
+
+  function startScreenFlash() {
+    // Create or reuse a red flash overlay
+    if (!flashOverlay) {
+      flashOverlay = document.createElement("div");
+      flashOverlay.id = "calendar-alert-flash";
+      flashOverlay.style.cssText = `
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        pointer-events: auto;
+        z-index: 9999;
+        transition: none;
+        opacity: 1;
+      `;
+      document.body.appendChild(flashOverlay);
+    }
+
+    // Rapid red flashing
+    let colorIndex = 0;
+    if (flashInterval) clearInterval(flashInterval);
+    flashOverlay.style.background = FLASH_COLORS[0];
+    flashInterval = setInterval(() => {
+      colorIndex = 1 - colorIndex;
+      flashOverlay.style.background = FLASH_COLORS[colorIndex];
+    }, 400);
+
+    // Dismiss on any touch/click on the overlay
+    if (flashDismissHandler) {
+      flashOverlay.removeEventListener("click", flashDismissHandler);
+      flashOverlay.removeEventListener("touchstart", flashDismissHandler);
+    }
+    flashDismissHandler = (e) => {
+      e.preventDefault();
+      clearAlert();
+    };
+    flashOverlay.addEventListener("click", flashDismissHandler);
+    flashOverlay.addEventListener("touchstart", flashDismissHandler);
+  }
+
+  function stopScreenFlash() {
+    if (flashInterval) {
+      clearInterval(flashInterval);
+      flashInterval = null;
+    }
+    if (flashDismissHandler && flashOverlay) {
+      flashOverlay.removeEventListener("click", flashDismissHandler);
+      flashOverlay.removeEventListener("touchstart", flashDismissHandler);
+      flashDismissHandler = null;
+    }
+    if (flashOverlay) {
+      flashOverlay.style.opacity = "0";
+      flashOverlay.style.background = "none";
+      flashOverlay.style.pointerEvents = "none";
+    }
+  }
+
+  function triggerAlert(title, body) {
+    // 1. System notification
+    if ("Notification" in window) {
+      if (Notification.permission === "granted") {
+        new Notification(title, { body, icon: "/images/favicon.png" });
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            new Notification(title, { body, icon: "/images/favicon.png" });
+          }
+        });
+      }
+    }
+
+    // 2. Audio beep for 10 seconds
+    try {
+      startAlertBeep();
+    } catch (e) {
+      console.warn("Alert beep error:", e);
+    }
+
+    // 3. Red screen flash until dismissed
+    try {
+      startScreenFlash();
+    } catch (e) {
+      console.warn("Alert flash error:", e);
+    }
+  }
+
+  function clearAlert() {
+    stopAlertBeep();
+    stopScreenFlash();
+  }
+
   function checkForUpcomingEvents(events) {
+    const now = new Date();
     for (const event of events) {
       if (isUpcoming(event, notificationMinutes)) {
         const eventId = event.uid || event.summary + event.start?.toString();
         if (!notifiedEventIds.has(eventId)) {
           notifiedEventIds.add(eventId);
-          sendNotification(
+          const startTime = new Date(event.start);
+          const diffMs = startTime - now;
+          const diffMinutes = Math.round(diffMs / (1000 * 60));
+          const minStr =
+            diffMinutes >= 60
+              ? `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m`
+              : `${diffMinutes} min`;
+          triggerAlert(
             "📅 Upcoming Event",
-            `${event.summary} starts in ${notificationMinutes} minutes!`,
+            `${event.summary} starting in ${minStr}`,
           );
         }
       }
@@ -252,6 +485,9 @@ export default async function initCalendar(container) {
 
       checkForUpcomingEvents(allEvents);
 
+      // Store events on content for periodic re-check (every 30s)
+      content._allEvents = allEvents;
+
       renderCalendar(todayEvents, tomorrowEvents, allEvents.length);
     } catch (err) {
       console.error("Calendar fetch error:", err);
@@ -269,6 +505,9 @@ export default async function initCalendar(container) {
   }
 
   function renderCalendar(events, tomorrowEvents, totalEvents) {
+    // Store allEvents for periodic alert re-checking
+    content._allEvents = null; // This is set in fetchCalendar after render
+
     let html = `
             <div class="calendar-today-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 8px 12px; background: #eaf2ff; border-radius: 12px;">
                 <span><i class="fa-regular fa-sun"></i> Today's Events</span>
@@ -334,6 +573,15 @@ export default async function initCalendar(container) {
     fetchCalendar();
     // Refresh every 15 minutes (Proton ICS can take hours to update)
     refreshIntervalId = setInterval(fetchCalendar, 15 * 60 * 1000);
+    // Also check events every 30 seconds for more accurate alert timing
+    this._alertCheckInterval = setInterval(() => {
+      // Re-check for upcoming events using the last fetched events stored on content
+      // We store allEvents on the content element for re-checking
+      const allEvents = content._allEvents;
+      if (allEvents) {
+        checkForUpcomingEvents(allEvents);
+      }
+    }, 30 * 1000);
   }
 
   function escapeHtml(str) {
@@ -349,7 +597,10 @@ export default async function initCalendar(container) {
   }
 
   startRefresh();
+
   return () => {
     if (refreshIntervalId) clearInterval(refreshIntervalId);
+    if (this._alertCheckInterval) clearInterval(this._alertCheckInterval);
+    clearAlert();
   };
 }

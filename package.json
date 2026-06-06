@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "dev": "vite",
     "build": "vite build"
   },
@@ -29,6 +29,7 @@
     "express": "^5.2.1",
     "infobip-rtc": "^2.7.35",
     "matrix-js-sdk": "^35.1.0",
+    "rrule": "^2.8.1",
     "vite": "^8.0.14"
   }
 }

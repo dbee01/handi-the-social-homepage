@@ -12,6 +12,7 @@
         />
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Expires" content="0" />
+
         <title>HandiHomepage – Senior Dashboard</title>
         <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
@@ -109,7 +110,9 @@
             }
 
             #weather {
-                display: inline-block !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                gap: 4px !important;
                 font-size: 1rem !important;
                 font-weight: 500 !important;
                 color: #1e1e1e !important;
@@ -160,10 +163,35 @@
             .customize-link a:hover {
                 background: #0033aa !important;
             }
+
+            /* Mobile header breakpoint */
+            @media (max-width: 1016px) {
+                header {
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    text-align: center !important;
+                }
+                .site-branding {
+                    text-align: center !important;
+                    width: 100% !important;
+                }
+                .nav-links {
+                    width: 100% !important;
+                }
+                .search-wrapper {
+                    max-width: 100% !important;
+                    width: 100% !important;
+                }
+                .header-weather {
+                    justify-content: center !important;
+                    width: auto !important;
+                }
+            }
         </style>
 
         <script src="/js/vendor/packery.pkgd.min.js"></script>
         <script src="/js/vendor/Sortable.min.js"></script>
+        <script src="/js/vendor/rrule.min.js"></script>
     </head>
     <body>
         <script src="js/core/message.js"></script>
@@ -171,7 +199,7 @@
         <header>
             <div class="site-branding">
                 <div class="handi-logo">
-                    <a href="/" class="logo-link">
+                    <a href="https://handihompage.com" class="logo-link">
                         <i class="fa-solid fa-hand-peace"></i>
                         <span class="logo-text">HandiHomepage</span>
                     </a>
@@ -252,17 +280,17 @@
                 <button id="footerMuteBtn" class="footer-icon">
                     <i class="fa-solid fa-volume-high"></i>
                 </button>
-                <button id="footerWakeLockBtn" class="footer-icon">
-                    <i class="fa-solid fa-bed"></i>
+                <button id="footerScrollUpBtn" class="footer-icon">
+                    <i class="fa-solid fa-chevron-up"></i>
+                </button>
+                <button id="footerScrollDownBtn" class="footer-icon">
+                    <i class="fa-solid fa-chevron-down"></i>
                 </button>
                 <button id="footerDocsBtn" class="footer-icon">
                     <i class="fa-solid fa-question"></i>
                 </button>
-                <button id="footerCoffeeBtn" class="footer-icon">
-                    <i class="fa-solid fa-beer"></i>
-                </button>
-                <button id="footerEmailBtn" class="footer-icon">
-                    <i class="fa-solid fa-at"></i>
+                <button id="footerWakeLockBtn" class="footer-icon">
+                    <i class="fa-solid fa-bed"></i>
                 </button>
                 <button id="footerSettingsBtn" class="footer-icon">
                     <i class="fa-solid fa-gear"></i>
@@ -361,6 +389,127 @@
                     if (e.key === "Enter") doSearch();
                 };
             }
+
+            // ========== GLOBAL TEST: alertTrigger for calendar alerts ==========
+            // Pre-create AudioContext on first click so it works from console
+            var _alertCtx = null;
+            var _alertFlash = null;
+            document.addEventListener("click", function () {
+                if (!_alertCtx) {
+                    try {
+                        _alertCtx = new (
+                            window.AudioContext || window.webkitAudioContext
+                        )();
+                    } catch (e) {}
+                }
+                if (_alertCtx && _alertCtx.state === "suspended") {
+                    _alertCtx.resume().catch(function () {});
+                }
+                // Request notification permission on click too (browser allows this)
+                if (
+                    "Notification" in window &&
+                    Notification.permission === "default"
+                ) {
+                    Notification.requestPermission();
+                }
+            });
+            window.alertTrigger = function () {
+                try {
+                    // System notification
+                    if (
+                        "Notification" in window &&
+                        Notification.permission === "granted"
+                    ) {
+                        new Notification("📅 TEST ALERT", {
+                            body: "Calendar test — beep, notification, and screen flash.",
+                            icon: "/images/favicon.png",
+                        });
+                    }
+
+                    // Audio beep (needs AudioContext to exist and be running)
+                    var ctx = _alertCtx;
+                    if (ctx) {
+                        if (ctx.state === "suspended")
+                            ctx.resume().catch(function () {});
+                        try {
+                            var osc = ctx.createOscillator();
+                            var gain = ctx.createGain();
+                            osc.type = "square";
+                            osc.frequency.value = 880;
+                            gain.gain.value = 0.15;
+                            osc.connect(gain);
+                            gain.connect(ctx.destination);
+                            osc.start();
+                            var t = ctx.currentTime;
+                            for (var p = 0; p < 10; p += 0.5) {
+                                gain.gain.setValueAtTime(
+                                    Math.floor(p / 0.5) % 2 === 0 ? 0.15 : 0,
+                                    t + p,
+                                );
+                            }
+                            gain.gain.setValueAtTime(0, t + 10);
+                            osc.stop(t + 10);
+                        } catch (e) {
+                            console.warn("Beep error:", e);
+                        }
+                    } else {
+                        console.log(
+                            "ℹ️ Click on the page first to enable audio, then run alertTrigger() again.",
+                        );
+                    }
+                } catch (e) {
+                    console.warn("alertTrigger beep error:", e);
+                }
+
+                try {
+                    // Screen flash — rapid red flashing until dismissed
+                    var flash = document.getElementById("calAlertFlash");
+                    if (!flash) {
+                        flash = document.createElement("div");
+                        flash.id = "calAlertFlash";
+                        flash.style.cssText =
+                            "position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:auto;z-index:9999;transition:none;opacity:1;background:rgba(220,0,0,0.25);";
+                        document.body.appendChild(flash);
+                        _alertFlash = flash;
+                    }
+                    var colors = ["rgba(220,0,0,0.25)", "rgba(220,0,0,0.50)"];
+                    var ci = 0;
+                    if (flash._interval) clearInterval(flash._interval);
+                    flash.style.background = colors[0];
+                    flash._interval = setInterval(function () {
+                        ci = 1 - ci;
+                        flash.style.background = colors[ci];
+                    }, 400);
+                    // Dismiss on click/touch
+                    flash.onclick = window.clearAlert;
+                    flash.ontouchstart = function (e) {
+                        e.preventDefault();
+                        window.clearAlert();
+                    };
+                } catch (e) {
+                    console.warn("alertTrigger flash error:", e);
+                }
+
+                console.log(
+                    "🔔 alertTrigger() fired — beep + red flash until dismissed",
+                );
+            };
+
+            // Global clearAlert() to dismiss calendar alert
+            window.clearAlert = function () {
+                var flash = document.getElementById("calAlertFlash");
+                if (flash) {
+                    if (flash._interval) {
+                        clearInterval(flash._interval);
+                        flash._interval = null;
+                    }
+                    flash.onclick = null;
+                    flash.ontouchstart = null;
+                    flash.style.opacity = "0";
+                    flash.style.background = "none";
+                    flash.style.pointerEvents = "none";
+                }
+            };
         </script>
 
         <script src="js/core/module-buttons.js"></script>

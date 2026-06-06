@@ -1,0 +1,112 @@
+/* =========================================================
+   HEADER LAYOUT
+========================================================= */
+
+header {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
+    padding: 12px 20px !important;
+    background: #ffffff !important;
+    border-bottom: 3px solid #0047cc !important;
+}
+
+.site-branding {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    order: 1 !important;
+}
+
+.nav-links {
+    flex: 1 !important;
+    display: flex !important;
+    justify-content: center !important;
+    order: 2 !important;
+}
+
+.search-wrapper {
+    width: 100% !important;
+    max-width: 500px !important;
+    background: #ffffff !important;
+    border: 2px solid #cbd5e1 !important;
+    border-radius: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 4px 8px 4px 20px !important;
+    box-sizing: border-box !important;
+}
+
+.header-weather {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    white-space: nowrap !important;
+    order: 3 !important;
+    background: #eaf2ff !important;
+    padding: 8px 16px !important;
+    border-radius: 48px !important;
+}
+
+#weather {
+    display: inline-block !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    color: #1e1e1e !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.search-button {
+    background: #0047cc;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+#searchInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    background: transparent;
+    min-width: 0;
+}
+
+#searchEngine {
+    border: none;
+    background: #f1f5f9;
+    padding: 6px 10px;
+    border-radius: 24px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+#searchEngineLogo {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.handi-logo .logo-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: xx-large;
+    font-weight: 600;
+    color: #1a1a2e;
+    text-decoration: none;
+}

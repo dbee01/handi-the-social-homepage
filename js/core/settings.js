@@ -38,7 +38,7 @@ const DEFAULT_SETTINGS = {
     userId: "",
   },
   weather: { location: "Cork", country: "IE" },
-  calendar: { url: "", notificationMinutes: 30 },
+  calendar: { url: "", notificationMinutes: 15 },
 };
 
 export function loadSettings() {

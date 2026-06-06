@@ -15,6 +15,9 @@ pnpm-lock.yaml
 .env.production
 .env.development
 
+# GTFS cache
+.gtfs-cache/
+
 # Logs
 logs/
 *.log

@@ -519,7 +519,11 @@
                     <div class="config-field">
                         <label>Notification time:</label
                         ><select id="calendarNotificationMinutes">
-                            <option value="30" selected>30 minutes</option>
+                            <option value="5">5 minutes</option>
+                            <option value="10">10 minutes</option>
+                            <option value="15" selected>15 minutes</option>
+                            <option value="30">30 minutes</option>
+                            <option value="60">1 hour</option>
                         </select>
                     </div>
                     <small
@@ -673,7 +677,7 @@
                             padding: 2px 8px;
                             border-radius: 20px;
                         "
-                        >🔒 Premium Features</span
+                        >🔒 Premium F>eatures</span
                     >
                 </h2>
                 <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px">
@@ -682,7 +686,7 @@
             </div>
 
             <!-- Premium 1: Free & Unlimited Calls (Infobip) -->
-            <!--
+
             <div class="module-card" data-module="webrtc">
                 <div class="module-header">
                     <div class="module-title">
@@ -738,10 +742,9 @@
                     </div>
                 </div>
             </div>
-            -->
 
             <!-- Premium 2: Live Bus Tracker -->
-            <!--
+
             <div class="module-card" data-module="live_bus">
                 <div class="module-header">
                     <div class="module-title">
@@ -781,10 +784,9 @@
                     </div>
                 </div>
             </div>
-            -->
 
             <!-- Premium 3: Emergency Location Button -->
-            <!--
+
             <div class="module-card" data-module="emergency_alert">
                 <div class="module-header">
                     <div class="module-title">
@@ -840,7 +842,6 @@
                     </div>
                 </div>
             </div>
-            -->
         </div>
 
         <div class="brand">
@@ -944,10 +945,13 @@
                                 calendar: false,
                                 phone: false,
                                 chat: false,
+                                webrtc: true,
+                                live_bus: true,
+                                emergency_alert: true,
                             },
                             gallery: { speed: 8000, autoStart: true },
-                            music: { volume: 85, shuffle: false },
-                            radio: { defaultStation: "0", volume: 70 },
+                            music: { volume: 100, shuffle: false },
+                            radio: { defaultStation: "0", volume: 100 },
                             news: { rssUrl: "", refresh: 15, maxArticles: 4 },
                             social: {
                                 instance: "https://mastodon.ie",
@@ -963,6 +967,14 @@
                                 refreshInterval: 30,
                             },
                             weather: { location: "Cork", country: "IE" },
+                            emergency_alert: { contacts: [] },
+                            webrtc: {
+                                baseUrl: "",
+                                apiKey: "",
+                                appId: "",
+                                callerId: "",
+                            },
+                            live_bus: { routeIds: "", stopIds: "" },
                         };
                         // Deep merge parsed into defaults
                         for (const key of Object.keys(defaults)) {
@@ -994,10 +1006,13 @@
                         calendar: false,
                         phone: false,
                         chat: false,
+                        webrtc: true,
+                        live_bus: true,
+                        emergency_alert: true,
                     },
                     gallery: { speed: 8000, autoStart: true },
-                    music: { volume: 85, shuffle: false },
-                    radio: { defaultStation: "0", volume: 70 },
+                    music: { volume: 100, shuffle: false },
+                    radio: { defaultStation: "0", volume: 100 },
                     news: { rssUrl: "", refresh: 15, maxArticles: 4 },
                     social: { instance: "https://mastodon.ie", limit: 4 },
                     calendar: { url: "", notificationMinutes: 30 },
@@ -1010,6 +1025,14 @@
                         refreshInterval: 30,
                     },
                     weather: { location: "Cork", country: "IE" },
+                    emergency_alert: { contacts: [] },
+                    webrtc: {
+                        baseUrl: "",
+                        apiKey: "",
+                        appId: "",
+                        callerId: "",
+                    },
+                    live_bus: { routeIds: "", stopIds: "" },
                 };
             }
 
@@ -1077,10 +1100,10 @@
                 }
 
                 if (photoFile) {
-                    const MAX_SIZE = 2 * 1024 * 1024; // 2 MB
+                    const MAX_SIZE = 7 * 1024 * 1024; // 7 MB
                     if (photoFile.size > MAX_SIZE) {
                         alert(
-                            "Contact photo must be under 2 MB. Please choose a smaller image.",
+                            "Contact photo must be under 7 MB. Please choose a smaller image.",
                         );
                         return;
                     }
@@ -1178,9 +1201,9 @@
                 "calendar",
                 "phone",
                 "chat",
-                // "webrtc",
-                // "live_bus",
-                // "emergency_alert",
+                "webrtc",
+                "live_bus",
+                "emergency_alert",
             ];
 
             function applySettingsToToggles() {
@@ -1335,6 +1358,21 @@
                 settings.emergency_alert.contacts = emergencyContacts;
 
                 // ============================================================
+                // WEBRTC (INFOBIP) SETTINGS
+                // ============================================================
+                if (document.getElementById("infobipBaseUrl")) {
+                    if (!settings.webrtc) settings.webrtc = {};
+                    settings.webrtc.baseUrl =
+                        document.getElementById("infobipBaseUrl")?.value || "";
+                    settings.webrtc.apiKey =
+                        document.getElementById("infobipApiKey")?.value || "";
+                    settings.webrtc.appId =
+                        document.getElementById("infobipAppId")?.value || "";
+                    settings.webrtc.callerId =
+                        document.getElementById("infobipCallerId")?.value || "";
+                }
+
+                // ============================================================
                 // BUS TRACKER SETTINGS
                 // ============================================================
                 if (document.getElementById("busRouteIds")) {
@@ -1402,6 +1440,10 @@
             function saveAllSettings() {
                 const settings = collectSettings();
                 saveSettings(settings);
+                // Dispatch custom event so open dashboard tabs re-render emergency module
+                try {
+                    window.dispatchEvent(new Event("handiSettingsSaved"));
+                } catch (e) {}
                 alert("Settings saved!");
                 location.reload();
             }
@@ -1470,6 +1512,12 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const args = urlParams.get("args");
                 if (args) {
+                    const aliasMap = {
+                        emergency: "emergency_alert",
+                        bus: "live_bus",
+                        calls: "webrtc",
+                        phone: "phone",
+                    };
                     const valid = [
                         "gallery",
                         "music",
@@ -1484,7 +1532,8 @@
                         "live_bus",
                         "emergency_alert",
                     ];
-                    const target = args.toLowerCase();
+                    let target = args.toLowerCase();
+                    if (aliasMap[target]) target = aliasMap[target];
                     if (valid.includes(target)) {
                         setTimeout(() => {
                             document

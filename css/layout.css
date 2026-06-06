@@ -53,13 +53,54 @@ header {
     border-radius: 48px;
 }
 
-/* Fix search wrapper width on mobile */
-@media (max-width: 768px) {
+/* Mobile header - centered at 1016px */
+@media (max-width: 1016px) {
+    header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .site-branding {
+        text-align: center;
+        width: 100%;
+    }
+    .nav-links {
+        width: 100%;
+    }
+    .header-weather {
+        justify-content: center;
+        width: auto;
+    }
+}
+
+@media (max-width: 1016px) {
     .search-wrapper {
         max-width: 100% !important;
         width: 100% !important;
         flex: none !important;
     }
+}
+
+.search-wrapper {
+    background: #f5f7fa;
+    border: 1px solid #e2e8f0;
+}
+
+.search-wrapper:focus-within {
+    border-color: #0047cc;
+    box-shadow: 0 0 0 3px rgba(0, 71, 204, 0.2);
+}
+
+#searchInput::placeholder {
+    color: #94a3b8;
+}
+
+.search-button:hover {
+    background: #0037a3;
+}
+
+.header-weather i {
+    color: #0047cc;
 }
 
 #searchInput {
@@ -101,27 +142,15 @@ header {
     gap: 8px;
     padding: 8px 16px;
     border-radius: 48px;
+    background: #eaf2ff;
+    border: 1px solid #bfd4ff;
 }
 
 #weather {
     white-space: nowrap;
-}
-
-/* Mobile header */
-@media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .site-branding {
-        text-align: center;
-    }
-    .nav-links {
-        width: 100%;
-    }
-    .header-weather {
-        justify-content: center;
-    }
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 @media (max-width: 550px) {
@@ -705,14 +734,13 @@ header {
     border-left: 4px solid #0047cc;
 }
 
-/* Play button inline */
+/* Play button inline (visual indicator, click on whole row) */
 .radio-play-btn {
     width: 44px;
     height: 44px;
     border-radius: 50%;
     color: white;
-    border: none;
-    cursor: pointer;
+    background: lightgray;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -722,11 +750,7 @@ header {
 }
 
 .radio-play-btn.playing {
-    background: #008000;
-}
-
-.radio-play-btn.playing:hover {
-    background: #006400;
+    background: lightgrey;
 }
 
 .radio-station span:last-child {
@@ -928,6 +952,18 @@ header {
     padding: 10px;
     border-radius: 12px;
     cursor: pointer;
+}
+
+#calendar-alert-flash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: opacity 0.4s ease;
+    opacity: 0;
 }
 
 @media (max-width: 640px) {
