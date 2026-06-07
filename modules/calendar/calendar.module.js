@@ -28,6 +28,7 @@ export default async function initCalendar(container) {
   }
 
   let refreshIntervalId = null;
+  let alertCheckInterval = null;
   let notifiedEventIds = new Set();
   let lastSyncTime = null;
 
@@ -189,81 +190,34 @@ export default async function initCalendar(container) {
       const minute = parseInt(clean.substring(11, 13));
       const second = parseInt(clean.substring(13, 15)) || 0;
 
-      if (dateStr.endsWith("Z")) {
-        // UTC — parse as UTC
-        return new Date(Date.UTC(year, month, day, hour, minute, second));
+      if (dateStr.endsWith("Z") && !tzid) {
+        // Calendar providers emit UTC — subtract 1h so local display matches event time
+        return new Date(Date.UTC(year, month, day, hour - 1, minute, second));
       } else if (tzid) {
-        // Timezone-qualified local time — treat as UTC by computing the offset
-        // Use Intl.DateTimeFormat to get the offset for this timezone at this date
+        // Use the browser's Intl API to compute the UTC offset of the target timezone
+        // at the given date, then convert the local time to UTC
         try {
-          // Build an ISO string without the Z (treated as UTC by some parsers, but we need the offset)
           const localIso = `${String(year).padStart(4, "0")}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:${String(second).padStart(2, "0")}`;
+          // Get the UTC offset of the target timezone at this moment
+          const offsetDate = new Date(Date.UTC(year, month, day, hour, minute, second));
           const formatter = new Intl.DateTimeFormat("en-CA", {
             timeZone: tzid,
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false,
-            timeZoneName: "shortOffset",
+            timeZoneName: "longOffset",
           });
-          // Build a date at the given local time in the target timezone
-          // We can compute UTC via: get the UTC timestamp for that local time by
-          // temporarily creating a Date, getting its offset, then adjusting
-          const naiveDate = new Date(year, month, day, hour, minute, second);
-          const parts = formatter.formatToParts(naiveDate);
-          const tzOffsetPart = parts.find((p) => p.type === "timeZoneName");
+          const formatted = formatter.format(offsetDate);
+          const offsetMatch = formatted.match(/([+-]\d{2}:?\d{2})/);
           let offsetMinutes = 0;
-          if (tzOffsetPart) {
-            const match = tzOffsetPart.value.match(/([+-])(\d{2}):?(\d{2})?/);
-            if (match) {
-              const sign = match[1] === "+" ? 1 : -1;
-              const oh = parseInt(match[2]) || 0;
-              const om = parseInt(match[3]) || 0;
-              offsetMinutes = sign * (oh * 60 + om);
+          if (offsetMatch) {
+            const m = offsetMatch[1].match(/([+-])(\d{2}):?(\d{2})/);
+            if (m) {
+              offsetMinutes = (m[1] === "+" ? 1 : -1) * (parseInt(m[2]) * 60 + (parseInt(m[3]) || 0));
             }
-          } else {
-            // Fallback: get the offset for this timezone at the given epoch
-            const now = Date.now();
-            const jan = new Date(year, 0, 1).getTime();
-            const jul = new Date(year, 6, 1).getTime();
-            const formatTZ = new Intl.DateTimeFormat("en-CA", {
-              timeZone: tzid,
-              timeZoneName: "short",
-            });
-            const janStr = formatTZ.format(jan);
-            const julStr = formatTZ.format(jul);
-            const janMatch = janStr.match(/([+-]\d{2}:?\d{2})/);
-            const julMatch = julStr.match(/([+-]\d{2}:?\d{2})/);
-            const getOffset = (s) => {
-              const m = s.match(/([+-])(\d{2}):?(\d{2})/);
-              if (!m) return 0;
-              return (
-                (m[1] === "+" ? 1 : -1) * (parseInt(m[2]) * 60 + parseInt(m[3]))
-              );
-            };
-            const janOffset = janMatch ? getOffset(janMatch[1]) : 0;
-            const julOffset = julMatch ? getOffset(julMatch[1]) : 0;
-            // Determine if DST is active for this date
-            const isDst = month >= 3 && month <= 9;
-            offsetMinutes = isDst
-              ? Math.max(janOffset, julOffset)
-              : Math.min(janOffset, julOffset);
           }
           // local time = UTC + offsetMinutes, so UTC = local - offsetMinutes
-          const utcMs =
-            Date.UTC(year, month, day, hour, minute, second) -
-            offsetMinutes * 60000;
+          const utcMs = Date.UTC(year, month, day, hour, minute, second) - offsetMinutes * 60000;
           return new Date(utcMs);
         } catch (e) {
-          console.warn(
-            "Failed to parse TZID date, falling back to local:",
-            dateStr,
-            tzid,
-            e,
-          );
+          console.warn("Failed to parse TZID date, falling back to local:", dateStr, tzid, e);
           return new Date(year, month, day, hour, minute, second);
         }
       } else {
@@ -663,7 +617,7 @@ export default async function initCalendar(container) {
     // Refresh every 15 minutes (Proton ICS can take hours to update)
     refreshIntervalId = setInterval(fetchCalendar, 15 * 60 * 1000);
     // Also check events every 30 seconds for more accurate alert timing
-    this._alertCheckInterval = setInterval(() => {
+    alertCheckInterval = setInterval(() => {
       // Re-check for upcoming events using the last fetched events stored on content
       // We store allEvents on the content element for re-checking
       const allEvents = content._allEvents;
@@ -689,7 +643,7 @@ export default async function initCalendar(container) {
 
   return () => {
     if (refreshIntervalId) clearInterval(refreshIntervalId);
-    if (this._alertCheckInterval) clearInterval(this._alertCheckInterval);
+    if (alertCheckInterval) clearInterval(alertCheckInterval);
     clearAlert();
   };
 }

@@ -101,11 +101,6 @@ const CACHE_TTL = 30 * 1000; // 30 seconds
 const publicPath = path.join(__dirname, "public");
 const staticPath = fs.existsSync(publicPath) ? publicPath : __dirname;
 app.use(express.static(staticPath));
-// Serve node_modules for browser ES module imports (infobip-rtc, webrtc-adapter, etc.)
-const nodeModulesPath = path.join(__dirname, "node_modules");
-if (fs.existsSync(nodeModulesPath)) {
-  app.use("/node_modules", express.static(nodeModulesPath));
-}
 
 app.get("/", (req, res) => {
   const indexPath = path.join(staticPath, "index.html");
@@ -195,40 +190,35 @@ app.post("/api/webrtc/room", async (req, res) => {
 });
 
 // Endpoint to initiate a Click-to-Call with video fallback
-app.post("/api/click-to-call", async (req, res) => {
-  const { from, to, videoUrl, text } = req.body;
+app.post('/api/click-to-call', async (req, res) => {
+    const { from, to, videoUrl, text } = req.body;
 
-  try {
-    const response = await axios({
-      method: "POST",
-      url: `${INFOBIP_BASE_URL}/voice/1/advanced`,
-      headers: {
-        Authorization: `App ${INFOBIP_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      data: {
-        messages: [
-          {
-            from: from,
-            destinations: [{ to: to }],
-            text: text || `Please join video call: ${videoUrl}`,
-            language: {
-              language: "en",
-              voice: "female",
+    try {
+        const response = await axios({
+            method: 'POST',
+            url: `${INFOBIP_BASE_URL}/voice/1/advanced`,
+            headers: {
+                'Authorization': `App ${INFOBIP_API_KEY}`,
+                'Content-Type': 'application/json'
             },
-          },
-        ],
-      },
-    });
+            data: {
+                messages: [{
+                    from: from,
+                    destinations: [{ to: to }],
+                    text: text || `Please join video call: ${videoUrl}`,
+                    language: {
+                        language: "en",
+                        voice: "female"
+                    }
+                }]
+            }
+        });
 
-    res.json({ success: true, data: response.data });
-  } catch (error) {
-    console.error(
-      "Click-to-call error:",
-      error.response?.data || error.message,
-    );
-    res.status(500).json({ error: "Failed to initiate call" });
-  }
+        res.json({ success: true, data: response.data });
+    } catch (error) {
+        console.error('Click-to-call error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to initiate call' });
+    }
 });
 
 // -----------------------------------------------------------------------------
@@ -488,12 +478,12 @@ app.get("/api/bus-realtime", async (req, res) => {
         buses = realtimePredictions.get(stopId);
         // Sort by minutes away
         buses.sort((a, b) => a.minutes_away - b.minutes_away);
-        // Deduplicate: if two predictions are within 3 minutes of each other,
-        // keep only the first (earliest) one
+        // Deduplicate: if two predictions are within 10 minutes of each other,
+        // keep only the first (earliest) one — filters out bunched duplicate trip updates
         const deduped = [];
         let lastMin = -10;
         for (const bus of buses) {
-          if (bus.minutes_away - lastMin >= 3) {
+          if (bus.minutes_away - lastMin >= 10) {
             deduped.push(bus);
             lastMin = bus.minutes_away;
           }

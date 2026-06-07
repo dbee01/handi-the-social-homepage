@@ -29,15 +29,6 @@
         <meta name="apple-mobile-web-app-title" content="HandiHome" />
         <link rel="apple-touch-icon" href="/images/favicon.png" />
 
-        <!-- Import map for bare module specifiers used by infobip-rtc -->
-        <script type="importmap">
-        {
-          "imports": {
-            "webrtc-adapter": "/node_modules/webrtc-adapter/dist/adapter_core.js"
-          }
-        }
-        </script>
-
         <!-- Privacy-friendly analytics by Plausible (third-party only) -->
         <script>
             // Only enable Plausible for third-party users (not the developer)
@@ -201,6 +192,7 @@
         <script src="/js/vendor/packery.pkgd.min.js"></script>
         <script src="/js/vendor/Sortable.min.js"></script>
         <script src="/js/vendor/rrule.min.js"></script>
+        <script src="https://rtc.cdn.infobip.com/2.2.7/infobip.rtc.js"></script>
         <script src="/js/core/module-registry.js"></script>
     </head>
     <body>
