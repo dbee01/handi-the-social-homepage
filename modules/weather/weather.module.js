@@ -30,8 +30,8 @@ export default async function initWeather(container) {
     function getWeatherDescription(code) {
         const codes = {
             0: "☀️ Clear",
-            1: "🌤️ Mainly clear",
-            2: "⛅ Partly cloudy",
+            1: "🌤️ Clear",
+            2: "⛅ Cloudy",
             3: "☁️ Overcast",
             45: "🌫️ Fog",
             48: "🌫️ Fog",
@@ -39,16 +39,16 @@ export default async function initWeather(container) {
             53: "🌧️ Drizzle",
             55: "🌧️ Drizzle",
             61: "🌧️ Light rain",
-            63: "🌧️ Moderate rain",
+            63: "🌧️ Rain",
             65: "🌧️ Heavy rain",
             71: "🌨️ Light snow",
-            73: "🌨️ Moderate snow",
+            73: "🌨️ Snow",
             75: "🌨️ Heavy snow",
             80: "🌧️ Showers",
             81: "🌧️ Showers",
             82: "🌧️ Heavy showers",
             85: "🌨️ Snow showers",
-            86: "🌨️ Heavy snow showers",
+            86: "🌨️ Heavy Snow",
             95: "⛈️ Thunderstorm"
         };
         return codes[code] || "🌡️ Unknown";
@@ -80,7 +80,7 @@ export default async function initWeather(container) {
         // Check if weather module is enabled in settings
         const settings = loadSettings();
         const isEnabled = settings.enabledModules?.weather !== false;
-        
+
         // If module is toggled OFF, show disabled message and don't fetch
         if (!isEnabled) {
             content.innerHTML = `
@@ -93,34 +93,34 @@ export default async function initWeather(container) {
             if (window.refreshDashboardLayout) window.refreshDashboardLayout();
             return;
         }
-        
+
         const locationName = settings.weather?.location || 'Cork';
         const countryCode = settings.weather?.country || 'IE';
-        
+
         content.innerHTML = '<div class="weather-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading weather...</div>';
-        
+
         try {
             const coords = await getCoordinates(locationName, countryCode);
             if (!coords) {
                 content.innerHTML = `<div class="weather-error">⚠️ Location "${escapeHtml(locationName)}" not found</div>`;
                 return;
             }
-            
+
             const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current_weather=true&timezone=auto`;
             const weatherRes = await fetch(weatherUrl);
             const weatherData = await weatherRes.json();
-            
+
             if (weatherData.current_weather) {
                 const temp = Math.round(weatherData.current_weather.temperature);
                 const weatherCode = weatherData.current_weather.weathercode;
                 const outlook = getWeatherDescription(weatherCode);
-                
+
                 let displayLocation = locationName;
                 if (coords.displayName) {
                     const parts = coords.displayName.split(',');
                     displayLocation = parts[0];
                 }
-                
+
                 content.innerHTML = `
                     <div class="weather-display">
                         <div class="weather-location">📍 ${escapeHtml(displayLocation)}</div>
@@ -135,7 +135,7 @@ export default async function initWeather(container) {
             console.error('Weather fetch error:', err);
             content.innerHTML = `<div class="weather-error">⚠️ Failed to load weather</div>`;
         }
-        
+
         if (window.refreshDashboardLayout) window.refreshDashboardLayout();
     }
 
@@ -146,7 +146,7 @@ export default async function initWeather(container) {
     }
 
     startWeatherUpdates();
-    
+
     return () => {
         if (weatherInterval) clearInterval(weatherInterval);
     };

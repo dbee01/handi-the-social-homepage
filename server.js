@@ -21,7 +21,10 @@ try {
       let key = trimmed.substring(0, eqIdx).trim();
       let val = trimmed.substring(eqIdx + 1).trim();
       // Strip surrounding quotes
-      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+      if (
+        (val.startsWith('"') && val.endsWith('"')) ||
+        (val.startsWith("'") && val.endsWith("'"))
+      ) {
         val = val.slice(1, -1);
       }
       if (!process.env[key]) {
@@ -446,6 +449,14 @@ app.get("/api/bus-realtime", async (req, res) => {
 
       if (realtimePredictions.has(stopId)) {
         buses = realtimePredictions.get(stopId);
+        // Deduplicate by minutes_away — keep only the first occurrence of each unique time
+        const seen = new Set();
+        buses = buses.filter((b) => {
+          const key = b.minutes_away;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
         isRealtime = true;
         console.log(`\n✅ STOP ${stopId} (${stopData.stop_name}):`);
         console.log(`   → REAL-TIME predictions: ${buses.length}`);

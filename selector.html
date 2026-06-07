@@ -35,15 +35,6 @@
                 flex-wrap: wrap;
             }
 
-            .selector-panel {
-                flex: 1;
-                min-width: 360px;
-                background: white;
-                border-radius: 28px;
-                padding: 28px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            }
-
             .selector-panel h2 {
                 font-size: 28px;
                 margin-bottom: 12px;
@@ -128,7 +119,6 @@
                 font-size: 12px;
                 padding: 3px 10px;
                 border-radius: 20px;
-                margin-left: 10px;
             }
 
             .toggle-btn {
@@ -162,9 +152,8 @@
                 opacity: 0.9;
             }
 
-            .dashboard-panel {
-                flex: 1.2;
-                min-width: 420px;
+            .dashboard-panel, .selector-panel {
+                flex: 1;
                 background: white;
                 border-radius: 28px;
                 padding: 28px;
@@ -172,16 +161,13 @@
             }
 
             .dashboard-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+                display: block;
                 margin-bottom: 28px;
-                flex-wrap: wrap;
-                gap: 16px;
             }
 
             .dashboard-header h2 {
                 font-size: 28px;
+                margin-bottom: 28px;
                 color: #1a1a2e;
             }
 
@@ -313,7 +299,7 @@
             }
 
             .consent-box label {
-                display: flex;
+                display: block;
                 align-items: center;
                 gap: 12px;
                 cursor: pointer;
@@ -325,6 +311,81 @@
                 width: 22px;
                 height: 22px;
                 cursor: pointer;
+            }
+
+            @media (max-width: 400px) {
+                .dashboard-layout {
+                    gap: 16px;
+                }
+                .dashboard-panel,
+                .selector-panel {
+                    padding: 16px;
+                    border-radius: 20px;
+                }
+                .selector-panel h2 {
+                    font-size: 24px;
+                }
+                .selector-sub {
+                    font-size: 17px;
+                    margin-bottom: 18px;
+                }
+                .group-title {
+                    font-size: 20px;
+                }
+                .module-item {
+                    padding: 14px 16px;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+                .module-info h4 {
+                    font-size: 17px;
+                }
+                .module-info p {
+                    font-size: 15px;
+                }
+                .toggle-btn {
+                    padding: 8px 16px;
+                    font-size: 16px;
+                    min-width: 64px;
+                }
+                .dashboard-panel h2 {
+                    font-size: 22px;
+                }
+                .dashboard-item {
+                    padding: 14px;
+                }
+                .item-content strong {
+                    font-size: 16px;
+                }
+                .item-content p {
+                    font-size: 14px;
+                }
+                .remove-dash {
+                    width: 40px;
+                    height: 40px;
+                    font-size: 18px;
+                }
+                .consent-box {
+                    padding: 16px;
+                }
+                .consent-box label {
+                    font-size: 17px;
+                }
+                .footer-consent {
+                    font-size: 16px;
+                }
+                .action-buttons {
+                    flex-direction: column;
+                    gap: 8px;
+                }
+                .action-buttons .btn {
+                    width: 100%;
+                    justify-content: center;
+                }
+                .empty-state {
+                    padding: 40px 16px;
+                    font-size: 17px;
+                }
             }
         </style>
     </head>
@@ -357,11 +418,7 @@
                     <div class="consent-box">
                         <label>
                             <input type="checkbox" id="privacyConsent" /> I
-                            agree to the Privacy Policy
-                        </label>
-                        <label>
-                            <input type="checkbox" id="termsConsent" /> I agree
-                            to the Terms & Conditions
+                            agree to the <a href="/privacy">Privacy Policy</a> and <a href="/terms">Terms & Conditions</a>
                         </label>
                     </div>
                 </div>
@@ -371,10 +428,10 @@
                         <h2>📌 Your Dashboard</h2>
                         <div class="action-buttons">
                             <button id="resetBtn" class="reset-btn">
-                                ⟳ Reset All
+                                ⟳ Reset
                             </button>
                             <button id="applyBtn" class="apply-btn">
-                                ✓ Apply to dashboard
+                                ✓ Submit
                             </button>
                         </div>
                     </div>
@@ -432,8 +489,7 @@
 
             function hasConsent() {
                 let p = document.getElementById("privacyConsent");
-                let t = document.getElementById("termsConsent");
-                return p && p.checked && t && t.checked;
+                return p && p.checked;
             }
 
             function renderSelector() {
@@ -479,16 +535,17 @@
                         div.className = "module-item premium-module";
                         div.innerHTML = `
                     <div class="module-info">
-                        <h4>${mod.icon} ${mod.name} <span class="premium-label">PREMIUM</span></h4>
+                        <span class="premium-label" style="display:inline-block;margin-bottom:4px;">PREMIUM</span>
+                        <h4>${mod.icon} ${mod.name}</h4>
                         <p>${mod.desc}</p>
                     </div>
                     <button class="toggle-btn ${isActive ? "btn-remove" : "btn-add"}">${isActive ? "✗" : "✓"}</button>
                 `;
                         let btn = div.querySelector("button");
                         btn.onclick = () => {
-                            if (!consent) {
+                            if (isPremium && !consent) {
                                 alert(
-                                    "⚠️ Please accept the Privacy Policy and Terms & Conditions to add or remove Premium modules.",
+                                    "⚠️ Please accept the Privacy Policy to add or remove Premium modules.",
                                 );
                                 return;
                             }
@@ -552,7 +609,7 @@
                     removeBtn.onclick = () => {
                         if (isPremium && !hasConsent()) {
                             alert(
-                                "⚠️ Please accept Privacy Policy and Terms to remove premium modules.",
+                                "⚠️ Please accept the Privacy Policy to remove premium modules.",
                             );
                             return;
                         }
@@ -603,7 +660,7 @@
             function resetModules() {
                 if (!hasConsent()) {
                     alert(
-                        "⚠️ Please accept Privacy Policy and Terms to reset.",
+                        "⚠️ Please accept the Privacy Policy to reset.",
                     );
                     return;
                 }
@@ -618,7 +675,7 @@
             function applyChanges() {
                 if (!hasConsent()) {
                     alert(
-                        "⚠️ Please accept Privacy Policy and Terms to apply.",
+                        "⚠️ Please accept the Privacy Policy to apply.",
                     );
                     return;
                 }

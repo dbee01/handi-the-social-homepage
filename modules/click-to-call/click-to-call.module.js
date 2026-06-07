@@ -31,7 +31,7 @@ export default async function initClickToCall(container) {
         return;
       }
       const script = document.createElement("script");
-      script.src = "//rtc.cdn.infobip.com/2.2.7/infobip.rtc.js";
+      script.src = "https://rtc.cdn.infobip.com/2.2.7/infobip.rtc.js";
       script.onload = () => resolve(window.InfobipRTC);
       script.onerror = () => reject(new Error("Failed to load Infobip SDK"));
       document.head.appendChild(script);
