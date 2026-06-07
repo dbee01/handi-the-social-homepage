@@ -43,6 +43,11 @@ const PORT = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
+// Serve favicon
+app.get("/favicon.ico", (req, res) =>
+  res.sendFile(path.join(__dirname, "images", "favicon.ico")),
+);
+
 const REALTIME_URL = "https://api.nationaltransport.ie/gtfsr/v2/TripUpdates";
 const VEHICLES_URL = "https://api.nationaltransport.ie/gtfsr/v2/Vehicles";
 const API_KEY = process.env.BUS_API_KEY || "";
@@ -92,16 +97,15 @@ let lastFetch = 0;
 const CACHE_TTL = 30 * 1000; // 30 seconds
 
 // -----------------------------------------------------------------------------
-// STATIC FRONTEND
-// -----------------------------------------------------------------------------
+// Static frontend
 const publicPath = path.join(__dirname, "public");
 const staticPath = fs.existsSync(publicPath) ? publicPath : __dirname;
 app.use(express.static(staticPath));
-// Serve infobip-rtc from node_modules for browser ES module imports
-app.use(
-  "/node_modules/infobip-rtc",
-  express.static(path.join(__dirname, "node_modules", "infobip-rtc")),
-);
+// Serve node_modules for browser ES module imports (infobip-rtc, webrtc-adapter, etc.)
+const nodeModulesPath = path.join(__dirname, "node_modules");
+if (fs.existsSync(nodeModulesPath)) {
+  app.use("/node_modules", express.static(nodeModulesPath));
+}
 
 app.get("/", (req, res) => {
   const indexPath = path.join(staticPath, "index.html");
@@ -252,19 +256,52 @@ app.get("/api/bus-realtime", async (req, res) => {
 
   const stops = {};
   const longToShortStopId = {};
+  // Build a reverse lookup: short suffix → long ID from GTFS stops
+  const suffixToLong = {};
+  if (gtfs.scheduleData && gtfs.scheduleData.stops) {
+    for (const longId of gtfs.scheduleData.stops.keys()) {
+      // If the long ID ends with the short numeric suffix, map it
+      const suffix = longId.replace(/^\D+/, ""); // strip non-digit prefix
+      if (suffix && suffix.length >= 4) {
+        suffixToLong[suffix] = longId;
+      }
+    }
+  }
+
   for (const stopId of requestedStopIds) {
+    // Look up in stopInfo first (manual short → long mapping)
     const info = stopInfo[stopId];
-    // If this stop has a longId, map long → short for API matching
-    const lookupId = info?.longId || stopId;
+    let lookupId = info?.longId || stopId;
+
+    // If not in stopInfo, try auto-resolving short IDs via GTFS suffix match
+    if (!info?.longId) {
+      const suffix = stopId.replace(/^\D+/, "");
+      if (suffixToLong[suffix]) {
+        lookupId = suffixToLong[suffix];
+        console.log(`   🔄 Auto-resolved ${stopId} → ${lookupId}`);
+      }
+    }
+
     longToShortStopId[lookupId] = stopId;
+
+    // Try to get a friendly name from GTFS data
+    let stopName = info?.name || null;
+    let direction = info?.direction || null;
+    if (!stopName && gtfs.scheduleData && gtfs.scheduleData.stops) {
+      const gtfsStop = gtfs.scheduleData.stops.get(lookupId) || gtfs.scheduleData.stops.get(stopId);
+      if (gtfsStop) {
+        stopName = gtfsStop.name;
+      }
+    }
+
     stops[lookupId] = {
       buses: [],
-      direction: info?.direction || "Unknown",
-      stop_name: info?.name || stopId,
+      direction: direction || "Unknown",
+      stop_name: stopName || lookupId,
       stop_id: stopId,
     };
     console.log(
-      `   📍 Stop: ${stopId} → ${info?.name || "Unknown"} (${info?.direction || "Unknown direction"})`,
+      `   📍 Stop: ${stopId} → ${stopName || "Unknown"} (${direction || "Unknown direction"})`,
     );
   }
 
@@ -449,14 +486,19 @@ app.get("/api/bus-realtime", async (req, res) => {
 
       if (realtimePredictions.has(stopId)) {
         buses = realtimePredictions.get(stopId);
-        // Deduplicate by minutes_away — keep only the first occurrence of each unique time
-        const seen = new Set();
-        buses = buses.filter((b) => {
-          const key = b.minutes_away;
-          if (seen.has(key)) return false;
-          seen.add(key);
-          return true;
-        });
+        // Sort by minutes away
+        buses.sort((a, b) => a.minutes_away - b.minutes_away);
+        // Deduplicate: if two predictions are within 3 minutes of each other,
+        // keep only the first (earliest) one
+        const deduped = [];
+        let lastMin = -10;
+        for (const bus of buses) {
+          if (bus.minutes_away - lastMin >= 3) {
+            deduped.push(bus);
+            lastMin = bus.minutes_away;
+          }
+        }
+        buses = deduped;
         isRealtime = true;
         console.log(`\n✅ STOP ${stopId} (${stopData.stop_name}):`);
         console.log(`   → REAL-TIME predictions: ${buses.length}`);

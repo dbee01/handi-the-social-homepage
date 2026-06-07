@@ -1,4 +1,5 @@
 // modules/click-to-call/click-to-call.module.js
+import { createInfobipRtc } from "/node_modules/infobip-rtc/dist/index.js";
 import { loadSettings } from "../../js/core/settings.js";
 
 export default async function initClickToCall(container) {
@@ -22,42 +23,39 @@ export default async function initClickToCall(container) {
   let localStream = null;
   let isMicMuted = false;
   let isVideoEnabled = true;
+  let activeCallButton = null;
 
-  // Load Infobip RTC SDK dynamically
-  function loadSDK() {
-    return new Promise((resolve, reject) => {
-      if (window.InfobipRTC) {
-        resolve(window.InfobipRTC);
-        return;
-      }
-      const script = document.createElement("script");
-      script.src = "https://rtc.cdn.infobip.com/2.2.7/infobip.rtc.js";
-      script.onload = () => resolve(window.InfobipRTC);
-      script.onerror = () => reject(new Error("Failed to load Infobip SDK"));
-      document.head.appendChild(script);
-    });
-  }
-
-  // Load contacts from settings
-  const settings = loadSettings();
-  const savedContacts = settings.click_to_call?.contacts || [];
-
-  // Build contact buttons from saved contacts
-  let contacts = [];
-  if (savedContacts.length > 0) {
+  function buildContacts() {
+    const settings = loadSettings();
+    const savedContacts = settings.click_to_call?.contacts || [];
     const emojis = ["👵", "👴", "👩‍⚕️", "👨", "👩", "🧑", "👱", "🧓"];
-    contacts = savedContacts.map((c, i) => ({
+    return savedContacts.map((c, i) => ({
       label: (emojis[i % emojis.length] || "📞") + " " + c.name,
       number: c.number,
       photo: c.photo || null,
     }));
   }
 
-  const rooms = [];
-
-  let activeCallButton = null;
-
   function buildUI() {
+    const contacts = buildContacts();
+
+    if (contacts.length === 0) {
+      content.innerHTML = `
+        <div class="module-empty" style="text-align:center;padding:20px;">
+          <i class="fa-solid fa-phone" style="font-size:3rem;color:#cbd5e1;margin-bottom:12px;"></i>
+          <p style="color:#64748b;margin-bottom:16px;">No contacts saved yet.</p>
+          <button id="ctcSettingsBtn" class="settings-link-btn" style="background:#eaf2ff;border:none;padding:12px 24px;border-radius:48px;font-size:1rem;font-weight:600;color:#0047cc;cursor:pointer;">
+            <i class="fa-solid fa-gear"></i> Add Contacts in Settings
+          </button>
+        </div>
+      `;
+      const settingsBtn = content.querySelector("#ctcSettingsBtn");
+      if (settingsBtn)
+        settingsBtn.onclick = () =>
+          (location.href = "settings.html?args=click_to_call");
+      return;
+    }
+
     let buttonsHtml = "";
     for (const c of contacts) {
       const avatarHtml = c.photo
@@ -74,13 +72,6 @@ export default async function initClickToCall(container) {
             <i class="fa-solid fa-video"></i>
           </button>
         </div>`;
-    }
-    for (const r of rooms) {
-      buttonsHtml += `
-        <button class="ctc-room-btn" data-room="${r.room}" data-identity="${r.identity}" style="width:100%;padding:14px;margin-bottom:8px;border-radius:16px;border:2px solid #cbd5e1;background:white;font-size:1.1rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all 0.2s;">
-          <span style="background:#0047cc;color:white;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-video"></i></span>
-          <span>${r.label}</span>
-        </button>`;
     }
 
     content.innerHTML = `
@@ -107,15 +98,6 @@ export default async function initClickToCall(container) {
         const number = btn.dataset.number;
         const video = btn.dataset.video === "true";
         makePhoneCall(number, video, btn);
-      });
-    });
-
-    // Wire up room buttons
-    content.querySelectorAll(".ctc-room-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const room = btn.dataset.room;
-        const identity = btn.dataset.identity;
-        createVideoRoom(room, identity, btn);
       });
     });
 
@@ -152,7 +134,7 @@ export default async function initClickToCall(container) {
       btn.style.opacity = "0.6";
       btn.style.pointerEvents = "none";
     }
-    content.querySelectorAll(".ctc-call-btn, .ctc-room-btn").forEach((b) => {
+    content.querySelectorAll(".ctc-call-btn").forEach((b) => {
       if (b !== btn) b.disabled = !!btn;
     });
   }
@@ -164,8 +146,6 @@ export default async function initClickToCall(container) {
     showCallUI(false);
 
     try {
-      await loadSDK();
-
       const tokenRes = await fetch("/api/webrtc/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -177,7 +157,7 @@ export default async function initClickToCall(container) {
       const tokenData = await tokenRes.json();
       if (!tokenData.token) throw new Error("Failed to obtain token");
 
-      infobipRTC = window.InfobipRTC(tokenData.token, { debug: true });
+      infobipRTC = createInfobipRtc(tokenData.token, { debug: true });
 
       infobipRTC.on("connected", () => {
         setStatus("Ringing...");
@@ -234,8 +214,6 @@ export default async function initClickToCall(container) {
     showCallUI(false);
 
     try {
-      await loadSDK();
-
       const roomRes = await fetch("/api/webrtc/room", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -247,7 +225,7 @@ export default async function initClickToCall(container) {
       const roomData = await roomRes.json();
       if (!roomData.token) throw new Error("Failed to join room");
 
-      infobipRTC = window.InfobipRTC(roomData.token, { debug: true });
+      infobipRTC = createInfobipRtc(roomData.token, { debug: true });
 
       infobipRTC.on("connected", () => {
         setStatus("Connected to room...");
@@ -334,4 +312,10 @@ export default async function initClickToCall(container) {
   }
 
   buildUI();
+
+  // Re-render when settings change
+  window.addEventListener("storage", (e) => {
+    if (e.key === "handiSettings") buildUI();
+  });
+  window.addEventListener("handiSettingsSaved", () => buildUI());
 }

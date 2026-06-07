@@ -1099,7 +1099,7 @@ header {
 @media (max-width: 640px) {
     .bus-item {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
     }
     .bus-arrival {
         text-align: left;

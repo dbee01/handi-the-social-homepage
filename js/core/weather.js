@@ -10,28 +10,27 @@ function escapeHtml(str) {
 
 function getWeatherDescription(code) {
     const codes = {
-        0: "☀️ Clear",
-        1: "🌤️ Mainly clear",
-        2: "⛅ Partly cloudy",
-        3: "☁️ Overcast",
-        45: "🌫️ Fog",
-        48: "🌫️ Fog",
-        51: "🌧️ Drizzle",
-        53: "🌧️ Drizzle",
-        55: "🌧️ Drizzle",
-        61: "🌧️ Light rain",
-        63: "🌧️ Moderate rain",
-        65: "🌧️ Heavy rain",
-        71: "🌨️ Light snow",
-        73: "🌨️ Moderate snow",
-        75: "🌨️ Heavy snow",
-        80: "🌧️ Showers",
-        81: "🌧️ Showers",
-        82: "🌧️ Heavy showers",
-        85: "🌨️ Snow showers",
-        86: "🌨️ Heavy snow showers",
-        95: "⛈️ Thunderstorm"
-    };
+      0: "☀️ Clear",
+      1: "🌤️ Clear",
+      2: "⛅ Cloudy",
+      3: "☁️ Overcast",
+      45: "🌫️ Fog",
+      48: "🌫️ Fog",
+      51: "🌧️ Drizzle",
+      53: "🌧️ Drizzle",
+      55: "🌧️ Drizzle",
+      61: "🌧️ Light rain",
+      63: "🌧️ Rain",
+      65: "🌧️ Heavy rain",
+      71: "🌨️ Light snow",
+      73: "🌨️ Snow",
+      75: "🌨️ Heavy snow",
+      80: "🌧️ Showers",
+      81: "🌧️ Showers",
+      82: "🌧️ Heavy showers",
+      85: "🌨️ Snow showers",
+      86: "🌨️ Heavy Snow",
+      95: "⛈️ Thunderstorm"    };
     return codes[code] || "🌡️ Unknown";
 }
 
@@ -94,14 +93,14 @@ export async function updateWeather() {
     const settings = loadSettings();
     let locationName = settings.weather?.location || 'Cork';
     let countryCode = settings.weather?.country || 'IE';
-    
+
     // Show loading state
     weatherEl.innerHTML = `<div class="weather-loading"><i class="fa-solid fa-spinner fa-spin"></i> ${escapeHtml(locationName)}...</div>`;
-    
+
     try {
         const coords = await getCoordinates(locationName, countryCode);
         let lat, lon, displayLocation = locationName;
-        
+
         if (coords) {
             lat = coords.lat;
             lon = coords.lon;
@@ -113,10 +112,10 @@ export async function updateWeather() {
             lon = -8.4756;
             displayLocation = locationName;
         }
-        
+
         let temp = null;
         let outlook = null;
-        
+
         // Try Open-Meteo first
         try {
             const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`;
@@ -138,7 +137,7 @@ export async function updateWeather() {
                 throw new Error('Both weather APIs failed');
             }
         }
-        
+
         if (temp !== null && outlook !== null) {
             weatherEl.innerHTML = `
                 <div class="weather-location">📍 ${escapeHtml(displayLocation)}</div>

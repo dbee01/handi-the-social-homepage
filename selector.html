@@ -543,7 +543,7 @@
                 `;
                         let btn = div.querySelector("button");
                         btn.onclick = () => {
-                            if (isPremium && !consent) {
+                            if (mod.tier === "premium" && !consent) {
                                 alert(
                                     "⚠️ Please accept the Privacy Policy to add or remove Premium modules.",
                                 );

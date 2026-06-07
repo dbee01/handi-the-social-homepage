@@ -772,15 +772,15 @@
                         ><input
                             type="text"
                             id="busRouteIds"
-                            placeholder="e.g., 223, 215"
+                            placeholder="e.g., 223, 220"
                         />
                     </div>
                     <div class="config-field">
-                        <label>Stop IDs (comma-separated):</label
+                        <label>Stop IDs (comma-separated, in order):</label
                         ><input
                             type="text"
                             id="busStopIds"
-                            placeholder="e.g., 242081,242051"
+                            placeholder="e.g., 242051,242051,246671,232111"
                         />
                     </div>
                 </div>
@@ -1644,28 +1644,27 @@
 
             function getWeatherDescription(code) {
                 const codes = {
-                    0: "☀️ Clear",
-                    1: "🌤️ Mainly clear",
-                    2: "⛅ Partly cloudy",
-                    3: "☁️ Overcast",
-                    45: "🌫️ Fog",
-                    48: "🌫️ Fog",
-                    51: "🌧️ Drizzle",
-                    53: "🌧️ Drizzle",
-                    55: "🌧️ Drizzle",
-                    61: "🌧️ Light rain",
-                    63: "🌧️ Moderate rain",
-                    65: "🌧️ Heavy rain",
-                    71: "🌨️ Light snow",
-                    73: "🌨️ Moderate snow",
-                    75: "🌨️ Heavy snow",
-                    80: "🌧️ Showers",
-                    81: "🌧️ Showers",
-                    82: "🌧️ Heavy showers",
-                    85: "🌨️ Snow showers",
-                    86: "🌨️ Heavy snow showers",
-                    95: "⛈️ Thunderstorm",
-                };
+                  0: "☀️ Clear",
+                  1: "🌤️ Clear",
+                  2: "⛅ Cloudy",
+                  3: "☁️ Overcast",
+                  45: "🌫️ Fog",
+                  48: "🌫️ Fog",
+                  51: "🌧️ Drizzle",
+                  53: "🌧️ Drizzle",
+                  55: "🌧️ Drizzle",
+                  61: "🌧️ Light rain",
+                  63: "🌧️ Rain",
+                  65: "🌧️ Heavy rain",
+                  71: "🌨️ Light snow",
+                  73: "🌨️ Snow",
+                  75: "🌨️ Heavy snow",
+                  80: "🌧️ Showers",
+                  81: "🌧️ Showers",
+                  82: "🌧️ Heavy showers",
+                  85: "🌨️ Snow showers",
+                  86: "🌨️ Heavy Snow",
+                  95: "⛈️ Thunderstorm"                };
                 return codes[code] || "🌡️";
             }
 
