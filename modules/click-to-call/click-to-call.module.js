@@ -193,6 +193,16 @@ export default function initClickToCall(container) {
     try {
       showCallStatus("Initiating call...");
 
+      // Request camera/mic permission immediately (user gesture context)
+      let localStream = null;
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localVideo.srcObject = localStream;
+      } catch (err) {
+        console.warn("Could not access camera/mic:", err);
+        // Continue without local video
+      }
+
       const response = await fetch("/api/webrtc/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -201,34 +211,27 @@ export default function initClickToCall(container) {
           enableVideo: true,
         }),
       });
-      const { token, capabilities } = await response.json();
+      const { token } = await response.json();
       if (!token) throw new Error("Failed to obtain token");
 
       infobipRTC = createInfobipRtc(token, { debug: true });
 
       infobipRTC.on("connected", () => {
         console.log("Connected to Infobip WebRTC platform");
-        initiatePhoneCall(phoneNumber);
+        initiatePhoneCall(phoneNumber, localStream);
       });
 
       infobipRTC.on("disconnected", () => endVideoCall());
 
-      infobipRTC.on("error", (error) => {
-        console.error("WebRTC error:", error);
-        showCallStatus("Connection error. Please try again.");
-        setTimeout(() => hideCallStatus(), 3000);
-      });
-
       infobipRTC.connect();
     } catch (error) {
       console.error("Call initiation error:", error);
-      alert(
-        "Failed to start call. Please check your microphone and camera permissions.",
-      );
+      showCallStatus("Call failed. Please try again.");
+      setTimeout(() => hideCallStatus(), 3000);
     }
   }
 
-  function initiatePhoneCall(phoneNumber) {
+  function initiatePhoneCall(phoneNumber, localStream) {
     currentCall = infobipRTC.callPhone(phoneNumber, {
       video: true,
       audio: true,
@@ -249,21 +252,7 @@ export default function initClickToCall(container) {
 
     currentCall.on("hangup", () => endVideoCall());
 
-    currentCall.on("error", (error) => {
-      console.error("Call error:", error);
-      endVideoCall();
-      alert("Call failed. Please try again.");
-    });
-
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((localStream) => {
-        localVideo.srcObject = localStream;
-        currentCall.localStream = localStream;
-      })
-      .catch((err) => {
-        console.warn("Could not access local camera/mic:", err);
-      });
+    currentCall.localStream = localStream;
   }
 
   async function createVideoRoom(roomName, participantIdentity) {
