@@ -7,6 +7,7 @@
             content="width=device-width, initial-scale=1.0, user-scalable=yes"
         />
         <title>Dashboard Modules - HandiHomepage</title>
+        <script src="/js/core/module-registry.js"></script>
         <style>
             * {
                 margin: 0;
@@ -393,59 +394,10 @@
         </div>
 
         <script>
-            // ========== MODULE DATABASE - MATCHES YOUR ACTUAL DASHBOARD ==========
-            // FREE modules (these exist in your index.html)
-            const FREE_MODULES = [
-                {
-                    id: "gallery",
-                    name: "Gallery",
-                    icon: "🖼️",
-                    desc: "Photos & memories",
-                },
-                {
-                    id: "music",
-                    name: "Music Player",
-                    icon: "🎵",
-                    desc: "Your playlists",
-                },
-                { id: "news", name: "News", icon: "📰", desc: "Top headlines" },
-                {
-                    id: "calendar",
-                    name: "Calendar",
-                    icon: "📅",
-                    desc: "Events & reminders",
-                },
-                {
-                    id: "phone",
-                    name: "SIM Phone",
-                    icon: "📞",
-                    desc: "SIM-based phone calls",
-                },
-            ];
-
-            // PREMIUM modules (these must have <div> elements in your index.html)
-            const PREMIUM_MODULES = [
-                // {
-                //     id: "live_bus",
-                //     name: "Live Bus Tracker",
-                //     icon: "🚌📍",
-                //     desc: "Real-time transit & routes",
-                // },
-                // {
-                //     id: "webrtc",
-                //     name: "Free Calls",
-                //     icon: "📱",
-                //     desc: "Free VoIP & international calls",
-                // },
-                // {
-                //     id: "emergency_alert",
-                //     name: "Emergency Alert",
-                //     icon: "⚠️🚨",
-                //     desc: "Critical notifications & safety",
-                // },
-            ];
-
-            const ALL_MODULES = [...FREE_MODULES, ...PREMIUM_MODULES];
+            // ========== MODULE DATABASE - USES module-registry.js ==========
+            const FREE_MODULES = window.HANDI_FREE_MODULES();
+            const PREMIUM_MODULES = window.HANDI_PREMIUM_MODULES();
+            const ALL_MODULES = window.HANDI_MODULES;
 
             function getEnabled() {
                 try {
@@ -650,14 +602,7 @@
                     );
                     return;
                 }
-                let defaults = {
-                    gallery: true,
-                    music: true,
-                    news: true,
-                    calendar: true,
-                    phone: true,
-                };
-                saveEnabled(defaults);
+                saveEnabled(window.HANDI_ENABLED_DEFAULTS());
                 renderSelector();
                 renderDashboard();
                 alert(

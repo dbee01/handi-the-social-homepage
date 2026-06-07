@@ -68,12 +68,18 @@ export default async function initCalendar(container) {
           const rawKey = line.substring(0, colonIndex);
           // Extract the base property name (before any semicolons with params)
           const key = rawKey.split(";")[0];
+          const params = rawKey.substring(key.length); // e.g. ";TZID=Europe/Dublin"
           let value = line.substring(colonIndex + 1);
 
           while (i + 1 < lines.length && lines[i + 1].startsWith(" ")) {
             value += lines[i + 1].trim();
             i++;
           }
+
+          // Extract TZID parameter if present
+          let tzid = null;
+          const tzidMatch = params.match(/TZID=([^;]+)/);
+          if (tzidMatch) tzid = tzidMatch[1];
 
           switch (key) {
             case "SUMMARY":
@@ -82,12 +88,18 @@ export default async function initCalendar(container) {
               );
               break;
             case "DTSTART":
-              currentEvent.start = parseICalDate(value);
-              currentEvent._dtstartRaw = value;
+              currentEvent.start = parseICalDate(value, tzid);
+              currentEvent._dtstartRaw = tzid
+                ? `;TZID=${tzid}:${value}`
+                : `:${value}`;
+              currentEvent._tzid = currentEvent._tzid || tzid;
               break;
             case "DTEND":
-              currentEvent.end = parseICalDate(value);
-              currentEvent._dtendRaw = value;
+              currentEvent.end = parseICalDate(value, tzid);
+              currentEvent._dtendRaw = tzid
+                ? `;TZID=${tzid}:${value}`
+                : `:${value}`;
+              currentEvent._tzid = currentEvent._tzid || tzid;
               break;
             case "DESCRIPTION":
               currentEvent.description = safeDecode(
@@ -122,7 +134,7 @@ export default async function initCalendar(container) {
         try {
           const RRule = window.rrule.RRule;
           const rruleStr =
-            "DTSTART:" + ev._dtstartRaw + "\nRRULE:" + ev.rruleStr;
+            "DTSTART" + ev._dtstartRaw + "\nRRULE:" + ev.rruleStr;
           const rule = RRule.fromString(rruleStr);
 
           // Compute a reasonable end date for expansion (next 6 months)
@@ -165,7 +177,7 @@ export default async function initCalendar(container) {
     return events;
   }
 
-  function parseICalDate(dateStr) {
+  function parseICalDate(dateStr, tzid) {
     if (!dateStr) return null;
     let clean = dateStr.replace(/Z$/, "");
 
@@ -176,11 +188,88 @@ export default async function initCalendar(container) {
       const hour = parseInt(clean.substring(9, 11));
       const minute = parseInt(clean.substring(11, 13));
       const second = parseInt(clean.substring(13, 15)) || 0;
-      // If the date ended with Z (UTC), use UTC; otherwise treat as local
+
       if (dateStr.endsWith("Z")) {
+        // UTC — parse as UTC
         return new Date(Date.UTC(year, month, day, hour, minute, second));
+      } else if (tzid) {
+        // Timezone-qualified local time — treat as UTC by computing the offset
+        // Use Intl.DateTimeFormat to get the offset for this timezone at this date
+        try {
+          // Build an ISO string without the Z (treated as UTC by some parsers, but we need the offset)
+          const localIso = `${String(year).padStart(4, "0")}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:${String(second).padStart(2, "0")}`;
+          const formatter = new Intl.DateTimeFormat("en-CA", {
+            timeZone: tzid,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+            timeZoneName: "shortOffset",
+          });
+          // Build a date at the given local time in the target timezone
+          // We can compute UTC via: get the UTC timestamp for that local time by
+          // temporarily creating a Date, getting its offset, then adjusting
+          const naiveDate = new Date(year, month, day, hour, minute, second);
+          const parts = formatter.formatToParts(naiveDate);
+          const tzOffsetPart = parts.find((p) => p.type === "timeZoneName");
+          let offsetMinutes = 0;
+          if (tzOffsetPart) {
+            const match = tzOffsetPart.value.match(/([+-])(\d{2}):?(\d{2})?/);
+            if (match) {
+              const sign = match[1] === "+" ? 1 : -1;
+              const oh = parseInt(match[2]) || 0;
+              const om = parseInt(match[3]) || 0;
+              offsetMinutes = sign * (oh * 60 + om);
+            }
+          } else {
+            // Fallback: get the offset for this timezone at the given epoch
+            const now = Date.now();
+            const jan = new Date(year, 0, 1).getTime();
+            const jul = new Date(year, 6, 1).getTime();
+            const formatTZ = new Intl.DateTimeFormat("en-CA", {
+              timeZone: tzid,
+              timeZoneName: "short",
+            });
+            const janStr = formatTZ.format(jan);
+            const julStr = formatTZ.format(jul);
+            const janMatch = janStr.match(/([+-]\d{2}:?\d{2})/);
+            const julMatch = julStr.match(/([+-]\d{2}:?\d{2})/);
+            const getOffset = (s) => {
+              const m = s.match(/([+-])(\d{2}):?(\d{2})/);
+              if (!m) return 0;
+              return (
+                (m[1] === "+" ? 1 : -1) * (parseInt(m[2]) * 60 + parseInt(m[3]))
+              );
+            };
+            const janOffset = janMatch ? getOffset(janMatch[1]) : 0;
+            const julOffset = julMatch ? getOffset(julMatch[1]) : 0;
+            // Determine if DST is active for this date
+            const isDst = month >= 3 && month <= 9;
+            offsetMinutes = isDst
+              ? Math.max(janOffset, julOffset)
+              : Math.min(janOffset, julOffset);
+          }
+          // local time = UTC + offsetMinutes, so UTC = local - offsetMinutes
+          const utcMs =
+            Date.UTC(year, month, day, hour, minute, second) -
+            offsetMinutes * 60000;
+          return new Date(utcMs);
+        } catch (e) {
+          console.warn(
+            "Failed to parse TZID date, falling back to local:",
+            dateStr,
+            tzid,
+            e,
+          );
+          return new Date(year, month, day, hour, minute, second);
+        }
+      } else {
+        // No TZID, no Z — treat as local
+        return new Date(year, month, day, hour, minute, second);
       }
-      return new Date(year, month, day, hour, minute, second);
     } else {
       const year = parseInt(clean.substring(0, 4));
       const month = parseInt(clean.substring(4, 6)) - 1;

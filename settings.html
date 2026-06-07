@@ -4,6 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Settings - Handi Homepage</title>
+        <script src="/js/core/module-registry.js"></script>
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
 
         <!-- Cache Control Headers for PWA -->
@@ -936,45 +937,9 @@
                         const parsed = JSON.parse(stored);
                         // Merge with defaults so missing keys get proper values
                         const defaults = {
-                            enabledModules: {
-                                gallery: false,
-                                music: false,
-                                radio: false,
-                                news: false,
-                                social: false,
-                                calendar: false,
-                                phone: false,
-                                chat: false,
-                                webrtc: true,
-                                live_bus: true,
-                                emergency_alert: true,
-                            },
-                            gallery: { speed: 8000, autoStart: true },
-                            music: { volume: 100, shuffle: false },
-                            radio: { defaultStation: "0", volume: 100 },
-                            news: { rssUrl: "", refresh: 15, maxArticles: 4 },
-                            social: {
-                                instance: "https://mastodon.ie",
-                                limit: 4,
-                            },
-                            calendar: { url: "", notificationMinutes: 30 },
-                            phone: { contacts: [], autoDialDelay: 10 },
-                            chat: {
-                                homeserver: "https://matrix.org",
-                                accessToken: "",
-                                userId: "",
-                                rooms: [],
-                                refreshInterval: 30,
-                            },
+                            enabledModules: window.HANDI_ENABLED_DEFAULTS(),
+                            ...window.HANDI_SETTINGS_DEFAULTS(),
                             weather: { location: "Cork", country: "IE" },
-                            emergency_alert: { contacts: [] },
-                            webrtc: {
-                                baseUrl: "",
-                                apiKey: "",
-                                appId: "",
-                                callerId: "",
-                            },
-                            live_bus: { routeIds: "", stopIds: "" },
                         };
                         // Deep merge parsed into defaults
                         for (const key of Object.keys(defaults)) {
@@ -997,42 +962,9 @@
                     }
                 } catch (e) {}
                 return {
-                    enabledModules: {
-                        gallery: false,
-                        music: false,
-                        radio: false,
-                        news: false,
-                        social: false,
-                        calendar: false,
-                        phone: false,
-                        chat: false,
-                        webrtc: true,
-                        live_bus: true,
-                        emergency_alert: true,
-                    },
-                    gallery: { speed: 8000, autoStart: true },
-                    music: { volume: 100, shuffle: false },
-                    radio: { defaultStation: "0", volume: 100 },
-                    news: { rssUrl: "", refresh: 15, maxArticles: 4 },
-                    social: { instance: "https://mastodon.ie", limit: 4 },
-                    calendar: { url: "", notificationMinutes: 30 },
-                    phone: { contacts: [], autoDialDelay: 10 },
-                    chat: {
-                        homeserver: "https://matrix.org",
-                        accessToken: "",
-                        userId: "",
-                        rooms: [],
-                        refreshInterval: 30,
-                    },
+                    enabledModules: window.HANDI_ENABLED_DEFAULTS(),
+                    ...window.HANDI_SETTINGS_DEFAULTS(),
                     weather: { location: "Cork", country: "IE" },
-                    emergency_alert: { contacts: [] },
-                    webrtc: {
-                        baseUrl: "",
-                        apiKey: "",
-                        appId: "",
-                        callerId: "",
-                    },
-                    live_bus: { routeIds: "", stopIds: "" },
                 };
             }
 
@@ -1192,19 +1124,7 @@
             // ============================================================
             // MODULE MANAGEMENT
             // ============================================================
-            const MODULES = [
-                "gallery",
-                "music",
-                "radio",
-                "news",
-                "social",
-                "calendar",
-                "phone",
-                "chat",
-                "webrtc",
-                "live_bus",
-                "emergency_alert",
-            ];
+            const MODULES = window.HANDI_MODULE_IDS();
 
             function applySettingsToToggles() {
                 const settings = loadSettings();
@@ -1518,20 +1438,7 @@
                         calls: "webrtc",
                         phone: "phone",
                     };
-                    const valid = [
-                        "gallery",
-                        "music",
-                        "radio",
-                        "news",
-                        "social",
-                        "phone",
-                        "weather",
-                        "calendar",
-                        "chat",
-                        "webrtc",
-                        "live_bus",
-                        "emergency_alert",
-                    ];
+                    const valid = [...window.HANDI_MODULE_IDS(), "weather"];
                     let target = args.toLowerCase();
                     if (aliasMap[target]) target = aliasMap[target];
                     if (valid.includes(target)) {

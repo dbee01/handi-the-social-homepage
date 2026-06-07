@@ -192,6 +192,7 @@
         <script src="/js/vendor/packery.pkgd.min.js"></script>
         <script src="/js/vendor/Sortable.min.js"></script>
         <script src="/js/vendor/rrule.min.js"></script>
+        <script src="/js/core/module-registry.js"></script>
     </head>
     <body>
         <script src="js/core/message.js"></script>
@@ -524,20 +525,8 @@
                         if (!s) return;
                         let enabled = JSON.parse(s).enabledModules || {};
 
-                        // All possible modules - weather module removed from grid
-                        let allModules = [
-                            "gallery",
-                            "music",
-                            "radio",
-                            "news",
-                            "social",
-                            "calendar",
-                            "chat",
-                            "phone",
-                            "live_bus",
-                            "webrtc",
-                            "emergency_alert",
-                        ];
+                        // All possible modules (from module-registry.js)
+                        let allModules = window.HANDI_MODULE_IDS();
 
                         let grid = document.getElementById("dashboard-grid");
                         if (!grid) return;
