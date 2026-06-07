@@ -25,8 +25,8 @@ export default async function initBus(container) {
   let stopsDataCache = null;
 
   const settings = loadSettings();
-  const savedRouteIds = settings.live_bus?.routeIds || "19";
-  const savedStopIds = settings.live_bus?.stopIds || "8220DB000092";
+  const savedRouteIds = settings.live_bus?.routeIds || "223";
+  const savedStopIds = settings.live_bus?.stopIds || "242051,242081";
   const routeId = savedRouteIds.split(",")[0].trim();
   const stopIds = savedStopIds
     .split(",")
@@ -45,11 +45,7 @@ export default async function initBus(container) {
                     <i class="fa-solid fa-arrow-right-arrow-left"></i> Switch Direction
                 </button>
             </div>
-            <button class="bus-refresh-btn">Refresh Times</button>
         `;
-
-    const refreshBtn = content.querySelector(".bus-refresh-btn");
-    if (refreshBtn) refreshBtn.addEventListener("click", () => fetchBusData());
 
     const switchBtn = document.getElementById("busSwitchBtn");
     if (switchBtn) {
@@ -89,11 +85,11 @@ export default async function initBus(container) {
     const footnoteSpan = content.querySelector(".bus-footnote");
     if (footnoteSpan) {
       if (stop.realtime_data && stop.mixed_data) {
-        footnoteSpan.textContent = "🟡 Mixed (Real-time & Scheduled)";
+        footnoteSpan.textContent = "🚌 Live & 🚏 Scheduled";
       } else if (stop.realtime_data) {
-        footnoteSpan.textContent = "🔴 Real‑time data";
+        footnoteSpan.textContent = "🚌 Live times";
       } else {
-        footnoteSpan.textContent = "📅 Scheduled times";
+        footnoteSpan.textContent = "🚏 Scheduled times";
       }
     }
 
@@ -113,6 +109,7 @@ export default async function initBus(container) {
                               (bus) => `
                             <div class="bus-item">
                                 <span class="bus-route">Route ${bus.route}</span>
+                                <span class="bus-icon ${bus.realtime ? "bus-icon-live" : "bus-icon-scheduled"}">${bus.realtime ? "🚌" : "🚏"}</span>
                                 <span class="bus-arrival ${bus.realtime ? "realtime-arrival" : "scheduled-arrival"}">${bus.arrival_text}</span>
                             </div>
                         `,

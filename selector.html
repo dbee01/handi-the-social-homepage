@@ -395,9 +395,14 @@
 
         <script>
             // ========== MODULE DATABASE - USES module-registry.js ==========
-            const FREE_MODULES = window.HANDI_FREE_MODULES();
-            const PREMIUM_MODULES = window.HANDI_PREMIUM_MODULES();
-            const ALL_MODULES = window.HANDI_MODULES;
+            // Only show modules that are enabled by default in the registry
+            const ALL_MODULES = window.HANDI_MODULES.filter(
+                (m) => m.defaultEnabled === true,
+            );
+            const FREE_MODULES = ALL_MODULES.filter((m) => m.tier === "free");
+            const PREMIUM_MODULES = ALL_MODULES.filter(
+                (m) => m.tier === "premium",
+            );
 
             function getEnabled() {
                 try {

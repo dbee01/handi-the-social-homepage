@@ -273,6 +273,9 @@
                 <div id="emergency_alert" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
+                <div id="click_to_call" class="dashboard-item module">
+                    <div class="module-content"></div>
+                </div>
             </main>
         </div>
 
@@ -325,6 +328,7 @@
 
             import initWebRTC from "./modules/webrtc/webrtc.module.js";
             import initEmergency from "./modules/emergency/emergency.module.js";
+            import initClickToCall from "./modules/click-to-call/click-to-call.module.js";
             import { initLayout } from "./js/core/layout.js";
 
             // Initialize all modules - weather module removed
@@ -340,6 +344,7 @@
                 social: initSocial,
                 radio: initRadio,
                 emergency_alert: initEmergency,
+                click_to_call: initClickToCall,
             };
 
             for (const [id, initFn] of Object.entries(modules)) {
@@ -516,38 +521,77 @@
         <script src="js/core/module-buttons.js"></script>
         <script src="js/core/footer-controls.js"></script>
 
-        <!-- ========== CLEANUP – shows/hides modules based on localStorage ========== -->
+        <!-- ========== CLEANUP – shows/hides modules based on localStorage + registry defaults ========== -->
         <script>
-            window.addEventListener("load", function () {
-                setTimeout(function () {
-                    try {
-                        let s = localStorage.getItem("handiSettings");
-                        if (!s) return;
-                        let enabled = JSON.parse(s).enabledModules || {};
+            (function () {
+                console.log("[Cleanup] Initializing...");
 
-                        // All possible modules (from module-registry.js)
+                function runCleanup() {
+                    try {
+                        if (!window.HANDI_MODULES) {
+                            console.log(
+                                "[Cleanup] HANDI_MODULES not available yet, retrying...",
+                            );
+                            setTimeout(runCleanup, 100);
+                            return;
+                        }
+                        console.log(
+                            "[Cleanup] HANDI_MODULES available:",
+                            typeof window.HANDI_MODULES,
+                        );
+
+                        let s = localStorage.getItem("handiSettings");
+                        let savedEnabled = s
+                            ? JSON.parse(s).enabledModules || {}
+                            : {};
+                        let registryDefaults = window.HANDI_ENABLED_DEFAULTS();
+
+                        console.log(
+                            "[Cleanup] Saved:",
+                            JSON.stringify(savedEnabled),
+                        );
+                        console.log(
+                            "[Cleanup] Registry:",
+                            JSON.stringify(registryDefaults),
+                        );
+
+                        function isModuleEnabled(id) {
+                            if (savedEnabled.hasOwnProperty(id))
+                                return savedEnabled[id] === true;
+                            return registryDefaults[id] === true;
+                        }
+
                         let allModules = window.HANDI_MODULE_IDS();
+                        console.log("[Cleanup] Module IDs:", allModules);
 
                         let grid = document.getElementById("dashboard-grid");
+                        console.log("[Cleanup] Grid:", !!grid);
                         if (!grid) return;
 
                         for (let id of allModules) {
                             let el = document.getElementById(id);
-                            if (el && enabled[id] !== true) {
-                                if (el.parentNode === grid) el.remove();
-                                console.log(`Removed: ${id}`);
-                            } else if (el && enabled[id] === true) {
-                                console.log(`Keeping: ${id}`);
+                            if (!el) continue;
+                            let enabled = isModuleEnabled(id);
+                            if (!enabled) {
+                                el.remove();
+                                console.log("[Cleanup] Removed:", id);
+                            } else {
+                                console.log("[Cleanup] Keeping:", id);
                             }
                         }
                     } catch (e) {
-                        console.error("Cleanup error:", e);
+                        console.error("[Cleanup] Error:", e);
                     }
-                }, 100);
-            });
-        </script>
+                }
 
-        <script>
+                // Try multiple times to catch the modules after they've been initialized
+                runCleanup();
+                document.addEventListener("DOMContentLoaded", runCleanup);
+                window.addEventListener("load", function () {
+                    setTimeout(runCleanup, 500);
+                });
+            })();
+
             // First visit redirect
             (function () {
                 if (localStorage.getItem("handiPopupShown") === "true") return;

@@ -8,10 +8,37 @@ const https = require("https");
 
 const gtfs = require("./gtfs-schedule.js");
 
+// Simple .env loader (avoids dotenv compatibility issues)
+try {
+  const envPath = path.join(__dirname, ".env");
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, "utf8");
+    for (const line of envContent.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) continue;
+      const eqIdx = trimmed.indexOf("=");
+      if (eqIdx < 1) continue;
+      let key = trimmed.substring(0, eqIdx).trim();
+      let val = trimmed.substring(eqIdx + 1).trim();
+      // Strip surrounding quotes
+      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+        val = val.slice(1, -1);
+      }
+      if (!process.env[key]) {
+        process.env[key] = val;
+      }
+    }
+    console.log("   → Loaded .env file");
+  }
+} catch (e) {
+  console.warn("   ⚠️ Could not load .env:", e.message);
+}
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(cors());
+app.use(express.json());
 
 const REALTIME_URL = "https://api.nationaltransport.ie/gtfsr/v2/TripUpdates";
 const VEHICLES_URL = "https://api.nationaltransport.ie/gtfsr/v2/Vehicles";
@@ -67,6 +94,11 @@ const CACHE_TTL = 30 * 1000; // 30 seconds
 const publicPath = path.join(__dirname, "public");
 const staticPath = fs.existsSync(publicPath) ? publicPath : __dirname;
 app.use(express.static(staticPath));
+// Serve infobip-rtc from node_modules for browser ES module imports
+app.use(
+  "/node_modules/infobip-rtc",
+  express.static(path.join(__dirname, "node_modules", "infobip-rtc")),
+);
 
 app.get("/", (req, res) => {
   const indexPath = path.join(staticPath, "index.html");
@@ -77,6 +109,118 @@ app.get("/", (req, res) => {
       message: "API running",
       endpoints: ["/api/bus-realtime", "/api/news"],
     });
+  }
+});
+
+// server.js
+const INFOBIP_API_KEY = process.env.INFOBIP_API_KEY || "YOUR_API_KEY";
+const INFOBIP_BASE_URL = process.env.INFOBIP_BASE_URL
+  ? `https://${process.env.INFOBIP_BASE_URL.replace(/^https?:\/\//, "")}`
+  : "https://api.infobip.com";
+
+// Endpoint for WebRTC token generation (audio + video)
+app.post("/api/webrtc/token", async (req, res) => {
+  const { identity, enableVideo = true } = req.body;
+
+  try {
+    const response = await axios({
+      method: "POST",
+      url: `${INFOBIP_BASE_URL}/webrtc/1/token`,
+      headers: {
+        Authorization: `App ${INFOBIP_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      data: {
+        identity: identity,
+        expiresIn: 3600,
+        // Request video capabilities in the token
+        capabilities: {
+          audio: true,
+          video: enableVideo,
+        },
+      },
+    });
+
+    res.json({
+      token: response.data.token,
+      capabilities: { audio: true, video: enableVideo },
+    });
+  } catch (error) {
+    console.error(
+      "Token generation error:",
+      error.response?.data || error.message,
+    );
+    res.status(500).json({ error: "Failed to generate token" });
+  }
+});
+
+// Endpoint for creating a video conference room (group calls)
+app.post("/api/webrtc/room", async (req, res) => {
+  const { roomName, identity } = req.body;
+
+  try {
+    // First get a token for the room creator
+    const tokenResponse = await axios({
+      method: "POST",
+      url: `${INFOBIP_BASE_URL}/webrtc/1/token`,
+      headers: {
+        Authorization: `App ${INFOBIP_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      data: {
+        identity: identity,
+        expiresIn: 3600,
+        capabilities: { audio: true, video: true },
+      },
+    });
+
+    res.json({
+      token: tokenResponse.data.token,
+      roomName: roomName || `handi-room-${Date.now()}`,
+    });
+  } catch (error) {
+    console.error(
+      "Room creation error:",
+      error.response?.data || error.message,
+    );
+    res.status(500).json({ error: "Failed to create video room" });
+  }
+});
+
+// Endpoint to initiate a Click-to-Call with video fallback
+app.post("/api/click-to-call", async (req, res) => {
+  const { from, to, videoUrl, text } = req.body;
+
+  try {
+    const response = await axios({
+      method: "POST",
+      url: `${INFOBIP_BASE_URL}/voice/1/advanced`,
+      headers: {
+        Authorization: `App ${INFOBIP_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      data: {
+        messages: [
+          {
+            from: from,
+            destinations: [{ to: to }],
+            text: text || `Please join video call: ${videoUrl}`,
+            language: {
+              language: "en",
+              voice: "female",
+            },
+          },
+        ],
+      },
+    });
+
+    res.json({ success: true, data: response.data });
+  } catch (error) {
+    console.error(
+      "Click-to-call error:",
+      error.response?.data || error.message,
+    );
+    res.status(500).json({ error: "Failed to initiate call" });
   }
 });
 

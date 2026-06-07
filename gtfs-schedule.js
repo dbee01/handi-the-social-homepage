@@ -5,6 +5,13 @@ const AdmZip = require("adm-zip");
 
 const GTFS_CACHE_DIR = path.join(__dirname, ".gtfs-cache");
 const GTFS_CACHE_FILE = path.join(GTFS_CACHE_DIR, "gtfs-cache.json");
+// Split cache into chunks to avoid massive JSON.stringify memory spikes
+const GTFS_CACHE_STOPS = path.join(GTFS_CACHE_DIR, "gtfs-cache-stops.json");
+const GTFS_CACHE_ROUTES = path.join(GTFS_CACHE_DIR, "gtfs-cache-routes.json");
+const GTFS_CACHE_CALENDAR = path.join(
+  GTFS_CACHE_DIR,
+  "gtfs-cache-calendar.json",
+);
 const GTFS_URLS = {
   busEireann:
     "https://www.transportforireland.ie/transitData/Data/GTFS_Bus_Eireann.zip",
@@ -28,16 +35,72 @@ let scheduleData = {
   calendarDates: new Map(),
 };
 
+// Streaming CSV parser that processes lines without loading entire file
+function parseCSVStream(text, onRow, onComplete) {
+  const lines = text.split("\n");
+  if (lines.length < 2) {
+    onComplete();
+    return;
+  }
+  const headers = lines[0].split(",").map((h) => h.trim().replace(/"/g, ""));
+  let i = 1;
+  function processChunk() {
+    const chunkEnd = Math.min(i + 5000, lines.length);
+    for (; i < chunkEnd; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+      const values = parseCSVLine(line);
+      if (values.length === 0) continue;
+      const row = {};
+      headers.forEach((h, idx) => {
+        row[h] = values[idx] || "";
+      });
+      onRow(row);
+    }
+    if (i < lines.length) {
+      setImmediate(processChunk);
+    } else {
+      setImmediate(onComplete);
+    }
+  }
+  setImmediate(processChunk);
+}
+
+// Read a CSV file from a zip entry and process with streaming parser
+function processZipCSV(zip, filename, onRow, onComplete) {
+  const entry = zip.getEntry(filename);
+  if (!entry) {
+    setImmediate(onComplete);
+    return;
+  }
+  const text = entry.getData().toString("utf8");
+  parseCSVStream(text, onRow, onComplete);
+}
+
 function saveCache() {
   try {
-    // Build a plain JSON-serializable structure
-    const data = {
-      stops: Array.from(scheduleData.stops.entries()),
-      calendar: Array.from(scheduleData.calendar.entries()),
-      calendarDates: Array.from(scheduleData.calendarDates.entries()).map(
-        ([k, v]) => [k, Array.from(v.entries())],
-      ),
-      routes: Array.from(scheduleData.routes.entries()).map(([id, r]) => [
+    fs.mkdirSync(GTFS_CACHE_DIR, { recursive: true });
+
+    // Write stops
+    fs.writeFileSync(
+      GTFS_CACHE_STOPS,
+      JSON.stringify(Array.from(scheduleData.stops.entries())),
+    );
+
+    // Write calendar
+    fs.writeFileSync(
+      GTFS_CACHE_CALENDAR,
+      JSON.stringify({
+        calendar: Array.from(scheduleData.calendar.entries()),
+        calendarDates: Array.from(scheduleData.calendarDates.entries()).map(
+          ([k, v]) => [k, Array.from(v.entries())],
+        ),
+      }),
+    );
+
+    // Write routes (this is the biggest — 1.3M stop times)
+    const routeData = Array.from(scheduleData.routes.entries()).map(
+      ([id, r]) => [
         id,
         {
           shortName: r.shortName,
@@ -55,12 +118,32 @@ function saveCache() {
             })),
           })),
         },
-      ]),
-    };
-    fs.mkdirSync(GTFS_CACHE_DIR, { recursive: true });
-    fs.writeFileSync(GTFS_CACHE_FILE, JSON.stringify(data));
-    const size = fs.statSync(GTFS_CACHE_FILE).size / 1024 / 1024;
-    console.log(`   → Cache saved (${size.toFixed(1)} MB)`);
+      ],
+    );
+    // Write routes in chunks to avoid one massive stringify
+    const CHUNK_SIZE = 5;
+    for (let i = 0; i < routeData.length; i += CHUNK_SIZE) {
+      const chunk = routeData.slice(i, i + CHUNK_SIZE);
+      const chunkPath = path.join(
+        GTFS_CACHE_DIR,
+        `gtfs-cache-routes-${Math.floor(i / CHUNK_SIZE)}.json`,
+      );
+      fs.writeFileSync(chunkPath, JSON.stringify(chunk));
+    }
+    // Write manifest
+    const numChunks = Math.ceil(routeData.length / CHUNK_SIZE);
+    fs.writeFileSync(GTFS_CACHE_ROUTES, JSON.stringify({ numChunks }));
+
+    const totalSizeMB = (
+      (fs.statSync(GTFS_CACHE_STOPS).size +
+        fs.statSync(GTFS_CACHE_CALENDAR).size +
+        fs.statSync(GTFS_CACHE_ROUTES).size +
+        numChunks *
+          fs.statSync(path.join(GTFS_CACHE_DIR, "gtfs-cache-routes-0.json"))
+            .size) /
+      (1024 * 1024)
+    ).toFixed(1);
+    console.log(`   → Cache saved (${totalSizeMB} MB approx)`);
   } catch (err) {
     console.error(`   ⚠️ Failed to save cache: ${err.message}`);
   }
@@ -68,19 +151,47 @@ function saveCache() {
 
 function loadCache() {
   try {
-    if (!fs.existsSync(GTFS_CACHE_FILE)) return false;
-    const raw = fs.readFileSync(GTFS_CACHE_FILE, "utf8");
-    const data = JSON.parse(raw);
-    scheduleData.stops = new Map(data.stops);
-    scheduleData.calendar = new Map(data.calendar);
-    scheduleData.calendarDates = new Map(
-      data.calendarDates.map(([k, v]) => [k, new Map(v)]),
-    );
-    scheduleData.routes = new Map(data.routes);
-    const mb = (fs.statSync(GTFS_CACHE_FILE).size / 1024 / 1024).toFixed(1);
-    console.log(`   → Loaded from cache (${mb} MB)`);
+    if (!fs.existsSync(GTFS_CACHE_ROUTES)) return false;
+
+    // Load stops
+    if (fs.existsSync(GTFS_CACHE_STOPS)) {
+      scheduleData.stops = new Map(
+        JSON.parse(fs.readFileSync(GTFS_CACHE_STOPS, "utf8")),
+      );
+    }
+
+    // Load calendar
+    if (fs.existsSync(GTFS_CACHE_CALENDAR)) {
+      const calData = JSON.parse(fs.readFileSync(GTFS_CACHE_CALENDAR, "utf8"));
+      scheduleData.calendar = new Map(calData.calendar);
+      scheduleData.calendarDates = new Map(
+        calData.calendarDates.map(([k, v]) => [k, new Map(v)]),
+      );
+    }
+
+    // Load routes from chunks
+    const manifest = JSON.parse(fs.readFileSync(GTFS_CACHE_ROUTES, "utf8"));
+    const routes = [];
+    for (let i = 0; i < manifest.numChunks; i++) {
+      const chunkPath = path.join(
+        GTFS_CACHE_DIR,
+        `gtfs-cache-routes-${i}.json`,
+      );
+      if (fs.existsSync(chunkPath)) {
+        const chunk = JSON.parse(fs.readFileSync(chunkPath, "utf8"));
+        routes.push(...chunk);
+      }
+    }
+    scheduleData.routes = new Map(routes);
+
+    const stats = fs.statSync(GTFS_CACHE_CALENDAR);
+    const totalMB = (
+      (stats.size + fs.statSync(GTFS_CACHE_STOPS).size) /
+      (1024 * 1024)
+    ).toFixed(1);
+    console.log(`   → Loaded from cache (${totalMB} MB + routes)`);
     console.log(
-      `   → ${scheduleData.stops.size} stops, ${scheduleData.routes.size} routes`,
+      `   → ${scheduleData.stops.size} stops, ${scheduleData.routes.size} routes, ${manifest.numChunks} route chunks`,
     );
     return true;
   } catch (err) {
@@ -194,148 +305,203 @@ function minutesToTimeStr(minutes) {
 }
 
 async function loadGTFS(gtfsUrl) {
-  console.log(`\n📦 Downloading GTFS static data...`);
-  console.log(`   → URL: ${gtfsUrl}`);
+  return new Promise((resolve, reject) => {
+    console.log(`\n📦 Downloading GTFS static data...`);
+    console.log(`   → URL: ${gtfsUrl}`);
 
-  const buffer = await downloadFile(gtfsUrl);
-  console.log(`   → Downloaded ${(buffer.length / 1024 / 1024).toFixed(1)} MB`);
+    downloadFile(gtfsUrl)
+      .then((buffer) => {
+        console.log(
+          `   → Downloaded ${(buffer.length / 1024 / 1024).toFixed(1)} MB`,
+        );
 
-  const zip = new AdmZip(buffer);
-  const entries = zip.getEntries();
+        const zip = new AdmZip(buffer);
+        // Free the buffer immediately after creating the zip
+        buffer = null;
 
-  const files = {};
-  for (const entry of entries) {
-    if (!entry.isDirectory) {
-      files[entry.entryName] = entry.getData().toString("utf8");
-    }
-  }
+        let pending = 0;
+        let hasError = false;
 
-  // Parse stops
-  if (files["stops.txt"]) {
-    const stops = parseCSV(files["stops.txt"]);
-    for (const s of stops) {
-      if (s.stop_id) {
-        scheduleData.stops.set(s.stop_id, {
-          name: s.stop_name || s.stop_id,
-          lat: s.stop_lat,
-          lon: s.stop_lon,
-        });
-      }
-    }
-    console.log(`   → Loaded ${scheduleData.stops.size} stops`);
-  }
-
-  // Parse calendar
-  if (files["calendar.txt"]) {
-    const calendar = parseCSV(files["calendar.txt"]);
-    const dayCols = [
-      "sunday",
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday",
-      "saturday",
-    ];
-    for (const c of calendar) {
-      const days = {};
-      for (const col of dayCols) {
-        days[col] = c[col] || "0";
-      }
-      scheduleData.calendar.set(c.service_id, days);
-    }
-    console.log(`   → Loaded ${scheduleData.calendar.size} calendar entries`);
-  }
-
-  // Parse calendar_dates (exceptions)
-  if (files["calendar_dates.txt"]) {
-    const dates = parseCSV(files["calendar_dates.txt"]);
-    for (const d of dates) {
-      if (!scheduleData.calendarDates.has(d.service_id)) {
-        scheduleData.calendarDates.set(d.service_id, new Map());
-      }
-      scheduleData.calendarDates
-        .get(d.service_id)
-        .set(d.date, d.exception_type || "1");
-    }
-    console.log(`   → Loaded ${dates.length} calendar date exceptions`);
-  }
-
-  // Parse routes
-  if (files["routes.txt"]) {
-    const routes = parseCSV(files["routes.txt"]);
-    for (const r of routes) {
-      if (!scheduleData.routes.has(r.route_id)) {
-        scheduleData.routes.set(r.route_id, {
-          shortName: r.route_short_name || r.route_id,
-          longName: r.route_long_name || "",
-          trips: [],
-        });
-      }
-    }
-    console.log(`   → Loaded ${scheduleData.routes.size} routes`);
-  }
-
-  // Parse trips (map routes to trips)
-  if (files["trips.txt"]) {
-    const trips = parseCSV(files["trips.txt"]);
-    for (const t of trips) {
-      if (scheduleData.routes.has(t.route_id)) {
-        scheduleData.routes.get(t.route_id).trips.push({
-          tripId: t.trip_id,
-          serviceId: t.service_id,
-          headsign: t.trip_headsign || "",
-          directionId: t.direction_id || "0",
-          shapeId: t.shape_id || "",
-          blockId: t.block_id || "",
-        });
-      }
-    }
-    console.log(`   → Loaded ${trips.length} trips`);
-  }
-
-  // Parse stop_times
-  if (files["stop_times.txt"]) {
-    // stop_times is usually the largest file, parse it streaming-style in chunks
-    // But for in-memory, we'll parse it all at once (it's typically 50-200MB)
-    const stopTimes = parseCSV(files["stop_times.txt"]);
-    const stopTimesByTrip = new Map();
-    for (const st of stopTimes) {
-      if (!st.trip_id || !st.stop_id) continue;
-      if (!stopTimesByTrip.has(st.trip_id)) {
-        stopTimesByTrip.set(st.trip_id, []);
-      }
-      stopTimesByTrip.get(st.trip_id).push({
-        stopId: st.stop_id,
-        arrivalTime: parseTimeToMinutes(
-          st.arrival_time || st.departure_time || "00:00:00",
-        ),
-        departureTime: parseTimeToMinutes(
-          st.departure_time || st.arrival_time || "00:00:00",
-        ),
-        stopSequence: parseInt(st.stop_sequence) || 0,
-      });
-    }
-
-    // Sort stop times by sequence
-    for (const [tripId, times] of stopTimesByTrip) {
-      times.sort((a, b) => a.stopSequence - b.stopSequence);
-    }
-
-    // Attach stop times to routes
-    for (const [routeId, route] of scheduleData.routes) {
-      for (const trip of route.trips) {
-        if (stopTimesByTrip.has(trip.tripId)) {
-          trip.stopTimes = stopTimesByTrip.get(trip.tripId);
+        function complete() {
+          if (--pending === 0) {
+            resolve();
+          }
         }
-      }
-    }
-    console.log(
-      `   → Loaded ${stopTimes.length} stop times across ${stopTimesByTrip.size} trips`,
-    );
-  }
 
-  console.log(`   ✅ GTFS data loaded successfully`);
+        // Parse stops
+        pending++;
+        processZipCSV(
+          zip,
+          "stops.txt",
+          (row) => {
+            if (row.stop_id) {
+              scheduleData.stops.set(row.stop_id, {
+                name: row.stop_name || row.stop_id,
+                lat: row.stop_lat,
+                lon: row.stop_lon,
+              });
+            }
+          },
+          () => {
+            console.log(`   → Loaded ${scheduleData.stops.size} stops`);
+            complete();
+          },
+        );
+
+        // Parse calendar
+        pending++;
+        const dayCols = [
+          "sunday",
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+        ];
+        let calCount = 0;
+        processZipCSV(
+          zip,
+          "calendar.txt",
+          (row) => {
+            const days = {};
+            for (const col of dayCols) {
+              days[col] = row[col] || "0";
+            }
+            scheduleData.calendar.set(row.service_id, days);
+            calCount++;
+          },
+          () => {
+            console.log(`   → Loaded ${calCount} calendar entries`);
+            complete();
+          },
+        );
+
+        // Parse calendar_dates
+        pending++;
+        let cdCount = 0;
+        processZipCSV(
+          zip,
+          "calendar_dates.txt",
+          (row) => {
+            if (!scheduleData.calendarDates.has(row.service_id)) {
+              scheduleData.calendarDates.set(row.service_id, new Map());
+            }
+            scheduleData.calendarDates
+              .get(row.service_id)
+              .set(row.date, row.exception_type || "1");
+            cdCount++;
+          },
+          () => {
+            console.log(`   → Loaded ${cdCount} calendar date exceptions`);
+            complete();
+          },
+        );
+
+        // Parse routes
+        pending++;
+        processZipCSV(
+          zip,
+          "routes.txt",
+          (row) => {
+            if (!scheduleData.routes.has(row.route_id)) {
+              scheduleData.routes.set(row.route_id, {
+                shortName: row.route_short_name || row.route_id,
+                longName: row.route_long_name || "",
+                trips: [],
+              });
+            }
+          },
+          () => {
+            console.log(`   → Loaded ${scheduleData.routes.size} routes`);
+            complete();
+          },
+        );
+
+        // Parse trips (batch into routes)
+        pending++;
+        let tripCount = 0;
+        processZipCSV(
+          zip,
+          "trips.txt",
+          (row) => {
+            if (scheduleData.routes.has(row.route_id)) {
+              scheduleData.routes.get(row.route_id).trips.push({
+                tripId: row.trip_id,
+                serviceId: row.service_id,
+                headsign: row.trip_headsign || "",
+                directionId: row.direction_id || "0",
+                shapeId: row.shape_id || "",
+                blockId: row.block_id || "",
+              });
+              tripCount++;
+            }
+          },
+          () => {
+            console.log(`   → Loaded ${tripCount} trips`);
+            complete();
+          },
+        );
+
+        // Parse stop_times — this is the big one, process in chunks
+        pending++;
+        let stCount = 0;
+        const stopTimesByTrip = new Map();
+        processZipCSV(
+          zip,
+          "stop_times.txt",
+          (row) => {
+            if (!row.trip_id || !row.stop_id) return;
+            if (!stopTimesByTrip.has(row.trip_id)) {
+              stopTimesByTrip.set(row.trip_id, []);
+            }
+            stopTimesByTrip.get(row.trip_id).push({
+              stopId: row.stop_id,
+              arrivalTime: parseTimeToMinutes(
+                row.arrival_time || row.departure_time || "00:00:00",
+              ),
+              departureTime: parseTimeToMinutes(
+                row.departure_time || row.arrival_time || "00:00:00",
+              ),
+              stopSequence: parseInt(row.stop_sequence) || 0,
+            });
+            stCount++;
+
+            // Yield every 50000 rows to keep event loop responsive
+            if (stCount % 50000 === 0) {
+              console.log(`   → Processing stop times: ${stCount}`);
+            }
+          },
+          () => {
+            console.log(
+              `   → Loaded ${stCount} stop times across ${stopTimesByTrip.size} trips`,
+            );
+
+            // Sort and attach stop times to trips
+            let attached = 0;
+            for (const [tripId, times] of stopTimesByTrip) {
+              times.sort((a, b) => a.stopSequence - b.stopSequence);
+            }
+
+            for (const [, route] of scheduleData.routes) {
+              for (const trip of route.trips) {
+                if (stopTimesByTrip.has(trip.tripId)) {
+                  trip.stopTimes = stopTimesByTrip.get(trip.tripId);
+                  attached++;
+                }
+              }
+            }
+
+            // Clear the map to free memory
+            stopTimesByTrip.clear();
+
+            console.log(`   ✅ GTFS data loaded successfully`);
+            complete();
+          },
+        );
+      })
+      .catch(reject);
+  });
 }
 
 function getCurrentDateStr() {

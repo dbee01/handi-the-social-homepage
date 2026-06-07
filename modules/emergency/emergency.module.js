@@ -47,8 +47,7 @@ export default async function initEmergency(container) {
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML =
-    '<i class="fa-solid fa-triangle-exclamation"></i> EMERGENCY';
+  title.innerHTML = '<i class="fa-solid fa-location-dot"></i> LOCATION SHARE';
   headerRow.appendChild(title);
 
   const headerActions = document.createElement("div");
@@ -111,9 +110,9 @@ export default async function initEmergency(container) {
       btn.style.opacity = "";
       btn.style.cursor = "";
       btn.innerHTML = `
-                <i class="fa-solid fa-bell" style="font-size: 2rem;"></i>
-                <span>ALERT</span>
-                <span style="font-size: 0.7rem;">Press on Phone</span>
+                <i class="fa-solid fa-location-dot" style="font-size: 2rem;"></i>
+                <span>SHARE</span>
+                <span style="font-size: 0.7rem;">Send my location</span>
             `;
       btn.onmouseenter = () => {
         btn.style.transform = "scale(1.05)";
@@ -149,7 +148,7 @@ export default async function initEmergency(container) {
     }
 
     const fullLink = `https://osm.org/go/${shortlink}`;
-    const message = `🚨 EMERGENCY ALERT! 🚨\n\nSomeone sent you their location.\n📍 Location: ${fullLink}\n⏰ Time: ${new Date().toLocaleString()}\n\nPlease check.`;
+    const message = `📍 Someone shared their location with you.\n\nLocation: ${fullLink}\nTime: ${new Date().toLocaleString()}`;
 
     // Strip + prefix from phone numbers (Infobip expects E.164 without +)
     const cleanNumber = phoneNumber.replace(/^\+/, "");
@@ -205,7 +204,7 @@ export default async function initEmergency(container) {
       content.innerHTML = `
                 <div class="module-empty">
                     <i class="fa-solid fa-phone"></i>
-                    <p>No emergency contacts saved.</p>
+                    <p>No trusted contacts saved.</p>
                     <button id="emergencySettingsBtn" class="settings-link-btn">
                         <i class="fa-solid fa-gear"></i> Add Contacts
                     </button>
@@ -242,29 +241,29 @@ export default async function initEmergency(container) {
             transition: all 0.2s;
         `;
     emergencyBtn.innerHTML = `
-            <i class="fa-solid fa-bell" style="font-size: 2rem;"></i>
-            <span>EMERGENCY</span>
-            <span style="font-size: 0.7rem;">Press for Help</span>
+            <i class="fa-solid fa-location-dot" style="font-size: 2rem;"></i>
+            <span>LOCATION SHARE</span>
+            <span style="font-size: 0.7rem;">Send my location</span>
         `;
     content.appendChild(emergencyBtn);
 
-    // Main emergency flow with location validation
-    function triggerEmergency() {
+    // Main location sharing flow
+    function triggerShare() {
       if (isLocked) {
-        setStatus("Emergency button is locked – unlock to activate.", true);
+        setStatus("Share button is locked – unlock to activate.", true);
         return;
       }
       if (
         !confirm(
-          "⚠️ EMERGENCY: Are you sure you want to send an alert to all your emergency contacts? Your current location will be shared.",
+          "📍 Share your location? This will send your current location to your trusted contacts.",
         )
       ) {
-        setStatus("Emergency cancelled.", false);
+        setStatus("Share cancelled.", false);
         return;
       }
 
       setStatus(
-        "Requesting your location (please allow precise location)...",
+        "Getting your location (please allow precise location)...",
         false,
       );
 
@@ -283,10 +282,10 @@ export default async function initEmergency(container) {
             const proceed = confirm(
               `⚠️ The location we received (${lat.toFixed(2)}, ${lon.toFixed(2)}) does not appear to be in Ireland.\n` +
                 `This may be because your browser could not get a precise GPS fix.\n\n` +
-                `Do you still want to send the emergency alert with this location?`,
+                `Do you still want to send your location?`,
             );
             if (!proceed) {
-              setStatus("Emergency cancelled – location inaccurate.", true);
+              setStatus("Share cancelled – location inaccurate.", true);
               return;
             }
           }
@@ -295,7 +294,7 @@ export default async function initEmergency(container) {
           const osmShortUrl = `https://osm.org/go/${shortCode}?z=16`;
 
           setStatus(
-            `Location obtained. Sending alerts to ${contacts.length} contact(s)...`,
+            `Location obtained. Sending to ${contacts.length} contact(s)...`,
             false,
           );
 
@@ -310,7 +309,7 @@ export default async function initEmergency(container) {
 
           if (successCount > 0) {
             setStatus(
-              `✅ Emergency alerts sent to ${successCount} contact(s). ${failCount > 0 ? `Failed: ${failCount}` : ""}`,
+              `✅ Location sent to ${successCount} contact(s). ${failCount > 0 ? `Failed: ${failCount}` : ""}`,
               false,
             );
             const linkDiv = document.createElement("div");
@@ -321,7 +320,7 @@ export default async function initEmergency(container) {
             setTimeout(() => linkDiv.remove(), 15000);
           } else {
             setStatus(
-              "❌ Failed to send any emergency alerts. Check network or contact numbers.",
+              "❌ Failed to send location. Check network or contact numbers.",
               true,
             );
           }
@@ -367,7 +366,7 @@ export default async function initEmergency(container) {
       }, 8000);
     }
 
-    emergencyBtn.onclick = triggerEmergency;
+    emergencyBtn.onclick = triggerShare;
     applyLockState(emergencyBtn);
   }
 

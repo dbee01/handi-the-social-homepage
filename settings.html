@@ -786,13 +786,13 @@
                 </div>
             </div>
 
-            <!-- Premium 3: Emergency Location Button -->
+            <!-- Premium 3: Location Share -->
 
             <div class="module-card" data-module="emergency_alert">
                 <div class="module-header">
                     <div class="module-title">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <h3>Emergency Location Button</h3>
+                        <i class="fa-solid fa-location-dot"></i>
+                        <h3>Location Share</h3>
                         <span
                             style="
                                 font-size: 0.7rem;
@@ -810,7 +810,7 @@
                 </div>
                 <div class="module-config">
                     <div class="config-field">
-                        <label>Emergency Contacts</label>
+                        <label>Trusted Contacts</label>
                         <div
                             id="emergencyContactsList"
                             class="contact-list"
@@ -843,6 +843,77 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Premium 4: Click to Call -->
+
+            <div class="module-card" data-module="click_to_call">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-phone"></i>
+                        <h3>Click to Call</h3>
+                        <span
+                            style="
+                                font-size: 0.7rem;
+                                background: #f59e0b;
+                                padding: 2px 8px;
+                                border-radius: 12px;
+                                margin-left: 8px;
+                            "
+                            >Premium</span
+                        >
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Video Call Contacts</label>
+                        <div
+                            id="clickToCallContactsList"
+                            class="contact-list"
+                        ></div>
+                    </div>
+                    <div
+                        style="
+                            display: flex;
+                            gap: 8px;
+                            margin-top: 8px;
+                            margin-bottom: 16px;
+                            flex-wrap: wrap;
+                        "
+                    >
+                        <input
+                            type="text"
+                            id="ctcName"
+                            placeholder="Name (e.g. Granny)"
+                            style="flex: 1"
+                        />
+                        <input
+                            type="tel"
+                            id="ctcPhone"
+                            placeholder="Phone"
+                            style="flex: 1"
+                        />
+                        <input
+                            type="file"
+                            id="ctcPhoto"
+                            accept="image/*"
+                            style="display: none"
+                        />
+                        <button
+                            id="ctcAddPhotoBtn"
+                            class="add-contact-btn"
+                            style="background: #64748b"
+                        >
+                            📷
+                        </button>
+                        <button id="addCtcInline" class="add-contact-btn">
+                            + Add
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="brand">
@@ -861,6 +932,7 @@
             let db = null;
             let phoneContacts = [];
             let emergencyContacts = [];
+            let clickToCallContacts = [];
 
             function initDB() {
                 return new Promise((resolve, reject) => {
@@ -1072,7 +1144,7 @@
                 if (!container) return;
                 if (emergencyContacts.length === 0) {
                     container.innerHTML =
-                        '<div style="padding: 20px; text-align: center; color: #64748b;">No emergency contacts saved. Add a contact below.</div>';
+                        '<div style="padding: 20px; text-align: center; color: #64748b;">No trusted contacts saved. Add a contact below.</div>';
                     return;
                 }
                 container.innerHTML = emergencyContacts
@@ -1122,6 +1194,88 @@
             }
 
             // ============================================================
+            // CLICK-TO-CALL CONTACTS MANAGEMENT
+            // ============================================================
+            function renderClickToCallContacts() {
+                const container = document.getElementById(
+                    "clickToCallContactsList",
+                );
+                if (!container) return;
+                if (clickToCallContacts.length === 0) {
+                    container.innerHTML =
+                        '<div style="padding: 20px; text-align: center; color: #64748b;">No video call contacts saved. Add a contact below.</div>';
+                    return;
+                }
+                container.innerHTML = clickToCallContacts
+                    .map(
+                        (c, i) => `
+            <div class="contact-item">
+                <div class="contact-photo">
+                    ${c.photo ? `<img src="${c.photo}" alt="">` : '<i class="fa-solid fa-user"></i>'}
+                </div>
+                <div class="contact-info">
+                    <strong>${escapeHtml(c.name)}</strong><br>
+                    <small>${escapeHtml(c.number)}</small>
+                </div>
+                <button class="delete-ctc-contact" data-index="${i}">✖ Delete</button>
+            </div>
+        `,
+                    )
+                    .join("");
+
+                document
+                    .querySelectorAll(".delete-ctc-contact")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", (e) => {
+                            const idx = parseInt(btn.dataset.index);
+                            clickToCallContacts.splice(idx, 1);
+                            renderClickToCallContacts();
+                        });
+                    });
+            }
+
+            function addClickToCallContact() {
+                const nameInput = document.getElementById("ctcName");
+                const numberInput = document.getElementById("ctcPhone");
+                const photoInput = document.getElementById("ctcPhoto");
+
+                const name = nameInput?.value.trim();
+                const number = numberInput?.value.trim();
+
+                if (!name || !number) {
+                    alert("Please enter both name and phone number");
+                    return;
+                }
+
+                const photoFile = photoInput?.files?.[0];
+                if (photoFile) {
+                    const MAX_SIZE = 7 * 1024 * 1024;
+                    if (photoFile.size > MAX_SIZE) {
+                        alert("Contact photo must be under 7 MB.");
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        clickToCallContacts.push({
+                            name,
+                            number,
+                            photo: e.target.result,
+                        });
+                        renderClickToCallContacts();
+                        nameInput.value = "";
+                        numberInput.value = "";
+                        if (photoInput) photoInput.value = "";
+                    };
+                    reader.readAsDataURL(photoFile);
+                } else {
+                    clickToCallContacts.push({ name, number, photo: null });
+                    renderClickToCallContacts();
+                    nameInput.value = "";
+                    numberInput.value = "";
+                }
+            }
+
+            // ============================================================
             // MODULE MANAGEMENT
             // ============================================================
             const MODULES = window.HANDI_MODULE_IDS();
@@ -1160,6 +1314,12 @@
                 if (settings.emergency_alert?.contacts) {
                     emergencyContacts = settings.emergency_alert.contacts;
                     renderEmergencyContacts();
+                }
+
+                // Load click-to-call contacts
+                if (settings.click_to_call?.contacts) {
+                    clickToCallContacts = settings.click_to_call.contacts;
+                    renderClickToCallContacts();
                 }
 
                 // Load bus settings
@@ -1225,7 +1385,7 @@
                 if (!settings.music) settings.music = {};
                 settings.music.volume =
                     parseInt(document.getElementById("musicVolume")?.value) ||
-                    85;
+                    100;
                 settings.music.shuffle =
                     document.getElementById("musicShuffle")?.value === "true";
 
@@ -1235,7 +1395,7 @@
                     "0";
                 settings.radio.volume =
                     parseInt(document.getElementById("radioVolume")?.value) ||
-                    70;
+                    100;
 
                 if (!settings.news) settings.news = {};
                 settings.news.rssUrl =
@@ -1276,6 +1436,9 @@
 
                 if (!settings.emergency_alert) settings.emergency_alert = {};
                 settings.emergency_alert.contacts = emergencyContacts;
+
+                if (!settings.click_to_call) settings.click_to_call = {};
+                settings.click_to_call.contacts = clickToCallContacts;
 
                 // ============================================================
                 // WEBRTC (INFOBIP) SETTINGS
@@ -1716,6 +1879,14 @@
             document
                 .getElementById("addEmergencyInline")
                 ?.addEventListener("click", addEmergencyContact);
+            document
+                .getElementById("addCtcInline")
+                ?.addEventListener("click", addClickToCallContact);
+            document
+                .getElementById("ctcAddPhotoBtn")
+                ?.addEventListener("click", () =>
+                    document.getElementById("ctcPhoto")?.click(),
+                );
 
             applySettingsToToggles();
             setupToggles();

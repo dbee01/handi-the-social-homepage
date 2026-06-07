@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js",
+    "start": "node --max-old-space-size=4096 server.js",
     "dev": "vite",
     "build": "vite build"
   },
