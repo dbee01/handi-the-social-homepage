@@ -559,7 +559,8 @@
                         function isModuleEnabled(id) {
                             if (savedEnabled.hasOwnProperty(id))
                                 return savedEnabled[id] === true;
-                            return registryDefaults[id] === true;
+                            // Not in saved settings = user never enabled it = hidden
+                            return false;
                         }
 
                         let allModules = window.HANDI_MODULE_IDS();
