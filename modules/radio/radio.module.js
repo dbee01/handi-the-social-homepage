@@ -176,9 +176,17 @@ export default async function initRadio(container) {
   }
 
   function stopPlayback(resetIcon = true) {
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.src = "";
+    if (currentAudio && typeof currentAudio.pause === "function") {
+      try {
+        currentAudio.pause();
+      } catch (e) {
+        /* ignore */
+      }
+      try {
+        currentAudio.src = "";
+      } catch (e) {
+        /* ignore */
+      }
       currentAudio = null;
     }
     stopVisualiserAndClear();
@@ -224,43 +232,55 @@ export default async function initRadio(container) {
     error.innerText = "";
 
     try {
-      currentAudio = new Audio(url);
-      currentAudio.muted = localStorage.getItem("globalMute") === "true";
-      currentAudio
-        .play()
-        .then(() => {
-          nowPlaying.innerText = `▶ Now playing: ${name}`;
-          document.querySelectorAll(".radio-station").forEach((item) => {
-            const btn = item.querySelector(".radio-play-btn");
-            if (btn) {
-              btn.innerHTML = '<i class="fa-solid fa-play"></i>';
-              btn.classList.remove("playing");
-            }
-            item.classList.remove("active-station");
-          });
-          if (playButton) {
-            playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
-            playButton.classList.add("playing");
-          }
-          stationItem.classList.add("active-station");
-          activeStationItem = stationItem;
-          activeStationName = name;
-          if (!isLocked) stopVisualiser = startFakeVisualiser(synthCanvas);
-        })
-        .catch((err) => {
-          console.warn("Play error:", err);
-          error.innerText = "Cannot play this station";
-          nowPlaying.innerText = "Playback failed";
-          stopPlayback(true);
-        });
-      currentAudio.onerror = () => {
-        error.innerText = "Stream unavailable";
-        nowPlaying.innerText = "Stream error";
-        stopPlayback(true);
-      };
+      const audio = document.createElement("audio");
+      audio.src = url;
+      audio.muted = localStorage.getItem("globalMute") === "true";
+      currentAudio = audio;
+      const playPromise = audio.play();
+      if (playPromise === undefined) {
+        // Sync play succeeded (unlikely in modern browsers)
+        onPlaySuccess(audio, name, stationItem, playButton);
+      } else {
+        playPromise
+          .then(() => onPlaySuccess(audio, name, stationItem, playButton))
+          .catch((err) => onPlayError(audio, err));
+      }
+      audio.onerror = () => onPlayError(audio, new Error("Stream error"));
     } catch (err) {
       console.error(err);
       error.innerText = "Unable to play stream";
+      stopPlayback(true);
+    }
+
+    function onPlaySuccess(audio, name, stationItem, playButton) {
+      if (audio !== currentAudio) return;
+      nowPlaying.innerText = `▶ Now playing: ${name}`;
+      document.querySelectorAll(".radio-station").forEach((item) => {
+        const btn = item.querySelector(".radio-play-btn");
+        if (btn) {
+          btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+          btn.classList.remove("playing");
+        }
+        item.classList.remove("active-station");
+      });
+      if (playButton) {
+        playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        playButton.classList.add("playing");
+      }
+      stationItem.classList.add("active-station");
+      activeStationItem = stationItem;
+      activeStationName = name;
+      if (!isLocked) stopVisualiser = startFakeVisualiser(synthCanvas);
+    }
+
+    function onPlayError(audio, err) {
+      if (audio !== currentAudio) return;
+      console.warn("Play error:", err);
+      error.innerText =
+        err.message === "Stream error"
+          ? "Stream unavailable"
+          : "Cannot play this station";
+      nowPlaying.innerText = "Playback failed";
       stopPlayback(true);
     }
   }
@@ -360,9 +380,17 @@ export default async function initRadio(container) {
   applyLockState();
 
   return () => {
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.src = "";
+    if (currentAudio && typeof currentAudio.pause === "function") {
+      try {
+        currentAudio.pause();
+      } catch (e) {
+        /* ignore */
+      }
+      try {
+        currentAudio.src = "";
+      } catch (e) {
+        /* ignore */
+      }
       currentAudio = null;
     }
     stopVisualiserAndClear();
