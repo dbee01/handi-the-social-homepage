@@ -20,7 +20,7 @@ const DEFAULT_SETTINGS = {
     calendar: false,
   },
   gallery: { slideSpeed: 3000, autoStart: true },
-  music: { volume: 70, shuffle: false },
+  music: { volume: 100, shuffle: false },
   news: {
     rssUrl: "https://www.thejournal.ie/feed/",
     refreshInterval: 15,
