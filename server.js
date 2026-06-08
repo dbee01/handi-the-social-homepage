@@ -48,8 +48,11 @@ app.get("/favicon.ico", (req, res) =>
   res.sendFile(path.join(__dirname, "images", "favicon.ico")),
 );
 
-const REALTIME_URL = "https://api.nationaltransport.ie/gtfsr/v2/TripUpdates";
-const VEHICLES_URL = "https://api.nationaltransport.ie/gtfsr/v2/Vehicles";
+const REALTIME_URL =
+  "https://api.nationaltransport.ie/gtfsr/v2/TripUpdates?format=json";
+const VEHICLES_URL =
+  "https://api.nationaltransport.ie/gtfsr/v2/Vehicles?format=json";
+const GTFSR_URL = "https://api.nationaltransport.ie/gtfsr/v2/gtfsr?format=json";
 const API_KEY = process.env.BUS_API_KEY || "";
 
 // -----------------------------------------------------------------------------
@@ -190,40 +193,49 @@ app.post("/api/webrtc/room", async (req, res) => {
 });
 
 // Endpoint to initiate a Click-to-Call with video fallback
-app.post('/api/click-to-call', async (req, res) => {
-    const { from, to, videoUrl, text } = req.body;
+app.post("/api/click-to-call", async (req, res) => {
+  const { from, to, videoUrl, text } = req.body;
 
-    try {
-        const response = await axios({
-            method: 'POST',
-            url: `${INFOBIP_BASE_URL}/voice/1/advanced`,
-            headers: {
-                'Authorization': `App ${INFOBIP_API_KEY}`,
-                'Content-Type': 'application/json'
+  try {
+    const response = await axios({
+      method: "POST",
+      url: `${INFOBIP_BASE_URL}/voice/1/advanced`,
+      headers: {
+        Authorization: `App ${INFOBIP_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      data: {
+        messages: [
+          {
+            from: from,
+            destinations: [{ to: to }],
+            text: text || `Please join video call: ${videoUrl}`,
+            language: {
+              language: "en",
+              voice: "female",
             },
-            data: {
-                messages: [{
-                    from: from,
-                    destinations: [{ to: to }],
-                    text: text || `Please join video call: ${videoUrl}`,
-                    language: {
-                        language: "en",
-                        voice: "female"
-                    }
-                }]
-            }
-        });
+          },
+        ],
+      },
+    });
 
-        res.json({ success: true, data: response.data });
-    } catch (error) {
-        console.error('Click-to-call error:', error.response?.data || error.message);
-        res.status(500).json({ error: 'Failed to initiate call' });
-    }
+    res.json({ success: true, data: response.data });
+  } catch (error) {
+    console.error(
+      "Click-to-call error:",
+      error.response?.data || error.message,
+    );
+    res.status(500).json({ error: "Failed to initiate call" });
+  }
 });
 
 // -----------------------------------------------------------------------------
-// BUS REALTIME API - IMPROVED VERSION WITH PROPER LOGGING
+// BUS REALTIME API - TripUpdate-based prediction
 // -----------------------------------------------------------------------------
+// Each NTA TripUpdate entity represents ONE trip (a specific bus run).
+// Each trip has stop_time_update entries for stops ahead.
+// For a requested stop, we find the nearest upcoming update for each trip.
+// Key: one trip = one bus = one prediction per stop.
 app.get("/api/bus-realtime", async (req, res) => {
   const now = Date.now();
   const routeId = req.query.route || "19";
@@ -231,319 +243,192 @@ app.get("/api/bus-realtime", async (req, res) => {
   const requestedStopIds = stopsParam.split(",").map((s) => s.trim());
   const forceRefresh = req.query.refresh === "true";
 
-  // Shorter cache TTL for real-time data (20 seconds)
   const REALTIME_CACHE_TTL = 20000;
   const FALLBACK_CACHE_TTL = 60000;
-
-  console.log("\n" + "=".repeat(60));
-  console.log(`🚌 BUS API REQUEST`);
-  console.log("=".repeat(60));
-  console.log(`📋 Parameters:`);
-  console.log(`   → Route ID: ${routeId}`);
-  console.log(`   → Stop IDs: ${stopsParam}`);
-  console.log(`   → Force refresh: ${forceRefresh}`);
-  console.log(`   → Timestamp: ${new Date().toISOString()}`);
-
-  const stops = {};
-  const longToShortStopId = {};
-  // Build a reverse lookup: short suffix → long ID from GTFS stops
-  const suffixToLong = {};
-  if (gtfs.scheduleData && gtfs.scheduleData.stops) {
-    for (const longId of gtfs.scheduleData.stops.keys()) {
-      // If the long ID ends with the short numeric suffix, map it
-      const suffix = longId.replace(/^\D+/, ""); // strip non-digit prefix
-      if (suffix && suffix.length >= 4) {
-        suffixToLong[suffix] = longId;
-      }
-    }
-  }
-
-  for (const stopId of requestedStopIds) {
-    // Look up in stopInfo first (manual short → long mapping)
-    const info = stopInfo[stopId];
-    let lookupId = info?.longId || stopId;
-
-    // If not in stopInfo, try auto-resolving short IDs via GTFS suffix match
-    if (!info?.longId) {
-      const suffix = stopId.replace(/^\D+/, "");
-      if (suffixToLong[suffix]) {
-        lookupId = suffixToLong[suffix];
-        console.log(`   🔄 Auto-resolved ${stopId} → ${lookupId}`);
-      }
-    }
-
-    longToShortStopId[lookupId] = stopId;
-
-    // Try to get a friendly name from GTFS data
-    let stopName = info?.name || null;
-    let direction = info?.direction || null;
-    if (!stopName && gtfs.scheduleData && gtfs.scheduleData.stops) {
-      const gtfsStop = gtfs.scheduleData.stops.get(lookupId) || gtfs.scheduleData.stops.get(stopId);
-      if (gtfsStop) {
-        stopName = gtfsStop.name;
-      }
-    }
-
-    stops[lookupId] = {
-      buses: [],
-      direction: direction || "Unknown",
-      stop_name: stopName || lookupId,
-      stop_id: stopId,
-    };
-    console.log(
-      `   📍 Stop: ${stopId} → ${stopName || "Unknown"} (${direction || "Unknown direction"})`,
-    );
-  }
-
   const cacheKey = `${routeId}|${stopsParam}`;
 
-  // Check cache - but skip if force refresh
+  // Check cache
   if (!forceRefresh && cachedData && cachedData._cacheKey === cacheKey) {
     const cacheAge = now - lastFetch;
     const isRealtime = cachedData.stops?.some((s) => s.realtime_data === true);
     const ttl = isRealtime ? REALTIME_CACHE_TTL : FALLBACK_CACHE_TTL;
-
-    if (cacheAge < ttl) {
-      console.log(
-        `\n💾 CACHE HIT (age: ${cacheAge}ms, realtime: ${isRealtime})`,
-      );
-      console.log("=".repeat(60) + "\n");
-      return res.json(cachedData);
-    } else {
-      console.log(`\n⏰ Cache expired (age: ${cacheAge}ms > TTL: ${ttl}ms)`);
-    }
-  } else {
-    console.log(`\n🔄 Cache MISS - fetching fresh data`);
+    if (cacheAge < ttl) return res.json(cachedData);
   }
 
-  try {
-    console.log(`\n🌐 MAKING API CALL TO NTA:`);
-    console.log(`   → URL: ${REALTIME_URL}`);
-    console.log(`   → Timeout: 15000ms`);
+  // Resolve stop IDs to long form
+  async function resolveStopIds(requestedIds) {
+    const result = {};
+    const suffixToLong = {};
+    if (gtfs.scheduleData && gtfs.scheduleData.stops) {
+      for (const longId of gtfs.scheduleData.stops.keys()) {
+        const suffix = longId.replace(/^\D+/, "");
+        if (suffix && suffix.length >= 4) suffixToLong[suffix] = longId;
+      }
+    }
+    for (const stopId of requestedIds) {
+      const info = stopInfo[stopId];
+      let lookupId = info?.longId || stopId;
+      if (!info?.longId) {
+        const suffix = stopId.replace(/^\D+/, "");
+        if (suffixToLong[suffix]) lookupId = suffixToLong[suffix];
+      }
+      let stopName = info?.name || null;
+      if (!stopName && gtfs.scheduleData && gtfs.scheduleData.stops) {
+        const gtfsStop =
+          gtfs.scheduleData.stops.get(lookupId) ||
+          gtfs.scheduleData.stops.get(stopId);
+        if (gtfsStop) stopName = gtfsStop.name;
+      }
+      result[lookupId] = {
+        stop_name: stopName || lookupId,
+        direction: info?.direction || "Unknown",
+        stop_id: stopId,
+      };
+    }
+    return result;
+  }
 
+  const stops = await resolveStopIds(requestedStopIds);
+  const resolvedStopIds = Object.keys(stops);
+
+  try {
     const response = await axios.get(REALTIME_URL, {
-      params: {
-        format: "json",
-      },
       headers: { "x-api-key": API_KEY, "Cache-Control": "no-cache" },
       httpsAgent: new https.Agent({ rejectUnauthorized: false }),
       timeout: 15000,
     });
 
-    console.log(`\n✅ NTA API RESPONSE:`);
-    console.log(`   → Status: ${response.status}`);
-    console.log(
-      `   → Response size: ${JSON.stringify(response.data).length} bytes`,
-    );
+    // Map: stopId -> predictions (one per unique trip)
+    // Keyed by trip_id + start_time to uniquely identify a bus run
+    const predictionsByStop = new Map();
+    for (const sid of resolvedStopIds) predictionsByStop.set(sid, []);
+
+    // Track which trips we've already seen per stop (trip_id + start_time)
+    const seenTripsPerStop = new Map();
+    for (const sid of resolvedStopIds) seenTripsPerStop.set(sid, new Set());
 
     let hasAnyRealTimeForRoute = false;
-    const realtimePredictions = new Map();
 
-    if (response.data && response.data.entity) {
-      const totalEntities = response.data.entity.length;
-      console.log(`   → Total entities received: ${totalEntities}`);
-
-      let routeMatches = 0;
-      let stopMatches = 0;
-
+    if (response.data?.entity) {
       for (const entity of response.data.entity) {
         if (!entity.trip_update) continue;
+        const tu = entity.trip_update;
+        const trip = tu.trip;
+        if (!trip) continue;
 
-        const tripUpdate = entity.trip_update;
-        const trip = tripUpdate.trip;
-
-        // Match route_id: the API returns full internal IDs like "2 223 c b"
-        // but the query uses short names like "223".
-        // The short name is position 1 in the space-split array.
-        const apiRouteId = trip?.route_id || "";
+        // Match route by short name
+        const apiRouteId = trip.route_id || "";
         const apiRouteParts = apiRouteId.split(" ");
         const apiShortName =
           apiRouteParts.length >= 3 ? apiRouteParts[1] : apiRouteId;
-        const matchesRoute = apiShortName === routeId;
+        if (apiShortName !== routeId) continue;
 
-        if (!trip || !matchesRoute) continue;
-
-        routeMatches++;
         hasAnyRealTimeForRoute = true;
 
-        const updates = tripUpdate.stop_time_update || [];
-        console.log(
-          `\n   🚌 Route ${routeId} match #${routeMatches}: ${updates.length} stop updates`,
-        );
+        // Unique trip identifier: trip_id + start_time (covers duplicate trip_ids)
+        const tripKey = `${trip.trip_id}_${trip.start_time}_${trip.start_date}`;
+
+        // Find the update for our requested stop that is closest (upcoming)
+        const updates = tu.stop_time_update || [];
+        let bestUpdate = null;
+        let bestMinutesAway = Infinity;
 
         for (const update of updates) {
-          const stopId = update.stop_id;
-          if (!stops[stopId]) continue;
+          const sid = update.stop_id;
+          if (!resolvedStopIds.includes(sid)) continue;
 
-          stopMatches++;
-          const arrival = update.arrival;
-          const departure = update.departure;
-          const arrivalTime = arrival?.time;
-          const departureTime = departure?.time;
-          const delay = arrival?.delay || departure?.delay || 0;
-          let relevantTime = arrivalTime || departureTime;
+          // Skip if we already have a prediction for this trip at this stop
+          const seenSet = seenTripsPerStop.get(sid);
+          if (seenSet.has(tripKey)) continue;
 
-          // If no absolute time but we have a delay, estimate from GTFS scheduled time
-          if (!relevantTime && delay && gtfs.scheduleData) {
-            const scheduled = gtfs.getScheduledTimes(routeId, stopId);
-            if (scheduled && scheduled.length > 0) {
-              const scheduledMinutes = scheduled[0].minutes_away;
-              const adjustedMinutes = Math.max(
-                0,
-                scheduledMinutes + Math.round(delay / 60),
-              );
-              if (adjustedMinutes <= 60) {
-                if (!realtimePredictions.has(stopId)) {
-                  realtimePredictions.set(stopId, []);
-                }
-                realtimePredictions.get(stopId).push({
-                  route: routeId,
-                  minutes_away: adjustedMinutes,
-                  arrival_text:
-                    adjustedMinutes <= 1
-                      ? "Due"
-                      : `${adjustedMinutes} min${adjustedMinutes !== 1 ? "s" : ""}`,
-                  delay,
-                  realtime: true,
-                });
-              }
+          // Calculate minutes away from arrival.time or delay
+          let minutesAway = null;
+          const arrivalTime = update.arrival?.time;
+          const departureTime = update.departure?.time;
+          const delay = update.arrival?.delay ?? update.departure?.delay ?? 0;
+
+          if (arrivalTime || departureTime) {
+            const refTime = arrivalTime || departureTime;
+            minutesAway = Math.round(
+              (Number(refTime) * 1000 - Date.now()) / 60000,
+            );
+          } else if (delay && gtfs.scheduleData) {
+            const scheduledArrivals = gtfs.getScheduledTimes(routeId, sid);
+            if (scheduledArrivals?.length > 0) {
+              const scheduledMin = scheduledArrivals[0].minutes_away;
+              minutesAway = Math.max(0, scheduledMin + Math.round(delay / 60));
             } else {
-              // No GTFS scheduled time either, but the bus is actively reporting
-              // this stop. Use a rough estimate: if the bus has a delay update
-              // it's likely arriving within 30 minutes.
-              const estimateMins = Math.min(
-                30,
-                Math.max(1, Math.round(delay / 60)),
-              );
-              if (!realtimePredictions.has(stopId)) {
-                realtimePredictions.set(stopId, []);
-              }
-              realtimePredictions.get(stopId).push({
-                route: routeId,
-                minutes_away: estimateMins,
-                arrival_text:
-                  estimateMins <= 1
-                    ? "Due"
-                    : `${estimateMins} min${estimateMins !== 1 ? "s" : ""}`,
-                delay,
-                realtime: true,
-              });
+              minutesAway = Math.max(1, Math.min(30, Math.round(delay / 60)));
             }
           }
 
-          if (relevantTime) {
-            const timeMs = Number(relevantTime) * 1000;
-            const minutesAway = Math.round((timeMs - Date.now()) / 60000);
+          if (minutesAway === null) continue;
+          if (minutesAway < -2 || minutesAway > 120) continue;
 
-            if (minutesAway >= -2 && minutesAway <= 60) {
-              if (!realtimePredictions.has(stopId)) {
-                realtimePredictions.set(stopId, []);
-              }
-              realtimePredictions.get(stopId).push({
-                route: routeId,
-                minutes_away: Math.max(0, minutesAway),
-                arrival_text:
-                  minutesAway <= 1
-                    ? "Due"
-                    : `${minutesAway} min${minutesAway !== 1 ? "s" : ""}`,
-                delay,
-                realtime: true,
-              });
+          // Keep the closest upcoming update for this trip
+          if (minutesAway < bestMinutesAway) {
+            bestMinutesAway = minutesAway;
+            bestUpdate = {
+              stopId: sid,
+              minutes_away: Math.max(0, minutesAway),
+              delay,
+              tripKey,
+            };
+          }
+        }
 
-              if (trip.trip_headsign) {
-                stops[stopId].direction = trip.trip_headsign;
-              }
-            }
+        // If we found a good update for this trip, add it
+        if (bestUpdate) {
+          const sid = bestUpdate.stopId;
+          seenTripsPerStop.get(sid).add(tripKey);
+          predictionsByStop.get(sid).push({
+            route: routeId,
+            minutes_away: bestUpdate.minutes_away,
+            arrival_text:
+              bestUpdate.minutes_away <= 1
+                ? "Due"
+                : `${bestUpdate.minutes_away} min${bestUpdate.minutes_away !== 1 ? "s" : ""}`,
+            delay: bestUpdate.delay,
+            realtime: true,
+          });
+          // Update direction if headsign available
+          if (trip.trip_headsign && stops[sid]) {
+            stops[sid].direction = trip.trip_headsign;
           }
         }
       }
-
-      console.log(`\n   📊 NTA DATA SUMMARY:`);
-      console.log(`      → Route ${routeId} matches: ${routeMatches}`);
-      console.log(`      → Stop matches: ${stopMatches}`);
-      console.log(
-        `      → Stops with predictions: ${realtimePredictions.size}`,
-      );
-    } else {
-      console.log(`   ⚠️ No entity data in response`);
     }
 
-    // Build results
+    // Build results — one per requested stop
     const results = [];
-    for (const [stopId, stopData] of Object.entries(stops)) {
-      let buses = [];
-      let isRealtime = false;
+    for (const sid of resolvedStopIds) {
+      const stopData = stops[sid];
+      let buses = predictionsByStop.get(sid) || [];
 
-      if (realtimePredictions.has(stopId)) {
-        buses = realtimePredictions.get(stopId);
-        // Sort by minutes away
-        buses.sort((a, b) => a.minutes_away - b.minutes_away);
-        // Deduplicate: if two predictions are within 10 minutes of each other,
-        // keep only the first (earliest) one — filters out bunched duplicate trip updates
-        const deduped = [];
-        let lastMin = -10;
-        for (const bus of buses) {
-          if (bus.minutes_away - lastMin >= 10) {
-            deduped.push(bus);
-            lastMin = bus.minutes_away;
-          }
-        }
-        buses = deduped;
-        isRealtime = true;
-        console.log(`\n✅ STOP ${stopId} (${stopData.stop_name}):`);
-        console.log(`   → REAL-TIME predictions: ${buses.length}`);
-        buses.forEach((bus, i) => {
-          console.log(
-            `      ${i + 1}. Route ${bus.route} - ${bus.arrival_text} (${bus.minutes_away} min)`,
-          );
-        });
-      } else if (hasAnyRealTimeForRoute) {
-        // Route has real-time data but no active predictions for this stop right now.
-        // Fall back to scheduled times from GTFS instead of showing empty.
-        buses = getGenericSchedule(routeId, stopId, stopData.direction);
-        isRealtime = false;
-        console.log(`\n⚠️ STOP ${stopId} (${stopData.stop_name}):`);
-        console.log(
-          `   → Route has real-time capability but no active buses right now`,
-        );
-        if (buses.length > 0) {
-          console.log(`   → Fallback: ${buses.length} scheduled times shown`);
-        } else {
-          console.log(`   → No scheduled times either`);
-        }
-      } else {
-        buses = getGenericSchedule(routeId, stopId, stopData.direction);
-        isRealtime = false;
-        console.log(`\n📅 STOP ${stopId} (${stopData.stop_name}):`);
-        console.log(
-          `   → Using SCHEDULED times (no real-time for route ${routeId})`,
-        );
-        buses.forEach((bus, i) => {
-          console.log(
-            `      ${i + 1}. Route ${bus.route} - ${bus.arrival_text} (scheduled)`,
-          );
-        });
-      }
-
+      // Sort closest first
       buses.sort((a, b) => a.minutes_away - b.minutes_away);
 
-      // In server.js, update the results builder:
-      const hasAnyRealtimeBus = buses.some((bus) => bus.realtime === true);
-      const hasAnyScheduledBus = buses.some((bus) => bus.scheduled === true);
+      // If no real-time data, fall back to scheduled
+      if (buses.length === 0) {
+        if (hasAnyRealTimeForRoute) {
+          // Route has live data but no active buses right now — show scheduled
+          buses = getGenericSchedule(routeId, sid, stopData.direction);
+        } else {
+          buses = getGenericSchedule(routeId, sid, stopData.direction);
+        }
+      }
 
       results.push({
         stop_name: stopData.stop_name,
         direction: stopData.direction,
-        stop_id: stopId,
+        stop_id: stopData.stop_id,
         buses: buses.slice(0, 4),
-        realtime_data: hasAnyRealtimeBus, // ← TRUE if ANY real-time bus exists
-        mixed_data: hasAnyRealtimeBus && hasAnyScheduledBus, // ← optional flag for mixed
+        realtime_data: buses.some((b) => b.realtime === true),
       });
     }
 
-    // Check if ANY bus across ANY stop is real-time
-    const hasAnyRealtimeBuses = results.some((stop) =>
-      stop.buses.some((bus) => bus.realtime === true),
+    const hasAnyRealtimeBuses = results.some((s) =>
+      s.buses.some((b) => b.realtime === true),
     );
 
     const result = {
@@ -555,41 +440,17 @@ app.get("/api/bus-realtime", async (req, res) => {
       _cacheKey: cacheKey,
     };
 
-    const realtimeCount = results.filter((r) => r.realtime_data).length;
-    console.log(`\n📊 FINAL SUMMARY:`);
-    console.log(`   → Data source: ${result.source.toUpperCase()}`);
-    console.log(
-      `   → Stops with real-time capability: ${realtimeCount}/${results.length}`,
-    );
-    console.log(`   → Last updated: ${result.last_updated}`);
-    console.log("=".repeat(60) + "\n");
-
     cachedData = result;
     lastFetch = now;
     res.json(result);
   } catch (error) {
-    console.error(`\n❌ BUS API ERROR:`);
-    console.error(`   → Message: ${error.message}`);
-    if (error.response) {
-      console.error(`   → Status: ${error.response.status}`);
-      console.error(
-        `   → Data: ${JSON.stringify(error.response.data).substring(0, 200)}`,
-      );
-    }
-    if (error.code === "ECONNABORTED") {
-      console.error(`   → Timeout: Request took longer than 15 seconds`);
-    }
-
+    console.error("Bus API error:", error.message);
     if (cachedData && cachedData._cacheKey === cacheKey) {
-      console.log(`\n💾 Using cached data due to API error`);
-      console.log("=".repeat(60) + "\n");
       return res.json(cachedData);
     }
-
-    console.log(`\n📅 FALLBACK: Using scheduled times`);
     const results = [];
-    for (const [stopId, stopData] of Object.entries(stops)) {
-      const buses = getGenericSchedule(routeId, stopId, stopData.direction);
+    for (const [sid, stopData] of Object.entries(stops)) {
+      const buses = getGenericSchedule(routeId, sid, stopData.direction);
       results.push({
         stop_name: stopData.stop_name,
         direction: stopData.direction,
@@ -598,7 +459,6 @@ app.get("/api/bus-realtime", async (req, res) => {
         realtime_data: false,
       });
     }
-    console.log("=".repeat(60) + "\n");
     res.json({
       success: true,
       last_updated: new Date().toISOString(),

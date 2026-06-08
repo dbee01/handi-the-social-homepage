@@ -134,8 +134,20 @@ export default async function initCalendar(container) {
       if (ev.rruleStr && window.rrule && window.rrule.RRule) {
         try {
           const RRule = window.rrule.RRule;
-          const rruleStr =
-            "DTSTART" + ev._dtstartRaw + "\nRRULE:" + ev.rruleStr;
+          // Feed rrule.js a UTC-based DTSTART so timezone is not double-handled.
+          // Use our already-correctly-parsed start date to compute the UTC DTSTART
+          // string in rrule.js's expected format (no TZID).
+          const utcStart = ev.start;
+          const utcStr =
+            utcStart.getUTCFullYear() +
+            String(utcStart.getUTCMonth() + 1).padStart(2, "0") +
+            String(utcStart.getUTCDate()).padStart(2, "0") +
+            "T" +
+            String(utcStart.getUTCHours()).padStart(2, "0") +
+            String(utcStart.getUTCMinutes()).padStart(2, "0") +
+            String(utcStart.getUTCSeconds()).padStart(2, "0") +
+            "Z";
+          const rruleStr = "DTSTART:" + utcStr + "\nRRULE:" + ev.rruleStr;
           const rule = RRule.fromString(rruleStr);
 
           // Compute a reasonable end date for expansion (next 6 months)
@@ -199,7 +211,9 @@ export default async function initCalendar(container) {
         try {
           const localIso = `${String(year).padStart(4, "0")}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:${String(second).padStart(2, "0")}`;
           // Get the UTC offset of the target timezone at this moment
-          const offsetDate = new Date(Date.UTC(year, month, day, hour, minute, second));
+          const offsetDate = new Date(
+            Date.UTC(year, month, day, hour, minute, second),
+          );
           const formatter = new Intl.DateTimeFormat("en-CA", {
             timeZone: tzid,
             timeZoneName: "longOffset",
@@ -210,14 +224,23 @@ export default async function initCalendar(container) {
           if (offsetMatch) {
             const m = offsetMatch[1].match(/([+-])(\d{2}):?(\d{2})/);
             if (m) {
-              offsetMinutes = (m[1] === "+" ? 1 : -1) * (parseInt(m[2]) * 60 + (parseInt(m[3]) || 0));
+              offsetMinutes =
+                (m[1] === "+" ? 1 : -1) *
+                (parseInt(m[2]) * 60 + (parseInt(m[3]) || 0));
             }
           }
           // local time = UTC + offsetMinutes, so UTC = local - offsetMinutes
-          const utcMs = Date.UTC(year, month, day, hour, minute, second) - offsetMinutes * 60000;
+          const utcMs =
+            Date.UTC(year, month, day, hour, minute, second) -
+            offsetMinutes * 60000;
           return new Date(utcMs);
         } catch (e) {
-          console.warn("Failed to parse TZID date, falling back to local:", dateStr, tzid, e);
+          console.warn(
+            "Failed to parse TZID date, falling back to local:",
+            dateStr,
+            tzid,
+            e,
+          );
           return new Date(year, month, day, hour, minute, second);
         }
       } else {
@@ -571,7 +594,7 @@ export default async function initCalendar(container) {
 
       html += `</div>`;
     } else {
-      html += `<div class="calendar-events-list" style="max-height: 450px; overflow-y: auto;">`;
+      html += `<div class="calendar-events-list">`;
       for (const event of events) {
         const timeStr = formatEventTime(event);
         html += `

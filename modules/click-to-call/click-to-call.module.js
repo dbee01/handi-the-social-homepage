@@ -74,6 +74,105 @@ export default function initClickToCall(container) {
         background: #0047cc;
         color: white;
     }
+
+    /* Click-to-Call dashboard contacts */
+    .ctc-content {
+        display: flex;
+        flex-direction: column;
+    }
+    .ctc-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .ctc-contact-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px;
+        background: #ffffff;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+    }
+    .ctc-contact-row:hover {
+        background: #f8fafc;
+        border-color: #0047cc;
+    }
+    .ctc-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #e2e8f0;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: #64748b;
+    }
+    .ctc-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .ctc-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .ctc-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .ctc-number {
+        font-size: 0.9rem;
+        color: #64748b;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .ctc-phone-trigger {
+        cursor: pointer;
+    }
+    .ctc-phone-btn,
+    .ctc-video-btn {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        border: 2px solid;
+        cursor: pointer;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: transform 0.15s;
+    }
+    .ctc-phone-btn:hover,
+    .ctc-video-btn:hover {
+        transform: scale(1.08);
+    }
+    .ctc-phone-btn {
+        background: #008000;
+        border-color: #008000;
+        color: white;
+    }
+    .ctc-phone-btn:hover {
+        background: #006400;
+        border-color: #006400;
+    }
+    .ctc-video-btn {
+        background: #3B82F6;
+        border-color: #3B82F6;
+        color: white;
+    }
+    .ctc-video-btn:hover {
+        background: #2563EB;
+        border-color: #2563EB;
+    }
   `;
   document.head.appendChild(style);
 
@@ -142,33 +241,6 @@ export default function initClickToCall(container) {
     hideCallStatus();
   }
 
-  function endVideoCall() {
-    if (currentCall && currentCall.localStream) {
-      currentCall.localStream.getTracks().forEach((track) => track.stop());
-    }
-    if (currentCall) {
-      currentCall.hangup();
-      currentCall = null;
-    }
-    if (infobipRTC) {
-      infobipRTC.disconnect();
-      infobipRTC = null;
-    }
-    if (remoteVideo.srcObject) {
-      remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
-      remoteVideo.srcObject = null;
-    }
-    if (localVideo.srcObject) {
-      localVideo.srcObject.getTracks().forEach((track) => track.stop());
-      localVideo.srcObject = null;
-    }
-    videoContainer.classList.remove("active");
-    isMicMuted = false;
-    isVideoEnabled = true;
-    updateMuteButtonUI();
-    updateVideoButtonUI();
-  }
-
   function updateMuteButtonUI() {
     if (isMicMuted) {
       toggleMuteBtn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
@@ -189,18 +261,70 @@ export default function initClickToCall(container) {
     }
   }
 
-  async function makePhoneCall(phoneNumber) {
+  async function makeAudioCall(phoneNumber) {
     try {
-      showCallStatus("Initiating call...");
+      showCallStatus("Calling...");
 
-      // Request camera/mic permission immediately (user gesture context)
+      // Audio-only — request mic only
+      let localStream = null;
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (err) {
+        console.warn("Could not access mic:", err);
+      }
+
+      const response = await fetch("/api/webrtc/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          identity: "handi_user_" + Date.now(),
+          enableVideo: false,
+        }),
+      });
+      const { token } = await response.json();
+      if (!token) throw new Error("Failed to obtain token");
+
+      infobipRTC = createInfobipRtc(token, { debug: true });
+
+      infobipRTC.on("connected", () => {
+        console.log("Connected to Infobip WebRTC platform");
+        currentCall = infobipRTC.callPhone(phoneNumber, {
+          video: false,
+          audio: true,
+        });
+        currentCall.on("ringing", () => {
+          console.log("Ringing...");
+          showCallStatus("Ringing...");
+        });
+        currentCall.on("established", () => {
+          console.log("Audio call connected!");
+          showCallStatus("Call connected");
+          setTimeout(() => hideCallStatus(), 2000);
+        });
+        currentCall.on("hangup", () => endCall());
+        currentCall.localStream = localStream;
+      });
+
+      infobipRTC.on("disconnected", () => endCall());
+      infobipRTC.connect();
+    } catch (error) {
+      console.error("Call error:", error);
+      showCallStatus("Call failed.");
+      setTimeout(() => hideCallStatus(), 2000);
+    }
+  }
+
+  async function makeVideoCall(phoneNumber) {
+    try {
+      showCallStatus("Initiating video call...");
+
+      // Request camera + mic permission immediately (user gesture context)
       let localStream = null;
       try {
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localVideo.srcObject = localStream;
       } catch (err) {
         console.warn("Could not access camera/mic:", err);
-        // Continue without local video
       }
 
       const response = await fetch("/api/webrtc/token", {
@@ -218,41 +342,61 @@ export default function initClickToCall(container) {
 
       infobipRTC.on("connected", () => {
         console.log("Connected to Infobip WebRTC platform");
-        initiatePhoneCall(phoneNumber, localStream);
+        currentCall = infobipRTC.callPhone(phoneNumber, {
+          video: true,
+          audio: true,
+        });
+        currentCall.on("ringing", () => {
+          console.log("Ringing...");
+          showCallStatus("Ringing...");
+        });
+        currentCall.on("established", (stream) => {
+          console.log("Video call connected!");
+          showVideoCallUI();
+          if (stream) {
+            remoteVideo.srcObject = stream;
+          }
+        });
+        currentCall.on("hangup", () => endCall());
+        currentCall.localStream = localStream;
       });
 
-      infobipRTC.on("disconnected", () => endVideoCall());
-
+      infobipRTC.on("disconnected", () => endCall());
       infobipRTC.connect();
     } catch (error) {
-      console.error("Call initiation error:", error);
-      showCallStatus("Call failed. Please try again.");
-      setTimeout(() => hideCallStatus(), 3000);
+      console.error("Video call error:", error);
+      showCallStatus("Video call failed.");
+      setTimeout(() => hideCallStatus(), 2000);
     }
   }
 
-  function initiatePhoneCall(phoneNumber, localStream) {
-    currentCall = infobipRTC.callPhone(phoneNumber, {
-      video: true,
-      audio: true,
-    });
-
-    currentCall.on("ringing", () => {
-      console.log("Ringing...");
-      showCallStatus("Ringing...");
-    });
-
-    currentCall.on("established", (stream) => {
-      console.log("Call connected!");
-      showVideoCallUI();
-      if (stream) {
-        remoteVideo.srcObject = stream;
-      }
-    });
-
-    currentCall.on("hangup", () => endVideoCall());
-
-    currentCall.localStream = localStream;
+  function endCall() {
+    // Stop local media tracks
+    if (currentCall && currentCall.localStream) {
+      currentCall.localStream.getTracks().forEach((track) => track.stop());
+    }
+    if (currentCall) {
+      currentCall.hangup();
+      currentCall = null;
+    }
+    if (infobipRTC) {
+      infobipRTC.disconnect();
+      infobipRTC = null;
+    }
+    // Reset video UI elements
+    if (remoteVideo.srcObject) {
+      remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
+      remoteVideo.srcObject = null;
+    }
+    if (localVideo.srcObject) {
+      localVideo.srcObject.getTracks().forEach((track) => track.stop());
+      localVideo.srcObject = null;
+    }
+    videoContainer.classList.remove("active");
+    isMicMuted = false;
+    isVideoEnabled = true;
+    updateMuteButtonUI();
+    updateVideoButtonUI();
   }
 
   async function createVideoRoom(roomName, participantIdentity) {
@@ -311,68 +455,99 @@ export default function initClickToCall(container) {
     }
   });
 
-  hangupBtn.addEventListener("click", endVideoCall);
+  hangupBtn.addEventListener("click", endCall);
 
   // Load contacts from settings
   const settings = loadSettings();
   const contacts = settings.click_to_call?.contacts || [];
 
-  // Render module UI — each contact is a row: photo + name + video btn + phone btn
-  const contactsHtml = contacts.length === 0
-    ? `<div style="padding: 20px; text-align: center; color: #64748b; font-size: 14px;">No contacts saved. Add contacts in Settings.</div>`
-    : contacts.map((c, i) => `
-      <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #F8FAFE; border-radius: 16px; margin-bottom: 8px;">
-        <div style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #e2e8f0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #64748b;">
-          ${c.photo ? `<img src="${c.photo}" style="width: 100%; height: 100%; object-fit: cover;" alt="">` : `<i class="fa-solid fa-user"></i>`}
-        </div>
-        <div style="flex: 1; min-width: 0;">
-          <div style="font-weight: 600; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(c.name)}</div>
-          <div style="font-size: 12px; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(c.number)}</div>
-        </div>
-        <button class="ctc-video-btn" data-number="${escapeHtml(c.number)}" style="background: #3B82F6; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <i class="fa-solid fa-video"></i>
-        </button>
-        <button class="ctc-phone-btn" data-number="${escapeHtml(c.number)}" style="background: #10B981; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <i class="fa-solid fa-phone"></i>
-        </button>
-      </div>
-    `).join("");
+  // Build header (matching all other module headers)
+  const pinBtn = container.querySelector(".pin-btn");
+  container.innerHTML = "";
+  if (pinBtn) container.prepend(pinBtn);
 
-  container.innerHTML = `
-    <div style="background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <div style="background: linear-gradient(135deg, #1F2B3C, #2C3E50); color: white; padding: 16px 20px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <i class="fa-solid fa-phone" style="font-size: 22px;"></i>
-                <div>
-                    <h3 style="margin: 0; font-size: 18px; font-weight: 600;">Click to Call</h3>
-                    <p style="margin: 2px 0 0; font-size: 12px; opacity: 0.8;">${contacts.length} contact${contacts.length !== 1 ? "s" : ""}</p>
-                </div>
+  const title = document.createElement("div");
+  title.className = "panel-title";
+  title.innerHTML = '<i class="fa-solid fa-phone"></i> CLICK-TO-CALL';
+  container.appendChild(title);
+
+  const content = document.createElement("div");
+  content.className = "ctc-content";
+  container.appendChild(content);
+
+  if (contacts.length === 0) {
+    content.innerHTML = `
+      <div class="module-empty">
+        <i class="fa-solid fa-phone"></i>
+        <p>No contacts saved yet.</p>
+        <button class="ctc-settings-btn settings-link-btn">
+          <i class="fa-solid fa-gear"></i> Add Contacts in Settings
+        </button>
+      </div>`;
+  } else {
+    content.innerHTML = `
+      <div class="ctc-list">
+        ${contacts.map((c) => `
+          <div class="ctc-contact-row">
+            <div class="ctc-avatar ctc-phone-trigger" data-number="${escapeHtml(c.number)}">
+              ${c.photo
+                ? `<img src="${c.photo}" alt="">`
+                : `<i class="fa-solid fa-user"></i>`
+              }
             </div>
-        </div>
-        <div style="padding: 16px;">
-          ${contactsHtml}
-        </div>
-    </div>
-  `;
+            <div class="ctc-info ctc-phone-trigger" data-number="${escapeHtml(c.number)}">
+              <div class="ctc-name">${escapeHtml(c.name)}</div>
+              <div class="ctc-number">${escapeHtml(c.number)}</div>
+            </div>
+            <button class="ctc-phone-btn" data-number="${escapeHtml(c.number)}" title="Call">
+              <i class="fa-solid fa-phone"></i>
+            </button>
+            <button class="ctc-video-btn" data-number="${escapeHtml(c.number)}" title="Video call">
+              <i class="fa-solid fa-video"></i>
+            </button>
+          </div>
+        `).join("")}
+      </div>`;
+  }
 
-  // Wire up video call buttons
-  container.querySelectorAll(".ctc-video-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const number = btn.dataset.number;
-      makePhoneCall(number);
+  // Settings button (empty state) — links to settings page
+  const settingsBtn = content.querySelector(".ctc-settings-btn");
+  if (settingsBtn) {
+    settingsBtn.addEventListener("click", () => {
+      location.href = "settings.html?args=click_to_call";
+    });
+  }
+
+  // Avatar, name, number — starts audio-only call
+  content.querySelectorAll(".ctc-phone-trigger").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const number = el.dataset.number;
+      makeAudioCall(number);
     });
   });
 
-  // Wire up audio-only call buttons
-  container.querySelectorAll(".ctc-phone-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
+  // Phone button — starts audio-only call
+  content.querySelectorAll(".ctc-phone-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
       const number = btn.dataset.number;
-      makePhoneCall(number);
+      makeAudioCall(number);
+    });
+  });
+
+  // Video button — starts video call
+  content.querySelectorAll(".ctc-video-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const number = btn.dataset.number;
+      makeVideoCall(number);
     });
   });
 
   // Expose functions globally for external access
-  window.makePhoneCall = makePhoneCall;
+  window.makeAudioCall = makeAudioCall;
+  window.makeVideoCall = makeVideoCall;
   window.createVideoRoom = createVideoRoom;
 
   function escapeHtml(str) {
