@@ -1,5 +1,7 @@
 // modules/click-to-call/click-to-call.module.js
 // Click-to-Call module: calls a phone number via Infobip WebRTC
+// corresponding to the WEBRTC infobip JS SDK WEBRTC
+// https://github.com/infobip/infobip-rtc-js
 
 import { loadSettings } from "../../js/core/settings.js";
 
