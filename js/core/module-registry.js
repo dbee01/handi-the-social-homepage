@@ -122,7 +122,7 @@ window.HANDI_MODULES = [
     icon: "📞",
     desc: "Call any phone number",
     tier: "premium",
-    defaultEnabled: 2,
+    defaultEnabled: 1,
     settingsConfig: { contacts: [] },
   },
 ];
