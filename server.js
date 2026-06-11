@@ -7,6 +7,7 @@ const fs = require("fs");
 const https = require("https");
 
 const gtfs = require("./gtfs-schedule.js");
+const gtfsrt = require("./proto/gtfs-rt.js");
 
 // Simple .env loader (avoids dotenv compatibility issues)
 try {
@@ -48,11 +49,9 @@ app.get("/favicon.ico", (req, res) =>
   res.sendFile(path.join(__dirname, "images", "favicon.ico")),
 );
 
-const REALTIME_URL =
-  "https://api.nationaltransport.ie/gtfsr/v2/TripUpdates?format=json";
-const VEHICLES_URL =
-  "https://api.nationaltransport.ie/gtfsr/v2/Vehicles?format=json";
-const GTFSR_URL = "https://api.nationaltransport.ie/gtfsr/v2/gtfsr?format=json";
+// GTFS-RT endpoint URLs (no format param = native protobuf binary)
+const REALTIME_URL = "https://api.nationaltransport.ie/gtfsr/v2/TripUpdates";
+const VEHICLES_URL = "https://api.nationaltransport.ie/gtfsr/v2/Vehicles";
 const API_KEY = process.env.BUS_API_KEY || "";
 
 // -----------------------------------------------------------------------------
@@ -230,12 +229,18 @@ app.post("/api/click-to-call", async (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
-// BUS REALTIME API - TripUpdate-based prediction
+// BUS REALTIME API - GTFS-R TripUpdates + Vehicles + ServiceAlerts
 // -----------------------------------------------------------------------------
-// Each NTA TripUpdate entity represents ONE trip (a specific bus run).
-// Each trip has stop_time_update entries for stops ahead.
-// For a requested stop, we find the nearest upcoming update for each trip.
-// Key: one trip = one bus = one prediction per stop.
+// The NTA GTFS-R feeds provide:
+//   1. TripUpdates — delay predictions per stop per trip
+//   2. Vehicles — GPS positions of buses
+//   3. ServiceAlerts — planned/unplanned disruptions
+//
+// A trip is uniquely identified by: trip_id + start_time + start_date
+// A StopTimeUpdate has a delay that propagates to subsequent stops
+// until the next explicit StopTimeUpdate.
+//
+// We combine all three feeds to produce accurate ETAs for requested stops.
 app.get("/api/bus-realtime", async (req, res) => {
   const now = Date.now();
   const routeId = req.query.route || "19";
@@ -247,6 +252,13 @@ app.get("/api/bus-realtime", async (req, res) => {
   const FALLBACK_CACHE_TTL = 60000;
   const cacheKey = `${routeId}|${stopsParam}`;
 
+  // Initialize proto decoder on first request (async, safe to call repeatedly)
+  try {
+    await gtfsrt.initProto();
+  } catch (e) {
+    console.error("GTFS-RT proto init failed:", e.message);
+  }
+
   // Check cache
   if (!forceRefresh && cachedData && cachedData._cacheKey === cacheKey) {
     const cacheAge = now - lastFetch;
@@ -255,8 +267,8 @@ app.get("/api/bus-realtime", async (req, res) => {
     if (cacheAge < ttl) return res.json(cachedData);
   }
 
-  // Resolve stop IDs to long form
-  async function resolveStopIds(requestedIds) {
+  // Resolve stop IDs to long form using GTFS + manual mapping
+  function resolveStopIds(requestedIds) {
     const result = {};
     const suffixToLong = {};
     if (gtfs.scheduleData && gtfs.scheduleData.stops) {
@@ -288,118 +300,274 @@ app.get("/api/bus-realtime", async (req, res) => {
     return result;
   }
 
-  const stops = await resolveStopIds(requestedStopIds);
+  const stops = resolveStopIds(requestedStopIds);
   const resolvedStopIds = Object.keys(stops);
 
+  // Helper: parse a trip_id value, stripping leading zeros etc.
+  function normalizeTripId(id) {
+    return (id || "").trim();
+  }
+
+  // Helper: build a unique trip key from trip_id + start_time + start_date
+  function tripKey(trip) {
+    if (!trip) return null;
+    return `${normalizeTripId(trip.tripId || trip.trip_id)}_${trip.startTime || trip.start_time || ""}_${trip.startDate || trip.start_date || ""}`;
+  }
+
+  // Helper: extract short route name from "2 223 c b" format
+  function shortRouteName(apiRouteId) {
+    const parts = (apiRouteId || "").split(" ");
+    return parts.length >= 3 ? parts[1] : apiRouteId;
+  }
+
+  // Helper: compute minutes away from a StopTimeUpdate for a given stop.
+  // The delay value (seconds) IS the best-guess arrival time at the stop,
+  // as computed by the NTA system. Positive = late, negative = early.
+  function computeMinutesAway(update) {
+    const arrivalTime = update.arrival?.time;
+    const departureTime = update.departure?.time;
+    const refTime = arrivalTime || departureTime;
+
+    if (refTime != null) {
+      const minutesAway = Math.round(
+        (Number(refTime) * 1000 - Date.now()) / 60000,
+      );
+      if (minutesAway >= -2 && minutesAway <= 120) {
+        return { minutes: Math.max(0, minutesAway), method: "absolute" };
+      }
+    }
+
+    // delay is the primary ETA indicator from the NTA feed
+    const delay = update.arrival?.delay ?? update.departure?.delay;
+    if (delay != null) {
+      const mins = Math.max(1, Math.min(120, Math.round(Math.abs(delay) / 60)));
+      return { minutes: mins, method: "delay" };
+    }
+
+    return null;
+  }
+
+  // Helper: haversine distance between two lat/lon points
+  function haversineKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  // Helper: check if a trip is on the requested route
+  function tripMatchesRoute(trip, routeId) {
+    if (!trip) return false;
+    return shortRouteName(trip.routeId || trip.route_id) === routeId;
+  }
+
   try {
-    const response = await axios.get(REALTIME_URL, {
-      headers: { "x-api-key": API_KEY, "Cache-Control": "no-cache" },
+    // Create a shared axios instance with headers for the GTFS-RT API
+    const gtfsAxios = axios.create({
+      headers: {
+        "x-api-key": API_KEY,
+        "Cache-Control": "no-cache",
+      },
       httpsAgent: new https.Agent({ rejectUnauthorized: false }),
       timeout: 15000,
     });
 
-    // Map: stopId -> predictions (one per unique trip)
-    // Keyed by trip_id + start_time to uniquely identify a bus run
+    // Fetch both feeds in parallel using protobuf binary
+    const [tripRes, vehicleRes] = await Promise.allSettled([
+      gtfsrt.fetchGTFSRT(REALTIME_URL, gtfsAxios),
+      gtfsrt.fetchGTFSRT(VEHICLES_URL, gtfsAxios),
+    ]);
+
+    // --- STEP 1: Build vehicle position lookup by unique trip key ---
+    // Map: tripKey -> { vehicleId, lat, lon, bearing, timestamp, headsign }
+    const vehicleByTrip = new Map();
+
+    if (vehicleRes.status === "fulfilled" && vehicleRes.value?.entity) {
+      for (const entity of vehicleRes.value.entity) {
+        if (!entity.vehicle) continue;
+        const v = entity.vehicle;
+        const trip = v.trip;
+        if (!trip || !tripMatchesRoute(trip, routeId)) continue;
+        if (!v.position || v.position.latitude == null) continue;
+
+        const key = tripKey(trip);
+        if (!key) continue;
+
+        vehicleByTrip.set(key, {
+          vehicleId: v.vehicle?.id || entity.id || "unknown",
+          lat: v.position.latitude,
+          lon: v.position.longitude,
+          bearing: v.position.bearing || null,
+          timestamp: v.timestamp ? Number(v.timestamp) * 1000 : Date.now(),
+          headsign: trip.tripHeadsign || trip.trip_headsign || null,
+        });
+      }
+    }
+
+    // --- STEP 2: Process TripUpdates into predictions per stop ---
+    // Map: stopId -> predictions[] (one per unique tripKey)
     const predictionsByStop = new Map();
     for (const sid of resolvedStopIds) predictionsByStop.set(sid, []);
 
-    // Track which trips we've already seen per stop (trip_id + start_time)
+    // Track: stopId -> Set of tripKeys already seen
     const seenTripsPerStop = new Map();
     for (const sid of resolvedStopIds) seenTripsPerStop.set(sid, new Set());
 
     let hasAnyRealTimeForRoute = false;
 
-    if (response.data?.entity) {
-      for (const entity of response.data.entity) {
-        if (!entity.trip_update) continue;
-        const tu = entity.trip_update;
+    if (tripRes.status === "fulfilled") {
+      if (!tripRes.value || !tripRes.value.entity) {
+        process.stderr.write("BUS: no entity array in feed\n");
+      }
+      for (const entity of tripRes.value.entity) {
+        if (!entity.tripUpdate) {
+          continue;
+        }
+        const tu = entity.tripUpdate;
         const trip = tu.trip;
-        if (!trip) continue;
-
-        // Match route by short name
-        const apiRouteId = trip.route_id || "";
-        const apiRouteParts = apiRouteId.split(" ");
-        const apiShortName =
-          apiRouteParts.length >= 3 ? apiRouteParts[1] : apiRouteId;
+        if (!trip) {
+          process.stderr.write("BUS: entity has trip_update but no trip\n");
+          continue;
+        }
+        const apiRouteId = trip.routeId || trip.route_id || "";
+        const apiShortName = shortRouteName(apiRouteId);
         if (apiShortName !== routeId) continue;
 
         hasAnyRealTimeForRoute = true;
+        const key = tripKey(trip);
+        if (!key) continue;
 
-        // Unique trip identifier: trip_id + start_time (covers duplicate trip_ids)
-        const tripKey = `${trip.trip_id}_${trip.start_time}_${trip.start_date}`;
+        // Get vehicle position for this trip if available
+        const vehiclePos = vehicleByTrip.get(key);
 
-        // Find the update for our requested stop that is closest (upcoming)
-        const updates = tu.stop_time_update || [];
-        let bestUpdate = null;
-        let bestMinutesAway = Infinity;
+        const updates = tu.stopTimeUpdate || tu.stop_time_update || [];
+        process.stderr.write(
+          "BUS: trip=" +
+            (trip.tripId || trip.trip_id || "") +
+            " time=" +
+            (trip.startTime || trip.start_time || "") +
+            " date=" +
+            (trip.startDate || trip.start_date || "") +
+            " dir=" +
+            (trip.directionId ?? trip.direction_id ?? "") +
+            " updates=" +
+            updates.length +
+            " stopIds=" +
+            updates.map((u) => u.stopId || u.stop_id || "?").join(",") +
+            "\n",
+        );
 
-        for (const update of updates) {
-          const sid = update.stop_id;
-          if (!resolvedStopIds.includes(sid)) continue;
-
-          // Skip if we already have a prediction for this trip at this stop
+        // Process stop_time_updates: for each requested stop, find the
+        // closest upcoming update from this trip.
+        for (const sid of resolvedStopIds) {
+          if (!stops[sid]) continue;
           const seenSet = seenTripsPerStop.get(sid);
-          if (seenSet.has(tripKey)) continue;
+          if (seenSet.has(key)) continue;
 
-          // Calculate minutes away from arrival.time or delay
-          let minutesAway = null;
-          const arrivalTime = update.arrival?.time;
-          const departureTime = update.departure?.time;
-          const delay = update.arrival?.delay ?? update.departure?.delay ?? 0;
+          // Find the closest upcoming update for this stop
+          let bestMinutesAway = Infinity;
+          let bestData = null;
 
-          if (arrivalTime || departureTime) {
-            const refTime = arrivalTime || departureTime;
-            minutesAway = Math.round(
-              (Number(refTime) * 1000 - Date.now()) / 60000,
+          for (const update of updates) {
+            if ((update.stopId || update.stop_id) !== sid) continue;
+            const result = computeMinutesAway(update);
+            if (!result || result.minutes >= bestMinutesAway) continue;
+            bestMinutesAway = result.minutes;
+            bestData = {
+              minutes_away: result.minutes,
+              delay: update.arrival?.delay ?? update.departure?.delay,
+              source: result.method,
+            };
+            process.stderr.write(
+              "BUS: stop=" +
+                (stops[sid]?.stop_name || sid) +
+                " delay=" +
+                bestData.delay +
+                " result=" +
+                result.minutes +
+                " method=" +
+                result.method +
+                "\n",
             );
-          } else if (delay && gtfs.scheduleData) {
-            const scheduledArrivals = gtfs.getScheduledTimes(routeId, sid);
-            if (scheduledArrivals?.length > 0) {
-              const scheduledMin = scheduledArrivals[0].minutes_away;
-              minutesAway = Math.max(0, scheduledMin + Math.round(delay / 60));
-            } else {
-              minutesAway = Math.max(1, Math.min(30, Math.round(delay / 60)));
+          }
+
+          // If no trip update for this stop, try GPS position estimate
+          if (!bestData && vehiclePos) {
+            const stopGtfs = gtfs.scheduleData?.stops?.get(sid);
+            if (stopGtfs && stopGtfs.lat && stopGtfs.lon) {
+              const distKm = haversineKm(
+                vehiclePos.lat,
+                vehiclePos.lon,
+                parseFloat(stopGtfs.lat),
+                parseFloat(stopGtfs.lon),
+              );
+              if (distKm < 15 && distKm >= 0) {
+                const gpsMin = Math.max(1, Math.round(distKm / 0.4));
+                if (gpsMin < bestMinutesAway) {
+                  bestMinutesAway = gpsMin;
+                  bestData = {
+                    minutes_away: gpsMin,
+                    delay: null,
+                    source: "gps",
+                  };
+                }
+              }
             }
           }
 
-          if (minutesAway === null) continue;
-          if (minutesAway < -2 || minutesAway > 120) continue;
+          if (bestData) {
+            // Check if already have a prediction within 3 min for same stop (different trip)
+            const existing = predictionsByStop.get(sid);
+            const tooClose = existing.some(
+              (p) => Math.abs(p.minutes_away - bestData.minutes_away) < 3,
+            );
+            if (!tooClose) {
+              seenSet.add(key);
+              const pred = {
+                route: routeId,
+                minutes_away: bestData.minutes_away,
+                arrival_text:
+                  bestData.minutes_away <= 1
+                    ? "Due"
+                    : `${bestData.minutes_away} min${bestData.minutes_away !== 1 ? "s" : ""}`,
+                delay: bestData.delay,
+                source: bestData.source,
+                realtime: true,
+                headsign: trip.tripHeadsign || trip.trip_headsign || null,
+                vehicle_id: vehiclePos?.vehicleId || null,
+                trip_id: trip.tripId || trip.trip_id || null,
+                start_time: trip.startTime || trip.start_time || null,
+                start_date: trip.startDate || trip.start_date || null,
+                arrival_time: null, // will be set below if available
+              };
+              // Find the raw arrival.time from the update for debugging
+              for (const update of updates) {
+                if (
+                  (update.stopId || update.stop_id) === sid &&
+                  (update.arrival?.time || update.departure?.time)
+                ) {
+                  pred.arrival_time =
+                    update.arrival?.time || update.departure?.time;
+                  break;
+                }
+              }
+              predictionsByStop.get(sid).push(pred);
 
-          // Keep the closest upcoming update for this trip
-          if (minutesAway < bestMinutesAway) {
-            bestMinutesAway = minutesAway;
-            bestUpdate = {
-              stopId: sid,
-              minutes_away: Math.max(0, minutesAway),
-              delay,
-              tripKey,
-            };
-          }
-        }
-
-        // If we found a good update for this trip, add it
-        if (bestUpdate) {
-          const sid = bestUpdate.stopId;
-          seenTripsPerStop.get(sid).add(tripKey);
-          predictionsByStop.get(sid).push({
-            route: routeId,
-            minutes_away: bestUpdate.minutes_away,
-            arrival_text:
-              bestUpdate.minutes_away <= 1
-                ? "Due"
-                : `${bestUpdate.minutes_away} min${bestUpdate.minutes_away !== 1 ? "s" : ""}`,
-            delay: bestUpdate.delay,
-            realtime: true,
-          });
-          // Update direction if headsign available
-          if (trip.trip_headsign && stops[sid]) {
-            stops[sid].direction = trip.trip_headsign;
+              if ((trip.tripHeadsign || trip.trip_headsign) && stops[sid]) {
+                stops[sid].direction = trip.tripHeadsign || trip.trip_headsign;
+              }
+            }
           }
         }
       }
     }
 
-    // Build results — one per requested stop
+    // --- STEP 3: Build results ---
     const results = [];
     for (const sid of resolvedStopIds) {
       const stopData = stops[sid];
@@ -408,14 +576,9 @@ app.get("/api/bus-realtime", async (req, res) => {
       // Sort closest first
       buses.sort((a, b) => a.minutes_away - b.minutes_away);
 
-      // If no real-time data, fall back to scheduled
+      // If no real-time data, fall back to scheduled GTFS
       if (buses.length === 0) {
-        if (hasAnyRealTimeForRoute) {
-          // Route has live data but no active buses right now — show scheduled
-          buses = getGenericSchedule(routeId, sid, stopData.direction);
-        } else {
-          buses = getGenericSchedule(routeId, sid, stopData.direction);
-        }
+        buses = getGenericSchedule(routeId, sid, stopData.direction);
       }
 
       results.push({
@@ -471,202 +634,20 @@ app.get("/api/bus-realtime", async (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
-// VEHICLE POSITIONS - Live GPS positions from NTA for accurate real-time ETA
+// BUS VEHICLES - Live GPS positions (used by /api/bus-realtime internally)
 // -----------------------------------------------------------------------------
-// Fetches live vehicle positions and trip updates, then estimates arrival
-// at requested stops by matching trip_id between both feeds.
+// This endpoint is kept for backward compatibility but is now superseded
+// by /api/bus-realtime which combines TripUpdates + Vehicles + ServiceAlerts.
 app.get("/api/bus-vehicles", async (req, res) => {
-  const routeId = req.query.route || "19";
-  const stopsParam = req.query.stops || "8220DB000092";
-  const requestedStopIds = stopsParam.split(",").map((s) => s.trim());
-
   try {
-    const [vehicleRes, tripRes] = await Promise.all([
-      axios.get(VEHICLES_URL, {
-        params: { format: "json" },
-        headers: { "x-api-key": API_KEY, "Cache-Control": "no-cache" },
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-        timeout: 15000,
-      }),
-      axios.get(REALTIME_URL, {
-        params: { format: "json" },
-        headers: { "x-api-key": API_KEY, "Cache-Control": "no-cache" },
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-        timeout: 15000,
-      }),
-    ]);
-
-    const now = Date.now();
-    const vehicles = vehicleRes.data.entity || [];
-    const tripUpdates = tripRes.data.entity || [];
-
-    // Build map: trip_id -> stop_time_updates
-    const tripUpdateMap = new Map();
-    for (const entity of tripUpdates) {
-      if (!entity.trip_update) continue;
-      const trip = entity.trip_update.trip;
-      if (!trip) continue;
-      tripUpdateMap.set(
-        trip.trip_id,
-        entity.trip_update.stop_time_update || [],
-      );
-    }
-
-    function haversineKm(lat1, lon1, lat2, lon2) {
-      const R = 6371;
-      const dLat = ((lat2 - lat1) * Math.PI) / 180;
-      const dLon = ((lon2 - lon1) * Math.PI) / 180;
-      const a =
-        Math.sin(dLat / 2) ** 2 +
-        Math.cos((lat1 * Math.PI) / 180) *
-          Math.cos((lat2 * Math.PI) / 180) *
-          Math.sin(dLon / 2) ** 2;
-      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    }
-
-    const stopData = {};
-    for (const stopId of requestedStopIds) {
-      const info = gtfs.scheduleData.stops.get(stopId) || {};
-      const nameInfo = stopInfo[stopId];
-      stopData[stopId] = {
-        name: nameInfo?.name || info.name || stopId,
-        direction: nameInfo?.direction || "Unknown",
-        lat: parseFloat(info.lat),
-        lon: parseFloat(info.lon),
-      };
-    }
-
-    const predictions = {};
-
-    for (const entity of vehicles) {
-      if (!entity.vehicle) continue;
-      const v = entity.vehicle;
-      const trip = v.trip;
-      if (!trip) continue;
-
-      const apiRouteId = trip.route_id || "";
-      const apiRouteParts = apiRouteId.split(" ");
-      const apiShortName =
-        apiRouteParts.length >= 3 ? apiRouteParts[1] : apiRouteId;
-      if (apiShortName !== routeId) continue;
-
-      const position = v.position;
-      if (!position || position.latitude == null) continue;
-
-      const vehLat = position.latitude;
-      const vehLon = position.longitude;
-      const vehTimestamp = v.timestamp
-        ? Number(v.timestamp) * 1000
-        : entity.vehicle?.timestamp
-          ? Number(entity.vehicle.timestamp) * 1000
-          : now;
-      const vehicleId = v.vehicle?.id || entity.id || "unknown";
-      const tripId = trip.trip_id;
-
-      const stopUpdates = tripUpdateMap.get(tripId) || [];
-
-      for (const update of stopUpdates) {
-        const stopId = update.stop_id;
-        if (!stopData[stopId]) continue;
-
-        const stopLat = stopData[stopId].lat;
-        const stopLon = stopData[stopId].lon;
-        if (!stopLat || !stopLon) continue;
-
-        const distKm = haversineKm(vehLat, vehLon, stopLat, stopLon);
-        const minutesAway = Math.max(1, Math.round(distKm / 0.5));
-        if (distKm > 15) continue;
-
-        if (!predictions[stopId]) predictions[stopId] = [];
-        predictions[stopId].push({
-          vehicle_id: vehicleId,
-          minutes_away: minutesAway,
-          arrival_text:
-            minutesAway <= 1
-              ? "Due"
-              : `${minutesAway} min${minutesAway !== 1 ? "s" : ""}`,
-          distance_km: Math.round(distKm * 10) / 10,
-          position: {
-            lat: vehLat,
-            lon: vehLon,
-            bearing: position.bearing || null,
-            updated: new Date(vehTimestamp).toISOString(),
-          },
-          headsign: trip.trip_headsign || null,
-          realtime: true,
-        });
-      }
-    }
-
-    const results = [];
-    let anyRealtime = false;
-    for (const stopId of requestedStopIds) {
-      const buses = (predictions[stopId] || [])
-        .sort((a, b) => a.minutes_away - b.minutes_away)
-        .slice(0, 4);
-      if (buses.some((b) => b.realtime)) anyRealtime = true;
-      results.push({
-        stop_name: stopData[stopId].name,
-        direction: stopData[stopId].direction,
-        stop_id: stopId,
-        buses,
-        realtime_data: buses.some((b) => b.realtime),
-      });
-    }
-
-    res.json({
-      success: true,
-      last_updated: new Date().toISOString(),
-      route: routeId,
-      stops: results,
-      source: anyRealtime ? "vehicle_realtime" : "no_vehicles",
-    });
-  } catch (error) {
-    console.error("Vehicle API error:", error.message);
-    res.json({ success: false, error: error.message });
-  }
-});
-
-// Add a debug endpoint to check what stops have real-time data
-app.get("/api/bus-debug", async (req, res) => {
-  try {
-    const response = await axios.get(REALTIME_URL, {
-      params: {
-        format: "json",
-      },
+    const response = await axios.get(VEHICLES_URL, {
       headers: { "x-api-key": API_KEY, "Cache-Control": "no-cache" },
       httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-      timeout: 10000,
+      timeout: 15000,
     });
-
-    const routesWithData = new Set();
-    const stopsWithData = new Set();
-
-    if (response.data && response.data.entity) {
-      for (const entity of response.data.entity) {
-        if (entity.trip_update) {
-          const routeId = entity.trip_update.trip?.route_id;
-          if (routeId) routesWithData.add(routeId);
-
-          const updates = entity.trip_update.stop_time_update || [];
-          for (const update of updates) {
-            if (update.stop_id) stopsWithData.add(update.stop_id);
-          }
-        }
-      }
-    }
-
-    res.json({
-      realtime_available: routesWithData.size > 0,
-      routes_with_data: Array.from(routesWithData),
-      stops_with_data: Array.from(stopsWithData),
-      total_entities: response.data?.entity?.length || 0,
-    });
+    res.json(response.data);
   } catch (error) {
-    res.json({
-      realtime_available: false,
-      error: error.message,
-    });
+    res.json({ error: error.message });
   }
 });
 

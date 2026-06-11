@@ -124,6 +124,17 @@
                 transition: background 0.2s;
                 flex-shrink: 0;
             }
+            .toggle-switch.mmr-disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+                pointer-events: auto; /* allow click for alert message */
+            }
+            .module-card-disabled {
+                opacity: 0.5;
+            }
+            .module-card-disabled .module-header {
+                cursor: default;
+            }
             .toggle-switch.active {
                 background: #0047cc;
             }
@@ -1282,7 +1293,7 @@
 
             function applySettingsToToggles() {
                 const settings = loadSettings();
-                const enabled = settings.enabledModules || {};
+                const mmr = window.getMMR();
                 MODULES.forEach((moduleId) => {
                     const card = document.querySelector(
                         `.module-card[data-module="${moduleId}"]`,
@@ -1290,9 +1301,20 @@
                     if (card) {
                         const toggle = card.querySelector(".toggle-switch");
                         if (toggle) {
-                            if (enabled[moduleId] === true)
+                            // Toggle state comes from MMR (the live source of truth)
+                            if (mmr[moduleId] === 1) {
                                 toggle.classList.add("active");
-                            else toggle.classList.remove("active");
+                            } else {
+                                toggle.classList.remove("active");
+                            }
+                            // Disable toggle and grey out card if MMR says state 2 (disabled)
+                            if (mmr[moduleId] === 2) {
+                                toggle.classList.add("mmr-disabled");
+                                card.classList.add("module-card-disabled");
+                            } else {
+                                toggle.classList.remove("mmr-disabled");
+                                card.classList.remove("module-card-disabled");
+                            }
                         }
                     }
                 });
@@ -1355,6 +1377,7 @@
             function collectSettings() {
                 const settings = loadSettings();
                 if (!settings.enabledModules) settings.enabledModules = {};
+                const mmr = window.getMMR();
 
                 MODULES.forEach((moduleId) => {
                     const card = document.querySelector(
@@ -1362,11 +1385,22 @@
                     );
                     if (card) {
                         const toggle = card.querySelector(".toggle-switch");
-                        if (toggle)
+                        if (toggle) {
                             settings.enabledModules[moduleId] =
                                 toggle.classList.contains("active");
+                            // Sync non-disabled toggles back to MMR
+                            if (!toggle.classList.contains("mmr-disabled")) {
+                                mmr[moduleId] = toggle.classList.contains(
+                                    "active",
+                                )
+                                    ? 1
+                                    : 0;
+                            }
+                        }
                     }
                 });
+                // Persist MMR
+                window.saveMMR(mmr);
 
                 if (!settings.weather) settings.weather = {};
                 settings.weather.location =
@@ -1534,12 +1568,14 @@
             async function resetAllData() {
                 if (
                     !confirm(
-                        "⚠️ WARNING: This will permanently delete ALL of your data. Are you sure?",
+                        "\u26A0\uFE0F WARNING: This will permanently delete ALL of your data. Are you sure?",
                     )
                 )
                     return;
                 localStorage.clear();
                 sessionStorage.clear();
+                // Re-initialize the MMR from registry defaults after clearing
+                window.resetMMR();
                 try {
                     await new Promise((resolve, reject) => {
                         const req = indexedDB.deleteDatabase(DB_NAME);
@@ -1565,7 +1601,21 @@
                         if (toggle) {
                             toggle.addEventListener("click", function (e) {
                                 e.stopPropagation();
+                                if (this.classList.contains("mmr-disabled")) {
+                                    alert(
+                                        "This module is disabled in the Master Module Record. Enable it from the Dashboard Selector first.",
+                                    );
+                                    return;
+                                }
                                 this.classList.toggle("active");
+                                // Update MMR live
+                                const mmr = window.getMMR();
+                                mmr[moduleId] = this.classList.contains(
+                                    "active",
+                                )
+                                    ? 1
+                                    : 0;
+                                window.saveMMR(mmr);
                             });
                         }
                     }

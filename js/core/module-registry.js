@@ -10,7 +10,7 @@ window.HANDI_MODULES = [
     icon: "🖼️",
     desc: "Photos & memories",
     tier: "free",
-    defaultEnabled: true,
+    defaultEnabled: 1, // 0=off, 1=on, 2=disabled (admin only)
     settingsConfig: { speed: 8000, autoStart: true },
   },
   {
@@ -19,7 +19,7 @@ window.HANDI_MODULES = [
     icon: "🎵",
     desc: "Your playlists",
     tier: "free",
-    defaultEnabled: true,
+    defaultEnabled: 1,
     settingsConfig: { volume: 100, shuffle: false },
   },
   {
@@ -28,7 +28,7 @@ window.HANDI_MODULES = [
     icon: "📻",
     desc: "Internet radio stations",
     tier: "free",
-    defaultEnabled: true,
+    defaultEnabled: 1,
     settingsConfig: { defaultStation: "0", volume: 100 },
   },
   {
@@ -37,7 +37,7 @@ window.HANDI_MODULES = [
     icon: "📰",
     desc: "Top headlines",
     tier: "free",
-    defaultEnabled: true,
+    defaultEnabled: 1,
     settingsConfig: { rssUrl: "", refresh: 15, maxArticles: 4 },
   },
   {
@@ -46,7 +46,7 @@ window.HANDI_MODULES = [
     icon: "🐘",
     desc: "Mastodon feed",
     tier: "free",
-    defaultEnabled: true,
+    defaultEnabled: 1,
     settingsConfig: { instance: "https://mastodon.ie", limit: 4 },
   },
   {
@@ -55,7 +55,7 @@ window.HANDI_MODULES = [
     icon: "📅",
     desc: "Events & reminders",
     tier: "free",
-    defaultEnabled: true,
+    defaultEnabled: 1,
     settingsConfig: { url: "", notificationMinutes: 30 },
   },
   {
@@ -64,7 +64,7 @@ window.HANDI_MODULES = [
     icon: "📞",
     desc: "SIM-based phone calls",
     tier: "free",
-    defaultEnabled: true,
+    defaultEnabled: 1,
     settingsConfig: { contacts: [], autoDialDelay: 10 },
   },
   {
@@ -73,7 +73,7 @@ window.HANDI_MODULES = [
     icon: "💬",
     desc: "Matrix messaging",
     tier: "free",
-    defaultEnabled: true,
+    defaultEnabled: 1,
     settingsConfig: {
       homeserver: "https://matrix.org",
       accessToken: "",
@@ -90,7 +90,7 @@ window.HANDI_MODULES = [
     icon: "🚌",
     desc: "Live bus times",
     tier: "premium",
-    defaultEnabled: true,
+    defaultEnabled: 2,
     settingsConfig: { routeIds: "", stopIds: "" },
   },
   {
@@ -99,7 +99,7 @@ window.HANDI_MODULES = [
     icon: "📱",
     desc: "Free VoIP & international calls",
     tier: "premium",
-    defaultEnabled: false,
+    defaultEnabled: 2,
     settingsConfig: {
       baseUrl: "",
       apiKey: "",
@@ -113,7 +113,7 @@ window.HANDI_MODULES = [
     icon: "📍",
     desc: "Share your location",
     tier: "premium",
-    defaultEnabled: true,
+    defaultEnabled: 2, // disabled by admin
     settingsConfig: { contacts: [] },
   },
   {
@@ -122,7 +122,7 @@ window.HANDI_MODULES = [
     icon: "📞",
     desc: "Call any phone number",
     tier: "premium",
-    defaultEnabled: true,
+    defaultEnabled: 2,
     settingsConfig: { contacts: [] },
   },
 ];
@@ -137,7 +137,7 @@ window.HANDI_PREMIUM_MODULES = function () {
   return window.HANDI_MODULES.filter((m) => m.tier === "premium");
 };
 
-// Helper: get enabledModules defaults
+// Helper: get enabledModules defaults (returns numeric 0/1/2 from registry)
 window.HANDI_ENABLED_DEFAULTS = function () {
   const obj = {};
   for (const m of window.HANDI_MODULES) {
@@ -163,4 +163,73 @@ window.HANDI_MODULE_IDS = function () {
 // Helper: get module lookup by id
 window.HANDI_MODULE_BY_ID = function (id) {
   return window.HANDI_MODULES.find((m) => m.id === id);
+};
+
+// =============================================================================
+// Master Module Record (MMR)
+// =============================================================================
+// The MMR is the live source of truth stored in localStorage under the key
+// "handiMasterModules". Each module is tracked with a 3-state value:
+//   0 = off      -- not displayed, selectable in selector
+//   1 = on       -- displayed on the dashboard
+//   2 = disabled -- blocked, greyed out everywhere, cannot be selected (admin only)
+//
+// On first load the MMR is seeded directly from each module's defaultEnabled
+// value in the registry (already 0, 1, or 2).
+
+const MMR_KEY = "handiMasterModules";
+
+window.MMR_OFF = 0;
+window.MMR_ON = 1;
+window.MMR_DISABLED = 2;
+
+// getMMR() -- reads the live MMR, seeding from registry defaults if absent
+window.getMMR = function () {
+  try {
+    const raw = localStorage.getItem(MMR_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (parsed) {
+      // Merge any new modules from the registry that aren't in the MMR yet
+      let changed = false;
+      for (const m of window.HANDI_MODULES) {
+        if (!(m.id in parsed)) {
+          parsed[m.id] = m.defaultEnabled;
+          changed = true;
+        }
+      }
+      if (changed) {
+        localStorage.setItem(MMR_KEY, JSON.stringify(parsed));
+      }
+      return parsed;
+    }
+  } catch (e) {
+    /* fall through */
+  }
+  // First load -- seed directly from registry defaultEnabled (0/1/2)
+  const seed = {};
+  for (const m of window.HANDI_MODULES) {
+    seed[m.id] = m.defaultEnabled;
+  }
+  localStorage.setItem(MMR_KEY, JSON.stringify(seed));
+  return seed;
+};
+
+// saveMMR(obj) -- persists the full MMR to localStorage
+window.saveMMR = function (obj) {
+  try {
+    localStorage.setItem(MMR_KEY, JSON.stringify(obj));
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+// resetMMR() -- resets the MMR to registry defaults (re-reads defaultEnabled)
+window.resetMMR = function () {
+  const defaults = {};
+  for (const m of window.HANDI_MODULES) {
+    defaults[m.id] = m.defaultEnabled;
+  }
+  localStorage.setItem(MMR_KEY, JSON.stringify(defaults));
+  return defaults;
 };

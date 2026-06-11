@@ -522,7 +522,7 @@
         <script src="js/core/module-buttons.js"></script>
         <script src="js/core/footer-controls.js"></script>
 
-        <!-- ========== CLEANUP – shows/hides modules based on localStorage + registry defaults ========== -->
+        <!-- ========== CLEANUP - shows/hides modules based on Master Module Record ========== -->
         <script>
             (function () {
                 console.log("[Cleanup] Initializing...");
@@ -541,27 +541,10 @@
                             typeof window.HANDI_MODULES,
                         );
 
-                        let s = localStorage.getItem("handiSettings");
-                        let savedEnabled = s
-                            ? JSON.parse(s).enabledModules || {}
-                            : {};
-                        let registryDefaults = window.HANDI_ENABLED_DEFAULTS();
+                        // Read the live Master Module Record
+                        let mmr = window.getMMR();
 
-                        console.log(
-                            "[Cleanup] Saved:",
-                            JSON.stringify(savedEnabled),
-                        );
-                        console.log(
-                            "[Cleanup] Registry:",
-                            JSON.stringify(registryDefaults),
-                        );
-
-                        function isModuleEnabled(id) {
-                            if (savedEnabled.hasOwnProperty(id))
-                                return savedEnabled[id] === true;
-                            // Not in saved settings = user never enabled it = hidden
-                            return false;
-                        }
+                        console.log("[Cleanup] MMR:", JSON.stringify(mmr));
 
                         let allModules = window.HANDI_MODULE_IDS();
                         console.log("[Cleanup] Module IDs:", allModules);
@@ -573,8 +556,8 @@
                         for (let id of allModules) {
                             let el = document.getElementById(id);
                             if (!el) continue;
-                            let enabled = isModuleEnabled(id);
-                            if (!enabled) {
+                            // Only display modules with state 1 (on)
+                            if (mmr[id] !== 1) {
                                 el.remove();
                                 console.log("[Cleanup] Removed:", id);
                             } else {

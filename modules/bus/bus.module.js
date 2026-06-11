@@ -29,8 +29,14 @@ export default async function initBus(container) {
   // Stops for each route are separated by comma; routes map to stop groups positionally.
   // e.g. routeIds = "223,220", stopIds = "242051,242081,246671,232111"
   // means route 223 uses "242051,242081" and route 220 uses "246671,232111"
-  const routeList = savedRouteIds.split(",").map((r) => r.trim()).filter(Boolean);
-  const stopIdList = savedStopIds.split(",").map((s) => s.trim()).filter(Boolean);
+  const routeList = savedRouteIds
+    .split(",")
+    .map((r) => r.trim())
+    .filter(Boolean);
+  const stopIdList = savedStopIds
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 
   // Build tab configs: calculate how many stops per route
   const tabs = [];
@@ -39,10 +45,14 @@ export default async function initBus(container) {
     tabs.push({ route: routeList[0], stops: stopIdList.join(",") });
   } else {
     // Multiple routes — distribute stop IDs evenly across routes
-    const stopsPerRoute = Math.max(1, Math.floor(stopIdList.length / routeList.length));
+    const stopsPerRoute = Math.max(
+      1,
+      Math.floor(stopIdList.length / routeList.length),
+    );
     for (let i = 0; i < routeList.length; i++) {
       const start = i * stopsPerRoute;
-      const end = i === routeList.length - 1 ? stopIdList.length : start + stopsPerRoute;
+      const end =
+        i === routeList.length - 1 ? stopIdList.length : start + stopsPerRoute;
       const routeStops = stopIdList.slice(start, end);
       if (routeStops.length > 0) {
         tabs.push({ route: routeList[i], stops: routeStops.join(",") });
@@ -56,9 +66,13 @@ export default async function initBus(container) {
     // Build tab bar if multiple tabs
     let tabsHtml = "";
     if (tabs.length > 1) {
-      tabsHtml = '<div class="bus-tabs" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">';
+      tabsHtml =
+        '<div class="bus-tabs" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">';
       tabs.forEach((tab, i) => {
-        const active = i === currentTabIndex ? 'style="background:#0047cc;color:white;"' : 'style="background:#eaf2ff;color:#0047cc;"';
+        const active =
+          i === currentTabIndex
+            ? 'style="background:#0047cc;color:white;"'
+            : 'style="background:#eaf2ff;color:#0047cc;"';
         tabsHtml += `<button class="bus-tab-btn" data-tab-index="${i}" ${active}>Route ${tab.route}</button>`;
       });
       tabsHtml += "</div>";
@@ -154,6 +168,7 @@ export default async function initBus(container) {
                     <span class="bus-route">Route ${bus.route}</span>
                     <span class="bus-icon ${bus.realtime ? "bus-icon-live" : "bus-icon-scheduled"}">${bus.realtime ? "🚌" : "🚏"}</span>
                     <span class="bus-arrival ${bus.realtime ? "realtime-arrival" : "scheduled-arrival"}">${bus.arrival_text}</span>
+                    <div class="bus-trip-id" style="font-size:0.65rem;color:#64748b;margin-top:2px;">trip=${escapeHtml(bus.trip_id || "")} start=${escapeHtml(bus.start_time || "")} date=${escapeHtml(bus.start_date || "")} delay=${escapeHtml(String(bus.delay ?? ""))} arr=${escapeHtml(String(bus.arrival_time || ""))} src=${escapeHtml(bus.source || "")}</div>
                   </div>
                 `,
                   )
@@ -218,9 +233,13 @@ export default async function initBus(container) {
     if (tabs.length > 1 && content.querySelector(".bus-tabs")) {
       tabsHtml = content.querySelector(".bus-tabs").outerHTML;
     } else if (tabs.length > 1) {
-      tabsHtml = '<div class="bus-tabs" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">';
+      tabsHtml =
+        '<div class="bus-tabs" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">';
       tabs.forEach((tab, i) => {
-        const active = i === currentTabIndex ? 'style="background:#0047cc;color:white;"' : 'style="background:#eaf2ff;color:#0047cc;"';
+        const active =
+          i === currentTabIndex
+            ? 'style="background:#0047cc;color:white;"'
+            : 'style="background:#eaf2ff;color:#0047cc;"';
         tabsHtml += `<button class="bus-tab-btn" data-tab-index="${i}" ${active}>Route ${tab.route}</button>`;
       });
       tabsHtml += "</div>";
@@ -271,5 +290,4 @@ export default async function initBus(container) {
 
   buildStaticStructure();
   fetchBusData();
-  startAutoRefresh();
 }

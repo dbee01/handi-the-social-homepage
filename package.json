@@ -29,6 +29,7 @@
     "express": "^5.2.1",
     "infobip-rtc": "^2.7.35",
     "matrix-js-sdk": "^35.1.0",
+    "protobufjs": "^7.6.2",
     "rrule": "^2.8.1",
     "vite": "^8.0.14"
   },

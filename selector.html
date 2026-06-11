@@ -97,6 +97,18 @@
                 transition: all 0.2s;
             }
 
+            .module-disabled {
+                opacity: 0.45;
+                pointer-events: none;
+            }
+
+            .module-disabled .toggle-btn {
+                background: #e0e0e0;
+                color: #9e9e9e;
+                border: 2px solid #bdbdbd;
+                cursor: not-allowed;
+            }
+
             .premium-module {
                 background: #fffaf2;
                 border-left: 5px solid #ff9800;
@@ -454,40 +466,18 @@
         </div>
 
         <script>
-            // ========== MODULE DATABASE - USES module-registry.js ==========
-            // Only show modules that are enabled by default in the registry
-            const ALL_MODULES = window.HANDI_MODULES.filter(
-                (m) => m.defaultEnabled === true,
-            );
-            const FREE_MODULES = ALL_MODULES.filter((m) => m.tier === "free");
-            const PREMIUM_MODULES = ALL_MODULES.filter(
-                (m) => m.tier === "premium",
-            );
+            // ========== MODULE DATABASE - DRIVEN BY MASTER MODULE RECORD ==========
+            // MMR states: 0=off (selectable), 1=on (active), 2=disabled (blocked)
+            const ALL_MODULES = window.HANDI_MODULES;
+            const FREE_MODULES = window.HANDI_FREE_MODULES();
+            const PREMIUM_MODULES = window.HANDI_PREMIUM_MODULES();
 
             function getEnabled() {
-                try {
-                    let s = localStorage.getItem("handiSettings");
-                    if (!s) return {};
-                    let settings = JSON.parse(s);
-                    return settings.enabledModules || {};
-                } catch (e) {
-                    return {};
-                }
+                return window.getMMR();
             }
 
             function saveEnabled(enabled) {
-                try {
-                    let s = localStorage.getItem("handiSettings");
-                    let settings = s ? JSON.parse(s) : {};
-                    settings.enabledModules = enabled;
-                    localStorage.setItem(
-                        "handiSettings",
-                        JSON.stringify(settings),
-                    );
-                    return true;
-                } catch (e) {
-                    return false;
-                }
+                return window.saveMMR(enabled);
             }
 
             function hasConsent() {
@@ -503,23 +493,41 @@
                 if (freeContainer) {
                     freeContainer.innerHTML = "";
                     FREE_MODULES.forEach((mod) => {
-                        let isActive = enabled[mod.id] === true;
+                        let state = enabled[mod.id];
+                        let isActive = state === 1;
+                        let isDisabled = state === 2;
                         let div = document.createElement("div");
-                        div.className = "module-item";
+                        div.className =
+                            "module-item" +
+                            (isDisabled ? " module-disabled" : "");
+                        let btnLabel, btnClass;
+                        if (isActive) {
+                            btnLabel = "\u2717";
+                            btnClass = "btn-remove";
+                        } else if (isDisabled) {
+                            btnLabel = "\u2014";
+                            btnClass = "btn-add";
+                        } else {
+                            btnLabel = "\u2713";
+                            btnClass = "btn-add";
+                        }
                         div.innerHTML = `
                     <div class="module-info">
                         <h4>${mod.icon} ${mod.name}</h4>
                         <p>${mod.desc}</p>
                     </div>
-                    <button class="toggle-btn ${isActive ? "btn-remove" : "btn-add"}">${isActive ? "✗" : "✓"}</button>
+                    <button class="toggle-btn ${btnClass}" ${isDisabled ? "disabled" : ""}>${btnLabel}</button>
                 `;
                         let btn = div.querySelector("button");
-                        btn.onclick = () => {
-                            enabled[mod.id] = !isActive;
-                            saveEnabled(enabled);
-                            renderSelector();
-                            renderDashboard();
-                        };
+                        if (!isDisabled) {
+                            btn.onclick = () => {
+                                // Toggle between 1 (on) and 0 (off)
+                                enabled[mod.id] = isActive ? 0 : 1;
+                                saveEnabled(enabled);
+                                renderSelector();
+                                renderDashboard();
+                            };
+                        }
                         freeContainer.appendChild(div);
                     });
                 }
@@ -529,30 +537,48 @@
                 if (premiumContainer) {
                     premiumContainer.innerHTML = "";
                     PREMIUM_MODULES.forEach((mod) => {
-                        let isActive = enabled[mod.id] === true;
+                        let state = enabled[mod.id];
+                        let isActive = state === 1;
+                        let isDisabled = state === 2;
                         let div = document.createElement("div");
-                        div.className = "module-item premium-module";
+                        div.className =
+                            "module-item premium-module" +
+                            (isDisabled ? " module-disabled" : "");
+                        let btnLabel, btnClass;
+                        if (isActive) {
+                            btnLabel = "\u2717";
+                            btnClass = "btn-remove";
+                        } else if (isDisabled) {
+                            btnLabel = "\u2014";
+                            btnClass = "btn-add";
+                        } else {
+                            btnLabel = "\u2713";
+                            btnClass = "btn-add";
+                        }
                         div.innerHTML = `
                         <div class="module-info">
                             <span class="premium-label" style="display:inline-block;margin-bottom:4px;">PREMIUM</span>
                             <h4>${mod.icon} ${mod.name}</h4>
                             <p>${mod.desc}</p>
                         </div>
-                        <button class="toggle-btn ${isActive ? "btn-remove" : "btn-add"}">${isActive ? "✗" : "✓"}</button>
+                        <button class="toggle-btn ${btnClass}" ${isDisabled ? "disabled" : ""}>${btnLabel}</button>
                     `;
                         let btn = div.querySelector("button");
-                        btn.onclick = () => {
-                            if (mod.tier === "premium" && !consent) {
-                                alert(
-                                    "⚠️ Please accept the Privacy Policy to add or remove Premium modules.",
-                                );
-                                return;
-                            }
-                            enabled[mod.id] = !isActive;
-                            saveEnabled(enabled);
-                            renderSelector();
-                            renderDashboard();
-                        };
+                        if (!isDisabled) {
+                            btn.onclick = () => {
+                                if (mod.tier === "premium" && !consent) {
+                                    alert(
+                                        "\u26A0\uFE0F Please accept the Privacy Policy to add or remove Premium modules.",
+                                    );
+                                    return;
+                                }
+                                // Toggle between 1 (on) and 0 (off)
+                                enabled[mod.id] = isActive ? 0 : 1;
+                                saveEnabled(enabled);
+                                renderSelector();
+                                renderDashboard();
+                            };
+                        }
                         premiumContainer.appendChild(div);
                     });
                 }
@@ -561,7 +587,7 @@
             function renderDashboard() {
                 let enabled = getEnabled();
                 let activeIds = Object.keys(enabled).filter(
-                    (k) => enabled[k] === true,
+                    (k) => enabled[k] === 1,
                 );
                 let activeModules = activeIds
                     .map((id) => ALL_MODULES.find((m) => m.id === id))
@@ -588,7 +614,7 @@
                     div.setAttribute("data-index", idx);
                     div.innerHTML = `
                 <div style="display: flex; align-items: center; width: 100%;">
-                    <span class="drag-handle">⋮⋮</span>
+                    <span class="drag-handle">\u22EE\u22EE</span>
                     <div class="item-content">
                         <span class="item-icon">${mod.icon}</span>
                         <div class="item-info">
@@ -604,12 +630,13 @@
                     removeBtn.onclick = () => {
                         if (isPremium && !hasConsent()) {
                             alert(
-                                "⚠️ Please accept the Privacy Policy to remove premium modules.",
+                                "\u26A0\uFE0F Please accept the Privacy Policy to remove premium modules.",
                             );
                             return;
                         }
                         let enabled = getEnabled();
-                        delete enabled[mod.id];
+                        // Set to 0 (off) so it becomes re-selectable
+                        enabled[mod.id] = 0;
                         saveEnabled(enabled);
                         renderSelector();
                         renderDashboard();
@@ -634,14 +661,18 @@
                         if (fromIdx !== toIdx) {
                             let enabled = getEnabled();
                             let active = Object.keys(enabled).filter(
-                                (k) => enabled[k] === true,
+                                (k) => enabled[k] === 1,
                             );
                             let [moved] = active.splice(fromIdx, 1);
                             active.splice(toIdx, 0, moved);
+                            // Rebuild MMR: set reordered actives to 1, preserve all others
                             let newEnabled = {};
-                            active.forEach((id) => {
-                                newEnabled[id] = true;
-                            });
+                            for (const key of Object.keys(enabled)) {
+                                newEnabled[key] = enabled[key];
+                            }
+                            for (const id of active) {
+                                newEnabled[id] = 1;
+                            }
                             saveEnabled(newEnabled);
                             renderSelector();
                             renderDashboard();
@@ -654,28 +685,28 @@
 
             function resetModules() {
                 if (!hasConsent()) {
-                    alert("⚠️ Please accept the Privacy Policy to reset.");
+                    alert(
+                        "\u26A0\uFE0F Please accept the Privacy Policy to reset.",
+                    );
                     return;
                 }
-                saveEnabled(window.HANDI_ENABLED_DEFAULTS());
+                window.resetMMR();
                 renderSelector();
                 renderDashboard();
                 alert(
-                    '✓ Reset complete! Click "Apply to dashboard" to save changes.',
+                    '\u2713 Reset complete! Click "Apply to dashboard" to save changes.',
                 );
             }
 
             function applyChanges() {
                 if (!hasConsent()) {
-                    alert("⚠️ Please accept the Privacy Policy to apply.");
+                    alert(
+                        "\u26A0\uFE0F Please accept the Privacy Policy to apply.",
+                    );
                     return;
                 }
 
-                // Re-read enabled from localStorage (should be fully initialized now)
-                let enabled = getEnabled();
-                saveEnabled(enabled);
-
-                // Redirect to your dashboard
+                // MMR is already saved live — just redirect
                 window.location.href = "/index.html";
             }
 

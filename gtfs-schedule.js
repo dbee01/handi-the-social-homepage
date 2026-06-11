@@ -615,5 +615,6 @@ async function initGTFS() {
 module.exports = {
   initGTFS,
   getScheduledTimes,
+  findRouteByShortName,
   scheduleData, // exposed for debugging
 };
