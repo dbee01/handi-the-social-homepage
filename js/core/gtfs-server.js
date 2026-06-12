@@ -194,27 +194,16 @@ async function getUpcomingDepartures(routeId, stopId, limit = 3) {
     const lib = await ensureLib();
     const _db = getDb() || lib.openDb(config);
     if (!db) db = _db;
-    const now = new Date();
-    // GTFS data is in Irish local time (UTC+1 summer, UTC+0 winter).
-    // The server may run in UTC, so always apply the Irish offset.
-    const isDst = (function () {
-      const mar = new Date(now.getFullYear(), 2, 31);
-      const oct = new Date(now.getFullYear(), 9, 31);
-      const lastSunMar = mar.getDate() - ((mar.getDay() + 1) % 7);
-      const lastSunOct = oct.getDate() - ((oct.getDay() + 1) % 7);
-      const dstStart = new Date(now.getFullYear(), 2, lastSunMar, 1);
-      const dstEnd = new Date(now.getFullYear(), 9, lastSunOct, 1);
-      return now >= dstStart && now < dstEnd;
-    })();
-    const irishOffset = isDst ? 1 : 0;
-    const irishHours = now.getUTCHours() + irishOffset;
-    const irishMins = now.getUTCMinutes();
-    const irishSecs = now.getUTCSeconds();
-    const nowSecs = irishHours * 3600 + irishMins * 60 + irishSecs;
-    const y = now.getUTCFullYear();
-    const m = String(now.getUTCMonth() + 1).padStart(2, "0");
-    const d = String(now.getUTCDate()).padStart(2, "0");
-    // If Irish time is past midnight (after 23:00 UTC in summer), use UTC date
+    // GTFS data is in Irish local time — format the date in Europe/Dublin timezone
+    const nowStr = new Date().toLocaleString("en-IE", {
+      timeZone: "Europe/Dublin",
+    });
+    const now = new Date(nowStr);
+    const nowSecs =
+      now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
     const dateInt = parseInt(`${y}${m}${d}`, 10);
 
     // Get trip_ids for this route (optionally filtered by date via service_id)
