@@ -1,4 +1,6 @@
 // modules/bus/bus.module.js
+// Bus Tracker v2 — realtime arrivals from GTFS scheduled data.
+// Supports up to 3 routes, each with departure/destination stops, tabbed UI.
 import { loadSettings } from "../../js/core/settings.js";
 
 export default async function initBus(container) {
@@ -16,64 +18,86 @@ export default async function initBus(container) {
   container.appendChild(content);
 
   let refreshInterval = null;
-  let isServerDown = false;
-  let currentStopIndex = 0;
-  let stopsDataCache = null;
   let currentTabIndex = 0;
+  let routesData = [];
 
   const settings = loadSettings();
-  const savedRouteIds = settings.live_bus?.routeIds || "223";
-  const savedStopIds = settings.live_bus?.stopIds || "242051,242081";
 
-  // Parse route/stop pairs: routes and stops are comma-separated.
-  // Stops for each route are separated by comma; routes map to stop groups positionally.
-  // e.g. routeIds = "223,220", stopIds = "242051,242081,246671,232111"
-  // means route 223 uses "242051,242081" and route 220 uses "246671,232111"
-  const routeList = savedRouteIds
-    .split(",")
-    .map((r) => r.trim())
-    .filter(Boolean);
-  const stopIdList = savedStopIds
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-
-  // Build tab configs: calculate how many stops per route
-  const tabs = [];
-  if (routeList.length === 1) {
-    // Single route — all stop IDs belong to it
-    tabs.push({ route: routeList[0], stops: stopIdList.join(",") });
-  } else {
-    // Multiple routes — distribute stop IDs evenly across routes
-    const stopsPerRoute = Math.max(
-      1,
-      Math.floor(stopIdList.length / routeList.length),
-    );
-    for (let i = 0; i < routeList.length; i++) {
-      const start = i * stopsPerRoute;
-      const end =
-        i === routeList.length - 1 ? stopIdList.length : start + stopsPerRoute;
-      const routeStops = stopIdList.slice(start, end);
-      if (routeStops.length > 0) {
-        tabs.push({ route: routeList[i], stops: routeStops.join(",") });
-      }
+  // Parse saved route configs
+  for (let i = 1; i <= 3; i++) {
+    const routeId = settings.live_bus?.[`route${i}_id`];
+    const depStop = settings.live_bus?.[`route${i}_departure_stop`];
+    const retStop = settings.live_bus?.[`route${i}_return_stop`];
+    if (routeId && depStop) {
+      routesData.push({
+        route_id: routeId,
+        route_short: settings.live_bus?.[`route${i}_short`] || routeId,
+        departure_stop_id: depStop,
+        departure_stop_name:
+          settings.live_bus?.[`route${i}_departure_name`] || depStop,
+        return_stop_id: retStop || depStop,
+        return_stop_name:
+          settings.live_bus?.[`route${i}_return_name`] || retStop || depStop,
+      });
     }
   }
 
-  const activeTab = tabs[currentTabIndex] || tabs[0];
+  // Fallback to old format
+  if (routesData.length === 0 && settings.live_bus?.routeIds) {
+    const oldRoutes = (settings.live_bus.routeIds || "")
+      .split(",")
+      .map((r) => r.trim())
+      .filter(Boolean);
+    const oldStops = (settings.live_bus.stopIds || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (oldRoutes.length > 0 && oldStops.length >= 2) {
+      routesData.push({
+        route_id: oldRoutes[0],
+        route_short: oldRoutes[0],
+        departure_stop_id: oldStops[0],
+        departure_stop_name: oldStops[0],
+        return_stop_id: oldStops[1] || oldStops[0],
+        return_stop_name: oldStops[1] || oldStops[0],
+      });
+    }
+  }
 
-  function buildStaticStructure() {
-    // Build tab bar if multiple tabs
+  if (routesData.length === 0) {
+    content.innerHTML = `
+      <div class="module-empty">
+        <i class="fa-solid fa-bus"></i>
+        <p>No bus routes configured.</p>
+        <button class="bus-settings-btn settings-link-btn">
+          <i class="fa-solid fa-gear"></i> Configure in Settings
+        </button>
+      </div>`;
+    content
+      .querySelector(".bus-settings-btn")
+      ?.addEventListener("click", () => {
+        location.href = "settings.html?args=bus";
+      });
+    return;
+  }
+
+  function getRoute() {
+    return routesData[currentTabIndex];
+  }
+
+  function renderUI() {
+    const r = getRoute();
+
     let tabsHtml = "";
-    if (tabs.length > 1) {
+    if (routesData.length > 1) {
       tabsHtml =
         '<div class="bus-tabs" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">';
-      tabs.forEach((tab, i) => {
+      routesData.forEach((route, i) => {
         const active =
           i === currentTabIndex
             ? 'style="background:#0047cc;color:white;"'
             : 'style="background:#eaf2ff;color:#0047cc;"';
-        tabsHtml += `<button class="bus-tab-btn" data-tab-index="${i}" ${active}>Route ${tab.route}</button>`;
+        tabsHtml += `<button class="bus-tab-btn" data-tab-index="${i}" ${active}>Route ${route.route_short}</button>`;
       });
       tabsHtml += "</div>";
     }
@@ -82,24 +106,35 @@ export default async function initBus(container) {
       ${tabsHtml}
       <div class="bus-timestamp">
         <i class="fa-solid fa-sync-alt"></i> <span class="bus-time">--:--:--</span>
-        <span class="bus-footnote"></span>
+        <span class="bus-footnote">Route ${r.route_short}</span>
       </div>
-      <div class="bus-current-stop"></div>
+      <div class="bus-stops-grid" style="display:flex;flex-direction:column;gap:12px;">
+        <div class="bus-stop-col" style="flex:1;">
+          <h4 class="bus-stop-label">📍 Departure</h4>
+          <div class="bus-stop-name">${escapeHtml(r.departure_stop_name)}</div>
+          <div class="bus-departures"></div>
+        </div>
+        <!--
+        <div class="bus-stop-col" style="flex:1;">
+          <h4 class="bus-stop-label">📍 Destination</h4>
+          <div class="bus-stop-name">${escapeHtml(r.return_stop_name)}</div>
+          <div class="bus-destinations"></div>
+        </div>
+        -->
+      </div>
       <div class="bus-switch-container">
         <button class="bus-switch-btn" id="busSwitchBtn">
-          <i class="fa-solid fa-arrow-right-arrow-left"></i> Switch Direction
+          <i class="fa-solid fa-arrow-right-arrow-left"></i> Change Direction
         </button>
       </div>
     `;
 
-    // Wire up tab buttons
     content.querySelectorAll(".bus-tab-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const idx = parseInt(btn.dataset.tabIndex);
         if (idx !== currentTabIndex) {
           currentTabIndex = idx;
-          stopsDataCache = null;
-          buildStaticStructure();
+          renderUI();
           fetchBusData();
         }
       });
@@ -108,176 +143,87 @@ export default async function initBus(container) {
     const switchBtn = document.getElementById("busSwitchBtn");
     if (switchBtn) {
       switchBtn.addEventListener("click", () => {
-        if (
-          stopsDataCache &&
-          stopsDataCache.stops &&
-          stopsDataCache.stops.length >= 2
-        ) {
-          currentStopIndex = currentStopIndex === 0 ? 1 : 0;
-          renderCurrentStop();
-        }
+        // Swap departure and destination stops
+        const r = getRoute();
+        const tmpId = r.departure_stop_id;
+        const tmpName = r.departure_stop_name;
+        r.departure_stop_id = r.return_stop_id;
+        r.departure_stop_name = r.return_stop_name;
+        r.return_stop_id = tmpId;
+        r.return_stop_name = tmpName;
+        renderUI();
+        fetchBusData();
       });
     }
   }
 
-  function renderCurrentStop() {
-    if (
-      !stopsDataCache ||
-      !stopsDataCache.stops ||
-      stopsDataCache.stops.length === 0
-    ) {
-      return;
-    }
-
-    if (currentStopIndex >= stopsDataCache.stops.length) {
-      currentStopIndex = 0;
-    }
-
-    const stop = stopsDataCache.stops[currentStopIndex];
-    if (!stop) return;
-
-    const containerDiv = content.querySelector(".bus-current-stop");
-    if (!containerDiv) return;
+  function renderDepartures(depData) {
+    const depList = content.querySelector(".bus-departures");
 
     const footnoteSpan = content.querySelector(".bus-footnote");
     if (footnoteSpan) {
-      if (stop.realtime_data && stop.mixed_data) {
-        footnoteSpan.textContent = "🚌 Live & 🚏 Scheduled";
-      } else if (stop.realtime_data) {
-        footnoteSpan.textContent = "🚌 Live times";
-      } else {
-        footnoteSpan.textContent = "🚏 Scheduled times";
-      }
+      footnoteSpan.textContent = `Route ${getRoute().route_short}`;
     }
 
-    const buses =
-      stop.buses && stop.buses.length > 0 ? stop.buses.slice(0, 3) : [];
-
-    containerDiv.innerHTML = `
-      <div class="bus-stop-card">
-        <h3 class="bus-stop-title">📍 ${escapeHtml(stop.stop_name)}</h3>
-        <div class="bus-direction">→ ${escapeHtml(stop.direction)}</div>
-        <div class="bus-buses-list">
-          ${
-            buses.length === 0
-              ? '<div class="bus-no-buses">⚠️ No upcoming buses</div>'
-              : buses
-                  .map(
-                    (bus) => `
-                  <div class="bus-item">
-                    <span class="bus-route">Route ${bus.route}</span>
-                    <span class="bus-icon ${bus.realtime ? "bus-icon-live" : "bus-icon-scheduled"}">${bus.realtime ? "🚌" : "🚏"}</span>
-                    <span class="bus-arrival ${bus.realtime ? "realtime-arrival" : "scheduled-arrival"}">${bus.arrival_text}</span>
-                    <div class="bus-trip-id" style="font-size:0.65rem;color:#64748b;margin-top:2px;">trip=${escapeHtml(bus.trip_id || "")} start=${escapeHtml(bus.start_time || "")} date=${escapeHtml(bus.start_date || "")} delay=${escapeHtml(String(bus.delay ?? ""))} arr=${escapeHtml(String(bus.arrival_time || ""))} src=${escapeHtml(bus.source || "")}</div>
-                  </div>
-                `,
-                  )
-                  .join("")
-          }
-        </div>
-      </div>
-    `;
-  }
-
-  function renderBusData(data) {
-    if (!data.stops || data.stops.length === 0) {
-      content.innerHTML =
-        '<div class="bus-no-data">No bus data available</div>';
-      if (window.refreshDashboardLayout) window.refreshDashboardLayout();
-      return;
+    if (!depList) return;
+    // Inject live-icon pulse animation if not already present
+    if (!document.getElementById("bus-live-style")) {
+      const style = document.createElement("style");
+      style.id = "bus-live-style";
+      style.textContent = `
+        .bus-icon-live {
+          display:inline-block;
+          animation: busPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes busPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.15); }
+        }
+      `;
+      document.head.appendChild(style);
     }
 
-    stopsDataCache = data;
-
-    if (currentStopIndex >= data.stops.length) {
-      currentStopIndex = 0;
-    }
-
-    const timeSpan = content.querySelector(".bus-time");
-    if (timeSpan)
-      timeSpan.textContent = new Date(data.last_updated).toLocaleTimeString();
-
-    renderCurrentStop();
-
-    if (window.refreshDashboardLayout) window.refreshDashboardLayout();
+    depList.innerHTML =
+      depData.length === 0
+        ? '<div class="bus-no-buses" style="color:#64748b;font-size:0.85rem;">No upcoming</div>'
+        : depData
+            .map(
+              (d) => `
+            <div class="bus-item" style="padding:4px 0;font-size:0.9rem;">
+              <span class="bus-icon bus-icon-scheduled" style="font-size:1.12rem;color:#f59e0b;font-weight:600;">🚏 Scheduled</span>
+              <span class="bus-arrival scheduled-arrival">
+              ${d.minutes_away} min <small style="color:#64748b;">(${d.arrival_time})</small>
+            </span>
+          </div>
+        `,
+            )
+            .join("");
   }
 
   async function fetchBusData() {
-    if (isServerDown) return;
     const timeSpan = content.querySelector(".bus-time");
     if (timeSpan) timeSpan.textContent = "Loading...";
-    const tab = tabs[currentTabIndex] || tabs[0];
-    if (!tab) return;
+
+    const route = getRoute();
+    if (!route) return;
+
     try {
-      const url = `/api/bus-realtime?route=${encodeURIComponent(tab.route)}&stops=${encodeURIComponent(tab.stops)}&refresh=true`;
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = await response.json();
-      if (!data.stops) throw new Error("Invalid response");
-      isServerDown = false;
-      renderBusData(data);
-      if (!refreshInterval) startAutoRefresh();
+      // Fetch departure stop times
+      const depUrl = `/api/bus/v2/departures?route_id=${encodeURIComponent(route.route_id)}&stop_id=${encodeURIComponent(route.departure_stop_id)}&limit=3`;
+      const depRes = await fetch(depUrl);
+      const depData = depRes.ok ? await depRes.json() : { departures: [] };
+
+      if (timeSpan) timeSpan.textContent = new Date().toLocaleTimeString();
+      renderDepartures(depData.departures || []);
+
+      if (!refreshInterval) {
+        refreshInterval = setInterval(fetchBusData, 60000);
+      }
+      if (window.refreshDashboardLayout) window.refreshDashboardLayout();
     } catch (err) {
       console.error("Bus fetch error:", err);
-      showErrorMessage(err.message);
-      isServerDown = true;
-      if (refreshInterval) {
-        clearInterval(refreshInterval);
-        refreshInterval = null;
-      }
+      if (timeSpan) timeSpan.textContent = "Error";
     }
-  }
-
-  function showErrorMessage(errorMsg) {
-    let tabsHtml = "";
-    if (tabs.length > 1 && content.querySelector(".bus-tabs")) {
-      tabsHtml = content.querySelector(".bus-tabs").outerHTML;
-    } else if (tabs.length > 1) {
-      tabsHtml =
-        '<div class="bus-tabs" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">';
-      tabs.forEach((tab, i) => {
-        const active =
-          i === currentTabIndex
-            ? 'style="background:#0047cc;color:white;"'
-            : 'style="background:#eaf2ff;color:#0047cc;"';
-        tabsHtml += `<button class="bus-tab-btn" data-tab-index="${i}" ${active}>Route ${tab.route}</button>`;
-      });
-      tabsHtml += "</div>";
-    }
-    content.innerHTML = `
-      ${tabsHtml}
-      <div class="bus-offline">
-        <i class="fa-solid fa-exclamation-triangle"></i> Bus data error
-        <div class="bus-offline-desc">${escapeHtml(errorMsg)}</div>
-        <button class="bus-retry-btn">Retry</button>
-      </div>
-    `;
-
-    content.querySelectorAll(".bus-tab-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const idx = parseInt(btn.dataset.tabIndex);
-        if (idx !== currentTabIndex) {
-          currentTabIndex = idx;
-          stopsDataCache = null;
-          isServerDown = false;
-          buildStaticStructure();
-          fetchBusData();
-        }
-      });
-    });
-
-    const retryBtn = content.querySelector(".bus-retry-btn");
-    if (retryBtn)
-      retryBtn.addEventListener("click", () => {
-        isServerDown = false;
-        fetchBusData();
-      });
-    if (window.refreshDashboardLayout) window.refreshDashboardLayout();
-  }
-
-  function startAutoRefresh() {
-    if (refreshInterval) clearInterval(refreshInterval);
-    refreshInterval = setInterval(fetchBusData, 60000);
   }
 
   function escapeHtml(str) {
@@ -288,6 +234,6 @@ export default async function initBus(container) {
     );
   }
 
-  buildStaticStructure();
+  renderUI();
   fetchBusData();
 }

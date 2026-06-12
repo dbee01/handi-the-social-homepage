@@ -136,7 +136,28 @@
   const docsBtn = document.getElementById("footerDocsBtn");
   if (docsBtn) {
     docsBtn.addEventListener("click", () => {
-      window.open("/docs.html", "_blank");
+      // Call the caregiver: first click-to-call contact
+      try {
+        const settings = JSON.parse(
+          localStorage.getItem("handiSettings") || "{}",
+        );
+        const contacts = settings.click_to_call?.contacts || [];
+        if (contacts.length > 0 && contacts[0].number) {
+          const number = contacts[0].number;
+          if (typeof window.makeAudioCall === "function") {
+            window.makeAudioCall(number);
+          } else {
+            // Fallback: open tel: link
+            window.location.href = `tel:${number}`;
+          }
+        } else {
+          alert(
+            "No caregiver contact found. Add a contact in Settings \u2192 Click to Call.",
+          );
+        }
+      } catch (e) {
+        console.warn("Caregiver call failed:", e);
+      }
     });
   }
 

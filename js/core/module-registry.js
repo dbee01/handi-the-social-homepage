@@ -90,7 +90,7 @@ window.HANDI_MODULES = [
     icon: "🚌",
     desc: "Live bus times",
     tier: "premium",
-    defaultEnabled: 2,
+    defaultEnabled: 1,
     settingsConfig: { routeIds: "", stopIds: "" },
   },
   {
@@ -113,7 +113,7 @@ window.HANDI_MODULES = [
     icon: "📍",
     desc: "Share your location",
     tier: "premium",
-    defaultEnabled: 2, // disabled by admin
+    defaultEnabled: 1, // disabled by admin
     settingsConfig: { contacts: [] },
   },
   {

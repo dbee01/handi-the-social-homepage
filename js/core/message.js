@@ -195,8 +195,9 @@
   const messages = [
     '💰 Do you have money issues? Contact the government agency <a href="https://mabs.ie/">MABS for assistance.</a>',
     '👬 We all could do with a friend sometime; talk to <a href="https://www.alone.ie/">ALONE</a> if you feel like reaching out.',
-    "🔒 Incognito Mode is NOT <i>incognito</i>! Surf the Web securely with the <a href='https://www.tkqlhce.com/click-101722909-13792632'>reputable Proton VPN</a> <sup>(sponsored)</sup>",
-    '❤️ We love Proton - the safe, European email provider. Learn why you should too: <a href="https://www.jdoqocy.com/click-101722909-13792584">visit Proton</a> <sup>(sponsored)</sup>',
+    "🔒 Surf the Web securely with the reputable <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a> service. <sup>(affiliate)</sup>",
+    '🆘 Add your medical information to your mobile phone immediately: Click Settings -> Search: "Medical"',
+    "🚑 To send an urgent alert (with your location) to the emergency services. Simply, press the power button 5 times or more on your Android or iOS phone",
     "📻 Turn off all audio channels by pressing the speaker icon (left of page footer at bottom of your screen).",
   ];
 

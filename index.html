@@ -280,6 +280,9 @@
             </main>
         </div>
 
+        <!-- =========================================================
+             FOOTER BAR — paste this inside <body> before closing </body>
+             ========================================================= -->
         <footer>
             <div class="footer-bar">
                 <button id="footerMuteBtn" class="footer-icon">
@@ -292,10 +295,10 @@
                     <i class="fa-solid fa-chevron-down"></i>
                 </button>
                 <button id="footerDocsBtn" class="footer-icon">
-                    <i class="fa-solid fa-question"></i>
+                    <i class="fa-solid fa-user-nurse"></i>
                 </button>
                 <button id="footerWakeLockBtn" class="footer-icon">
-                    <i class="fa-solid fa-bed"></i>
+                    <i class="fa-solid fa-sun"></i>
                 </button>
                 <button id="footerSettingsBtn" class="footer-icon">
                     <i class="fa-solid fa-gear"></i>
@@ -519,6 +522,40 @@
             };
         </script>
 
+        <!-- ========== SUBSCRIPTION CHECK ========== -->
+        <script>
+            (async function () {
+                const host = window.location.hostname;
+                // Localhost always gets premium
+                if (
+                    host === "localhost" ||
+                    host === "127.0.0.1" ||
+                    host.startsWith("192.168.")
+                ) {
+                    window.PREMIUM_ACTIVE = true;
+                    return;
+                }
+                const subId = localStorage.getItem("stripe_subscription_id");
+                if (!subId) {
+                    window.PREMIUM_ACTIVE = false;
+                    return;
+                }
+                try {
+                    const resp = await fetch(
+                        `/api/subscription/status?subscription_id=${encodeURIComponent(subId)}`,
+                    );
+                    const data = await resp.json();
+                    window.PREMIUM_ACTIVE = data.premium === true;
+                    if (data.expiry) {
+                        localStorage.setItem("premium_expiry", data.expiry);
+                    }
+                } catch (e) {
+                    console.warn("Subscription check failed:", e);
+                    window.PREMIUM_ACTIVE = false;
+                }
+            })();
+        </script>
+
         <script src="js/core/module-buttons.js"></script>
         <script src="js/core/footer-controls.js"></script>
 
@@ -543,6 +580,24 @@
 
                         // Read the live Master Module Record
                         let mmr = window.getMMR();
+
+                        // If subscription inactive, disable all premium modules in MMR
+                        if (window.PREMIUM_ACTIVE === false) {
+                            let changed = false;
+                            const premiumIds = window
+                                .HANDI_PREMIUM_MODULES()
+                                .map((m) => m.id);
+                            for (const id of premiumIds) {
+                                if (mmr[id] !== 2) {
+                                    mmr[id] = 2;
+                                    changed = true;
+                                }
+                            }
+                            if (changed) window.saveMMR(mmr);
+                            console.log(
+                                "[Cleanup] Premium disabled — subscription inactive",
+                            );
+                        }
 
                         console.log("[Cleanup] MMR:", JSON.stringify(mmr));
 

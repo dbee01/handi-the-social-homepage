@@ -1,0 +1,38 @@
+{
+  "agencies": [
+    {
+      "path": "https://www.transportforireland.ie/transitData/Data/GTFS_Realtime.zip",
+      "exclude": [
+        "shapes",
+        "areas",
+        "attributions",
+        "booking_rules",
+        "fare_attributes",
+        "fare_leg_rules",
+        "fare_media",
+        "fare_products",
+        "fare_rules",
+        "fare_transfer_rules",
+        "feed_info",
+        "frequencies",
+        "levels",
+        "location_group_stops",
+        "location_groups",
+        "locations",
+        "networks",
+        "pathways",
+        "rider_categories",
+        "route_networks",
+        "translations",
+        "calendar_attributes",
+        "directions"
+      ]
+    }
+  ],
+  "downloadTimeout": 120000,
+  "gtfsRealtimeExpirationSeconds": false,
+  "ignoreDuplicates": false,
+  "ignoreErrors": true,
+  "sqlitePath": "/tmp/gtfs.sqlite",
+  "verbose": true
+}

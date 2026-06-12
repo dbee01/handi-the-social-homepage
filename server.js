@@ -6,8 +6,8 @@ const path = require("path");
 const fs = require("fs");
 const https = require("https");
 
-const gtfs = require("./gtfs-schedule.js");
 const gtfsrt = require("./proto/gtfs-rt.js");
+const gtfsServer = require("./js/core/gtfs-server.js");
 
 // Simple .env loader (avoids dotenv compatibility issues)
 try {
@@ -737,8 +737,96 @@ app.get("/api/news", async (req, res) => {
 // -----------------------------------------------------------------------------
 // HEALTH CHECK
 // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// BUS API v2 (node-gtfs library)
+// -----------------------------------------------------------------------------
+
+// Get all available routes
+app.get("/api/bus/v2/routes", async (req, res) => {
+  try {
+    const routes = await gtfsServer.getAllRoutes();
+    res.json({ routes });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Get all stops for a specific route
+app.get("/api/bus/v2/stops", async (req, res) => {
+  const routeId = req.query.route_id;
+  if (!routeId) return res.status(400).json({ error: "route_id required" });
+  try {
+    const stops = await gtfsServer.getRouteStops(routeId);
+    res.json({ stops });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Get upcoming departures for a stop on a route
+app.get("/api/bus/v2/departures", async (req, res) => {
+  const { route_id, stop_id, limit } = req.query;
+  if (!route_id || !stop_id) {
+    return res.status(400).json({ error: "route_id and stop_id required" });
+  }
+  try {
+    const departures = await gtfsServer.getUpcomingDepartures(
+      route_id,
+      stop_id,
+      parseInt(limit) || 3,
+    );
+    res.json({ departures });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+// -----------------------------------------------------------------------------
+// SUBSCRIPTION STATUS (Stripe)
+// -----------------------------------------------------------------------------
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
+
+app.get("/api/subscription/status", async (req, res) => {
+  // Dev mode — always premium
+  const host = req.get("host") || "";
+  if (host.includes("localhost") || host.includes("127.0.0.1")) {
+    return res.json({ premium: true, expiry: null, dev: true });
+  }
+
+  const subId = req.query.subscription_id;
+  if (!subId) return res.json({ premium: false });
+
+  if (!STRIPE_SECRET_KEY) {
+    console.warn("STRIPE_SECRET_KEY not set — returning premium=false");
+    return res.json({ premium: false });
+  }
+
+  try {
+    const resp = await axios.get(
+      `https://api.stripe.com/v1/subscriptions/${encodeURIComponent(subId)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${STRIPE_SECRET_KEY}`,
+        },
+      },
+    );
+    const status = resp.data.status;
+    res.json({
+      premium: status === "active" || status === "trialing",
+      expiry: new Date(resp.data.current_period_end * 1000).toISOString(),
+      status: status,
+    });
+  } catch (e) {
+    console.error(
+      "Stripe subscription check failed:",
+      e.response?.data || e.message,
+    );
+    res.json({ premium: false });
+  }
 });
 
 // -----------------------------------------------------------------------------
@@ -748,21 +836,23 @@ const server = app.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ Server running on port ${PORT}`);
   console.log(`🌐 API base: http://page.handihomepage.com:${PORT}/`);
   console.log(`🚌 Bus API: /api/bus-realtime?route={routeId}&stops={stopIds}`);
+  console.log(`🚌 Bus API v2: /api/bus/v2/*`);
   console.log(`📰 News API: /api/news?url=...`);
   console.log(`❤️ Health: /health`);
 
-  // Load GTFS static timetable data for fallback scheduled times
-  // Don't await — let the server start serving immediately
-  gtfs
-    .initGTFS()
+  // Import GTFS static data (node-gtfs)
+  console.log(`📦 Importing GTFS static data...`);
+  gtfsServer
+    .doImport()
     .then(() => {
-      console.log(`
-🚌 GTFS data loaded — scheduled fallback times now available`);
+      console.log(`🚌 GTFS static data ready`);
     })
     .catch((err) => {
-      console.error(`
-⚠️ GTFS failed to load: ${err.message}`);
+      console.error(`⚠️ GTFS import failed: ${err.message}`);
     });
+
+  // Load GTFS static timetable data for fallback scheduled times (legacy - disabled in favour of gtfs-server)
+  // gtfs.initGTFS().then(...).catch(...)
 });
 
 process.on("SIGTERM", () => {
