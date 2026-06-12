@@ -8,6 +8,18 @@
         />
         <title>Dashboard Modules - HandiHomepage</title>
         <script src="/js/core/module-registry.js"></script>
+        <script>
+            // Premium module check for selector
+            (function () {
+                var host = window.location.hostname;
+                window.PREMIUM_ACTIVE =
+                    host === "localhost" ||
+                    host === "127.0.0.1" ||
+                    host.startsWith("192.168.") ||
+                    host.startsWith("staging.") ||
+                    host.startsWith("senior.");
+            })();
+        </script>
         <style>
             * {
                 margin: 0;
@@ -474,7 +486,19 @@
             const PREMIUM_MODULES = window.HANDI_PREMIUM_MODULES();
 
             function getEnabled() {
-                return window.getMMR();
+                let mmr = window.getMMR();
+                // On premium-enabled hosts, auto-activate premium modules that are off (0)
+                if (window.PREMIUM_ACTIVE !== false) {
+                    let changed = false;
+                    PREMIUM_MODULES.forEach((m) => {
+                        if (mmr[m.id] === 0) {
+                            mmr[m.id] = 1;
+                            changed = true;
+                        }
+                    });
+                    if (changed) window.saveMMR(mmr);
+                }
+                return mmr;
             }
 
             function saveEnabled(enabled) {

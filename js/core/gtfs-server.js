@@ -195,6 +195,7 @@ async function getUpcomingDepartures(routeId, stopId, limit = 3) {
     const _db = getDb() || lib.openDb(config);
     if (!db) db = _db;
     const now = new Date();
+    // GTFS stop_times are in Irish local time — use getHours, not getUTCHours
     const nowSecs =
       now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
     const y = now.getFullYear();

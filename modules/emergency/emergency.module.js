@@ -112,7 +112,7 @@ export default async function initEmergency(container) {
       btn.innerHTML = `
                 <i class="fa-solid fa-location-dot" style="font-size: 2rem;"></i>
                 <span>SHARE</span>
-                <span style="font-size: 0.7rem;">Send my location</span>
+                <span style="font-size: 0.7rem;">Send</span>
             `;
       btn.onmouseenter = () => {
         btn.style.transform = "scale(1.05)";
@@ -263,7 +263,7 @@ export default async function initEmergency(container) {
     emergencyBtn.innerHTML = `
             <i class="fa-solid fa-location-dot" style="font-size: 2rem;"></i>
             <span>LOCATION SHARE</span>
-            <span style="font-size: 0.7rem;">Send my location</span>
+            <span style="font-size: 0.7rem;">Send location</span>
         `;
     content.appendChild(emergencyBtn);
 

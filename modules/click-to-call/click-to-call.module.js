@@ -816,6 +816,11 @@ export default function initClickToCall(container) {
     isVideoEnabled = true;
     updateMuteButtonUI();
     updateVideoButtonUI();
+
+    // Notify Phone module that call ended
+    try {
+      window.dispatchEvent(new Event("handiCallEnded"));
+    } catch (e) {}
   }
 
   // ── Video room ──────────────────────────────────────────────────────────
