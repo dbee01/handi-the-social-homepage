@@ -295,7 +295,7 @@ header {
 
 /* Gallery module container - height reflects content, no image jumps */
 .dashboard-item[data-module="gallery"] {
-    min-height: unset !important;
+    min-height: 200px !important;
     height: auto !important;
     display: flex !important;
     flex-direction: column !important;
@@ -336,6 +336,12 @@ header {
     border-radius: 12px !important;
     display: block !important;
     margin: 0 auto !important;
+}
+
+@media (max-width: 600px) {
+    .gallery-slide-img {
+        height: 180px !important;
+    }
 }
 
 /* Caption */

@@ -127,6 +127,7 @@ export default async function initEmergency(container) {
 
   async function sendSMS(phoneNumber, shortlink) {
     const settings = loadSettings();
+    // Read Infobip config from phone settings (was webrtc)
     const webrtc = settings.webrtc || {};
     const baseUrl = webrtc.baseUrl || "";
     const apiKey = webrtc.apiKey || "";
@@ -152,14 +153,14 @@ export default async function initEmergency(container) {
 
     // Strip + prefix from phone numbers (Infobip expects E.164 without +)
     const cleanNumber = phoneNumber.replace(/^\+/, "");
-    console.log("[Emergency] Sending SMS via Infobip", {
+    console.log("[Emergency] Sending SMS via Infobip v3", {
       to: cleanNumber,
       from,
       messageLength: message.length,
     });
 
     try {
-      const response = await fetch(`https://${baseUrl}/sms/2/text/advanced`, {
+      const response = await fetch(`https://${baseUrl}/sms/3/messages`, {
         method: "POST",
         headers: {
           Authorization: apiKey,
@@ -169,9 +170,9 @@ export default async function initEmergency(container) {
         body: JSON.stringify({
           messages: [
             {
+              sender: from,
               destinations: [{ to: cleanNumber }],
-              from: from,
-              text: message,
+              content: { text: message },
             },
           ],
         }),
@@ -180,10 +181,24 @@ export default async function initEmergency(container) {
       if (!response.ok) {
         let detail = `HTTP ${response.status}`;
         try {
-          const errBody = await response.text();
-          detail += ` — ${errBody}`;
-          console.error("[Emergency] Infobip error body:", errBody);
-        } catch (_) {}
+          const errBody = await response.json();
+          if (errBody.violations) {
+            const msgs = errBody.violations
+              .map((v) => `${v.property}: ${v.violation}`)
+              .join("; ");
+            detail += ` — ${errBody.description || ""}: ${msgs}`;
+          } else if (errBody.description) {
+            detail += ` — ${errBody.description}`;
+          } else {
+            detail += ` — ${JSON.stringify(errBody)}`;
+          }
+          console.error("[Emergency] Infobip error:", errBody);
+        } catch (_) {
+          try {
+            const txt = await response.text();
+            detail += ` — ${txt}`;
+          } catch (__) {}
+        }
         throw new Error(detail);
       }
       const data = await response.json();
@@ -198,7 +213,12 @@ export default async function initEmergency(container) {
   // Re-render whenever settings change (listens for same-tab storage events)
   function render() {
     const settings = loadSettings();
-    const contacts = settings.emergency_alert?.contacts || [];
+    // Read contacts from emergency_alert, fall back to phone contacts with share_location
+    let contacts = settings.emergency_alert?.contacts || [];
+    if (contacts.length === 0) {
+      const phoneContacts = settings.phone?.contacts || [];
+      contacts = phoneContacts.filter((c) => c.share_location);
+    }
 
     if (contacts.length === 0) {
       content.innerHTML = `

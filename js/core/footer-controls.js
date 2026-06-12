@@ -136,23 +136,22 @@
   const docsBtn = document.getElementById("footerDocsBtn");
   if (docsBtn) {
     docsBtn.addEventListener("click", () => {
-      // Call the caregiver: first click-to-call contact
+      // Call the caregiver: first contact marked as caregiver in Phone module
       try {
         const settings = JSON.parse(
           localStorage.getItem("handiSettings") || "{}",
         );
-        const contacts = settings.click_to_call?.contacts || [];
-        if (contacts.length > 0 && contacts[0].number) {
-          const number = contacts[0].number;
+        const contacts = settings.phone?.contacts || [];
+        const caregiver = contacts.find((c) => c.caregiver) || contacts[0];
+        if (caregiver && caregiver.number) {
           if (typeof window.makeAudioCall === "function") {
-            window.makeAudioCall(number);
+            window.makeAudioCall(caregiver.number);
           } else {
-            // Fallback: open tel: link
-            window.location.href = `tel:${number}`;
+            window.location.href = `tel:${caregiver.number}`;
           }
         } else {
           alert(
-            "No caregiver contact found. Add a contact in Settings \u2192 Click to Call.",
+            "No caregiver contact found. Add a contact in Settings \u2192 Phone.",
           );
         }
       } catch (e) {

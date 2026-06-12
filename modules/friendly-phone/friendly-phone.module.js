@@ -4,141 +4,129 @@
  * See the LICENSE file in the repository root for full details.
  */
 // modules/friendly-phone/friendly-phone.module.js
-import { loadSettings } from '../../js/core/settings.js';
+// Unified Phone module — SIM, Video, and Click-to-Call in one element.
+import { loadSettings } from "../../js/core/settings.js";
 
 export default async function initPhone(container) {
-    // ---------- Create header row: title + lock + pin ----------
-    const headerRow = document.createElement('div');
-    headerRow.className = 'phone-header-row';
+  // ── Header ────────────────────────────────────────────────────────────
+  const pinBtn = container.querySelector(".pin-btn");
+  container.innerHTML = "";
+  if (pinBtn) container.prepend(pinBtn);
 
-    // Title (left)
-    const title = document.createElement('div');
-    title.className = 'panel-title';
-    title.innerHTML = '<i class="fa-solid fa-phone"></i> PHONE';
-    headerRow.appendChild(title);
+  const title = document.createElement("div");
+  title.className = "panel-title";
+  title.innerHTML = '<i class="fa-solid fa-phone"></i> PHONE';
+  container.appendChild(title);
 
-    // Right side container for lock + pin
-    const headerActions = document.createElement('div');
-    headerActions.className = 'phone-header-actions';
+  const content = document.createElement("div");
+  content.className = "phone-content";
+  container.appendChild(content);
 
-    // Lock toggle button
-    const lockToggle = document.createElement('button');
-    lockToggle.className = 'phone-lock-toggle';
+  const parentItem = container.closest(".dashboard-item");
+  if (parentItem) parentItem.dataset.module = "phone";
 
-    // Load saved lock state – default to LOCKED (true)
-    const saved = localStorage.getItem('phoneLocked');
-    let isLocked = saved !== null ? saved === 'true' : true;
+  const settings = loadSettings();
+  const contacts = settings.phone?.contacts || [];
 
-    function updateLockIcon() {
-        lockToggle.innerHTML = isLocked
-            ? '<i class="fa-solid fa-lock"></i>'
-            : '<i class="fa-solid fa-lock-open"></i>';
-        lockToggle.style.color = isLocked ? '#cc0000' : '#008000';
-    }
-    updateLockIcon();
-
-    lockToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        isLocked = !isLocked;
-        localStorage.setItem('phoneLocked', isLocked);
-        updateLockIcon();
-        applyLockState();
-    });
-
-    headerActions.appendChild(lockToggle);
-
-    // Pin button handling (clone to avoid absolute positioning issues)
-    const originalPinBtn = container.querySelector('.pin-btn');
-    let pinBtn = null;
-    if (originalPinBtn) {
-        pinBtn = originalPinBtn.cloneNode(true);
-        pinBtn.classList.add('pin-btn-clone');
-        originalPinBtn.style.display = 'none';
-        headerActions.appendChild(pinBtn);
-    }
-
-    headerRow.appendChild(headerActions);
-
-    // Clear container and add header row
-    container.innerHTML = '';
-    container.appendChild(headerRow);
-
-    // ----- Phone content area (will be disabled when locked) -----
-    const content = document.createElement('div');
-    content.className = 'phone-content';
-    container.appendChild(content);
-
-    const parentItem = container.closest('.dashboard-item');
-    if (parentItem) parentItem.dataset.module = 'phone';
-
-    const settings = loadSettings();
-    const contacts = settings.phone?.contacts || [];
-
-    // Empty state with Settings button (like Chat module)
-    if (!contacts.length) {
-        content.innerHTML = `
+  // ── Empty state ───────────────────────────────────────────────────────
+  if (!contacts.length) {
+    content.innerHTML = `
             <div class="module-empty">
                 <i class="fa-solid fa-address-book"></i>
-                <p>No phone contacts saved.</p>
-                <button id="phoneSettingsBtn" class="settings-link-btn">
+                <p>No contacts saved.</p>
+                <button class="settings-link-btn" id="phoneSettingsBtn">
                     <i class="fa-solid fa-gear"></i> Add Contacts in Settings
                 </button>
             </div>
         `;
-        const settingsBtn = content.querySelector('#phoneSettingsBtn');
-        if (settingsBtn) {
-            settingsBtn.onclick = () => {
-                window.location.href = 'settings.html?args=phone';
-            };
-        }
-        return;
-    }
+    content.querySelector("#phoneSettingsBtn").onclick = () => {
+      window.location.href = "settings.html?args=phone";
+    };
+    return;
+  }
 
-    // Contacts exist - display them
-    content.innerHTML = `
+  // ── Helper: make WebRTC audio call (reuses click-to-call logic if loaded) ──
+  async function doWebRTCCall(number, btn) {
+    if (typeof window.makeAudioCall === "function") {
+      window.makeAudioCall(number);
+    } else {
+      // Fallback: try loading click-to-call module dynamically
+      try {
+        const mod = await import("../click-to-call/click-to-call.module.js");
+        mod.default(container);
+        setTimeout(() => {
+          if (typeof window.makeAudioCall === "function") {
+            window.makeAudioCall(number);
+          } else {
+            window.location.href = "tel:" + number;
+          }
+        }, 500);
+      } catch (e) {
+        window.location.href = "tel:" + number;
+      }
+    }
+  }
+
+  // ── Render contacts ───────────────────────────────────────────────────
+  function escapeHtml(str) {
+    if (!str) return "";
+    return str.replace(
+      /[&<>]/g,
+      (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m],
+    );
+  }
+
+  content.innerHTML = `
         <div class="phone-list">
-            ${contacts.map(c => `
+            ${contacts
+              .map(
+                (c) => `
                 <div class="phone-card">
-                    ${c.photo 
+                    ${
+                      c.photo
                         ? `<img class="phone-avatar" src="${c.photo}" alt="">`
                         : `<div class="phone-avatar placeholder"><i class="fa-solid fa-user"></i></div>`
                     }
-                    <div class="phone-name">${escapeHtml(c.name)}</div>
-                    <a class="phone-call" href="tel:${c.number}">
-                        <i class="fa-solid fa-phone"></i>
-                    </a>
+                    <div class="phone-name">
+                        ${escapeHtml(c.name)}
+                        ${c.caregiver ? '<span style="font-size:0.6rem;background:#f59e0b;color:white;padding:1px 5px;border-radius:6px;margin-left:4px;">Caregiver</span>' : ""}
+                    </div>
+                    <div class="phone-actions">
+                        <a class="phone-call sim-call" href="tel:${c.number}" title="SIM Call">
+                            <i class="fa-solid fa-phone"></i>
+                        </a>
+                        <button class="phone-call video-call" data-number="${escapeHtml(c.number)}" title="Video Call">
+                            <i class="fa-solid fa-video"></i>
+                        </button>
+                        <button class="phone-call webrtc-call" data-number="${escapeHtml(c.number)}" title="Free Call">
+                            <i class="fa-solid fa-headset"></i>
+                        </button>
+                    </div>
                 </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
         </div>
     `;
 
-    function applyLockState() {
-        const allCallLinks = content.querySelectorAll('.phone-call');
-        if (isLocked) {
-            allCallLinks.forEach(link => {
-                link.classList.add('locked');
-                link.addEventListener('click', preventCall);
-            });
-        } else {
-            allCallLinks.forEach(link => {
-                link.classList.remove('locked');
-                link.removeEventListener('click', preventCall);
-            });
-        }
-    }
+  // ── Wire up buttons ───────────────────────────────────────────────────
+  content.querySelectorAll(".webrtc-call").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      doWebRTCCall(btn.dataset.number, btn);
+    });
+  });
 
-    function preventCall(e) {
-        e.preventDefault();
-    }
-
-    applyLockState();
-
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;'
-        }[m]));
-    }
+  content.querySelectorAll(".video-call").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (typeof window.makeVideoCall === "function") {
+        window.makeVideoCall(btn.dataset.number);
+      } else if (typeof window.makeAudioCall === "function") {
+        window.makeAudioCall(btn.dataset.number);
+      } else {
+        window.location.href = "tel:" + btn.dataset.number;
+      }
+    });
+  });
 }

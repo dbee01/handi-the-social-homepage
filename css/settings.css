@@ -13,7 +13,7 @@
 body {
     background: #f5f7fa;
     color: #1f2937;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: "Segoe UI", sans-serif;
     padding: 20px;
 }
 
@@ -70,7 +70,7 @@ h1 {
 }
 
 .save-btn:hover {
-    background-color: #ff8c00;      /* bright orange – highly visible */
+    background-color: #ff8c00; /* bright orange – highly visible */
     color: #1e1e1e;
     transform: scale(1.02);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -174,8 +174,8 @@ h1 {
 }
 
 .config-field p {
-    font-size: medium; 
-    color:#64748b;
+    font-size: medium;
+    color: #64748b;
 }
 
 .config-field input,
@@ -220,10 +220,11 @@ h1 {
 
 .contact-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 12px;
     padding: 12px 14px;
     border-bottom: 1px solid #e5e7eb;
+    overflow: hidden;
 }
 
 .contact-item:last-child {
@@ -375,7 +376,9 @@ h1 {
     color: #cc0000;
 }
 
-.weather-loading, .weather-fallback, .weather-location {
+.weather-loading,
+.weather-fallback,
+.weather-location {
     min-height: 60px;
 }
 

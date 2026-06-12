@@ -545,12 +545,12 @@
                 </div>
             </div>
 
-            <!-- SIM Phone Module -->
+            <!-- Phone Module (unified: SIM + Video + Click-to-Call) -->
             <div class="module-card" data-module="phone">
                 <div class="module-header">
                     <div class="module-title">
                         <i class="fa-solid fa-phone"></i>
-                        <h3>SIM Phone</h3>
+                        <h3>Phone</h3>
                     </div>
                     <div class="toggle-switch">
                         <div class="toggle-slider"></div>
@@ -558,7 +558,7 @@
                 </div>
                 <div class="module-config">
                     <div class="config-field">
-                        <label>Phone Contacts</label>
+                        <label>Contacts</label>
                         <div id="phoneContactsList" class="contact-list"></div>
                     </div>
                     <div
@@ -573,42 +573,56 @@
                         <input
                             type="text"
                             id="phoneName"
-                            placeholder="Contact Name"
-                            style="flex: 2"
+                            placeholder="Name"
+                            style="
+                                flex: 1;
+                                min-width: 140px;
+                                font-size: 1.2rem;
+                                padding: 14px 16px;
+                            "
                         />
                         <input
                             type="tel"
                             id="phoneNumber"
-                            placeholder="Phone Number"
-                            style="flex: 2"
+                            placeholder="Phone"
+                            style="
+                                flex: 1;
+                                min-width: 140px;
+                                font-size: 1.2rem;
+                                padding: 14px 16px;
+                            "
                         />
                         <input
                             type="file"
                             id="phonePhoto"
                             accept="image/png,image/jpeg,image/webp"
-                            style="flex: 1"
+                            style="display: none"
                         />
+                        <button
+                            id="phonePhotoBtn"
+                            class="upload-btn"
+                            style="
+                                background: #64748b;
+                                margin: 0;
+                                font-size: 1.1rem;
+                                padding: 14px 20px;
+                            "
+                            type="button"
+                        >
+                            📷
+                        </button>
                         <button
                             id="addPhoneInline"
                             class="upload-btn"
-                            style="margin: 0"
+                            style="
+                                margin: 0;
+                                font-size: 1.1rem;
+                                padding: 14px 28px;
+                            "
+                            type="button"
                         >
-                            + Add Contact
+                            + Add
                         </button>
-                    </div>
-                    <div class="config-field">
-                        <label>Auto-dial warning (seconds):</label>
-                        <input
-                            type="number"
-                            id="autoDialDelay"
-                            min="5"
-                            max="30"
-                            value="10"
-                        />
-                        <small
-                            >⚠️ Warning: Calls will be placed immediately when
-                            unlocked. Keep locked unless making a call.</small
-                        >
                     </div>
                 </div>
             </div>
@@ -697,65 +711,7 @@
                 </p>
             </div>
 
-            <!-- Premium 1: Free & Unlimited Calls (Infobip) -->
-
-            <div class="module-card" data-module="webrtc">
-                <div class="module-header">
-                    <div class="module-title">
-                        <i class="fa-solid fa-phone-volume"></i>
-                        <h3>Free & Unlimited Calls</h3>
-                        <span
-                            style="
-                                font-size: 0.7rem;
-                                background: #f59e0b;
-                                padding: 2px 8px;
-                                border-radius: 12px;
-                                margin-left: 8px;
-                            "
-                            >Premium</span
-                        >
-                    </div>
-                    <div class="toggle-switch">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-                <div class="module-config">
-                    <div class="config-field">
-                        <label>Infobip Base URL:</label>
-                        <input
-                            type="url"
-                            id="infobipBaseUrl"
-                            placeholder="https://your-account.api.infobip.com"
-                        />
-                    </div>
-                    <div class="config-field">
-                        <label>API Key:</label>
-                        <input
-                            type="password"
-                            id="infobipApiKey"
-                            placeholder="Your API Key"
-                        />
-                    </div>
-                    <div class="config-field">
-                        <label>Application ID:</label>
-                        <input
-                            type="text"
-                            id="infobipAppId"
-                            placeholder="Your Application ID"
-                        />
-                    </div>
-                    <div class="config-field">
-                        <label>Caller ID:</label>
-                        <input
-                            type="tel"
-                            id="infobipCallerId"
-                            placeholder="+1234567890"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Premium 2: Live Bus Tracker -->
+            <!-- Premium 1: Live Bus Tracker -->
 
             <div class="module-card" data-module="live_bus">
                 <div class="module-header">
@@ -936,7 +892,7 @@
                 </div>
             </div>
 
-            <!-- Premium 3: Location Share -->
+            <!-- Premium 2: Location Share (contacts come from Phone module above) -->
 
             <div class="module-card" data-module="emergency_alert">
                 <div class="module-header">
@@ -959,109 +915,10 @@
                     </div>
                 </div>
                 <div class="module-config">
-                    <div class="config-field">
-                        <label>Trusted Contacts</label>
-                        <div
-                            id="emergencyContactsList"
-                            class="contact-list"
-                        ></div>
-                    </div>
-                    <div
-                        style="
-                            display: flex;
-                            gap: 8px;
-                            margin-top: 8px;
-                            margin-bottom: 16px;
-                            flex-wrap: wrap;
-                        "
+                    <small style="color: #64748b"
+                        >Location sharing is configured per contact in the Phone
+                        module above.</small
                     >
-                        <input
-                            type="text"
-                            id="emergencyName"
-                            placeholder="Name"
-                            style="flex: 1"
-                        />
-                        <input
-                            type="tel"
-                            id="emergencyPhone"
-                            placeholder="Phone"
-                            style="flex: 1"
-                        />
-                        <button id="addEmergencyInline" class="add-contact-btn">
-                            + Add
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Premium 4: Click to Call -->
-
-            <div class="module-card" data-module="click_to_call">
-                <div class="module-header">
-                    <div class="module-title">
-                        <i class="fa-solid fa-phone"></i>
-                        <h3>Click to Call</h3>
-                        <span
-                            style="
-                                font-size: 0.7rem;
-                                background: #f59e0b;
-                                padding: 2px 8px;
-                                border-radius: 12px;
-                                margin-left: 8px;
-                            "
-                            >Premium</span
-                        >
-                    </div>
-                    <div class="toggle-switch">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-                <div class="module-config">
-                    <div class="config-field">
-                        <label>Video Call Contacts</label>
-                        <div
-                            id="clickToCallContactsList"
-                            class="contact-list"
-                        ></div>
-                    </div>
-                    <div
-                        style="
-                            display: flex;
-                            gap: 8px;
-                            margin-top: 8px;
-                            margin-bottom: 16px;
-                            flex-wrap: wrap;
-                        "
-                    >
-                        <input
-                            type="text"
-                            id="ctcName"
-                            placeholder="Name (e.g. Granny)"
-                            style="flex: 1"
-                        />
-                        <input
-                            type="tel"
-                            id="ctcPhone"
-                            placeholder="Phone"
-                            style="flex: 1"
-                        />
-                        <input
-                            type="file"
-                            id="ctcPhoto"
-                            accept="image/*"
-                            style="display: none"
-                        />
-                        <button
-                            id="ctcAddPhotoBtn"
-                            class="add-contact-btn"
-                            style="background: #64748b"
-                        >
-                            📷
-                        </button>
-                        <button id="addCtcInline" class="add-contact-btn">
-                            + Add
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1216,20 +1073,50 @@
                 container.innerHTML = phoneContacts
                     .map(
                         (c, i) => `
-            <div class="contact-item">
-                <div class="contact-photo">
-                    ${c.photo ? `<img src="${c.photo}" alt="">` : '<i class="fa-solid fa-user"></i>'}
+                <div class="contact-item" style="padding:18px 24px;font-size:1.15rem;display:flex;align-items:center;gap:16px;width:100%;overflow:hidden;box-sizing:border-box;">
+                    <div class="contact-photo" style="width:80px;height:80px;font-size:2.2rem;flex-shrink:0;border-radius:50%;overflow:hidden;">
+                        ${c.photo ? `<img src="${c.photo}" alt="" style="width:100%;height:100%;object-fit:cover;">` : '<i class="fa-solid fa-user" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;"></i>'}
+                    </div>
+                    <div class="contact-info" style="flex:1;min-width:0;">
+                        <strong style="font-size:1.3rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(c.name)}</strong>
+                        <small style="font-size:1.05rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(c.number)}</small>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;align-items:flex-start;">
+                        <label style="font-size:1.1rem;white-space:nowrap;cursor:pointer;">
+                            Caregiver <input type="radio" name="caregiver" class="caregiver-radio" data-index="${i}" ${c.caregiver ? "checked" : ""} style="transform:scale(2);" />
+                        </label>
+                        <label style="font-size:1.1rem;white-space:nowrap;cursor:pointer;">
+                            📍 Share <input type="checkbox" class="shareloc-check" data-index="${i}" ${c.share_location ? "checked" : ""} style="transform:scale(2);" />
+                        </label>
+                    </div>
+                    <button class="delete-contact" data-index="${i}" style="font-size:1.5rem;flex-shrink:0;margin-left:100px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;">✖</button>
                 </div>
-                <div class="contact-info">
-                    <strong>${escapeHtml(c.name)}</strong><br>
-                    <small>${escapeHtml(c.number)}</small>
-                </div>
-                <button class="delete-contact" data-index="${i}">✖ Delete</button>
-            </div>
-        `,
+            `,
                     )
                     .join("");
 
+                // Wire up caregiver radios (only one at a time)
+                document
+                    .querySelectorAll(".caregiver-radio")
+                    .forEach((radio) => {
+                        radio.addEventListener("change", () => {
+                            const idx = parseInt(radio.dataset.index);
+                            phoneContacts.forEach((c, i) => {
+                                c.caregiver = i === idx;
+                            });
+                            renderPhoneContacts();
+                        });
+                    });
+
+                // Wire up share location checkboxes
+                document.querySelectorAll(".shareloc-check").forEach((cb) => {
+                    cb.addEventListener("change", () => {
+                        const idx = parseInt(cb.dataset.index);
+                        phoneContacts[idx].share_location = cb.checked;
+                    });
+                });
+
+                // Wire up delete buttons
                 document.querySelectorAll(".delete-contact").forEach((btn) => {
                     btn.addEventListener("click", (e) => {
                         const idx = parseInt(btn.dataset.index);
@@ -1244,6 +1131,10 @@
                 const numberInput = document.getElementById("phoneNumber");
                 const photoFile =
                     document.getElementById("phonePhoto")?.files[0];
+                const caregiverCheck =
+                    document.getElementById("phoneCaregiver");
+                const shareLocCheck =
+                    document.getElementById("phoneShareLocation");
 
                 const name = nameInput?.value.trim();
                 const number = numberInput?.value.trim();
@@ -1252,6 +1143,14 @@
                     alert("Please enter both name and phone number");
                     return;
                 }
+
+                const contact = {
+                    name,
+                    number,
+                    photo: null,
+                    caregiver: phoneContacts.length === 0,
+                    share_location: false,
+                };
 
                 if (photoFile) {
                     const MAX_SIZE = 7 * 1024 * 1024; // 7 MB
@@ -1263,11 +1162,8 @@
                     }
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        phoneContacts.push({
-                            name,
-                            number,
-                            photo: e.target.result,
-                        });
+                        contact.photo = e.target.result;
+                        phoneContacts.push(contact);
                         renderPhoneContacts();
                         nameInput.value = "";
                         numberInput.value = "";
@@ -1275,7 +1171,7 @@
                     };
                     reader.readAsDataURL(photoFile);
                 } else {
-                    phoneContacts.push({ name, number, photo: null });
+                    phoneContacts.push(contact);
                     renderPhoneContacts();
                     nameInput.value = "";
                     numberInput.value = "";
@@ -1300,17 +1196,17 @@
                 container.innerHTML = emergencyContacts
                     .map(
                         (c, i) => `
-            <div class="contact-item">
-                <div class="contact-photo">
-                    ${c.photo ? `<img src="${c.photo}" alt="">` : '<i class="fa-solid fa-user"></i>'}
+                <div class="contact-item">
+                    <div class="contact-photo">
+                        ${c.photo ? `<img src="${c.photo}" alt="">` : '<i class="fa-solid fa-user"></i>'}
+                    </div>
+                    <div class="contact-info">
+                        <strong>${escapeHtml(c.name)}</strong><br>
+                        <small>${escapeHtml(c.number)}</small>
+                    </div>
+                    <button class="delete-emergency-contact" data-index="${i}">✖ Delete</button>
                 </div>
-                <div class="contact-info">
-                    <strong>${escapeHtml(c.name)}</strong><br>
-                    <small>${escapeHtml(c.number)}</small>
-                </div>
-                <button class="delete-emergency-contact" data-index="${i}">✖ Delete</button>
-            </div>
-        `,
+            `,
                     )
                     .join("");
 
@@ -1359,17 +1255,17 @@
                 container.innerHTML = clickToCallContacts
                     .map(
                         (c, i) => `
-            <div class="contact-item">
-                <div class="contact-photo">
-                    ${c.photo ? `<img src="${c.photo}" alt="">` : '<i class="fa-solid fa-user"></i>'}
+                <div class="contact-item">
+                    <div class="contact-photo">
+                        ${c.photo ? `<img src="${c.photo}" alt="">` : '<i class="fa-solid fa-user"></i>'}
+                    </div>
+                    <div class="contact-info">
+                        <strong>${escapeHtml(c.name)}</strong><br>
+                        <small>${escapeHtml(c.number)}</small>
+                    </div>
+                    <button class="delete-ctc-contact" data-index="${i}">✖ Delete</button>
                 </div>
-                <div class="contact-info">
-                    <strong>${escapeHtml(c.name)}</strong><br>
-                    <small>${escapeHtml(c.number)}</small>
-                </div>
-                <button class="delete-ctc-contact" data-index="${i}">✖ Delete</button>
-            </div>
-        `,
+            `,
                     )
                     .join("");
 
@@ -2092,6 +1988,11 @@
             document
                 .getElementById("addPhoneInline")
                 ?.addEventListener("click", addPhoneContact);
+            document
+                .getElementById("phonePhotoBtn")
+                ?.addEventListener("click", () =>
+                    document.getElementById("phonePhoto")?.click(),
+                );
             document
                 .getElementById("addEmergencyInline")
                 ?.addEventListener("click", addEmergencyContact);

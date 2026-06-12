@@ -59,15 +59,6 @@ window.HANDI_MODULES = [
     settingsConfig: { url: "", notificationMinutes: 30 },
   },
   {
-    id: "phone",
-    name: "SIM Phone",
-    icon: "📞",
-    desc: "SIM-based phone calls",
-    tier: "free",
-    defaultEnabled: 1,
-    settingsConfig: { contacts: [], autoDialDelay: 10 },
-  },
-  {
     id: "chat",
     name: "Chat",
     icon: "💬",
@@ -85,6 +76,15 @@ window.HANDI_MODULES = [
 
   // ─── Premium modules ───────────────────────────────────────────────────
   {
+    id: "phone",
+    name: "Phone",
+    icon: "📞",
+    desc: "SIM, video & browser calls",
+    tier: "premium",
+    defaultEnabled: 1,
+    settingsConfig: { contacts: [] },
+  },
+  {
     id: "live_bus",
     name: "Bus Tracker",
     icon: "🚌",
@@ -94,33 +94,10 @@ window.HANDI_MODULES = [
     settingsConfig: { routeIds: "", stopIds: "" },
   },
   {
-    id: "webrtc",
-    name: "Free Calls",
-    icon: "📱",
-    desc: "Free VoIP & international calls",
-    tier: "premium",
-    defaultEnabled: 2,
-    settingsConfig: {
-      baseUrl: "",
-      apiKey: "",
-      appId: "",
-      callerId: "",
-    },
-  },
-  {
     id: "emergency_alert",
     name: "Location Share",
     icon: "📍",
     desc: "Share your location",
-    tier: "premium",
-    defaultEnabled: 1, // disabled by admin
-    settingsConfig: { contacts: [] },
-  },
-  {
-    id: "click_to_call",
-    name: "Click to Call",
-    icon: "📞",
-    desc: "Call any phone number",
     tier: "premium",
     defaultEnabled: 1,
     settingsConfig: { contacts: [] },
