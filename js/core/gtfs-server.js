@@ -7,6 +7,9 @@ const fs = require("fs");
 const https = require("https");
 const AdmZip = require("adm-zip");
 
+const REALTIME_URL = "https://api.nationaltransport.ie/gtfsr/v2/TripUpdates";
+const API_KEY = process.env.BUS_API_KEY || "";
+
 let gtfsLib = null;
 let db = null;
 
@@ -106,6 +109,17 @@ async function prepareGtfsSource() {
 // Import GTFS static data
 async function doImport() {
   try {
+    const hostname = require("os").hostname();
+    // Skip import on localhost (dev) if DB already exists
+    if (
+      fs.existsSync(config.sqlitePath) &&
+      (hostname === "localhost" ||
+        hostname.startsWith("daz-") ||
+        hostname.includes("pav"))
+    ) {
+      console.log("[GTFS] Dev mode — using existing database, skipping import");
+      return;
+    }
     await prepareGtfsSource();
     const lib = await ensureLib();
     await lib.importGtfs(config);
@@ -224,8 +238,8 @@ async function getUpcomingDepartures(routeId, stopId, limit = 3) {
       )
       .slice(0, limit);
 
-    // Enrich with headsign from trips
-    return upcoming.map((st) => {
+    // Enrich with headsign from trips, then overlay realtime if available
+    const departures = upcoming.map((st) => {
       const trip = lib.getTrips({ trip_id: st.trip_id })[0];
       return {
         trip_id: st.trip_id,
@@ -236,10 +250,175 @@ async function getUpcomingDepartures(routeId, stopId, limit = 3) {
           Math.floor((st.arrival_timestamp - nowSecs) / 60),
         ),
         headsign: trip?.trip_headsign || "",
+        live: false,
+        delay_seconds: 0,
       };
     });
+
+    // Overlay realtime delays using manual fetch (node-gtfs fetch doesn't support custom TLS)
+    if (API_KEY && departures.length > 0) {
+      try {
+        // Fetch realtime TripUpdates directly with TLS disabled
+        const result = await new Promise((resolve, reject) => {
+          https
+            .get(
+              REALTIME_URL,
+              {
+                headers: { "x-api-key": API_KEY, "Cache-Control": "no-cache" },
+                rejectUnauthorized: false,
+              },
+              (res) => {
+                const chunks = [];
+                res.on("data", (c) => chunks.push(c));
+                res.on("end", () => resolve(Buffer.concat(chunks)));
+                res.on("error", reject);
+              },
+            )
+            .on("error", reject);
+        });
+
+        // Parse protobuf directly
+        const gtfsrt = require("../../proto/gtfs-rt.js");
+        await gtfsrt.initProto();
+        const data = gtfsrt.decodeFeedMessage(result);
+
+        if (data && data.entity) {
+          const tripIdsSet = new Set(departures.map((d) => d.trip_id));
+          for (const entity of data.entity) {
+            if (!entity.tripUpdate) continue;
+            const tu = entity.tripUpdate;
+            const tripId = tu.trip?.tripId || tu.trip?.trip_id;
+            if (!tripId || !tripIdsSet.has(tripId)) continue;
+            const updates = tu.stopTimeUpdate || [];
+            for (const update of updates) {
+              const uStopId = update.stopId || update.stop_id;
+              if (uStopId !== stopId) continue;
+              const delay =
+                (update.arrival?.delay || update.departure?.delay) ?? 0;
+              if (!delay) continue;
+              const dep = departures.find((d) => d.trip_id === tripId);
+              if (!dep) continue;
+              const scheduledSt = stoptimes.find(
+                (st) => st.trip_id === dep.trip_id,
+              );
+              const scheduledSecs = scheduledSt?.arrival_timestamp || 0;
+              const realtimeSecs = scheduledSecs + delay;
+              dep.delay_seconds = delay;
+              dep.live = true;
+              dep.arrival_time = secsToTime(realtimeSecs);
+              dep.minutes_away = Math.max(
+                0,
+                Math.floor((realtimeSecs - nowSecs) / 60),
+              );
+              break;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn(
+          "[GTFS] Realtime overlay failed, using scheduled:",
+          e.message,
+        );
+      }
+    }
+
+    return departures;
   } catch (e) {
     console.error("[GTFS] getUpcomingDepartures error:", e.message);
+    return [];
+  }
+}
+
+// Get all stop IDs from GTFS for suffix mapping
+async function getAllStopIds() {
+  try {
+    const lib = await ensureLib();
+    const _db = getDb() || lib.openDb(config);
+    if (!db) db = _db;
+    const stops = lib.getStops();
+    return stops.map((s) => s.stop_id);
+  } catch (e) {
+    console.error("[GTFS] getAllStopIds error:", e.message);
+    return [];
+  }
+}
+
+// Get stop info (name, lat, lon) from GTFS static data
+async function getStopInfo(stopId) {
+  try {
+    const lib = await ensureLib();
+    const _db = getDb() || lib.openDb(config);
+    if (!db) db = _db;
+    const stops = lib.getStops({ stop_id: stopId });
+    if (stops.length === 0) return null;
+    const s = stops[0];
+    return {
+      name: s.stop_name || s.stop_id,
+      lat: s.stop_lat || null,
+      lon: s.stop_lon || null,
+    };
+  } catch (e) {
+    console.error("[GTFS] getStopInfo error:", e.message);
+    return null;
+  }
+}
+
+// Get scheduled departures in realtime-compatible format
+async function getScheduledDepartures(routeId, stopId, limit = 4) {
+  try {
+    const lib = await ensureLib();
+    const _db = getDb() || lib.openDb(config);
+    if (!db) db = _db;
+
+    const nowStr = new Date().toLocaleString("en-IE", {
+      timeZone: "Europe/Dublin",
+    });
+    const now = new Date(nowStr);
+    const nowSecs =
+      now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    const dateInt = parseInt(`${y}${m}${d}`, 10);
+
+    const tripIds = lib.getTrips({ route_id: routeId }).map((t) => t.trip_id);
+    if (tripIds.length === 0) return [];
+
+    const stoptimes = lib.getStoptimes(
+      { stop_id: stopId, date: dateInt },
+      [],
+      [["arrival_timestamp", "ASC"]],
+    );
+
+    return stoptimes
+      .filter(
+        (st) => tripIds.includes(st.trip_id) && st.arrival_timestamp >= nowSecs,
+      )
+      .slice(0, limit)
+      .map((st) => {
+        const trip = lib.getTrips({ trip_id: st.trip_id })[0];
+        const mins = Math.max(
+          0,
+          Math.floor((st.arrival_timestamp - nowSecs) / 60),
+        );
+        return {
+          route: routeId,
+          minutes_away: mins,
+          arrival_text:
+            mins <= 1 ? "Due" : `${mins} min${mins !== 1 ? "s" : ""}`,
+          delay: null,
+          source: "schedule",
+          realtime: false,
+          headsign: trip?.trip_headsign || "",
+          vehicle_id: null,
+          trip_id: st.trip_id,
+          start_time: null,
+          start_date: null,
+          arrival_time: null,
+        };
+      });
+  } catch (e) {
+    console.error("[GTFS] getScheduledDepartures error:", e.message);
     return [];
   }
 }
@@ -249,4 +428,7 @@ module.exports = {
   getAllRoutes,
   getRouteStops,
   getUpcomingDepartures,
+  getAllStopIds,
+  getStopInfo,
+  getScheduledDepartures,
 };

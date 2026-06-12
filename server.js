@@ -85,10 +85,9 @@ const stopInfo = {
 // GENERIC SCHEDULE (GTFS FALLBACK)
 // -----------------------------------------------------------------------------
 // Returns scheduled times from the GTFS Bus Éireann timetable
-function getGenericSchedule(routeId, stopId, direction) {
+async function getGenericSchedule(routeId, stopId, direction) {
   // The GTFS data uses the same long-form stop IDs as the NTA real-time API
-  // If we have Bus Éireann GTFS data loaded, try to look up the route
-  return gtfs.getScheduledTimes(routeId, stopId);
+  return gtfsServer.getScheduledDepartures(routeId, stopId);
 }
 
 // -----------------------------------------------------------------------------
@@ -268,14 +267,18 @@ app.get("/api/bus-realtime", async (req, res) => {
   }
 
   // Resolve stop IDs to long form using GTFS + manual mapping
-  function resolveStopIds(requestedIds) {
+  async function resolveStopIds(requestedIds) {
     const result = {};
     const suffixToLong = {};
-    if (gtfs.scheduleData && gtfs.scheduleData.stops) {
-      for (const longId of gtfs.scheduleData.stops.keys()) {
+    // Build suffix-to-longId map from all GTFS stops
+    try {
+      const allStops = await gtfsServer.getAllStopIds();
+      for (const longId of allStops) {
         const suffix = longId.replace(/^\D+/, "");
         if (suffix && suffix.length >= 4) suffixToLong[suffix] = longId;
       }
+    } catch (_) {
+      /* GTFS not available, skip suffix map */
     }
     for (const stopId of requestedIds) {
       const info = stopInfo[stopId];
@@ -285,11 +288,15 @@ app.get("/api/bus-realtime", async (req, res) => {
         if (suffixToLong[suffix]) lookupId = suffixToLong[suffix];
       }
       let stopName = info?.name || null;
-      if (!stopName && gtfs.scheduleData && gtfs.scheduleData.stops) {
-        const gtfsStop =
-          gtfs.scheduleData.stops.get(lookupId) ||
-          gtfs.scheduleData.stops.get(stopId);
-        if (gtfsStop) stopName = gtfsStop.name;
+      if (!stopName) {
+        try {
+          const gtfsStop =
+            (await gtfsServer.getStopInfo(lookupId)) ||
+            (await gtfsServer.getStopInfo(stopId));
+          if (gtfsStop) stopName = gtfsStop.name;
+        } catch (_) {
+          /* ignore */
+        }
       }
       result[lookupId] = {
         stop_name: stopName || lookupId,
@@ -300,7 +307,7 @@ app.get("/api/bus-realtime", async (req, res) => {
     return result;
   }
 
-  const stops = resolveStopIds(requestedStopIds);
+  const stops = await resolveStopIds(requestedStopIds);
   const resolvedStopIds = Object.keys(stops);
 
   // Helper: parse a trip_id value, stripping leading zeros etc.
@@ -498,13 +505,23 @@ app.get("/api/bus-realtime", async (req, res) => {
 
           // If no trip update for this stop, try GPS position estimate
           if (!bestData && vehiclePos) {
-            const stopGtfs = gtfs.scheduleData?.stops?.get(sid);
-            if (stopGtfs && stopGtfs.lat && stopGtfs.lon) {
+            let stopLat = null,
+              stopLon = null;
+            try {
+              const info = await gtfsServer.getStopInfo(sid);
+              if (info && info.lat) {
+                stopLat = parseFloat(info.lat);
+                stopLon = parseFloat(info.lon);
+              }
+            } catch (_) {
+              /* ignore */
+            }
+            if (stopLat && stopLon) {
               const distKm = haversineKm(
                 vehiclePos.lat,
                 vehiclePos.lon,
-                parseFloat(stopGtfs.lat),
-                parseFloat(stopGtfs.lon),
+                stopLat,
+                stopLon,
               );
               if (distKm < 15 && distKm >= 0) {
                 const gpsMin = Math.max(1, Math.round(distKm / 0.4));
@@ -578,7 +595,7 @@ app.get("/api/bus-realtime", async (req, res) => {
 
       // If no real-time data, fall back to scheduled GTFS
       if (buses.length === 0) {
-        buses = getGenericSchedule(routeId, sid, stopData.direction);
+        buses = await getGenericSchedule(routeId, sid, stopData.direction);
       }
 
       results.push({
@@ -613,7 +630,7 @@ app.get("/api/bus-realtime", async (req, res) => {
     }
     const results = [];
     for (const [sid, stopData] of Object.entries(stops)) {
-      const buses = getGenericSchedule(routeId, sid, stopData.direction);
+      const buses = await getGenericSchedule(routeId, sid, stopData.direction);
       results.push({
         stop_name: stopData.stop_name,
         direction: stopData.direction,

@@ -1,5 +1,5 @@
 // modules/bus/bus.module.js
-// Bus Tracker v2 — realtime arrivals from GTFS scheduled data.
+// Bus Tracker v2 — realtime arrivals from GTFS-RT TripUpdates + Vehicles.
 // Supports up to 3 routes, each with departure/destination stops, tabbed UI.
 import { loadSettings } from "../../js/core/settings.js";
 
@@ -114,13 +114,6 @@ export default async function initBus(container) {
           <div class="bus-stop-name">${escapeHtml(r.departure_stop_name)}</div>
           <div class="bus-departures"></div>
         </div>
-        <!--
-        <div class="bus-stop-col" style="flex:1;">
-          <h4 class="bus-stop-label">📍 Destination</h4>
-          <div class="bus-stop-name">${escapeHtml(r.return_stop_name)}</div>
-          <div class="bus-destinations"></div>
-        </div>
-        -->
       </div>
       <div class="bus-switch-container">
         <button class="bus-switch-btn" id="busSwitchBtn">
@@ -166,38 +159,137 @@ export default async function initBus(container) {
     }
 
     if (!depList) return;
-    // Inject live-icon pulse animation if not already present
+
+    // Inject live-icon styles if not already present
     if (!document.getElementById("bus-live-style")) {
       const style = document.createElement("style");
       style.id = "bus-live-style";
       style.textContent = `
+        .bus-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 4px 0;
+          font-size: 0.9rem;
+        }
+        .bus-item-icon {
+          display: inline-block;
+          font-size: 1.12rem;
+          font-weight: 600;
+          transition: color 0.4s ease, transform 0.4s ease, opacity 0.4s ease;
+        }
         .bus-icon-live {
-          display:inline-block;
+          color: #16a34a;
           animation: busPulse 1.5s ease-in-out infinite;
         }
         @keyframes busPulse {
           0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(1.15); }
+          50% { opacity: 0.6; transform: scale(1.2); }
+        }
+        .bus-icon-scheduled {
+          color: #f59e0b;
+        }
+        .bus-icon-fallback {
+          color: #94a3b8;
+        }
+        .bus-arrival {
+          flex: 1;
+        }
+        .bus-delay-badge {
+          display: inline-block;
+          padding: 1px 6px;
+          border-radius: 4px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          margin-left: 4px;
+        }
+        .bus-delay-late {
+          background: #fef2f2;
+          color: #dc2626;
+        }
+        .bus-delay-early {
+          background: #f0fdf4;
+          color: #16a34a;
+        }
+        .bus-delay-ontime {
+          background: #f0f9ff;
+          color: #0284c7;
+        }
+        .bus-source-gps {
+          font-size: 0.7rem;
+          color: #94a3b8;
+          margin-left: 4px;
+        }
+        .bus-no-buses {
+          color: #64748b;
+          font-size: 0.85rem;
+        }
+        .bus-vehicle {
+          font-size: 0.7rem;
+          color: #64748b;
+          display: block;
         }
       `;
       document.head.appendChild(style);
     }
 
-    depList.innerHTML =
-      depData.length === 0
-        ? '<div class="bus-no-buses" style="color:#64748b;font-size:0.85rem;">No upcoming</div>'
-        : depData
-            .map(
-              (d) => `
-            <div class="bus-item" style="padding:4px 0;font-size:0.9rem;">
-              <span class="bus-icon bus-icon-scheduled" style="font-size:1.12rem;color:#f59e0b;font-weight:600;">🚏 Scheduled</span>
-              <span class="bus-arrival scheduled-arrival">
-              ${d.minutes_away} min <small style="color:#64748b;">(${d.arrival_time})</small>
+    if (depData.length === 0) {
+      depList.innerHTML = '<div class="bus-no-buses">No upcoming</div>';
+      return;
+    }
+
+    depList.innerHTML = depData
+      .map((d) => {
+        const isLive = d.realtime === true;
+        const isGps = d.source === "gps";
+        const iconClass = isLive ? "bus-icon-live" : "bus-icon-scheduled";
+        const iconLabel = isLive
+          ? isGps
+            ? "📡 GPS"
+            : "🟢 Live"
+          : "🚏 Scheduled";
+
+        const arrivalText =
+          d.arrival_text ||
+          (d.minutes_away <= 1
+            ? "Due"
+            : `${d.minutes_away} min${d.minutes_away !== 1 ? "s" : ""}`);
+
+        // Delay badge
+        let delayHtml = "";
+        if (d.delay != null && d.delay !== 0) {
+          const delayMins = Math.round(Math.abs(d.delay) / 60);
+          const sign = d.delay > 0 ? "+" : "-";
+          const badgeClass =
+            d.delay > 60
+              ? "bus-delay-late"
+              : d.delay < -60
+                ? "bus-delay-early"
+                : "bus-delay-ontime";
+          delayHtml = `<span class="bus-delay-badge ${badgeClass}">${sign}${delayMins}m</span>`;
+        }
+
+        // Vehicle ID
+        const vehicleHtml = d.vehicle_id
+          ? `<span class="bus-vehicle">🚌 ${escapeHtml(d.vehicle_id)}</span>`
+          : "";
+
+        // GPS source note
+        const gpsNote = isGps
+          ? '<span class="bus-source-gps">(estimated)</span>'
+          : "";
+
+        return `
+          <div class="bus-item">
+            <span class="bus-item-icon ${iconClass}">${iconLabel}</span>
+            <span class="bus-arrival">
+              ${arrivalText}${delayHtml}${gpsNote}
+              ${vehicleHtml}
             </span>
           </div>
-        `,
-            )
-            .join("");
+        `;
+      })
+      .join("");
   }
 
   async function fetchBusData() {
@@ -208,13 +300,26 @@ export default async function initBus(container) {
     if (!route) return;
 
     try {
-      // Fetch departure stop times
-      const depUrl = `/api/bus/v2/departures?route_id=${encodeURIComponent(route.route_id)}&stop_id=${encodeURIComponent(route.departure_stop_id)}&limit=3`;
-      const depRes = await fetch(depUrl);
-      const depData = depRes.ok ? await depRes.json() : { departures: [] };
+      // 1. Try realtime API first
+      const rtUrl = `/api/bus-realtime?route=${encodeURIComponent(route.route_short)}&stops=${encodeURIComponent(route.departure_stop_id)}`;
+      const rtRes = await fetch(rtUrl);
+      const rtData = rtRes.ok ? await rtRes.json() : null;
 
-      if (timeSpan) timeSpan.textContent = new Date().toLocaleTimeString();
-      renderDepartures(depData.departures || []);
+      if (rtData && rtData.stops && rtData.stops.length > 0) {
+        const stopData = rtData.stops[0];
+        const buses = stopData.buses || [];
+
+        if (buses.length > 0) {
+          if (timeSpan) timeSpan.textContent = new Date().toLocaleTimeString();
+          renderDepartures(buses);
+        } else {
+          // Real-time returned but no buses — try scheduled fallback
+          await fetchScheduledFallback(route, timeSpan);
+        }
+      } else {
+        // Real-time failed or empty — fall back to scheduled
+        await fetchScheduledFallback(route, timeSpan);
+      }
 
       if (!refreshInterval) {
         refreshInterval = setInterval(fetchBusData, 60000);
@@ -222,6 +327,35 @@ export default async function initBus(container) {
       if (window.refreshDashboardLayout) window.refreshDashboardLayout();
     } catch (err) {
       console.error("Bus fetch error:", err);
+      // Try scheduled fallback on error
+      await fetchScheduledFallback(route, timeSpan);
+    }
+  }
+
+  async function fetchScheduledFallback(route, timeSpan) {
+    try {
+      const depUrl = `/api/bus/v2/departures?route_id=${encodeURIComponent(route.route_id)}&stop_id=${encodeURIComponent(route.departure_stop_id)}&limit=3`;
+      const depRes = await fetch(depUrl);
+      const depData = depRes.ok ? await depRes.json() : { departures: [] };
+
+      if (timeSpan) timeSpan.textContent = new Date().toLocaleTimeString();
+      // Map v2 format to realtime-compatible format
+      const buses = (depData.departures || []).map((d) => ({
+        minutes_away: d.minutes_away,
+        arrival_text:
+          d.minutes_away <= 1
+            ? "Due"
+            : `${d.minutes_away} min${d.minutes_away !== 1 ? "s" : ""}`,
+        arrival_time: d.arrival_time,
+        delay: d.delay_seconds || null,
+        source: "schedule",
+        realtime: false,
+        headsign: d.headsign || null,
+        vehicle_id: null,
+      }));
+      renderDepartures(buses);
+    } catch (e) {
+      console.error("Scheduled fallback error:", e);
       if (timeSpan) timeSpan.textContent = "Error";
     }
   }
