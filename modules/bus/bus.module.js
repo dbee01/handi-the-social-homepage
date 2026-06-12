@@ -20,10 +20,10 @@ export default async function initBus(container) {
   let refreshInterval = null;
   let currentTabIndex = 0;
   let routesData = [];
+  let showingDeparture = true; // true = departure visible, false = return visible
 
   const settings = loadSettings();
 
-  // Parse saved route configs
   for (let i = 1; i <= 3; i++) {
     const routeId = settings.live_bus?.[`route${i}_id`];
     const depStop = settings.live_bus?.[`route${i}_departure_stop`];
@@ -42,7 +42,6 @@ export default async function initBus(container) {
     }
   }
 
-  // Fallback to old format
   if (routesData.length === 0 && settings.live_bus?.routeIds) {
     const oldRoutes = (settings.live_bus.routeIds || "")
       .split(",")
@@ -85,6 +84,27 @@ export default async function initBus(container) {
     return routesData[currentTabIndex];
   }
 
+  // Inject styles once
+  if (!document.getElementById("bus-live-style")) {
+    const style = document.createElement("style");
+    style.id = "bus-live-style";
+    style.textContent = `
+      .bus-item { padding:4px 0; font-size:0.9rem; }
+      .bus-no-buses { color:#64748b; font-size:0.85rem; }
+      .bus-icon-live {
+        display: inline-block;
+        animation: busShake 0.6s ease-in-out infinite;
+      }
+      @keyframes busShake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-2px) rotate(-2deg); }
+        75% { transform: translateX(2px) rotate(2deg); }
+      }
+      .bus-direction-hidden { display: none; }
+    `;
+    document.head.appendChild(style);
+  }
+
   function renderUI() {
     const r = getRoute();
 
@@ -102,192 +122,106 @@ export default async function initBus(container) {
       tabsHtml += "</div>";
     }
 
+    const depVisible = showingDeparture ? "" : "bus-direction-hidden";
+    const retVisible = showingDeparture ? "bus-direction-hidden" : "";
+
     content.innerHTML = `
       ${tabsHtml}
       <div class="bus-timestamp">
         <i class="fa-solid fa-sync-alt"></i> <span class="bus-time">--:--:--</span>
         <span class="bus-footnote">Route ${r.route_short}</span>
       </div>
-      <div class="bus-stops-grid" style="display:flex;flex-direction:column;gap:12px;">
-        <div class="bus-stop-col" style="flex:1;">
-          <h4 class="bus-stop-label">📍 Departure</h4>
-          <div class="bus-stop-name">${escapeHtml(r.departure_stop_name)}</div>
-          <div class="bus-departures"></div>
-        </div>
+      <div class="bus-direction ${depVisible}" id="bus-direction-dep">
+        <h4 class="bus-stop-label">📍 Departure</h4>
+        <div class="bus-stop-name">${escapeHtml(r.departure_stop_name)}</div>
+        <div class="bus-departures"></div>
       </div>
-      <div class="bus-switch-container">
-        <button class="bus-switch-btn" id="busSwitchBtn">
-          <i class="fa-solid fa-arrow-right-arrow-left"></i> Change Direction
-        </button>
+      <div class="bus-direction ${retVisible}" id="bus-direction-ret">
+        <h4 class="bus-stop-label">📍 Return</h4>
+        <div class="bus-stop-name">${escapeHtml(r.return_stop_name)}</div>
+        <div class="bus-returns"></div>
       </div>
+      <div class="bus-switch-container"></div>
     `;
+
+    // Build switch button via DOM (bypasses innerHTML event issues)
+    const switchContainer = content.querySelector(".bus-switch-container");
+    if (switchContainer) {
+      const btn = document.createElement("button");
+      btn.className = "bus-switch-btn";
+      btn.innerHTML =
+        '<i class="fa-solid fa-arrow-right-arrow-left"></i> Change Direction';
+      btn.addEventListener("click", () => {
+        showingDeparture = !showingDeparture;
+        const depDiv = document.getElementById("bus-direction-dep");
+        const retDiv = document.getElementById("bus-direction-ret");
+        if (depDiv) depDiv.classList.toggle("bus-direction-hidden");
+        if (retDiv) retDiv.classList.toggle("bus-direction-hidden");
+      });
+      switchContainer.appendChild(btn);
+    }
 
     content.querySelectorAll(".bus-tab-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const idx = parseInt(btn.dataset.tabIndex);
         if (idx !== currentTabIndex) {
           currentTabIndex = idx;
+          showingDeparture = true;
           renderUI();
           fetchBusData();
         }
       });
     });
-
-    const switchBtn = document.getElementById("busSwitchBtn");
-    if (switchBtn) {
-      switchBtn.addEventListener("click", () => {
-        // Swap departure and destination stops
-        const r = getRoute();
-        const tmpId = r.departure_stop_id;
-        const tmpName = r.departure_stop_name;
-        r.departure_stop_id = r.return_stop_id;
-        r.departure_stop_name = r.return_stop_name;
-        r.return_stop_id = tmpId;
-        r.return_stop_name = tmpName;
-        renderUI();
-        fetchBusData();
-      });
-    }
   }
 
-  function renderDepartures(depData) {
-    const depList = content.querySelector(".bus-departures");
+  // Render a bus list into a container
+  function renderBusList(selector, data) {
+    const list = content.querySelector(selector);
+    if (!list) return;
 
-    const footnoteSpan = content.querySelector(".bus-footnote");
-    if (footnoteSpan) {
-      footnoteSpan.textContent = `Route ${getRoute().route_short}`;
-    }
-
-    if (!depList) return;
-
-    // Inject live-icon styles if not already present
-    if (!document.getElementById("bus-live-style")) {
-      const style = document.createElement("style");
-      style.id = "bus-live-style";
-      style.textContent = `
-        .bus-item {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 4px 0;
-          font-size: 0.9rem;
-        }
-        .bus-item-icon {
-          display: inline-block;
-          font-size: 1.12rem;
-          font-weight: 600;
-          transition: color 0.4s ease, transform 0.4s ease, opacity 0.4s ease;
-        }
-        .bus-icon-live {
-          color: #16a34a;
-          animation: busPulse 1.5s ease-in-out infinite;
-        }
-        @keyframes busPulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.6; transform: scale(1.2); }
-        }
-        .bus-icon-scheduled {
-          color: #f59e0b;
-        }
-        .bus-icon-fallback {
-          color: #94a3b8;
-        }
-        .bus-arrival {
-          flex: 1;
-        }
-        .bus-delay-badge {
-          display: inline-block;
-          padding: 1px 6px;
-          border-radius: 4px;
-          font-size: 0.75rem;
-          font-weight: 600;
-          margin-left: 4px;
-        }
-        .bus-delay-late {
-          background: #fef2f2;
-          color: #dc2626;
-        }
-        .bus-delay-early {
-          background: #f0fdf4;
-          color: #16a34a;
-        }
-        .bus-delay-ontime {
-          background: #f0f9ff;
-          color: #0284c7;
-        }
-        .bus-source-gps {
-          font-size: 0.7rem;
-          color: #94a3b8;
-          margin-left: 4px;
-        }
-        .bus-no-buses {
-          color: #64748b;
-          font-size: 0.85rem;
-        }
-        .bus-vehicle {
-          font-size: 0.7rem;
-          color: #64748b;
-          display: block;
-        }
-      `;
-      document.head.appendChild(style);
-    }
-
-    if (depData.length === 0) {
-      depList.innerHTML = '<div class="bus-no-buses">No upcoming</div>';
+    if (!data || data.length === 0) {
+      list.innerHTML = '<div class="bus-no-buses">No upcoming</div>';
       return;
     }
 
-    depList.innerHTML = depData
+    list.innerHTML = data
       .map((d) => {
-        const isLive = d.realtime === true;
-        const isGps = d.source === "gps";
-        const iconClass = isLive ? "bus-icon-live" : "bus-icon-scheduled";
-        const iconLabel = isLive
-          ? isGps
-            ? "📡 GPS"
-            : "🟢 Live"
-          : "🚏 Scheduled";
-
         const arrivalText =
           d.arrival_text ||
           (d.minutes_away <= 1
             ? "Due"
             : `${d.minutes_away} min${d.minutes_away !== 1 ? "s" : ""}`);
 
-        // Delay badge
-        let delayHtml = "";
-        if (d.delay != null && d.delay !== 0) {
-          const delayMins = Math.round(Math.abs(d.delay) / 60);
-          const sign = d.delay > 0 ? "+" : "-";
-          const badgeClass =
-            d.delay > 60
-              ? "bus-delay-late"
-              : d.delay < -60
-                ? "bus-delay-early"
-                : "bus-delay-ontime";
-          delayHtml = `<span class="bus-delay-badge ${badgeClass}">${sign}${delayMins}m</span>`;
+        let etaStr = "--:--:--";
+        if (d.arrival_time != null && typeof d.arrival_time === "number") {
+          const eta = new Date(d.arrival_time * 1000);
+          etaStr = eta.toLocaleTimeString("en-IE", {
+            timeZone: "Europe/Dublin",
+            hour12: false,
+          });
+        } else if (
+          typeof d.arrival_time === "string" &&
+          d.arrival_time !== ""
+        ) {
+          etaStr = d.arrival_time;
+        } else if (d.minutes_away != null) {
+          const eta = new Date(Date.now() + d.minutes_away * 60000);
+          etaStr = eta.toLocaleTimeString("en-IE", {
+            timeZone: "Europe/Dublin",
+            hour12: false,
+          });
         }
 
-        // Vehicle ID
-        const vehicleHtml = d.vehicle_id
-          ? `<span class="bus-vehicle">🚌 ${escapeHtml(d.vehicle_id)}</span>`
-          : "";
-
-        // GPS source note
-        const gpsNote = isGps
-          ? '<span class="bus-source-gps">(estimated)</span>'
-          : "";
+        const isLive = d.realtime === true;
+        const label = isLive
+          ? '<span style="font-size:1.12rem;color:#16a34a;font-weight:600;">Live <span class="bus-icon-live" style="font-size:1.12rem;">🚌</span></span>'
+          : '<span style="font-size:1.12rem;color:#f59e0b;font-weight:600;">🚏 Scheduled</span>';
 
         return `
           <div class="bus-item">
-            <span class="bus-item-icon ${iconClass}">${iconLabel}</span>
-            <span class="bus-arrival">
-              ${arrivalText}${delayHtml}${gpsNote}
-              ${vehicleHtml}
-            </span>
-          </div>
-        `;
+            ${label}
+            ${arrivalText} <small style="color:#64748b;">(ETA ${etaStr})</small>
+          </div>`;
       })
       .join("");
   }
@@ -300,24 +234,32 @@ export default async function initBus(container) {
     if (!route) return;
 
     try {
-      // 1. Try realtime API first
-      const rtUrl = `/api/bus-realtime?route=${encodeURIComponent(route.route_short)}&stops=${encodeURIComponent(route.departure_stop_id)}`;
+      // Fetch both stops in one call
+      const stopIds = [route.departure_stop_id];
+      if (route.return_stop_id !== route.departure_stop_id) {
+        stopIds.push(route.return_stop_id);
+      }
+      const rtUrl = `/api/bus-realtime?route=${encodeURIComponent(route.route_short)}&stops=${encodeURIComponent(stopIds.join(","))}`;
       const rtRes = await fetch(rtUrl);
       const rtData = rtRes.ok ? await rtRes.json() : null;
 
       if (rtData && rtData.stops && rtData.stops.length > 0) {
-        const stopData = rtData.stops[0];
-        const buses = stopData.buses || [];
-
-        if (buses.length > 0) {
-          if (timeSpan) timeSpan.textContent = new Date().toLocaleTimeString();
-          renderDepartures(buses);
+        if (timeSpan) timeSpan.textContent = new Date().toLocaleTimeString();
+        const depStop = rtData.stops.find(
+          (s) => s.stop_id === route.departure_stop_id,
+        );
+        const retStop = rtData.stops.find(
+          (s) => s.stop_id === route.return_stop_id,
+        );
+        const depBuses = depStop?.buses || [];
+        const retBuses = retStop?.buses || [];
+        if (depBuses.length > 0 || retBuses.length > 0) {
+          renderBusList(".bus-departures", depBuses);
+          renderBusList(".bus-returns", retBuses);
         } else {
-          // Real-time returned but no buses — try scheduled fallback
           await fetchScheduledFallback(route, timeSpan);
         }
       } else {
-        // Real-time failed or empty — fall back to scheduled
         await fetchScheduledFallback(route, timeSpan);
       }
 
@@ -327,33 +269,41 @@ export default async function initBus(container) {
       if (window.refreshDashboardLayout) window.refreshDashboardLayout();
     } catch (err) {
       console.error("Bus fetch error:", err);
-      // Try scheduled fallback on error
       await fetchScheduledFallback(route, timeSpan);
     }
   }
 
   async function fetchScheduledFallback(route, timeSpan) {
     try {
-      const depUrl = `/api/bus/v2/departures?route_id=${encodeURIComponent(route.route_id)}&stop_id=${encodeURIComponent(route.departure_stop_id)}&limit=3`;
-      const depRes = await fetch(depUrl);
-      const depData = depRes.ok ? await depRes.json() : { departures: [] };
+      const fetchOne = async (stopId) => {
+        const url = `/api/bus/v2/departures?route_id=${encodeURIComponent(route.route_id)}&stop_id=${encodeURIComponent(stopId)}&limit=3`;
+        const res = await fetch(url);
+        const data = res.ok ? await res.json() : { departures: [] };
+        return (data.departures || []).map((d) => ({
+          minutes_away: d.minutes_away,
+          arrival_text:
+            d.minutes_away <= 1
+              ? "Due"
+              : `${d.minutes_away} min${d.minutes_away !== 1 ? "s" : ""}`,
+          arrival_time: d.arrival_time,
+          delay: d.delay_seconds || null,
+          source: "schedule",
+          realtime: false,
+          headsign: d.headsign || null,
+          vehicle_id: null,
+        }));
+      };
+
+      const [depBuses, retBuses] = await Promise.all([
+        fetchOne(route.departure_stop_id),
+        route.return_stop_id !== route.departure_stop_id
+          ? fetchOne(route.return_stop_id)
+          : Promise.resolve([]),
+      ]);
 
       if (timeSpan) timeSpan.textContent = new Date().toLocaleTimeString();
-      // Map v2 format to realtime-compatible format
-      const buses = (depData.departures || []).map((d) => ({
-        minutes_away: d.minutes_away,
-        arrival_text:
-          d.minutes_away <= 1
-            ? "Due"
-            : `${d.minutes_away} min${d.minutes_away !== 1 ? "s" : ""}`,
-        arrival_time: d.arrival_time,
-        delay: d.delay_seconds || null,
-        source: "schedule",
-        realtime: false,
-        headsign: d.headsign || null,
-        vehicle_id: null,
-      }));
-      renderDepartures(buses);
+      renderBusList(".bus-departures", depBuses);
+      renderBusList(".bus-returns", retBuses);
     } catch (e) {
       console.error("Scheduled fallback error:", e);
       if (timeSpan) timeSpan.textContent = "Error";
