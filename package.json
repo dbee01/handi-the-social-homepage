@@ -1,11 +1,11 @@
 {
-  "name": "ple",
+  "name": "Handi Homepage",
   "version": "1.0.0",
-  "description": "DEMO: https://ple.ie",
-  "main": "app.js",
+  "description": "DEMO: https://senior.handihomepage.com",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --max-old-space-size=4096 server.js",
+    "start": "node server.js",
     "dev": "vite",
     "build": "vite build"
   },

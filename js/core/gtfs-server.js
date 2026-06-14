@@ -197,12 +197,10 @@ async function getRouteStops(routeId) {
     if (!db) db = _db;
     const stops = lib.getStops({ route_id: routeId });
     const seen = new Set();
-    const seenNames = new Set();
     const unique = [];
     for (const s of stops) {
-      if (!seen.has(s.stop_id) && !seenNames.has(s.stop_name)) {
+      if (!seen.has(s.stop_id)) {
         seen.add(s.stop_id);
-        seenNames.add(s.stop_name);
         unique.push({
           stop_id: s.stop_id,
           stop_name: s.stop_name || s.stop_id,
@@ -232,25 +230,16 @@ async function getUpcomingDepartures(routeId, stopId, limit = 3) {
     const _db = getDb() || lib.openDb(config);
     if (!db) db = _db;
     // GTFS data is in Irish local time — format the date in Europe/Dublin timezone
-    const nowParts = new Intl.DateTimeFormat("en-IE", {
+    const nowStr = new Date().toLocaleString("en-IE", {
       timeZone: "Europe/Dublin",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour12: false,
-    }).formatToParts(new Date());
-    const part = (t) => nowParts.find((p) => p.type === t)?.value || "0";
+    });
+    const now = new Date(nowStr);
     const nowSecs =
-      parseInt(part("hour")) * 3600 +
-      parseInt(part("minute")) * 60 +
-      parseInt(part("second"));
-    const dateInt = parseInt(
-      `${part("year")}${part("month")}${part("day")}`,
-      10,
-    );
+      now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    const dateInt = parseInt(`${y}${m}${d}`, 10);
 
     // Get trip_ids for this route (optionally filtered by date via service_id)
     const tripIds = lib.getTrips({ route_id: routeId }).map((t) => t.trip_id);
@@ -321,32 +310,30 @@ async function getUpcomingDepartures(routeId, stopId, limit = 3) {
             const tu = entity.tripUpdate;
             const tripId = tu.trip?.tripId || tu.trip?.trip_id;
             if (!tripId || !tripIdsSet.has(tripId)) continue;
-            // Trip is in the real-time feed — mark as live
-            const dep = departures.find((d) => d.trip_id === tripId);
-            if (!dep) continue;
-            // Use delay from any stop on this trip
             const updates = tu.stopTimeUpdate || [];
-            let tripDelay = 0;
             for (const update of updates) {
+              const uStopId = update.stopId || update.stop_id;
+              if (uStopId !== stopId) continue;
               const delay =
                 (update.arrival?.delay || update.departure?.delay) ?? 0;
-              if (delay !== 0) {
-                tripDelay = delay;
-                break;
-              }
+              if (!delay) continue;
+              const dep = departures.find((d) => d.trip_id === tripId);
+              if (!dep) continue;
+              const scheduledSt = stoptimes.find(
+                (st) => st.trip_id === dep.trip_id,
+              );
+              const scheduledSecs = scheduledSt?.arrival_timestamp || 0;
+              const realtimeSecs = scheduledSecs + delay;
+              dep.delay_seconds = delay;
+              dep.live = true;
+              dep.arrival_time = secsToTime(realtimeSecs);
+              dep.minutes_away = Math.max(
+                0,
+
+                Math.floor((realtimeSecs - nowSecs) / 60),
+              );
+              break;
             }
-            const scheduledSt = stoptimes.find(
-              (st) => st.trip_id === dep.trip_id,
-            );
-            const scheduledSecs = scheduledSt?.arrival_timestamp || 0;
-            const realtimeSecs = scheduledSecs + tripDelay;
-            dep.delay_seconds = tripDelay;
-            dep.live = true;
-            dep.arrival_time = secsToTime(realtimeSecs);
-            dep.minutes_away = Math.max(
-              0,
-              Math.floor((realtimeSecs - nowSecs) / 60),
-            );
           }
         }
       } catch (e) {
@@ -400,27 +387,6 @@ async function getStopInfo(stopId) {
   }
 }
 
-// Get the direction_id that serves this stop for this route
-async function getStopDirection(routeId, stopId) {
-  await waitForImport();
-  try {
-    const lib = await ensureLib();
-    const _db = getDb() || lib.openDb(config);
-    if (!db) db = _db;
-    const stoptimes = lib.getStoptimes(
-      { stop_id: stopId },
-      [],
-      [["arrival_timestamp", "ASC"]],
-      { limit: 1 },
-    );
-    if (stoptimes.length === 0) return null;
-    const trip = lib.getTrips({ trip_id: stoptimes[0].trip_id })[0];
-    return trip?.direction_id ?? null;
-  } catch (e) {
-    return null;
-  }
-}
-
 // Get scheduled departures in realtime-compatible format
 async function getScheduledDepartures(routeId, stopId, limit = 4) {
   await waitForImport();
@@ -429,28 +395,17 @@ async function getScheduledDepartures(routeId, stopId, limit = 4) {
     const _db = getDb() || lib.openDb(config);
     if (!db) db = _db;
 
-    // Get current time in seconds since midnight, Europe/Dublin timezone
-    const nowParts = new Intl.DateTimeFormat("en-IE", {
+    const nowStr = new Date().toLocaleString("en-IE", {
       timeZone: "Europe/Dublin",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour12: false,
-    }).formatToParts(new Date());
-    const part = (t) => nowParts.find((p) => p.type === t)?.value || "0";
-    const nowH = parseInt(part("hour"));
-    const nowM = parseInt(part("minute"));
-    const nowS = parseInt(part("second"));
-    const nowSecs = nowH * 3600 + nowM * 60 + nowS;
-    const dateInt = parseInt(
-      `${part("year")}${part("month")}${part("day")}`,
-      10,
-    );
+    });
+    const now = new Date(nowStr);
+    const nowSecs =
+      now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    const dateInt = parseInt(`${y}${m}${d}`, 10);
 
-    // Get trips for this route
     const tripIds = lib.getTrips({ route_id: routeId }).map((t) => t.trip_id);
     if (tripIds.length === 0) return [];
 
@@ -464,6 +419,7 @@ async function getScheduledDepartures(routeId, stopId, limit = 4) {
       .filter(
         (st) => tripIds.includes(st.trip_id) && st.arrival_timestamp >= nowSecs,
       )
+      .slice(0, limit)
       .map((st) => {
         const trip = lib.getTrips({ trip_id: st.trip_id })[0];
         const mins = Math.max(
@@ -485,9 +441,7 @@ async function getScheduledDepartures(routeId, stopId, limit = 4) {
           start_date: null,
           arrival_time: null,
         };
-      })
-      .filter((d) => d.minutes_away <= 120)
-      .slice(0, limit);
+      });
   } catch (e) {
     console.error("[GTFS] getScheduledDepartures error:", e.message);
     return [];
@@ -502,5 +456,4 @@ module.exports = {
   getAllStopIds,
   getStopInfo,
   getScheduledDepartures,
-  getStopDirection,
 };

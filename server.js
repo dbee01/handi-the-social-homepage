@@ -879,8 +879,6 @@ app.get("/api/subscription/status", async (req, res) => {
 // -----------------------------------------------------------------------------
 const server = app.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ Server running on port ${PORT}`);
-  console.log(`🌐 API base: http://page.handihomepage.com:${PORT}/`);
-  console.log(`🚌 Bus API: /api/bus-realtime?route={routeId}&stops={stopIds}`);
   console.log(`🚌 Bus API v2: /api/bus/v2/*`);
   console.log(`📰 News API: /api/news?url=...`);
   console.log(`❤️ Health: /health`);
