@@ -278,6 +278,32 @@ header {
     padding: 32px 24px;
 }
 
+/* Default placeholder shown before module initializes */
+.module-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex: 1;
+    min-height: 200px;
+    gap: 12px;
+    color: var(--muted);
+}
+
+.module-placeholder i {
+    font-size: 2.5rem;
+    color: var(--green);
+    opacity: 0.6;
+}
+
+.module-placeholder span {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
 .settings-link-btn {
     display: inline-flex;
     align-items: center;

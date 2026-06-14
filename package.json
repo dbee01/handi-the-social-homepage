@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dbee01/ple.git"
+    "url": "git+https://codeberg.org/handi/ple.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dbee01/ple/issues"
+    "url": "https://codeberg.org/handi/ple/issues"
   },
-  "homepage": "https://github.com/dbee01/ple#readme",
+  "homepage": "https://codeberg/handi/ple#readme",
   "dependencies": {
     "adm-zip": "^0.5.17",
     "axios": "^1.16.0",
