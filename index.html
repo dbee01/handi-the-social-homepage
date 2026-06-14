@@ -351,9 +351,8 @@
                 if (element && element.querySelector(".module-content")) {
                     try {
                         initFn(element.querySelector(".module-content"));
-                        console.log(`✅ Initialized: ${id}`);
                     } catch (e) {
-                        console.error(`❌ Failed to init ${id}:`, e);
+                        console.error(`Failed to init ${id}:`, e);
                     }
                 } else {
                     console.warn(`⚠️ Element not found: ${id}`);
@@ -562,26 +561,15 @@
         <!-- ========== CLEANUP - shows/hides modules based on Master Module Record ========== -->
         <script>
             (function () {
-                console.log("[Cleanup] Initializing...");
-
                 function runCleanup() {
                     try {
                         if (!window.HANDI_MODULES) {
-                            console.log(
-                                "[Cleanup] HANDI_MODULES not available yet, retrying...",
-                            );
                             setTimeout(runCleanup, 100);
                             return;
                         }
-                        console.log(
-                            "[Cleanup] HANDI_MODULES available:",
-                            typeof window.HANDI_MODULES,
-                        );
 
-                        // Read the live Master Module Record
                         let mmr = window.getMMR();
 
-                        // If subscription check completed and inactive, disable premium modules
                         if (window.PREMIUM_ACTIVE === false) {
                             let changed = false;
                             const premiumIds = window
@@ -594,29 +582,18 @@
                                 }
                             }
                             if (changed) window.saveMMR(mmr);
-                            console.log(
-                                "[Cleanup] Premium disabled — subscription inactive",
-                            );
                         }
 
-                        console.log("[Cleanup] MMR:", JSON.stringify(mmr));
-
                         let allModules = window.HANDI_MODULE_IDS();
-                        console.log("[Cleanup] Module IDs:", allModules);
 
                         let grid = document.getElementById("dashboard-grid");
-                        console.log("[Cleanup] Grid:", !!grid);
                         if (!grid) return;
 
                         for (let id of allModules) {
                             let el = document.getElementById(id);
                             if (!el) continue;
-                            // Only display modules with state 1 (on)
                             if (mmr[id] !== 1) {
                                 el.remove();
-                                console.log("[Cleanup] Removed:", id);
-                            } else {
-                                console.log("[Cleanup] Keeping:", id);
                             }
                         }
                     } catch (e) {

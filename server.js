@@ -86,7 +86,6 @@ const stopInfo = {
 // -----------------------------------------------------------------------------
 // Returns scheduled times from the GTFS Bus Éireann timetable
 async function getGenericSchedule(routeId, stopId, direction) {
-  // The GTFS data uses the same long-form stop IDs as the NTA real-time API
   return gtfsServer.getScheduledDepartures(routeId, stopId);
 }
 
@@ -310,6 +309,18 @@ app.get("/api/bus-realtime", async (req, res) => {
   const stops = await resolveStopIds(requestedStopIds);
   const resolvedStopIds = Object.keys(stops);
 
+  // Determine correct directionId from GTFS static data or query param
+  const requestedDir =
+    req.query.direction != null ? parseInt(req.query.direction) : null;
+  for (const sid of resolvedStopIds) {
+    const dir = requestedDir ?? (await gtfsServer.getStopDirection(sid));
+    if (dir != null) {
+      stops[sid].directionId = dir;
+    }
+  }
+
+  console.log(`[BUS] route=${routeId} stops=${resolvedStopIds.join(",")}`);
+
   // Helper: parse a trip_id value, stripping leading zeros etc.
   function normalizeTripId(id) {
     return (id || "").trim();
@@ -449,9 +460,6 @@ app.get("/api/bus-realtime", async (req, res) => {
         const key = tripKey(trip);
         if (!key) continue;
 
-        // Get vehicle position for this trip if available
-        const vehiclePos = vehicleByTrip.get(key);
-
         const updates = tu.stopTimeUpdate || tu.stop_time_update || [];
         process.stderr.write(
           "BUS: trip=" +
@@ -473,6 +481,12 @@ app.get("/api/bus-realtime", async (req, res) => {
         // closest upcoming update from this trip.
         for (const sid of resolvedStopIds) {
           if (!stops[sid]) continue;
+
+          // Filter by stop's direction from GTFS data
+          const tripDir = trip.directionId ?? trip.direction_id;
+          const stopDir = stops[sid].directionId;
+          if (stopDir != null && tripDir !== stopDir) continue;
+
           const seenSet = seenTripsPerStop.get(sid);
           if (seenSet.has(key)) continue;
 
@@ -503,46 +517,19 @@ app.get("/api/bus-realtime", async (req, res) => {
             );
           }
 
-          // If no trip update for this stop, try GPS position estimate
-          if (!bestData && vehiclePos) {
-            let stopLat = null,
-              stopLon = null;
-            try {
-              const info = await gtfsServer.getStopInfo(sid);
-              if (info && info.lat) {
-                stopLat = parseFloat(info.lat);
-                stopLon = parseFloat(info.lon);
-              }
-            } catch (_) {
-              /* ignore */
-            }
-            if (stopLat && stopLon) {
-              const distKm = haversineKm(
-                vehiclePos.lat,
-                vehiclePos.lon,
-                stopLat,
-                stopLon,
-              );
-              if (distKm < 15 && distKm >= 0) {
-                const gpsMin = Math.max(1, Math.round(distKm / 0.4));
-                if (gpsMin < bestMinutesAway) {
-                  bestMinutesAway = gpsMin;
-                  bestData = {
-                    minutes_away: gpsMin,
-                    delay: null,
-                    source: "gps",
-                  };
-                }
-              }
-            }
-          }
+          // No GPS fallback — scheduled departures are accurate enough
 
           if (bestData) {
             // Check if already have a prediction within 3 min for same stop (different trip)
             const existing = predictionsByStop.get(sid);
             const tooClose = existing.some(
-              (p) => Math.abs(p.minutes_away - bestData.minutes_away) < 3,
+              (p) => Math.abs(p.minutes_away - bestData.minutes_away) < 20,
             );
+            if (tooClose) {
+              console.log(
+                `[TOOCLOSE] Skipping stop=${sid} tripKey=${key} min=${bestData.minutes_away} — within 3min of existing`,
+              );
+            }
             if (!tooClose) {
               seenSet.add(key);
               const pred = {
@@ -593,9 +580,50 @@ app.get("/api/bus-realtime", async (req, res) => {
       // Sort closest first
       buses.sort((a, b) => a.minutes_away - b.minutes_away);
 
+      console.log(
+        `[RESULT] stop=${sid} (${stopData?.stop_name}) preds=${buses.length}: ${buses.map((p) => `${p.minutes_away}min(trip=${p.trip_id})`).join(", ")}`,
+      );
+
       // If no real-time data, fall back to scheduled GTFS
       if (buses.length === 0) {
         buses = await getGenericSchedule(routeId, sid, stopData.direction);
+        // Overlay real-time delays from already-fetched TripUpdates
+        if (
+          tripRes.status === "fulfilled" &&
+          tripRes.value?.entity &&
+          buses.length > 0
+        ) {
+          const tripIds = new Set(buses.map((b) => b.trip_id));
+          for (const entity of tripRes.value.entity) {
+            if (!entity.tripUpdate) continue;
+            const tu = entity.tripUpdate;
+            const tripId = tu.trip?.tripId || tu.trip?.trip_id;
+            if (!tripId || !tripIds.has(tripId)) continue;
+            const updates = tu.stopTimeUpdate || [];
+            let tripDelay = 0;
+            for (const update of updates) {
+              const d = (update.arrival?.delay || update.departure?.delay) ?? 0;
+              if (d !== 0) {
+                tripDelay = d;
+                break;
+              }
+            }
+            const bus = buses.find((b) => b.trip_id === tripId);
+            if (!bus) continue;
+            bus.delay_seconds = tripDelay;
+            bus.realtime = true;
+            bus.source = "realtime";
+            if (tripDelay !== 0) {
+              bus.minutes_away = Math.max(
+                0,
+                bus.minutes_away + Math.round(tripDelay / 60),
+              );
+            }
+          }
+        }
+        console.log(
+          `[SCHEDULE] stop=${sid} (${stopData?.stop_name}) fallback=${buses.length}: ${buses.map((b) => `${b.minutes_away}min(trip=${b.trip_id})`).join(", ")}`,
+        );
       }
 
       results.push({

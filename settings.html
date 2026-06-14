@@ -649,6 +649,7 @@
                     </div>
                 </div>
                 <div class="module-config">
+                    <datalist id="busRouteList"></datalist>
                     <div id="busFormsContainer">
                         <!-- Route 1 -->
                         <div
@@ -664,9 +665,14 @@
                             <h4 style="margin: 0 0 12px">Route 1</h4>
                             <div class="config-field">
                                 <label>Bus Route:</label>
-                                <select class="bus-route-select" data-route="1">
-                                    <option value="">-- Select Route --</option>
-                                </select>
+                                <input
+                                    type="text"
+                                    class="bus-route-select"
+                                    data-route="1"
+                                    list="busRouteList"
+                                    placeholder="Type to search..."
+                                    autocomplete="off"
+                                />
                             </div>
                             <div class="config-field">
                                 <label>Departure Stop:</label>
@@ -715,9 +721,14 @@
                             <h4 style="margin: 0 0 12px">Route 2 (optional)</h4>
                             <div class="config-field">
                                 <label>Bus Route:</label>
-                                <select class="bus-route-select" data-route="2">
-                                    <option value="">-- Select Route --</option>
-                                </select>
+                                <input
+                                    type="text"
+                                    class="bus-route-select"
+                                    data-route="2"
+                                    list="busRouteList"
+                                    placeholder="Type to search..."
+                                    autocomplete="off"
+                                />
                             </div>
                             <div class="config-field">
                                 <label>Departure Stop:</label>
@@ -766,9 +777,14 @@
                             <h4 style="margin: 0 0 12px">Route 3 (optional)</h4>
                             <div class="config-field">
                                 <label>Bus Route:</label>
-                                <select class="bus-route-select" data-route="3">
-                                    <option value="">-- Select Route --</option>
-                                </select>
+                                <input
+                                    type="text"
+                                    class="bus-route-select"
+                                    data-route="3"
+                                    list="busRouteList"
+                                    placeholder="Type to search..."
+                                    autocomplete="off"
+                                />
                             </div>
                             <div class="config-field">
                                 <label>Departure Stop:</label>
@@ -1538,11 +1554,16 @@
                     const retName = document.querySelector(
                         `.bus-ret-name[data-route="${i}"]`,
                     );
-                    const routeId = routeSelect?.value || "";
-                    const routeShort =
-                        routeSelect?.selectedOptions?.[0]?.textContent
-                            ?.split(" — ")[0]
-                            ?.trim() || "";
+                    const label = routeSelect?.value?.trim() || "";
+                    // Extract route_id from datalist option
+                    let routeId = "";
+                    if (label) {
+                        const match = [
+                            ...document.getElementById("busRouteList").options,
+                        ].find((o) => o.value === label);
+                        routeId = match?.getAttribute("data-route-id") || "";
+                    }
+                    const routeShort = label.split(" — ")[0]?.trim() || "";
                     if (routeId) {
                         settings.live_bus[`route${i}_id`] = routeId;
                         settings.live_bus[`route${i}_short`] = routeShort;
@@ -2036,8 +2057,14 @@
                     );
                     const routeId = settings.live_bus[`route${i}_id`];
                     if (!routeId || !routeSelect) continue;
-                    routeSelect.value = routeId;
-                    routeSelect.dispatchEvent(new Event("change"));
+                    // Find the label for this route_id in the datalist
+                    const routeOpt = [
+                        ...document.getElementById("busRouteList").options,
+                    ].find((o) => o.getAttribute("data-route-id") === routeId);
+                    if (routeOpt) {
+                        routeSelect.value = routeOpt.value;
+                        routeSelect.dispatchEvent(new Event("input"));
+                    }
                     // Wait for stops to load, then set saved stop values
                     const depStop =
                         settings.live_bus[`route${i}_departure_stop`];
@@ -2101,23 +2128,28 @@
                     // Populate route dropdowns
                     for (const route of uniqueRoutes) {
                         const label = `${route.short_name} — ${route.long_name || ""}`;
+                        const opt = document.createElement("option");
+                        opt.value = label;
+                        opt.setAttribute("data-route-id", route.route_id);
                         document
-                            .querySelectorAll(".bus-route-select")
-                            .forEach((sel) => {
-                                const opt = document.createElement("option");
-                                opt.value = route.route_id;
-                                opt.textContent = label;
-                                sel.appendChild(opt);
-                            });
+                            .getElementById("busRouteList")
+                            .appendChild(opt);
                     }
 
-                    // When a route is selected, fetch its stops (attach listeners BEFORE loading saved settings)
+                    // When a route is selected, fetch its stops
                     document
                         .querySelectorAll(".bus-route-select")
-                        .forEach((sel) => {
-                            sel.addEventListener("change", async function () {
+                        .forEach((input) => {
+                            input.addEventListener("input", async function () {
                                 const routeNum = this.dataset.route;
-                                const routeId = this.value;
+                                const label = this.value.trim();
+                                // Find matching datalist option for route_id
+                                const match = [
+                                    ...document.getElementById("busRouteList")
+                                        .options,
+                                ].find((o) => o.value === label);
+                                const routeId =
+                                    match?.getAttribute("data-route-id") || "";
                                 const depSelect = document.querySelector(
                                     `.bus-dep-stop-select[data-route="${routeNum}"]`,
                                 );
@@ -2150,6 +2182,13 @@
                                     );
                                     const stopsData = await stopsResp.json();
                                     const stops = stopsData.stops || [];
+
+                                    // Sort alphabetically
+                                    stops.sort((a, b) =>
+                                        (a.stop_name || "").localeCompare(
+                                            b.stop_name || "",
+                                        ),
+                                    );
 
                                     depSelect.innerHTML =
                                         '<option value="">-- Select Stop --</option>';

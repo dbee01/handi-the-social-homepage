@@ -12,6 +12,8 @@ const API_KEY = process.env.BUS_API_KEY || "";
 
 let gtfsLib = null;
 let db = null;
+let importReady = false;
+let importPromise = null;
 
 // Load config
 const configPath = path.join(__dirname, "..", "..", "config.json");
@@ -108,33 +110,44 @@ async function prepareGtfsSource() {
 
 // Import GTFS static data
 async function doImport() {
-  try {
-    const hostname = require("os").hostname();
-    // Skip import on localhost (dev) if DB already exists
-    if (
-      fs.existsSync(config.sqlitePath) &&
-      (hostname === "localhost" ||
-        hostname.startsWith("daz-") ||
-        hostname.includes("pav"))
-    ) {
-      console.log("[GTFS] Dev mode — using existing database, skipping import");
-      return;
-    }
-    await prepareGtfsSource();
-    const lib = await ensureLib();
-    await lib.importGtfs(config);
-    if (db) {
-      try {
-        gtfsLib.closeDb(db);
-      } catch (e) {
-        /* ignore */
+  // Prevent double import
+  if (importPromise) return importPromise;
+
+  importPromise = (async () => {
+    try {
+      const hostname = require("os").hostname();
+      // Skip import on localhost (dev) if DB already exists
+      if (
+        fs.existsSync(config.sqlitePath) &&
+        (hostname === "localhost" ||
+          hostname.startsWith("daz-") ||
+          hostname.includes("pav"))
+      ) {
+        console.log(
+          "[GTFS] Dev mode — using existing database, skipping import",
+        );
+        importReady = true;
+        return;
       }
-      db = null;
+      await prepareGtfsSource();
+      const lib = await ensureLib();
+      await lib.importGtfs(config);
+      if (db) {
+        try {
+          gtfsLib.closeDb(db);
+        } catch (e) {
+          /* ignore */
+        }
+        db = null;
+      }
+      console.log("[GTFS] Static data imported successfully");
+      importReady = true;
+    } catch (e) {
+      console.error("[GTFS] Import error:", e.message);
+      importReady = false;
     }
-    console.log("[GTFS] Static data imported successfully");
-  } catch (e) {
-    console.error("[GTFS] Import error:", e.message);
-  }
+  })();
+  return importPromise;
 }
 
 async function ensureLib() {
@@ -142,6 +155,11 @@ async function ensureLib() {
     gtfsLib = await import("gtfs");
   }
   return gtfsLib;
+}
+
+async function waitForImport() {
+  if (importReady) return;
+  if (importPromise) await importPromise;
 }
 
 function getDb() {
@@ -153,6 +171,7 @@ function getDb() {
 
 // Get all route IDs
 async function getAllRoutes() {
+  await waitForImport();
   try {
     const lib = await ensureLib();
     const _db = getDb() || lib.openDb(config);
@@ -171,16 +190,19 @@ async function getAllRoutes() {
 
 // Get all stops for a route
 async function getRouteStops(routeId) {
+  await waitForImport();
   try {
     const lib = await ensureLib();
     const _db = getDb() || lib.openDb(config);
     if (!db) db = _db;
     const stops = lib.getStops({ route_id: routeId });
     const seen = new Set();
+    const seenNames = new Set();
     const unique = [];
     for (const s of stops) {
-      if (!seen.has(s.stop_id)) {
+      if (!seen.has(s.stop_id) && !seenNames.has(s.stop_name)) {
         seen.add(s.stop_id);
+        seenNames.add(s.stop_name);
         unique.push({
           stop_id: s.stop_id,
           stop_name: s.stop_name || s.stop_id,
@@ -204,21 +226,31 @@ function secsToTime(s) {
 }
 
 async function getUpcomingDepartures(routeId, stopId, limit = 3) {
+  await waitForImport();
   try {
     const lib = await ensureLib();
     const _db = getDb() || lib.openDb(config);
     if (!db) db = _db;
     // GTFS data is in Irish local time — format the date in Europe/Dublin timezone
-    const nowStr = new Date().toLocaleString("en-IE", {
+    const nowParts = new Intl.DateTimeFormat("en-IE", {
       timeZone: "Europe/Dublin",
-    });
-    const now = new Date(nowStr);
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour12: false,
+    }).formatToParts(new Date());
+    const part = (t) => nowParts.find((p) => p.type === t)?.value || "0";
     const nowSecs =
-      now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, "0");
-    const d = String(now.getDate()).padStart(2, "0");
-    const dateInt = parseInt(`${y}${m}${d}`, 10);
+      parseInt(part("hour")) * 3600 +
+      parseInt(part("minute")) * 60 +
+      parseInt(part("second"));
+    const dateInt = parseInt(
+      `${part("year")}${part("month")}${part("day")}`,
+      10,
+    );
 
     // Get trip_ids for this route (optionally filtered by date via service_id)
     const tripIds = lib.getTrips({ route_id: routeId }).map((t) => t.trip_id);
@@ -289,29 +321,32 @@ async function getUpcomingDepartures(routeId, stopId, limit = 3) {
             const tu = entity.tripUpdate;
             const tripId = tu.trip?.tripId || tu.trip?.trip_id;
             if (!tripId || !tripIdsSet.has(tripId)) continue;
+            // Trip is in the real-time feed — mark as live
+            const dep = departures.find((d) => d.trip_id === tripId);
+            if (!dep) continue;
+            // Use delay from any stop on this trip
             const updates = tu.stopTimeUpdate || [];
+            let tripDelay = 0;
             for (const update of updates) {
-              const uStopId = update.stopId || update.stop_id;
-              if (uStopId !== stopId) continue;
               const delay =
                 (update.arrival?.delay || update.departure?.delay) ?? 0;
-              if (!delay) continue;
-              const dep = departures.find((d) => d.trip_id === tripId);
-              if (!dep) continue;
-              const scheduledSt = stoptimes.find(
-                (st) => st.trip_id === dep.trip_id,
-              );
-              const scheduledSecs = scheduledSt?.arrival_timestamp || 0;
-              const realtimeSecs = scheduledSecs + delay;
-              dep.delay_seconds = delay;
-              dep.live = true;
-              dep.arrival_time = secsToTime(realtimeSecs);
-              dep.minutes_away = Math.max(
-                0,
-                Math.floor((realtimeSecs - nowSecs) / 60),
-              );
-              break;
+              if (delay !== 0) {
+                tripDelay = delay;
+                break;
+              }
             }
+            const scheduledSt = stoptimes.find(
+              (st) => st.trip_id === dep.trip_id,
+            );
+            const scheduledSecs = scheduledSt?.arrival_timestamp || 0;
+            const realtimeSecs = scheduledSecs + tripDelay;
+            dep.delay_seconds = tripDelay;
+            dep.live = true;
+            dep.arrival_time = secsToTime(realtimeSecs);
+            dep.minutes_away = Math.max(
+              0,
+              Math.floor((realtimeSecs - nowSecs) / 60),
+            );
           }
         }
       } catch (e) {
@@ -331,6 +366,7 @@ async function getUpcomingDepartures(routeId, stopId, limit = 3) {
 
 // Get all stop IDs from GTFS for suffix mapping
 async function getAllStopIds() {
+  await waitForImport();
   try {
     const lib = await ensureLib();
     const _db = getDb() || lib.openDb(config);
@@ -345,6 +381,7 @@ async function getAllStopIds() {
 
 // Get stop info (name, lat, lon) from GTFS static data
 async function getStopInfo(stopId) {
+  await waitForImport();
   try {
     const lib = await ensureLib();
     const _db = getDb() || lib.openDb(config);
@@ -363,24 +400,57 @@ async function getStopInfo(stopId) {
   }
 }
 
+// Get the direction_id that serves this stop for this route
+async function getStopDirection(routeId, stopId) {
+  await waitForImport();
+  try {
+    const lib = await ensureLib();
+    const _db = getDb() || lib.openDb(config);
+    if (!db) db = _db;
+    const stoptimes = lib.getStoptimes(
+      { stop_id: stopId },
+      [],
+      [["arrival_timestamp", "ASC"]],
+      { limit: 1 },
+    );
+    if (stoptimes.length === 0) return null;
+    const trip = lib.getTrips({ trip_id: stoptimes[0].trip_id })[0];
+    return trip?.direction_id ?? null;
+  } catch (e) {
+    return null;
+  }
+}
+
 // Get scheduled departures in realtime-compatible format
 async function getScheduledDepartures(routeId, stopId, limit = 4) {
+  await waitForImport();
   try {
     const lib = await ensureLib();
     const _db = getDb() || lib.openDb(config);
     if (!db) db = _db;
 
-    const nowStr = new Date().toLocaleString("en-IE", {
+    // Get current time in seconds since midnight, Europe/Dublin timezone
+    const nowParts = new Intl.DateTimeFormat("en-IE", {
       timeZone: "Europe/Dublin",
-    });
-    const now = new Date(nowStr);
-    const nowSecs =
-      now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, "0");
-    const d = String(now.getDate()).padStart(2, "0");
-    const dateInt = parseInt(`${y}${m}${d}`, 10);
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour12: false,
+    }).formatToParts(new Date());
+    const part = (t) => nowParts.find((p) => p.type === t)?.value || "0";
+    const nowH = parseInt(part("hour"));
+    const nowM = parseInt(part("minute"));
+    const nowS = parseInt(part("second"));
+    const nowSecs = nowH * 3600 + nowM * 60 + nowS;
+    const dateInt = parseInt(
+      `${part("year")}${part("month")}${part("day")}`,
+      10,
+    );
 
+    // Get trips for this route
     const tripIds = lib.getTrips({ route_id: routeId }).map((t) => t.trip_id);
     if (tripIds.length === 0) return [];
 
@@ -394,7 +464,6 @@ async function getScheduledDepartures(routeId, stopId, limit = 4) {
       .filter(
         (st) => tripIds.includes(st.trip_id) && st.arrival_timestamp >= nowSecs,
       )
-      .slice(0, limit)
       .map((st) => {
         const trip = lib.getTrips({ trip_id: st.trip_id })[0];
         const mins = Math.max(
@@ -416,7 +485,9 @@ async function getScheduledDepartures(routeId, stopId, limit = 4) {
           start_date: null,
           arrival_time: null,
         };
-      });
+      })
+      .filter((d) => d.minutes_away <= 120)
+      .slice(0, limit);
   } catch (e) {
     console.error("[GTFS] getScheduledDepartures error:", e.message);
     return [];
@@ -431,4 +502,5 @@ module.exports = {
   getAllStopIds,
   getStopInfo,
   getScheduledDepartures,
+  getStopDirection,
 };
