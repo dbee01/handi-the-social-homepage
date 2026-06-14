@@ -45,16 +45,13 @@ export default async function initChat(container) {
 
   async function initMatrixClient() {
     if (!username || !password) {
-      // Try legacy token
       if (legacyToken && settings.chat?.userId) {
         try {
-          const sdk = window.matrixcs || (await loadMatrixSDK());
-          matrixClient = sdk.createClient({
+          matrixClient = window.matrixcs.createClient({
             baseUrl: homeserver,
             accessToken: legacyToken,
             userId: settings.chat.userId,
           });
-          // Verify it works
           await matrixClient.getUserId();
           return true;
         } catch {
@@ -65,11 +62,8 @@ export default async function initChat(container) {
     }
 
     try {
-      const sdk = window.matrixcs || (await loadMatrixSDK());
-      matrixClient = sdk.createClient({ baseUrl: homeserver });
-
+      matrixClient = window.matrixcs.createClient({ baseUrl: homeserver });
       const resp = await matrixClient.loginWithPassword(username, password);
-      // Store the fresh tokens for next session
       settings.chat = settings.chat || {};
       settings.chat.accessToken = resp.access_token;
       settings.chat.userId = resp.user_id;
@@ -80,13 +74,6 @@ export default async function initChat(container) {
       matrixClient = null;
       return false;
     }
-  }
-
-  async function loadMatrixSDK() {
-    // matrix-js-sdk is bundled via Vite/node_modules
-    const mod = await import("matrix-js-sdk");
-    window.matrixcs = mod;
-    return mod;
   }
 
   // =====================================================

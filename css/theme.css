@@ -892,11 +892,9 @@ header {
 }
 
 .pin-btn.pinned {
-    background: rgba(0, 255, 65, 0.12);
-
-    border-color: rgba(0, 255, 65, 0.35);
-
-    color: var(--green);
+    background: rgba(255, 127, 0, 0.2);
+    border-color: rgba(255, 127, 0, 0.5);
+    color: var(--orange);
 }
 
 /* =========================================================

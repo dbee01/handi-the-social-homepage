@@ -584,47 +584,8 @@ app.get("/api/bus-realtime", async (req, res) => {
         `[RESULT] stop=${sid} (${stopData?.stop_name}) preds=${buses.length}: ${buses.map((p) => `${p.minutes_away}min(trip=${p.trip_id})`).join(", ")}`,
       );
 
-      // If no real-time data, fall back to scheduled GTFS
-      if (buses.length === 0) {
-        buses = await getGenericSchedule(routeId, sid, stopData.direction);
-        // Overlay real-time delays from already-fetched TripUpdates
-        if (
-          tripRes.status === "fulfilled" &&
-          tripRes.value?.entity &&
-          buses.length > 0
-        ) {
-          const tripIds = new Set(buses.map((b) => b.trip_id));
-          for (const entity of tripRes.value.entity) {
-            if (!entity.tripUpdate) continue;
-            const tu = entity.tripUpdate;
-            const tripId = tu.trip?.tripId || tu.trip?.trip_id;
-            if (!tripId || !tripIds.has(tripId)) continue;
-            const updates = tu.stopTimeUpdate || [];
-            let tripDelay = 0;
-            for (const update of updates) {
-              const d = (update.arrival?.delay || update.departure?.delay) ?? 0;
-              if (d !== 0) {
-                tripDelay = d;
-                break;
-              }
-            }
-            const bus = buses.find((b) => b.trip_id === tripId);
-            if (!bus) continue;
-            bus.delay_seconds = tripDelay;
-            bus.realtime = true;
-            bus.source = "realtime";
-            if (tripDelay !== 0) {
-              bus.minutes_away = Math.max(
-                0,
-                bus.minutes_away + Math.round(tripDelay / 60),
-              );
-            }
-          }
-        }
-        console.log(
-          `[SCHEDULE] stop=${sid} (${stopData?.stop_name}) fallback=${buses.length}: ${buses.map((b) => `${b.minutes_away}min(trip=${b.trip_id})`).join(", ")}`,
-        );
-      }
+      // Always use scheduled GTFS
+      buses = await getGenericSchedule(routeId, sid, stopData.direction);
 
       results.push({
         stop_name: stopData.stop_name,
