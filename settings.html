@@ -2220,6 +2220,13 @@
             })();
 
             console.log("Settings page loaded");
+
+            // Reload if MMR changes in another tab
+            window.addEventListener("storage", function (e) {
+                if (e.key === "handiMasterModules") {
+                    location.reload();
+                }
+            });
         </script>
     </body>
 </html>

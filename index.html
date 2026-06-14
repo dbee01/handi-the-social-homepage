@@ -529,13 +529,13 @@
                     host.startsWith("staging.")
                 ) {
                     window.PREMIUM_ACTIVE = true;
-                    // On dev hosts, reset MMR to defaults so all modules are active
-                    window.resetMMR();
+                    window.dispatchEvent(new Event("premiumChecked"));
                     return;
                 }
                 const subId = localStorage.getItem("stripe_subscription_id");
                 if (!subId) {
                     window.PREMIUM_ACTIVE = false;
+                    window.dispatchEvent(new Event("premiumChecked"));
                     return;
                 }
                 try {
@@ -551,6 +551,8 @@
                     console.warn("Subscription check failed:", e);
                     window.PREMIUM_ACTIVE = false;
                 }
+                // Notify cleanup that premium status is known
+                window.dispatchEvent(new Event("premiumChecked"));
             })();
         </script>
 
@@ -579,7 +581,7 @@
                         // Read the live Master Module Record
                         let mmr = window.getMMR();
 
-                        // If subscription inactive, disable all premium modules in MMR
+                        // If subscription check completed and inactive, disable premium modules
                         if (window.PREMIUM_ACTIVE === false) {
                             let changed = false;
                             const premiumIds = window
@@ -627,6 +629,13 @@
                 document.addEventListener("DOMContentLoaded", runCleanup);
                 window.addEventListener("load", function () {
                     setTimeout(runCleanup, 500);
+                });
+                window.addEventListener("premiumChecked", runCleanup);
+                // Re-run when MMR changes in another tab
+                window.addEventListener("storage", function (e) {
+                    if (e.key === "handiMasterModules") {
+                        location.reload();
+                    }
                 });
             })();
 

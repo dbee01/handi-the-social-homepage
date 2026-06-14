@@ -18,7 +18,6 @@
                     host.startsWith("192.168.") ||
                     host.startsWith("staging.") ||
                     host.startsWith("senior.");
-                if (window.PREMIUM_ACTIVE) window.resetMMR();
             })();
         </script>
         <style>
@@ -489,7 +488,7 @@
             function getEnabled() {
                 let mmr = window.getMMR();
                 // On premium-enabled hosts, auto-activate premium modules that are off (0)
-                if (window.PREMIUM_ACTIVE !== false) {
+                if (window.PREMIUM_ACTIVE === true) {
                     let changed = false;
                     PREMIUM_MODULES.forEach((m) => {
                         if (mmr[m.id] === 0) {
@@ -757,6 +756,13 @@
                     renderSelector();
                     renderDashboard();
                 });
+
+            // Reload if MMR changes in another tab
+            window.addEventListener("storage", function (e) {
+                if (e.key === "handiMasterModules") {
+                    location.reload();
+                }
+            });
         </script>
     </body>
 </html>
