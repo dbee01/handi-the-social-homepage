@@ -379,12 +379,31 @@ header {
 }
 
 .phone-call {
-    background: #008000;
     color: white;
 }
 
-.phone-call:hover {
+.sim-call {
+    background: #008000;
+}
+
+.sim-call:hover {
     background: #006400;
+}
+
+.video-call {
+    background: #0047cc;
+}
+
+.video-call:hover {
+    background: #0037a3;
+}
+
+.webrtc-call {
+    background: #f59e0b;
+}
+
+.webrtc-call:hover {
+    background: #d97706;
 }
 
 /* News */
@@ -431,6 +450,16 @@ header {
 .bus-refresh-btn:hover {
     background: #0047cc;
     color: #ffffff;
+}
+
+/* Module placeholder (pre-init) */
+.module-placeholder {
+    color: #64748b;
+}
+
+.module-placeholder i {
+    color: #0047cc;
+    opacity: 1;
 }
 
 /* Chat */

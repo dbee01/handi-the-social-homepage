@@ -67,18 +67,13 @@
                 cursor: pointer;
                 font-weight: bold;
             }
-            .save-btn {
+            .save-exit-btn {
                 background: #0047cc;
                 color: white;
                 border: none;
             }
             .reset-btn {
                 background: #ef4444;
-                color: white;
-                border: none;
-            }
-            .exit-btn {
-                background: #64748b;
                 color: white;
                 border: none;
             }
@@ -282,9 +277,10 @@
             <div class="header">
                 <h1>Settings</h1>
                 <div class="header-buttons">
-                    <button class="save-btn" id="saveBtn">Save Settings</button>
                     <button class="reset-btn" id="resetBtn">⟳ Reset All</button>
-                    <button class="exit-btn" id="exitBtn">Exit</button>
+                    <button class="save-exit-btn" id="saveExitBtn">
+                        Save & Exit
+                    </button>
                 </div>
             </div>
 
@@ -546,87 +542,6 @@
             </div>
 
             <!-- Phone Module (unified: SIM + Video + Click-to-Call) -->
-            <div class="module-card" data-module="phone">
-                <div class="module-header">
-                    <div class="module-title">
-                        <i class="fa-solid fa-phone"></i>
-                        <h3>Phone</h3>
-                    </div>
-                    <div class="toggle-switch">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-                <div class="module-config">
-                    <div class="config-field">
-                        <label>Contacts</label>
-                        <div id="phoneContactsList" class="contact-list"></div>
-                    </div>
-                    <div
-                        style="
-                            display: flex;
-                            gap: 12px;
-                            margin-top: 16px;
-                            margin-bottom: 16px;
-                            flex-wrap: wrap;
-                        "
-                    >
-                        <input
-                            type="text"
-                            id="phoneName"
-                            placeholder="Name"
-                            style="
-                                flex: 1;
-                                min-width: 140px;
-                                font-size: 1.2rem;
-                                padding: 14px 16px;
-                            "
-                        />
-                        <input
-                            type="tel"
-                            id="phoneNumber"
-                            placeholder="Phone"
-                            style="
-                                flex: 1;
-                                min-width: 140px;
-                                font-size: 1.2rem;
-                                padding: 14px 16px;
-                            "
-                        />
-                        <input
-                            type="file"
-                            id="phonePhoto"
-                            accept="image/png,image/jpeg,image/webp"
-                            style="display: none"
-                        />
-                        <button
-                            id="phonePhotoBtn"
-                            class="upload-btn"
-                            style="
-                                background: #64748b;
-                                margin: 0;
-                                font-size: 1.1rem;
-                                padding: 14px 20px;
-                            "
-                            type="button"
-                        >
-                            📷
-                        </button>
-                        <button
-                            id="addPhoneInline"
-                            class="upload-btn"
-                            style="
-                                margin: 0;
-                                font-size: 1.1rem;
-                                padding: 14px 28px;
-                            "
-                            type="button"
-                        >
-                            + Add
-                        </button>
-                    </div>
-                </div>
-            </div>
-
             <!-- Chat Module -->
             <div class="module-card" data-module="chat">
                 <div class="module-header">
@@ -648,19 +563,19 @@
                         />
                     </div>
                     <div class="config-field">
-                        <label>Access Token:</label
+                        <label>Username:</label
                         ><input
-                            type="password"
-                            id="chatAccessToken"
-                            placeholder="mat_..."
+                            type="text"
+                            id="chatUsername"
+                            placeholder="@username:matrix.org"
                         />
                     </div>
                     <div class="config-field">
-                        <label>User ID:</label
+                        <label>Password:</label
                         ><input
-                            type="text"
-                            id="chatUserId"
-                            placeholder="@username:matrix.org"
+                            type="password"
+                            id="chatPassword"
+                            placeholder="Your Matrix password"
                         />
                     </div>
                     <div class="config-field">
@@ -703,7 +618,7 @@
                             padding: 2px 8px;
                             border-radius: 20px;
                         "
-                        >🔒 Premium F>eatures</span
+                        >🔒 Premium Features</span
                     >
                 </h2>
                 <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px">
@@ -892,7 +807,100 @@
                 </div>
             </div>
 
-            <!-- Premium 2: Location Share (contacts come from Phone module above) -->
+            <!-- Premium 2: Phone -->
+
+            <div class="module-card" data-module="phone">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-phone"></i>
+                        <h3>Phone</h3>
+                        <span
+                            style="
+                                font-size: 0.7rem;
+                                background: #f59e0b;
+                                padding: 2px 8px;
+                                border-radius: 12px;
+                                margin-left: 8px;
+                            "
+                            >Premium</span
+                        >
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Contacts</label>
+                        <div id="phoneContactsList" class="contact-list"></div>
+                    </div>
+                    <div
+                        style="
+                            display: flex;
+                            gap: 12px;
+                            margin-top: 16px;
+                            margin-bottom: 16px;
+                            flex-wrap: wrap;
+                        "
+                    >
+                        <input
+                            type="text"
+                            id="phoneName"
+                            placeholder="Name"
+                            style="
+                                flex: 1;
+                                min-width: 140px;
+                                font-size: 1.2rem;
+                                padding: 14px 16px;
+                            "
+                        />
+                        <input
+                            type="tel"
+                            id="phoneNumber"
+                            placeholder="Phone"
+                            style="
+                                flex: 1;
+                                min-width: 140px;
+                                font-size: 1.2rem;
+                                padding: 14px 16px;
+                            "
+                        />
+                        <input
+                            type="file"
+                            id="phonePhoto"
+                            accept="image/png,image/jpeg,image/webp"
+                            style="display: none"
+                        />
+                        <button
+                            id="phonePhotoBtn"
+                            class="upload-btn"
+                            style="
+                                background: #64748b;
+                                margin: 0;
+                                font-size: 1.1rem;
+                                padding: 14px 20px;
+                            "
+                            type="button"
+                        >
+                            📷
+                        </button>
+                        <button
+                            id="addPhoneInline"
+                            class="upload-btn"
+                            style="
+                                margin: 0;
+                                font-size: 1.1rem;
+                                padding: 14px 28px;
+                            "
+                            type="button"
+                        >
+                            + Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium 3: Location Share (contacts come from Phone module above) -->
 
             <div class="module-card" data-module="emergency_alert">
                 <div class="module-header">
@@ -1082,8 +1090,9 @@
                         <small style="font-size:1.05rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(c.number)}</small>
                     </div>
                     <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;align-items:flex-start;">
-                        <label style="font-size:1.1rem;white-space:nowrap;cursor:pointer;">
-                            Caregiver <input type="radio" name="caregiver" class="caregiver-radio" data-index="${i}" ${c.caregiver ? "checked" : ""} style="transform:scale(2);" />
+                        <label style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:1.1rem;cursor:pointer;">
+                            <span>Caregiver</span>
+                            <input type="radio" name="caregiver" class="caregiver-radio" data-index="${i}" ${c.caregiver ? "checked" : ""} style="transform:scale(2);" />
                         </label>
                         <label style="font-size:1.1rem;white-space:nowrap;cursor:pointer;">
                             📍 Share <input type="checkbox" class="shareloc-check" data-index="${i}" ${c.share_location ? "checked" : ""} style="transform:scale(2);" />
@@ -1129,12 +1138,8 @@
             function addPhoneContact() {
                 const nameInput = document.getElementById("phoneName");
                 const numberInput = document.getElementById("phoneNumber");
-                const photoFile =
-                    document.getElementById("phonePhoto")?.files[0];
-                const caregiverCheck =
-                    document.getElementById("phoneCaregiver");
-                const shareLocCheck =
-                    document.getElementById("phoneShareLocation");
+                const photoInput = document.getElementById("phonePhoto");
+                const photoFile = photoInput?.files[0];
 
                 const name = nameInput?.value.trim();
                 const number = numberInput?.value.trim();
@@ -1152,31 +1157,32 @@
                     share_location: false,
                 };
 
+                phoneContacts.push(contact);
+                renderPhoneContacts();
+
+                // Clear inputs immediately
+                nameInput.value = "";
+                numberInput.value = "";
+
                 if (photoFile) {
-                    const MAX_SIZE = 7 * 1024 * 1024; // 7 MB
+                    const MAX_SIZE = 7 * 1024 * 1024;
                     if (photoFile.size > MAX_SIZE) {
-                        alert(
-                            "Contact photo must be under 7 MB. Please choose a smaller image.",
-                        );
+                        alert("Contact photo must be under 7 MB.");
+                        photoInput.value = "";
                         return;
                     }
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         contact.photo = e.target.result;
-                        phoneContacts.push(contact);
                         renderPhoneContacts();
-                        nameInput.value = "";
-                        numberInput.value = "";
-                        document.getElementById("phonePhoto").value = "";
+                        photoInput.value = "";
+                    };
+                    reader.onerror = () => {
+                        photoInput.value = "";
                     };
                     reader.readAsDataURL(photoFile);
                 } else {
-                    phoneContacts.push(contact);
-                    renderPhoneContacts();
-                    nameInput.value = "";
-                    numberInput.value = "";
-                    if (document.getElementById("phonePhoto"))
-                        document.getElementById("phonePhoto").value = "";
+                    if (photoInput) photoInput.value = "";
                 }
             }
 
@@ -1570,11 +1576,11 @@
                 const newHomeserver = document
                     .getElementById("chatHomeserver")
                     ?.value.trim();
-                const newAccessToken = document
-                    .getElementById("chatAccessToken")
+                const newUsername = document
+                    .getElementById("chatUsername")
                     ?.value.trim();
-                const newUserId = document
-                    .getElementById("chatUserId")
+                const newPassword = document
+                    .getElementById("chatPassword")
                     ?.value.trim();
                 const newRoom1 = document
                     .getElementById("chatRoom1")
@@ -1596,12 +1602,12 @@
                     settings.chat.homeserver = "https://matrix.org";
                 }
 
-                if (newAccessToken !== "") {
-                    settings.chat.accessToken = newAccessToken;
+                if (newUsername !== "") {
+                    settings.chat.username = newUsername;
                 }
 
-                if (newUserId !== "") {
-                    settings.chat.userId = newUserId;
+                if (newPassword !== "") {
+                    settings.chat.password = newPassword;
                 }
 
                 const newRooms = [newRoom1, newRoom2, newRoom3].filter(
@@ -1619,12 +1625,10 @@
             function saveAllSettings() {
                 const settings = collectSettings();
                 saveSettings(settings);
-                // Dispatch custom event so open dashboard tabs re-render emergency module
+                // Dispatch custom event so open dashboard tabs re-render
                 try {
                     window.dispatchEvent(new Event("handiSettingsSaved"));
                 } catch (e) {}
-                alert("Settings saved!");
-                location.reload();
             }
 
             async function resetAllData() {
@@ -1977,14 +1981,14 @@
                 );
 
             document
-                .getElementById("saveBtn")
-                ?.addEventListener("click", saveAllSettings);
+                .getElementById("saveExitBtn")
+                ?.addEventListener("click", () => {
+                    saveAllSettings();
+                    window.location.href = "/";
+                });
             document
                 .getElementById("resetBtn")
                 ?.addEventListener("click", resetAllData);
-            document
-                .getElementById("exitBtn")
-                ?.addEventListener("click", () => (window.location.href = "/"));
             document
                 .getElementById("addPhoneInline")
                 ?.addEventListener("click", addPhoneContact);

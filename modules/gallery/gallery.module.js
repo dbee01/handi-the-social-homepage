@@ -34,7 +34,7 @@ export default async function initGallery(container) {
   if (!images.length) {
     content.innerHTML = `
             <div class="module-empty">
-                <i class="fa-solid fa-folder-open"></i>
+                <i class="fa-solid fa-images"></i>
                 <p>No images in gallery.</p>
                 <button id="gallerySettingsBtn" class="settings-link-btn">
                     <i class="fa-solid fa-gear"></i> Add Images in Settings

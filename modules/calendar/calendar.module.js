@@ -505,7 +505,7 @@ export default async function initCalendar(container) {
     if (!calendarUrl || calendarUrl.trim() === "") {
       content.innerHTML = `
                 <div class="module-empty">
-                    <i class="fa-regular fa-calendar-circle-plus"></i>
+                    <i class="fa-solid fa-calendar-days"></i>
                     <p>No calendar configured.</p>
                     <button id="calendarSettingsBtn" class="settings-link-btn">
                         <i class="fa-solid fa-gear"></i> Add Calendar in Settings

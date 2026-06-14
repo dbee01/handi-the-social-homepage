@@ -89,13 +89,20 @@ header {
     border-right: 1px solid var(--border-light);
 }
 
-.logo-startpage { background: #000; }
-.logo-qwant { background: #24285a; }
-.logo-ecosia { background: #2b5c2b; }
-.logo-mojeek { background: #242424; }
+.logo-startpage {
+    background: #000;
+}
+.logo-qwant {
+    background: #24285a;
+}
+.logo-ecosia {
+    background: #2b5c2b;
+}
+.logo-mojeek {
+    background: #242424;
+}
 
 .search-engine-select {
-
     background: #151515;
 
     border: none;
@@ -113,7 +120,6 @@ header {
 }
 
 .search-wrapper input {
-
     padding: 12px;
 
     background: transparent;
@@ -133,7 +139,6 @@ header {
 }
 
 .search-wrapper i {
-
     color: var(--green);
 
     cursor: pointer;
@@ -150,7 +155,6 @@ header {
 ========================================================= */
 
 .header-weather {
-
     background: var(--panel-alt);
 
     padding: 8px 14px;
@@ -176,12 +180,14 @@ header {
 }
 
 .mastodon-list {
-    max-height: 380px;
-    overflow: hidden;
-    touch-action: none;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    max-height: none;
+}
+
+.mastodon-list .mastodon-item:nth-child(n + 3) {
+    display: none;
 }
 
 .mastodon-item {
@@ -191,9 +197,6 @@ header {
     padding: 12px 0;
 
     border-bottom: 1px solid var(--border-light);
-    min-height: 170px;
-    height: 170px;
-    overflow: hidden;
 }
 
 .mastodon-item:last-child {
@@ -345,7 +348,7 @@ header {
 }
 
 .music-track-item:hover {
-    background: rgba(0,255,65,0.05);
+    background: rgba(0, 255, 65, 0.05);
 }
 
 /* STATES */
@@ -369,8 +372,7 @@ header {
 /* LIST */
 
 .radio-list {
-    max-height: 320px;
-    overflow-y: auto;
+    max-height: none;
 }
 
 /* STATION ITEM */
@@ -405,11 +407,11 @@ header {
 
 .radio-station:hover {
     border-color: var(--green);
-    background: rgba(0,255,65,0.05);
+    background: rgba(0, 255, 65, 0.05);
 }
 
 .radio-station.active {
-    background: rgba(0,255,65,0.10);
+    background: rgba(0, 255, 65, 0.1);
     border-color: var(--green);
 }
 
@@ -502,7 +504,7 @@ header {
 .news-scroll-btn:hover,
 .radio-scroll-btn:active,
 .radio-scroll-btn:hover {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 /* =========================================================
@@ -548,7 +550,7 @@ header {
 
 .phone-card:hover {
     border-color: var(--green);
-    box-shadow: 0 0 0 3px rgba(0,255,65,0.08);
+    box-shadow: 0 0 0 3px rgba(0, 255, 65, 0.08);
 }
 
 /* AVATAR */
@@ -595,23 +597,29 @@ header {
 /* CALL BUTTON */
 
 .phone-call {
-    background: var(--green);
-
     color: #000;
-
     border-radius: 999px;
-
     padding: 6px 12px;
-
     text-decoration: none;
-
     display: inline-flex;
     align-items: center;
     gap: 6px;
-
     font-weight: bold;
-
     margin-top: 6px;
+    border: none;
+}
+
+.sim-call {
+    background: var(--green);
+}
+
+.video-call {
+    background: var(--cyan);
+    color: #000;
+}
+
+.webrtc-call {
+    background: var(--orange);
 }
 
 /* EMPTY STATE */
@@ -727,7 +735,7 @@ header {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.95);
+    background: rgba(0, 0, 0, 0.95);
     z-index: 20000;
     justify-content: center;
     align-items: center;
@@ -771,7 +779,7 @@ header {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     border: none;
     color: white;
     font-size: 3rem;
@@ -782,7 +790,7 @@ header {
 }
 
 .gallery-lightbox-nav:hover {
-    background: rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.8);
 }
 
 .gallery-lightbox-prev {
@@ -798,7 +806,6 @@ header {
 ========================================================= */
 
 .dashboard-item {
-
     background: var(--panel);
 
     border: 1px solid var(--border);
@@ -824,12 +831,11 @@ header {
 }
 
 .dashboard-item:hover {
-
     border-color: #2e2e2e;
 
     box-shadow:
-        0 0 0 1px rgba(0,255,65,0.08),
-        0 8px 24px rgba(0,0,0,0.35);
+        0 0 0 1px rgba(0, 255, 65, 0.08),
+        0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 .dashboard-item:active {
@@ -841,7 +847,6 @@ header {
 ========================================================= */
 
 .panel-title {
-
     font-size: 1.1rem;
     font-weight: bold;
 
@@ -858,7 +863,6 @@ header {
 ========================================================= */
 
 .pin-btn {
-
     background: #181818;
 
     border: 1px solid #2c2c2c;
@@ -876,7 +880,6 @@ header {
 }
 
 .pin-btn:hover {
-
     background: #222;
 
     color: #fff;
@@ -889,10 +892,9 @@ header {
 }
 
 .pin-btn.pinned {
+    background: rgba(0, 255, 65, 0.12);
 
-    background: rgba(0,255,65,0.12);
-
-    border-color: rgba(0,255,65,0.35);
+    border-color: rgba(0, 255, 65, 0.35);
 
     color: var(--green);
 }
@@ -902,10 +904,9 @@ header {
 ========================================================= */
 
 .dashboard-item.is-pinned {
-
     border-color: #00ff41;
 
-    box-shadow: 0 0 12px rgba(0,255,65,0.15);
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.15);
 }
 
 /* =========================================================
@@ -913,7 +914,6 @@ header {
 ========================================================= */
 
 .packery-drop-placeholder {
-
     outline: 2px dashed var(--green);
 
     outline-offset: -6px;
@@ -932,7 +932,6 @@ header {
 }
 
 .sortable-drag {
-
     opacity: 0.9;
 
     transform: rotate(1deg);
@@ -943,7 +942,6 @@ header {
 ========================================================= */
 
 footer {
-
     background: #000;
 
     border-top: 1px solid var(--border);
@@ -954,7 +952,6 @@ footer {
 }
 
 .settings-link {
-
     color: var(--green);
 
     cursor: pointer;
@@ -969,7 +966,6 @@ footer {
 ========================================================= */
 
 @media (max-width: 600px) {
-
     .brand {
         font-size: 1.4rem;
     }

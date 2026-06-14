@@ -706,8 +706,7 @@ header {
 }
 
 .radio-list {
-    max-height: 420px;
-    overflow-y: auto;
+    max-height: none;
     border-radius: 12px;
 }
 
@@ -720,30 +719,10 @@ header {
 /* Radio player controls */
 /* Radio list - matching music player scroll bar */
 .radio-list {
-    max-height: 400px;
-    overflow-y: auto;
+    max-height: none;
     border: 2px solid #cbd5e1;
     border-radius: 12px;
     background: #ffffff;
-}
-
-/* Custom scroll bar (same as music player) */
-.radio-list::-webkit-scrollbar {
-    width: 10px;
-}
-
-.radio-list::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 10px;
-}
-
-.radio-list::-webkit-scrollbar-thumb {
-    background: #0047cc;
-    border-radius: 10px;
-}
-
-.radio-list::-webkit-scrollbar-thumb:hover {
-    background: #0037a3;
 }
 
 /* Radio station row with inline play button */
@@ -837,9 +816,12 @@ header {
 }
 
 .news-list {
-    max-height: 600px;
-    overflow-y: auto;
+    max-height: none;
     padding: 4px;
+}
+
+.news-list .news-article:nth-child(n + 3) {
+    display: none;
 }
 
 .news-article,
@@ -1214,16 +1196,15 @@ body {
 /* Force phone cards to be horizontal */
 /* Make phone card full width */
 /* =========================================================
-   PHONE MODULE - HORIZONTAL ROW WITH WRAP
+   PHONE MODULE
    ========================================================= */
 
-/* Phone card container - horizontal row */
+/* Phone card - default vertical stack (> 900px) */
 .phone-card {
     display: flex !important;
-    flex-direction: row !important;
+    flex-direction: column !important;
     align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 20px !important;
+    gap: 12px !important;
     max-width: 100% !important;
     overflow: hidden !important;
     background: #ffffff;
@@ -1234,54 +1215,50 @@ body {
     margin-bottom: 12px !important;
 }
 
-/* Avatar image - elderly sized */
+.phone-card-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Avatar image */
 .phone-avatar {
-    width: 60px !important;
-    height: 60px !important;
+    width: 120px !important;
+    height: 120px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
     flex-shrink: 0 !important;
     border: 2px solid #0047cc !important;
 }
 
-/* Placeholder avatar */
 .phone-avatar.placeholder {
     background: #eaf2ff !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-size: 1.8rem !important;
+    font-size: 3rem !important;
     color: #0047cc !important;
 }
 
-/* Contact name - large text */
 .phone-name {
-    flex: 2 !important;
     font-size: 1.2rem !important;
     font-weight: 700 !important;
     color: #1e293b !important;
-    text-align: left !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    text-align: center !important;
 }
 
-/* Phone number - large text */
-.phone-number {
-    flex: 2 !important;
-    font-size: 1.2rem !important;
-    color: #1e293b !important;
-    text-align: left !important;
-    letter-spacing: 1px !important;
+.phone-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
 }
-
 /* Call button - elderly sized */
 .phone-call {
     flex: 0 0 auto !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background: #008000 !important;
     color: white !important;
     width: 64px !important;
     height: 64px !important;
@@ -1290,10 +1267,34 @@ body {
     text-decoration: none !important;
     transition: background 0.2s !important;
     cursor: pointer !important;
+    border: none !important;
 }
 
-.phone-call:hover {
+.sim-call {
+    background: #008000 !important;
+}
+.sim-call:hover {
     background: #006400 !important;
+}
+
+.video-call {
+    background: #0047cc !important;
+}
+.video-call:hover {
+    background: #0037a3 !important;
+}
+
+.webrtc-call {
+    background: #f59e0b !important;
+}
+.webrtc-call:hover {
+    background: #d97706 !important;
+}
+
+.phone-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
 }
 
 .phone-call.locked {
@@ -1302,56 +1303,74 @@ body {
     pointer-events: none !important;
 }
 
-/* Mobile: wrap and adjust */
+/* Horizontal layout (≤ 900px): two-column with left-aligned buttons */
+@media (max-width: 900px) {
+    .phone-card {
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 16px !important;
+    }
+
+    .phone-card-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .phone-name {
+        text-align: left !important;
+    }
+
+    .phone-actions {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px;
+    }
+
+    .phone-avatar {
+        width: 80px !important;
+        height: 80px !important;
+    }
+}
+
+/* Mobile: wrap and adjust (≤ 650px) */
 @media (max-width: 650px) {
     .phone-card {
-        flex-wrap: wrap !important;
-        gap: 12px !important;
         padding: 16px !important;
     }
 
     .phone-avatar {
-        width: 50px !important;
-        height: 50px !important;
+        width: 70px !important;
+        height: 70px !important;
     }
 
     .phone-name {
-        flex: 1 !important;
         font-size: 1.1rem !important;
-        white-space: normal !important;
-    }
-
-    .phone-number {
-        flex: 1 !important;
-        font-size: 1.1rem !important;
-        text-align: right !important;
     }
 
     .phone-call {
-        width: 100% !important;
-        border-radius: 60px !important;
-        margin-top: 8px !important;
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 0.65rem !important;
     }
 }
 
 /* Very small screens */
 @media (max-width: 480px) {
     .phone-avatar {
-        width: 44px !important;
-        height: 44px !important;
+        width: 100px !important;
+        height: 100px !important;
     }
 
     .phone-name {
         font-size: 1rem !important;
     }
 
-    .phone-number {
-        font-size: 0.95rem !important;
-    }
-
     .phone-call {
-        height: 56px !important;
-        font-size: 1.3rem !important;
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 0.6rem !important;
     }
 }
 

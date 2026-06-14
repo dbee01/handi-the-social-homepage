@@ -47,7 +47,7 @@ export default async function initEmergency(container) {
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-solid fa-location-dot"></i> LOCATION SHARE';
+  title.innerHTML = '<i class="fa-solid fa-location-dot"></i> LOCATION';
   headerRow.appendChild(title);
 
   const headerActions = document.createElement("div");
@@ -223,7 +223,7 @@ export default async function initEmergency(container) {
     if (contacts.length === 0) {
       content.innerHTML = `
                 <div class="module-empty">
-                    <i class="fa-solid fa-phone"></i>
+                    <i class="fa-solid fa-location-dot"></i>
                     <p>No trusted contacts saved.</p>
                     <button id="emergencySettingsBtn" class="settings-link-btn">
                         <i class="fa-solid fa-gear"></i> Add Contacts

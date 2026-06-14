@@ -77,7 +77,7 @@ export default async function initMusic(container) {
     content.innerHTML = `
             <div class="module-empty">
                 <i class="fa-solid fa-music"></i>
-                <p>No music uploaded.</p>
+                <p>No music loaded.</p>
                 <button id="musicSettingsBtn" class="settings-link-btn">
                     <i class="fa-solid fa-gear"></i> Add Music in Settings
                 </button>

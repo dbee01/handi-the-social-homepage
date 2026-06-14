@@ -58,7 +58,7 @@ export default async function initPhone(container) {
       btn.classList.remove("calling");
       btn.style.background = "";
       btn.style.borderColor = "";
-      btn.innerHTML = '<i class="fa-solid fa-headset"></i>';
+      btn.innerHTML = '<i class="fa-solid fa-globe"></i>';
       callingBtn = null;
     }
   }
@@ -113,6 +113,7 @@ export default async function initPhone(container) {
         .map(
           (c) => `
         <div class="phone-card">
+          <div class="phone-card-left">
           ${
             c.photo
               ? `<img class="phone-avatar" src="${c.photo}" alt="">`
@@ -122,6 +123,7 @@ export default async function initPhone(container) {
             ${escapeHtml(c.name)}
             ${c.caregiver ? '<span style="font-size:0.6rem;background:#f59e0b;color:white;padding:1px 5px;border-radius:6px;margin-left:4px;">Caregiver</span>' : ""}
           </div>
+          </div>
           <div class="phone-actions">
             <a class="phone-call sim-call" href="tel:${c.number}" title="SIM Call">
               <i class="fa-solid fa-phone"></i>
@@ -130,7 +132,7 @@ export default async function initPhone(container) {
               <i class="fa-solid fa-video"></i>
             </button>
             <button class="phone-call webrtc-call" data-number="${escapeHtml(c.number)}" title="Free Call">
-              <i class="fa-solid fa-headset"></i>
+              <i class="fa-solid fa-globe"></i>
             </button>
           </div>
         </div>
