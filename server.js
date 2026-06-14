@@ -543,7 +543,7 @@ app.get("/api/bus-realtime", async (req, res) => {
                 source: bestData.source,
                 realtime: true,
                 headsign: trip.tripHeadsign || trip.trip_headsign || null,
-                vehicle_id: vehiclePos?.vehicleId || null,
+                vehicle_id: null,
                 trip_id: trip.tripId || trip.trip_id || null,
                 start_time: trip.startTime || trip.start_time || null,
                 start_date: trip.startDate || trip.start_date || null,
