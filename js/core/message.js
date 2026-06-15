@@ -95,7 +95,7 @@
     bannerText.style.minWidth = "200px";
     bannerText.innerHTML = `
                 <strong>📲 Install HandiHomepage on your device</strong><br>
-                <span style="color: #444;">Click <strong>Install</strong> to add HandiHomepage to your home screen or start menu. It works offline too!</span>
+                <span style="color: #444;">Click <strong>install</strong></span>
             `;
 
     const btnGroup = document.createElement("span");

@@ -197,13 +197,16 @@ async function getRouteStops(routeId) {
     if (!db) db = _db;
     const stops = lib.getStops({ route_id: routeId });
     const seen = new Set();
+    const seenNames = new Set();
     const unique = [];
     for (const s of stops) {
-      if (!seen.has(s.stop_id)) {
+      const name = s.stop_name || s.stop_id;
+      if (!seen.has(s.stop_id) && !seenNames.has(name)) {
         seen.add(s.stop_id);
+        seenNames.add(name);
         unique.push({
           stop_id: s.stop_id,
-          stop_name: s.stop_name || s.stop_id,
+          stop_name: name,
           stop_lat: s.stop_lat,
           stop_lon: s.stop_lon,
         });
@@ -387,6 +390,27 @@ async function getStopInfo(stopId) {
   }
 }
 
+// Get the direction_id that serves this stop for this route
+async function getStopDirection(routeId, stopId) {
+  await waitForImport();
+  try {
+    const lib = await ensureLib();
+    const _db = getDb() || lib.openDb(config);
+    if (!db) db = _db;
+    const stoptimes = lib.getStoptimes(
+      { stop_id: stopId },
+      [],
+      [["arrival_timestamp", "ASC"]],
+      { limit: 1 },
+    );
+    if (stoptimes.length === 0) return null;
+    const trip = lib.getTrips({ trip_id: stoptimes[0].trip_id })[0];
+    return trip?.direction_id ?? null;
+  } catch (e) {
+    return null;
+  }
+}
+
 // Get scheduled departures in realtime-compatible format
 async function getScheduledDepartures(routeId, stopId, limit = 4) {
   await waitForImport();
@@ -456,4 +480,5 @@ module.exports = {
   getAllStopIds,
   getStopInfo,
   getScheduledDepartures,
+  getStopDirection,
 };

@@ -584,8 +584,10 @@ app.get("/api/bus-realtime", async (req, res) => {
         `[RESULT] stop=${sid} (${stopData?.stop_name}) preds=${buses.length}: ${buses.map((p) => `${p.minutes_away}min(trip=${p.trip_id})`).join(", ")}`,
       );
 
-      // Always use scheduled GTFS
-      buses = await getGenericSchedule(routeId, sid, stopData.direction);
+      // Use real-time if available, otherwise fall back to scheduled
+      if (buses.length === 0) {
+        buses = await getGenericSchedule(routeId, sid, stopData.direction);
+      }
 
       results.push({
         stop_name: stopData.stop_name,
