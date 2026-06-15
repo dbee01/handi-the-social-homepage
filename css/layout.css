@@ -983,8 +983,9 @@ header {
 
 @media (max-width: 640px) {
     .calendar-event-card {
-        flex-direction: column;
-        gap: 8px;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
     }
     .calendar-event-time {
         min-width: auto;
