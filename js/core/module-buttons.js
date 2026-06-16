@@ -53,9 +53,11 @@
         `,
     emergency_alert: `
             <strong>📍 Location Alert</strong><br><br>
-            • Sends an SMS with your current location to trusted contacts.<br>
+            <strong>📱 Mobile phones only.</strong><br>
+            • Sends an SMS with your GPS location to trusted contacts.<br>
+            • Requires GPS and mobile network (not available on desktop/tablet).<br>
             • Add contacts in <strong>Settings → Location Share</strong>.<br>
-            • Unlock the button (🔓) then press <strong>SHARE</strong> to send.
+            • Unlock the button (🔓) then press <strong>SHARE</strong> to send.<br>
             • Test with your own number first to ensure it works.
         `,
     phone: `

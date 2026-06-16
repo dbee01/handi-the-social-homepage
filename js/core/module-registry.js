@@ -79,7 +79,7 @@ window.HANDI_MODULES = [
     id: "phone",
     name: "Phone",
     icon: "📞",
-    desc: "SIM, video & browser calls",
+    desc: "free worldwide calls",
     tier: "premium",
     defaultEnabled: 1,
     settingsConfig: { contacts: [] },
