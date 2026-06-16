@@ -816,12 +816,7 @@ header {
 }
 
 .news-list {
-    max-height: none;
     padding: 4px;
-}
-
-.news-list .news-article:nth-child(n + 3) {
-    display: none;
 }
 
 .news-article,

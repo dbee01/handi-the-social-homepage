@@ -163,11 +163,10 @@
             }
             .config-field input,
             .config-field select {
-                width: 100%;
-                padding: 10px;
                 border: 1px solid #cbd5e1;
                 border-radius: 8px;
                 font-size: 0.9rem;
+                margin-right: 1.5rem;
             }
             .upload-btn {
                 background: #0047cc;
@@ -1097,16 +1096,17 @@
                         <strong style="font-size:1.3rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(c.name)}</strong>
                         <small style="font-size:1.05rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(c.number)}</small>
                     </div>
-                    <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;align-items:flex-end;">
-                        <label style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:1.1rem;cursor:pointer;">
-                            <span>Caregiver</span>
-                            <input type="radio" name="caregiver" class="caregiver-radio" data-index="${i}" ${c.caregiver ? "checked" : ""} style="transform:scale(2);" />
+                    <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;min-width:160px;">
+                        <label style="display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:1.1rem;cursor:pointer;">
+                            <span>🩺 Caregiver</span>
+                            <input type="radio" name="caregiver" class="caregiver-radio" data-index="${i}" ${c.caregiver ? "checked" : ""} style="transform:scale(2);flex-shrink:0;" />
                         </label>
-                        <label style="font-size:1.1rem;white-space:nowrap;cursor:pointer;">
-                            📍 Share <input type="checkbox" class="shareloc-check" data-index="${i}" ${c.share_location ? "checked" : ""} style="transform:scale(2);" />
+                        <label style="display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:1.1rem;cursor:pointer;">
+                            <span>📍 Share</span>
+                            <input type="checkbox" class="shareloc-check" data-index="${i}" ${c.share_location ? "checked" : ""} style="transform:scale(2);flex-shrink:0;" />
                         </label>
                     </div>
-                    <button class="delete-contact" data-index="${i}" style="font-size:1.5rem;flex-shrink:0;margin-left:100px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;">✖</button>
+                    <button class="delete-contact" data-index="${i}" style="font-size:1.5rem;flex-shrink:0;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;">✖</button>
                 </div>
             `,
                     )
@@ -1371,6 +1371,15 @@
                 // Load phone contacts
                 if (settings.phone?.contacts) {
                     phoneContacts = settings.phone.contacts;
+                    // Restore photos from separate storage
+                    try {
+                        const photos = JSON.parse(
+                            localStorage.getItem("handiContactPhotos") || "{}",
+                        );
+                        phoneContacts.forEach((c, i) => {
+                            if (photos[i]) c.photo = photos[i];
+                        });
+                    } catch (e) {}
                     renderPhoneContacts();
                 }
                 if (
@@ -1500,7 +1509,23 @@
                     ) || 30;
 
                 if (!settings.phone) settings.phone = {};
-                settings.phone.contacts = phoneContacts;
+                settings.phone.contacts = phoneContacts.map((c) => ({
+                    name: c.name,
+                    number: c.number,
+                    caregiver: c.caregiver,
+                    share_location: c.share_location,
+                }));
+                // Store photos separately to avoid quota
+                const photos = {};
+                phoneContacts.forEach((c, i) => {
+                    if (c.photo) photos[i] = c.photo;
+                });
+                try {
+                    localStorage.setItem(
+                        "handiContactPhotos",
+                        JSON.stringify(photos),
+                    );
+                } catch (e) {}
                 settings.phone.autoDialDelay =
                     parseInt(document.getElementById("autoDialDelay")?.value) ||
                     10;
@@ -1635,7 +1660,6 @@
                     const settings = collectSettings();
                     const json = JSON.stringify(settings);
                     localStorage.setItem("handiSettings", json);
-                    window.location.href = "/";
                 } catch (e) {
                     document.body.insertAdjacentHTML(
                         "beforeend",

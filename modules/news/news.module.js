@@ -31,7 +31,8 @@ export default async function initNews(container) {
     try {
       const hostname = new URL(url).hostname;
       let name = hostname.replace(/^www\./, "").split(".")[0];
-      return name.toUpperCase() + " NEWS";
+      name = name.replace(/^THE/i, "THE ").toUpperCase();
+      return name + " NEWS";
     } catch (e) {
       return "NEWS";
     }
@@ -166,103 +167,74 @@ export default async function initNews(container) {
       return;
     }
 
-    // Build the UI with inline styles for guaranteed behavior
-    content.innerHTML = `
-            <div class="news-scroll-wrapper" style="display: flex; flex-direction: column; gap: 8px;">
-                <button id="newsScrollUp" class="news-scroll-btn" style="width: 100%; padding: 12px; background: #e2e8f0; border: none; border-radius: 12px; cursor: pointer; font-size: 1rem; font-weight: bold;">▲ Scroll Up</button>
-                <div id="newsList" class="news-list" style="overflow-y: auto; scroll-behavior: smooth; padding: 4px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff;"></div>
-                <button id="newsScrollDown" class="news-scroll-btn" style="width: 100%; padding: 12px; background: #e2e8f0; border: none; border-radius: 12px; cursor: pointer; font-size: 1rem; font-weight: bold;">▼ Scroll Down</button>
-            </div>
-        `;
-
-    const list = document.getElementById("newsList");
-    const up = document.getElementById("newsScrollUp");
-    const down = document.getElementById("newsScrollDown");
+    currentStart = 0;
     const sourceDisplay = formatSourceName(channelLink);
 
+    content.innerHTML = `
+      <div class="news-scroll-wrapper" style="display:flex;flex-direction:column;gap:8px;">
+        <button id="newsScrollUp" class="news-scroll-btn" style="width:100%;padding:12px;background:#e2e8f0;border:none;border-radius:12px;cursor:pointer;font-size:1rem;font-weight:bold;">▲ Scroll Up</button>
+        <div id="newsList" class="news-list"></div>
+        <button id="newsScrollDown" class="news-scroll-btn" style="width:100%;padding:12px;background:#e2e8f0;border:none;border-radius:12px;cursor:pointer;font-size:1rem;font-weight:bold;">▼ Scroll Down</button>
+      </div>
+    `;
+
+    const list = document.getElementById("newsList");
     if (!list) return;
 
-    // Add all articles
-    for (const article of articles) {
-      const articleDiv = document.createElement("div");
-      articleDiv.className = "news-article";
-      articleDiv.style.marginBottom = "16px";
-      articleDiv.style.padding = "16px";
-      articleDiv.style.background = "#ffffff";
-      articleDiv.style.border = "1px solid #e2e8f0";
-      articleDiv.style.borderRadius = "12px";
-      articleDiv.innerHTML = `
-                <div style="display: flex; gap: 12px; margin-bottom: 12px;">
-                    ${article.imageUrl ? `<img src="${article.imageUrl}" alt="" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" onerror="this.style.display='none'">` : '<div style="width: 60px; height: 60px; background: #e2e8f0; border-radius: 8px;"></div>'}
-                    <div style="flex: 1;">
-                        <div style="font-weight: 700; color: #0047cc;">${escapeHtml(sourceDisplay)}</div>
-                        <div style="font-size: 0.75rem; color: #64748b;">${escapeHtml(article.pubDate)}</div>
-                    </div>
-                </div>
-                <h3 style="font-size: 1rem; margin: 8px 0;"><a href="${article.link}" target="_blank" style="color: #1e1e1e; text-decoration: none;">${escapeHtml(article.title)}</a></h3>
-                <p style="color: #475569; font-size: 0.85rem; margin: 0;">${escapeHtml(article.excerpt)}</p>
-            `;
-      list.appendChild(articleDiv);
-    }
+    // Add all articles as DOM elements
+    const articleEls = articles.map((article) => {
+      const div = document.createElement("div");
+      div.className = "news-article";
+      div.style.cssText =
+        "margin-bottom:16px;padding:16px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;";
+      div.innerHTML = `
+        <div style="display:flex;gap:12px;margin-bottom:12px;">
+          ${article.imageUrl ? `<img src="${article.imageUrl}" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" onerror="this.style.display='none'">` : '<div style="width:60px;height:60px;background:#e2e8f0;border-radius:8px;"></div>'}
+          <div style="flex:1;">
+            <div style="font-weight:700;color:#0047cc;">${escapeHtml(sourceDisplay)}</div>
+            <div style="font-size:0.75rem;color:#64748b;">${escapeHtml(article.pubDate)}</div>
+          </div>
+        </div>
+        <h3 style="font-size:1rem;margin:8px0;"><a href="${article.link}" target="_blank" style="color:#1e1e1e;text-decoration:none;">${escapeHtml(article.title)}</a></h3>
+        <p style="color:#475569;font-size:0.85rem;margin:0;">${escapeHtml(article.excerpt)}</p>
+      `;
+      list.appendChild(div);
+      return div;
+    });
 
-    // Function to set height to exactly fit 2 articles
-    function setExactHeight() {
-      const articleElements = list.querySelectorAll(".news-article");
-      if (articleElements.length >= 2) {
-        // Get the bottom position of the 2nd article
-        const secondArticle = articleElements[1];
-        const heightNeeded =
-          secondArticle.offsetTop + secondArticle.offsetHeight + 20;
-        list.style.maxHeight = `${heightNeeded}px`;
-        console.log(`Set height to ${heightNeeded}px for 2 articles`);
-      } else if (articleElements.length === 1) {
-        list.style.maxHeight = `${articleElements[0].offsetHeight + 30}px`;
-      } else {
-        list.style.maxHeight = "300px";
-      }
-    }
-
-    // Wait for images to load, then set height
-    const images = list.querySelectorAll("img");
-    if (images.length === 0) {
-      setTimeout(setExactHeight, 50);
-    } else {
-      let loadedCount = 0;
-      images.forEach((img) => {
-        if (img.complete) {
-          loadedCount++;
-        } else {
-          img.addEventListener("load", () => {
-            loadedCount++;
-            if (loadedCount === images.length) setExactHeight();
-          });
-          img.addEventListener("error", () => {
-            loadedCount++;
-            if (loadedCount === images.length) setExactHeight();
-          });
-        }
+    function updateVisibility() {
+      articleEls.forEach((el, i) => {
+        el.style.display =
+          i >= currentStart && i < currentStart + VISIBLE ? "" : "none";
       });
-      setTimeout(setExactHeight, 1000);
+      // Disable buttons at boundaries
+      const upBtn = document.getElementById("newsScrollUp");
+      const downBtn = document.getElementById("newsScrollDown");
+      if (upBtn) upBtn.style.opacity = currentStart === 0 ? "0.3" : "1";
+      if (downBtn)
+        downBtn.style.opacity =
+          currentStart + VISIBLE >= articleEls.length ? "0.3" : "1";
     }
 
-    // Also observe size changes (window resize, font loading)
-    const resizeObserver = new ResizeObserver(() => setExactHeight());
-    resizeObserver.observe(list);
+    updateVisibility();
 
-    // Calculate scroll amount (height of one article + margin)
-    const firstArticle = list.querySelector(".news-article");
-    const scrollAmount = firstArticle ? firstArticle.offsetHeight + 16 : 350;
-
-    // Scroll up (shows previous articles)
-    up.onclick = (e) => {
+    document.getElementById("newsScrollUp").onclick = (e) => {
       e.preventDefault();
-      list.scrollBy({ top: -scrollAmount, behavior: "smooth" });
+      if (currentStart > 0) {
+        currentStart = Math.max(0, currentStart - STEP);
+        updateVisibility();
+      }
     };
 
-    // Scroll down (shows next articles)
-    down.onclick = (e) => {
+    document.getElementById("newsScrollDown").onclick = (e) => {
       e.preventDefault();
-      list.scrollBy({ top: scrollAmount, behavior: "smooth" });
+      if (currentStart + VISIBLE < articleEls.length) {
+        currentStart = Math.min(
+          articleEls.length - VISIBLE,
+          currentStart + STEP,
+        );
+        updateVisibility();
+      }
     };
 
     if (window.refreshDashboardLayout) window.refreshDashboardLayout();

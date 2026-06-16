@@ -7,6 +7,7 @@
             content="width=device-width, initial-scale=1.0, user-scalable=yes"
         />
         <title>Dashboard Modules - HandiHomepage</title>
+        <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
         <script src="/js/core/module-registry.js"></script>
         <script>
             // Premium module check for selector
@@ -61,13 +62,22 @@
                 border-bottom: 2px solid #e9ecef;
             }
 
+            .module-groups-row {
+                display: flex;
+                gap: 24px;
+                margin-top: 3rem;
+            }
+            .module-groups-row .module-group {
+                flex: 1;
+                min-width: 0;
+            }
             .module-group {
                 margin-bottom: 36px;
             }
 
             .group-title {
                 font-weight: 700;
-                font-size: 22px;
+                font-size: 1.4rem;
                 margin-bottom: 18px;
                 padding-bottom: 10px;
                 border-bottom: 3px solid #e9ecef;
@@ -127,13 +137,13 @@
             }
 
             .module-info h4 {
-                font-size: 19px;
+                font-size: 1.5rem;
                 font-weight: 600;
                 margin-bottom: 6px;
             }
 
             .module-info p {
-                font-size: 17px;
+                font-size: 1.2rem;
                 color: #6c757d;
             }
 
@@ -160,15 +170,13 @@
             }
 
             .btn-add {
-                background: #e8f5e9;
-                color: #2e7d32;
-                border: 2px solid #a5d6a7;
+                background: #ffebee;
+                color: #c62828;
             }
 
             .btn-remove {
-                background: #ffebee;
-                color: #c62828;
-                border: 2px solid #ef9a9a;
+                background: #e8f5e9;
+                color: #2e7d32;
             }
 
             .toggle-btn:hover {
@@ -324,11 +332,11 @@
             }
 
             .consent-box label {
-                display: block;
+                display: flex;
                 align-items: center;
                 gap: 12px;
                 cursor: pointer;
-                font-size: 18px;
+                font-size: 1.3rem;
                 margin-bottom: 12px;
             }
 
@@ -338,7 +346,11 @@
                 cursor: pointer;
             }
 
-            @media (max-width: 400px) {
+            @media (max-width: 700px) {
+                .module-groups-row {
+                    flex-direction: column;
+                }
+            }
                 .dashboard-layout {
                     gap: 16px;
                 }
@@ -350,9 +362,13 @@
                 .selector-panel h2 {
                     font-size: 24px;
                 }
-                .selector-sub {
-                    font-size: 17px;
+                .selector-sub p {
+                    font-size: 1.4rem;
+                    line-height: 1.4;
+                    margin: 0;
+                    margin-left: 1rem;
                     margin-bottom: 18px;
+                    margin-top: 1.5rem;
                 }
                 .group-title {
                     font-size: 20px;
@@ -363,10 +379,10 @@
                     gap: 10px;
                 }
                 .module-info h4 {
-                    font-size: 17px;
+                    font-size: 1.3rem;
                 }
                 .module-info p {
-                    font-size: 15px;
+                    font-size: 1.1rem;
                 }
                 .toggle-btn {
                     padding: 8px 16px;
@@ -394,7 +410,7 @@
                     padding: 16px;
                 }
                 .consent-box label {
-                    font-size: 17px;
+                    font-size: 1.3rem;
                 }
                 .footer-consent {
                     font-size: 16px;
@@ -418,63 +434,113 @@
         <div class="dashboard-app">
             <div class="dashboard-layout">
                 <div class="selector-panel">
-                    <h2>📦 Module Library</h2>
+                    <h2 style="text-align: center">🔧 Build your homepage</h2>
                     <div class="selector-sub">
-                        Click ✓ to add / ✗ to remove modules
+                        <div
+                            style="
+                                display: flex;
+                                gap: 24px;
+                                font-size: 1.2rem;
+                                margin-top: 1.5rem;
+                            "
+                        >
+                            <div style="flex: 1">
+                                <p style="margin: 4px0">
+                                    <i
+                                        class="fa-solid fa-lock"
+                                        style="color: #cc0000"
+                                    ></i>
+                                    Unlock sound: press red lock icon to unlock
+                                    module controls
+                                </p>
+                                <p style="margin: 2px0">
+                                    <i
+                                        class="fa-solid fa-volume-high"
+                                        style="color: #0047cc"
+                                    ></i>
+                                    Mute all: press speaker icon to silence all
+                                    dashboard sound
+                                </p>
+                                <p style="margin: 2px0">
+                                    <i
+                                        class="fa-solid fa-user-nurse"
+                                        style="color: #0047cc"
+                                    ></i>
+                                    Call caregiver: press nurse icon to phone
+                                    contact set in Settings → Phone
+                                </p>
+                            </div>
+                            <div style="flex: 1">
+                                <p style="margin: 4px0">
+                                    <i
+                                        class="fa-solid fa-gear"
+                                        style="color: #0047cc"
+                                    ></i>
+                                    Settings: press settings icon to configure
+                                    the dashboard
+                                </p>
+                                <p style="margin: 2px0">
+                                    <i
+                                        class="fa-solid fa-sun"
+                                        style="color: #0047cc"
+                                    ></i>
+                                    Stay awake: press sun icon to keep screen
+                                    awake
+                                </p>
+                                <p style="margin: 2px0">
+                                    <i
+                                        class="fa-solid fa-circle-info"
+                                        style="color: #000"
+                                    ></i>
+                                    Help: press 'i' info button for info on any
+                                    element
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- FREE MODULES - no 'bus' because it doesn't exist in your dashboard -->
-                    <div class="module-group">
-                        <div class="group-title free-title">
-                            🆓 FREE MODULES
-                        </div>
-                        <div id="freeModulesList" class="modules-list"></div>
-                    </div>
-
-                    <!-- PREMIUM MODULES -->
-                    <div class="module-group">
-                        <div class="group-title premium-title">
-                            💎 PREMIUM MODULES
-                            <span class="premium-icon">✦ PREMIUM ✦</span>
-                        </div>
-                        <div id="premiumModulesList" class="modules-list"></div>
-                    </div>
-                </div>
-
-                <div class="dashboard-panel">
-                    <div class="dashboard-header">
-                        <h2>📌 Your Dashboard</h2>
-
-                        <div class="action-buttons">
-                            <button id="resetBtn" class="reset-btn">
-                                ⟳ Reset
-                            </button>
-                            <button id="applyBtn" class="apply-btn">
-                                ✓ Submit
-                            </button>
+                    <div class="module-groups-row">
+                        <div class="module-group">
+                            <div class="group-title free-title">
+                                🆓 FREE MODULES
+                            </div>
+                            <div
+                                id="freeModulesList"
+                                class="modules-list"
+                            ></div>
                         </div>
 
-                        <div class="consent-box">
-                            <label>
-                                <input type="checkbox" id="privacyConsent" /> I
-                                agree to the
-                                <a href="/privacy">Privacy Policy</a> and
-                                <a href="/terms">Terms & Conditions</a>
-                            </label>
+                        <div class="module-group">
+                            <div class="group-title premium-title">
+                                💎 PREMIUM MODULES
+                                <span class="premium-icon">✦ PREMIUM ✦</span>
+                            </div>
+                            <div
+                                id="premiumModulesList"
+                                class="modules-list"
+                            ></div>
                         </div>
                     </div>
-                    <div id="dashboardList" class="dashboard-list"></div>
+
                     <div
-                        id="emptyMsg"
-                        class="empty-state"
-                        style="display: none"
+                        class="consent-box"
+                        style="margin-bottom: 12px; font-size: 1rem"
                     >
-                        ✨ No modules yet — click ✓ on any module to add ✨
+                        <label>
+                            <input type="checkbox" id="privacyConsent" /> I
+                            agree to the
+                            <a href="/privacy">Privacy Policy</a> and
+                            <a href="/terms">Terms & Conditions</a>
+                        </label>
+                    </div>
+
+                    <div class="action-buttons" style="margin-bottom: 16px">
+                        <button id="resetBtn" class="reset-btn">⟳ Reset</button>
+                        <button id="applyBtn" class="apply-btn">
+                            ✓ Submit
+                        </button>
                     </div>
                 </div>
-            </div>
-            <div class="footer-consent">
-                🔒 Premium modules require accepting Terms & Privacy Policy
             </div>
         </div>
 
@@ -527,13 +593,13 @@
                             (isDisabled ? " module-disabled" : "");
                         let btnLabel, btnClass;
                         if (isActive) {
-                            btnLabel = "\u2717";
+                            btnLabel = "\u2713";
                             btnClass = "btn-remove";
                         } else if (isDisabled) {
                             btnLabel = "\u2014";
                             btnClass = "btn-add";
                         } else {
-                            btnLabel = "\u2713";
+                            btnLabel = "\u2717";
                             btnClass = "btn-add";
                         }
                         div.innerHTML = `
@@ -571,13 +637,13 @@
                             (isDisabled ? " module-disabled" : "");
                         let btnLabel, btnClass;
                         if (isActive) {
-                            btnLabel = "\u2717";
+                            btnLabel = "\u2713";
                             btnClass = "btn-remove";
                         } else if (isDisabled) {
                             btnLabel = "\u2014";
                             btnClass = "btn-add";
                         } else {
-                            btnLabel = "\u2713";
+                            btnLabel = "\u2717";
                             btnClass = "btn-add";
                         }
                         div.innerHTML = `
@@ -610,102 +676,7 @@
             }
 
             function renderDashboard() {
-                let enabled = getEnabled();
-                let activeIds = Object.keys(enabled).filter(
-                    (k) => enabled[k] === 1,
-                );
-                let activeModules = activeIds
-                    .map((id) => ALL_MODULES.find((m) => m.id === id))
-                    .filter((m) => m);
-
-                let container = document.getElementById("dashboardList");
-                let emptyMsg = document.getElementById("emptyMsg");
-
-                if (activeModules.length === 0) {
-                    container.innerHTML = "";
-                    if (emptyMsg) emptyMsg.style.display = "block";
-                    return;
-                }
-                if (emptyMsg) emptyMsg.style.display = "none";
-
-                container.innerHTML = "";
-                activeModules.forEach((mod, idx) => {
-                    let isPremium = PREMIUM_MODULES.some(
-                        (p) => p.id === mod.id,
-                    );
-                    let div = document.createElement("div");
-                    div.className = "dashboard-item";
-                    div.setAttribute("draggable", "true");
-                    div.setAttribute("data-index", idx);
-                    div.innerHTML = `
-                <div style="display: flex; align-items: center; width: 100%;">
-                    <span class="drag-handle">\u22EE\u22EE</span>
-                    <div class="item-content">
-                        <span class="item-icon">${mod.icon}</span>
-                        <div class="item-info">
-                            <strong>${mod.name} ${isPremium ? '<span class="premium-dash-badge">PREMIUM</span>' : ""}</strong>
-                            <p>${mod.desc}</p>
-                        </div>
-                    </div>
-                    <button class="remove-dash">🗑️</button>
-                </div>
-            `;
-
-                    let removeBtn = div.querySelector(".remove-dash");
-                    removeBtn.onclick = () => {
-                        if (isPremium && !hasConsent()) {
-                            alert(
-                                "\u26A0\uFE0F Please accept the Privacy Policy to remove premium modules.",
-                            );
-                            return;
-                        }
-                        let enabled = getEnabled();
-                        // Set to 0 (off) so it becomes re-selectable
-                        enabled[mod.id] = 0;
-                        saveEnabled(enabled);
-                        renderSelector();
-                        renderDashboard();
-                    };
-
-                    div.ondragstart = (e) => {
-                        e.dataTransfer.setData("text/plain", idx);
-                        div.style.opacity = "0.5";
-                    };
-                    div.ondragend = () => {
-                        div.style.opacity = "1";
-                    };
-                    div.ondragover = (e) => {
-                        e.preventDefault();
-                    };
-                    div.ondrop = (e) => {
-                        e.preventDefault();
-                        let fromIdx = parseInt(
-                            e.dataTransfer.getData("text/plain"),
-                        );
-                        let toIdx = idx;
-                        if (fromIdx !== toIdx) {
-                            let enabled = getEnabled();
-                            let active = Object.keys(enabled).filter(
-                                (k) => enabled[k] === 1,
-                            );
-                            let [moved] = active.splice(fromIdx, 1);
-                            active.splice(toIdx, 0, moved);
-                            // Rebuild MMR: set reordered actives to 1, preserve all others
-                            let newEnabled = {};
-                            for (const key of Object.keys(enabled)) {
-                                newEnabled[key] = enabled[key];
-                            }
-                            for (const id of active) {
-                                newEnabled[id] = 1;
-                            }
-                            saveEnabled(newEnabled);
-                            renderSelector();
-                            renderDashboard();
-                        }
-                    };
-
-                    container.appendChild(div);
-                });
+                // Dashboard preview removed — no-op
             }
 
             function resetModules() {
@@ -717,7 +688,6 @@
                 }
                 window.resetMMR();
                 renderSelector();
-                renderDashboard();
                 alert(
                     '\u2713 Reset complete! Click "Apply to dashboard" to save changes.',
                 );
@@ -736,7 +706,6 @@
             }
 
             renderSelector();
-            renderDashboard();
 
             document
                 .getElementById("resetBtn")
@@ -748,13 +717,6 @@
                 .getElementById("privacyConsent")
                 ?.addEventListener("change", () => {
                     renderSelector();
-                    renderDashboard();
-                });
-            document
-                .getElementById("termsConsent")
-                ?.addEventListener("change", () => {
-                    renderSelector();
-                    renderDashboard();
                 });
 
             // Reload if MMR changes in another tab

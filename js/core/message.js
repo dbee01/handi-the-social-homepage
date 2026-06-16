@@ -197,7 +197,7 @@
     '👬 We all could do with a friend sometime; talk to <a href="https://www.alone.ie/">ALONE</a> if you feel like reaching out.',
     "🔒 Surf the Web securely with the reputable <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a> service. <sup>(affiliate)</sup>",
     '🆘 Add your medical information to your mobile phone now: Click Settings -> search: "Emergency" -> update with your details',
-    "🚑 To send an urgent alert (with your location) to the emergency services. Simply, press the power button 5 times or more on your <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android</a> or <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple phone or watch",
+    "🚑 Need help quick? Configure your <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android phone</a> or <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple phone and watch</a> to send an alert to the emergency services with your location when you press the power button on your device 5 or more times!",
     "📻 Turn off all audio channels on this dashboard by pressing the speaker icon (left of page footer at bottom of your screen).",
   ];
 

@@ -27,6 +27,16 @@ export default async function initPhone(container) {
   const settings = loadSettings();
   const contacts = settings.phone?.contacts || [];
 
+  // Restore photos from separate storage
+  try {
+    const photos = JSON.parse(
+      localStorage.getItem("handiContactPhotos") || "{}",
+    );
+    contacts.forEach((c, i) => {
+      if (photos[i]) c.photo = photos[i];
+    });
+  } catch (e) {}
+
   if (!contacts.length) {
     content.innerHTML = `
       <div class="module-empty">
