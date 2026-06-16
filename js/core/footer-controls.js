@@ -135,8 +135,7 @@
 
   const docsBtn = document.getElementById("footerDocsBtn");
   if (docsBtn) {
-    docsBtn.addEventListener("click", () => {
-      // Call the caregiver: first contact marked as caregiver in Phone module
+    docsBtn.addEventListener("click", async () => {
       try {
         const settings = JSON.parse(
           localStorage.getItem("handiSettings") || "{}",
@@ -144,6 +143,23 @@
         const contacts = settings.phone?.contacts || [];
         const caregiver = contacts.find((c) => c.caregiver) || contacts[0];
         if (caregiver && caregiver.number) {
+          // Ensure WebRTC is loaded
+          if (typeof window.makeAudioCall !== "function") {
+            try {
+              const hidden = document.createElement("div");
+              hidden.style.display = "none";
+              document.body.appendChild(hidden);
+              const mod =
+                await import("/modules/click-to-call/click-to-call.module.js");
+              await mod.default(hidden);
+              for (let i = 0; i < 20; i++) {
+                if (typeof window.makeAudioCall === "function") break;
+                await new Promise((r) => setTimeout(r, 100));
+              }
+            } catch (e) {
+              console.warn("WebRTC load failed:", e);
+            }
+          }
           if (typeof window.makeAudioCall === "function") {
             window.makeAudioCall(caregiver.number);
           } else {

@@ -1631,12 +1631,17 @@
             }
 
             function saveAllSettings() {
-                const settings = collectSettings();
-                saveSettings(settings);
-                // Dispatch custom event so open dashboard tabs re-render
                 try {
-                    window.dispatchEvent(new Event("handiSettingsSaved"));
-                } catch (e) {}
+                    const settings = collectSettings();
+                    const json = JSON.stringify(settings);
+                    localStorage.setItem("handiSettings", json);
+                    window.location.href = "/";
+                } catch (e) {
+                    document.body.insertAdjacentHTML(
+                        "beforeend",
+                        `<div style="position:fixed;top:0;left:0;right:0;background:red;color:white;padding:20px;z-index:99999;font-size:18px">SAVE ERROR: ${e.name} — ${e.message}</div>`,
+                    );
+                }
             }
 
             async function resetAllData() {
@@ -1930,7 +1935,14 @@
                             name: f.name,
                             file: f,
                         }));
-                        await saveGallery(processed);
+                        try {
+                            await saveGallery(processed);
+                        } catch (err) {
+                            alert(
+                                "Upload failed. Storage may be blocked or full.",
+                            );
+                            return;
+                        }
                     };
                     input.click();
                 });
@@ -1958,7 +1970,14 @@
                             name: f.name,
                             file: f,
                         }));
-                        await saveMusic(processed);
+                        try {
+                            await saveMusic(processed);
+                        } catch (err) {
+                            alert(
+                                "Upload failed. Storage may be blocked or full.",
+                            );
+                            return;
+                        }
                     };
                     input.click();
                 });

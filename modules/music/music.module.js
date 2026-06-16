@@ -57,18 +57,23 @@ export default async function initMusic(container) {
     tracks = await loadMusic();
   } catch (err) {
     console.error("Failed to load music:", err);
-    content.innerHTML = `
-            <div class="module-empty">
-                <i class="fa-solid fa-exclamation-triangle"></i>
-                <p>Failed to load music library.</p>
-                <button id="musicRetryBtn" class="settings-link-btn">
-                    <i class="fa-solid fa-rotate-right"></i> Retry
-                </button>
-            </div>
-        `;
-    const retryBtn = content.querySelector("#musicRetryBtn");
-    if (retryBtn) retryBtn.onclick = () => location.reload();
-    return;
+    // Detect if storage is blocked
+    if (!window.indexedDB) {
+      content.innerHTML = `<div class="module-empty"><i class="fa-solid fa-triangle-exclamation"></i><p>Your browser blocks storage. Check Firefox settings → Privacy → make sure "Never remember history" is OFF.</p></div>`;
+    } else {
+      content.innerHTML = `
+              <div class="module-empty">
+                  <i class="fa-solid fa-exclamation-triangle"></i>
+                  <p>Failed to load music library.</p>
+                  <button id="musicRetryBtn" class="settings-link-btn">
+                      <i class="fa-solid fa-rotate-right"></i> Retry
+                  </button>
+              </div>
+          `;
+      const retryBtn = content.querySelector("#musicRetryBtn");
+      if (retryBtn) retryBtn.onclick = () => location.reload();
+      return;
+    }
   }
 
   // NO validation – assume all tracks are valid
