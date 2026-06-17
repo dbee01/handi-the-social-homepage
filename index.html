@@ -377,6 +377,9 @@
                 await new Promise((r) => setTimeout(r, 200));
             }
 
+            // Re-scan for lock buttons now that modules have initialized
+            if (window.refreshModuleControls) window.refreshModuleControls();
+
             // Initialize weather in header only
             try {
                 const weatherElement = document.getElementById("weather");

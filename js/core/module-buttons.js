@@ -185,98 +185,118 @@
   function addModuleControls(moduleElement) {
     const moduleId = moduleElement.getAttribute("id");
     if (!moduleId) return;
-    if (moduleElement.querySelector(".module-controls")) return; // already done
 
     const grid = document.getElementById("dashboard-grid");
     if (!grid) return;
 
-    // Create container
-    const controlsDiv = document.createElement("div");
-    controlsDiv.className = "module-controls";
-    controlsDiv.style.cssText = `
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            display: flex;
-            gap: 8px;
-            z-index: 10;
-        `;
+    // Create or reuse controls container
+    let controlsDiv = moduleElement.querySelector(".module-controls");
+    if (!controlsDiv) {
+      controlsDiv = document.createElement("div");
+      controlsDiv.className = "module-controls";
+      controlsDiv.style.cssText = `
+              position: absolute;
+              top: 12px;
+              right: 12px;
+              display: flex;
+              gap: 8px;
+              z-index: 10;
+          `;
+      moduleElement.appendChild(controlsDiv);
+    }
 
-    // 1. Lock button (move existing if present)
+    // 1. Lock button (move existing if present, skip if already in controls)
     let lockBtn = null;
-    const possibleLockSelectors = [
-      ".radio-lock-toggle",
-      ".music-lock-toggle",
-      ".phone-lock-toggle",
-      ".emergency-lock-toggle",
-    ];
-    for (const sel of possibleLockSelectors) {
-      const found = moduleElement.querySelector(sel);
-      if (found) {
-        lockBtn = found;
-        break;
+    if (
+      !controlsDiv.querySelector(
+        ".emergency-lock-toggle, .radio-lock-toggle, .music-lock-toggle, .phone-lock-toggle",
+      )
+    ) {
+      const possibleLockSelectors = [
+        ".radio-lock-toggle",
+        ".music-lock-toggle",
+        ".phone-lock-toggle",
+        ".emergency-lock-toggle",
+      ];
+      for (const sel of possibleLockSelectors) {
+        const found = moduleElement.querySelector(sel);
+        if (found) {
+          lockBtn = found;
+          break;
+        }
       }
     }
     if (lockBtn) {
+      lockBtn.style.order = "0";
       // Move lock button into controls (preserve its event listeners)
       lockBtn.remove();
       controlsDiv.appendChild(lockBtn);
-      // Ensure it has consistent styling (override module-specific styles)
       lockBtn.style.position = "relative";
       lockBtn.style.top = "auto";
       lockBtn.style.right = "auto";
+      // Preserve red/green lock color
+      const icon = lockBtn.querySelector("i");
+      if (icon && icon.style.color) {
+        lockBtn.style.color = icon.style.color;
+      }
     }
 
     // 2. Info button
-    const infoBtn = document.createElement("button");
-    infoBtn.className = "module-info-btn";
-    infoBtn.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
-    infoBtn.title = "Help";
-    infoBtn.setAttribute("aria-label", "Help for this module");
-    infoBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      showHelp(moduleId);
-    });
-    controlsDiv.appendChild(infoBtn);
+    if (!controlsDiv.querySelector(".module-info-btn")) {
+      const infoBtn = document.createElement("button");
+      infoBtn.className = "module-info-btn";
+      infoBtn.style.order = "1";
+      infoBtn.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+      infoBtn.title = "Help";
+      infoBtn.setAttribute("aria-label", "Help for this module");
+      infoBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        showHelp(moduleId);
+      });
+      controlsDiv.appendChild(infoBtn);
+    }
 
     // 3. Pin button (create new, or use existing if found somewhere)
-    let pinBtn = moduleElement.querySelector(".pin-btn");
-    if (!pinBtn) {
-      pinBtn = document.createElement("button");
-      pinBtn.className = "pin-btn";
-      pinBtn.innerHTML = '<i class="fa-solid fa-thumbtack"></i>';
-      pinBtn.title = "Pin to top";
-    } else {
-      // Remove from old position
-      pinBtn.remove();
-    }
-    // Update pin icon based on current pinned state
-    const isPinned = moduleElement.classList.contains("is-pinned");
-    if (isPinned) {
-      pinBtn.classList.add("pinned");
-      pinBtn.title = "Unpin";
-    } else {
-      pinBtn.classList.remove("pinned");
-      pinBtn.title = "Pin to top";
-    }
-    pinBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const panel = moduleElement;
-      const currentlyPinned = panel.classList.contains("is-pinned");
-      if (currentlyPinned) {
-        panel.classList.remove("is-pinned");
-        pinBtn.classList.remove("pinned");
+    if (!controlsDiv.querySelector(".pin-btn")) {
+      let pinBtn = moduleElement.querySelector(".pin-btn");
+      if (!pinBtn) {
+        pinBtn = document.createElement("button");
+        pinBtn.className = "pin-btn";
+        pinBtn.style.order = "2";
+        pinBtn.innerHTML = '<i class="fa-solid fa-thumbtack"></i>';
         pinBtn.title = "Pin to top";
-        moveItemToBottom(panel, grid);
       } else {
-        panel.classList.add("is-pinned");
+        // Remove from old position
+        pinBtn.remove();
+      }
+      // Update pin icon based on current pinned state
+      const isPinned = moduleElement.classList.contains("is-pinned");
+      if (isPinned) {
         pinBtn.classList.add("pinned");
         pinBtn.title = "Unpin";
-        moveItemToTop(panel, grid);
+      } else {
+        pinBtn.classList.remove("pinned");
+        pinBtn.title = "Pin to top";
       }
-      refreshLayout();
-    });
-    controlsDiv.appendChild(pinBtn);
+      pinBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const panel = moduleElement;
+        const currentlyPinned = panel.classList.contains("is-pinned");
+        if (currentlyPinned) {
+          panel.classList.remove("is-pinned");
+          pinBtn.classList.remove("pinned");
+          pinBtn.title = "Pin to top";
+          moveItemToBottom(panel, grid);
+        } else {
+          panel.classList.add("is-pinned");
+          pinBtn.classList.add("pinned");
+          pinBtn.title = "Unpin";
+          moveItemToTop(panel, grid);
+        }
+        refreshLayout();
+      });
+      controlsDiv.appendChild(pinBtn);
+    }
 
     // Style all buttons uniformly
     const buttons = controlsDiv.querySelectorAll("button");
@@ -311,6 +331,10 @@
   }
 
   // ----- Initialise all modules and watch for new ones -----
+  function scanAll() {
+    document.querySelectorAll(".dashboard-item").forEach(addModuleControls);
+  }
+
   function init() {
     const dashboard = document.getElementById("dashboard-grid");
     if (!dashboard) return;
@@ -338,4 +362,7 @@
   } else {
     init();
   }
+
+  // Expose for re-scan after modules initialize
+  window.refreshModuleControls = scanAll;
 })();
