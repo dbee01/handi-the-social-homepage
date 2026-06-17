@@ -362,7 +362,9 @@
                 emergency_alert: initEmergency,
             };
 
-            for (const [id, initFn] of Object.entries(modules)) {
+            const entries = Object.entries(modules);
+            for (let i = 0; i < entries.length; i++) {
+                const [id, initFn] = entries[i];
                 const element = document.getElementById(id);
                 if (element && element.querySelector(".module-content")) {
                     try {
@@ -370,9 +372,9 @@
                     } catch (e) {
                         console.error(`Failed to init ${id}:`, e);
                     }
-                } else {
-                    console.warn(`⚠️ Element not found: ${id}`);
                 }
+                // Small delay to avoid rate limiting
+                await new Promise((r) => setTimeout(r, 200));
             }
 
             // Initialize weather in header only
