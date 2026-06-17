@@ -68,7 +68,7 @@ export default async function initPhone(container) {
       btn.classList.remove("calling");
       btn.style.background = "";
       btn.style.borderColor = "";
-      btn.innerHTML = '<i class="fa-solid fa-globe"></i>';
+      btn.innerHTML = '<i class="fa-solid fa-phone"></i>';
       callingBtn = null;
     }
   }
@@ -135,14 +135,11 @@ export default async function initPhone(container) {
           </div>
           </div>
           <div class="phone-actions">
-            <a class="phone-call sim-call" href="tel:${c.number}" title="SIM Call">
-              <i class="fa-solid fa-phone"></i>
-            </a>
             <button class="phone-call video-call" data-number="${escapeHtml(c.number)}" title="Video Call">
               <i class="fa-solid fa-video"></i>
             </button>
             <button class="phone-call webrtc-call" data-number="${escapeHtml(c.number)}" title="Free Call">
-              <i class="fa-solid fa-globe"></i>
+              <i class="fa-solid fa-phone"></i>
             </button>
           </div>
         </div>

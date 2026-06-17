@@ -317,6 +317,21 @@
             </span>
         </div>
 
+        <!-- Service worker update handler -->
+        <script>
+            navigator.serviceWorker?.addEventListener("message", (e) => {
+                if (e.data?.type === "update") {
+                    if (confirm("A new version is available. Reload now?")) {
+                        window.location.reload();
+                    }
+                }
+            });
+            // Trigger update check when page loads
+            navigator.serviceWorker?.ready.then((reg) => {
+                reg.active?.postMessage("check-update");
+            });
+        </script>
+
         <!-- ========== MODULE INITIALISATION ========== -->
         <script type="module">
             import { startWeatherUpdates } from "./js/core/weather.js";
