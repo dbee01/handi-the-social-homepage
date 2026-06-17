@@ -413,30 +413,55 @@ async function getStopDirection(routeId, stopId) {
 
 // Get scheduled departures in realtime-compatible format
 async function getScheduledDepartures(routeId, stopId, limit = 4) {
+  console.log(`[SCHED-CALL] route=${routeId} stop=${stopId}`);
   await waitForImport();
   try {
     const lib = await ensureLib();
     const _db = getDb() || lib.openDb(config);
     if (!db) db = _db;
 
-    const nowStr = new Date().toLocaleString("en-IE", {
+    // Get current time in seconds since midnight, Europe/Dublin timezone
+    const nowParts = new Intl.DateTimeFormat("en-IE", {
       timeZone: "Europe/Dublin",
-    });
-    const now = new Date(nowStr);
-    const nowSecs =
-      now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, "0");
-    const d = String(now.getDate()).padStart(2, "0");
-    const dateInt = parseInt(`${y}${m}${d}`, 10);
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour12: false,
+    }).formatToParts(new Date());
+    const part = (t) => nowParts.find((p) => p.type === t)?.value || "0";
+    const nowH = parseInt(part("hour"));
+    const nowM = parseInt(part("minute"));
+    const nowS = parseInt(part("second"));
+    const nowSecs = nowH * 3600 + nowM * 60 + nowS;
+    const dateInt = parseInt(
+      `${part("year")}${part("month")}${part("day")}`,
+      10,
+    );
 
-    const tripIds = lib.getTrips({ route_id: routeId }).map((t) => t.trip_id);
+    // Get trips for this route (match by short_name inside long route_id like "2 220 c b")
+    let tripIds = lib.getTrips({ route_id: routeId }).map((t) => t.trip_id);
+    if (tripIds.length === 0) {
+      const allTrips = lib.getTrips();
+      tripIds = allTrips
+        .filter((t) => {
+          const parts = (t.route_id || "").split(" ");
+          return parts.length >= 3 && parts[1] === routeId;
+        })
+        .map((t) => t.trip_id);
+    }
     if (tripIds.length === 0) return [];
 
     const stoptimes = lib.getStoptimes(
       { stop_id: stopId, date: dateInt },
       [],
       [["arrival_timestamp", "ASC"]],
+    );
+
+    console.log(
+      `[SCHED] stop=${stopId} date=${dateInt} trips=${tripIds.length} stoptimes=${stoptimes.length} nowSecs=${nowSecs}`,
     );
 
     return stoptimes

@@ -575,26 +575,34 @@ app.get("/api/bus-realtime", async (req, res) => {
     const results = [];
     for (const sid of resolvedStopIds) {
       const stopData = stops[sid];
-      let buses = predictionsByStop.get(sid) || [];
-
-      // Sort closest first
-      buses.sort((a, b) => a.minutes_away - b.minutes_away);
-
-      console.log(
-        `[RESULT] stop=${sid} (${stopData?.stop_name}) preds=${buses.length}: ${buses.map((p) => `${p.minutes_away}min(trip=${p.trip_id})`).join(", ")}`,
+      let live = predictionsByStop.get(sid) || [];
+      let scheduled = await getGenericSchedule(
+        routeId,
+        sid,
+        stopData.direction,
       );
 
-      // Use real-time if available, otherwise fall back to scheduled
-      if (buses.length === 0) {
-        buses = await getGenericSchedule(routeId, sid, stopData.direction);
+      // Merge: live wins over scheduled for same trip_id
+      const seen = new Set(live.map((b) => b.trip_id));
+      for (const s of scheduled) {
+        if (s.trip_id && !seen.has(s.trip_id)) {
+          seen.add(s.trip_id);
+          live.push(s);
+        }
       }
+
+      live.sort((a, b) => a.minutes_away - b.minutes_away);
+
+      console.log(
+        `[RESULT] stop=${sid} live=${predictionsByStop.get(sid)?.length || 0} scheduled=${scheduled.length} final=${live.length}`,
+      );
 
       results.push({
         stop_name: stopData.stop_name,
         direction: stopData.direction,
         stop_id: stopData.stop_id,
-        buses: buses.slice(0, 4),
-        realtime_data: buses.some((b) => b.realtime === true),
+        buses: live.slice(0, 4),
+        realtime_data: live.some((b) => b.realtime === true),
       });
     }
 
