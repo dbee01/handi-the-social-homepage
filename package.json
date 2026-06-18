@@ -33,6 +33,7 @@
     "matrix-js-sdk": "^35.1.0",
     "protobufjs": "^7.6.2",
     "rrule": "^2.8.1",
+    "stripe": "^22.2.1",
     "vite": "^8.0.14"
   },
   "devDependencies": {

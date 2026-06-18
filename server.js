@@ -806,6 +806,26 @@ app.get("/health", (req, res) => {
 // -----------------------------------------------------------------------------
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
 
+const stripe = STRIPE_SECRET_KEY ? require("stripe")(STRIPE_SECRET_KEY) : null;
+
+// Stripe success — lookup session and return subscription ID
+app.get("/api/stripe/session", async (req, res) => {
+  if (!stripe) return res.status(500).json({ error: "Stripe not configured" });
+
+  const sessionId = req.query.session_id;
+  if (!sessionId) return res.status(400).json({ error: "Missing session_id" });
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    res.json({
+      subscription_id: session.subscription,
+      customer: session.customer,
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 app.get("/api/subscription/status", async (req, res) => {
   // Dev mode — always premium
   const host = req.get("host") || "";

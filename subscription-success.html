@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Subscription – Handi Homepage</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 40px; }
+    .spinner { font-size: 2rem; margin: 20px; }
+  </style>
+</head>
+<body>
+  <h2>📦 Setting up your subscription...</h2>
+  <div class="spinner">⏳</div>
+  <p id="status">Verifying payment...</p>
+  <script>
+    (async () => {
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get("session_id");
+      if (!sessionId) {
+        document.getElementById("status").innerText = "No session found. Please try again.";
+        return;
+      }
+      try {
+        const resp = await fetch("/api/stripe/session?session_id=" + sessionId);
+        const data = await resp.json();
+        if (data.subscription_id) {
+          localStorage.setItem("stripe_subscription_id", data.subscription_id);
+          document.getElementById("status").innerHTML =
+            "✅ Subscription active! <a href='/'>Go to your dashboard</a>";
+        } else {
+          document.getElementById("status").innerText = "Could not verify payment.";
+        }
+      } catch (e) {
+        document.getElementById("status").innerText = "Error verifying. Please refresh.";
+      }
+    })();
+  </script>
+</body>
+</html>
