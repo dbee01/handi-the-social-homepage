@@ -837,11 +837,12 @@ app.get("/api/subscription/status", async (req, res) => {
   if (!subId) return res.json({ premium: false });
 
   if (!STRIPE_SECRET_KEY) {
-    console.warn("STRIPE_SECRET_KEY not set — returning premium=false");
+    console.warn("Stripe not configured — returning premium=false");
     return res.json({ premium: false });
   }
 
   try {
+    // Use raw REST API — Stripe SDK has a date-parsing bug on some subscriptions
     const resp = await axios.get(
       `https://api.stripe.com/v1/subscriptions/${encodeURIComponent(subId)}`,
       {
@@ -850,10 +851,12 @@ app.get("/api/subscription/status", async (req, res) => {
         },
       },
     );
-    const status = resp.data.status;
+    const sub = resp.data;
+    const status = sub.status;
+    const endTimestamp = sub.current_period_end || sub.trial_end || null;
     res.json({
       premium: status === "active" || status === "trialing",
-      expiry: new Date(resp.data.current_period_end * 1000).toISOString(),
+      expiry: endTimestamp ? new Date(endTimestamp * 1000).toISOString() : null,
       status: status,
     });
   } catch (e) {

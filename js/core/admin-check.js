@@ -1,42 +1,40 @@
-// js/admin-check.js - Check if user has premium access
+// js/admin-check.js - Check if user has premium access (Stripe subscription)
 const USER_ACCESS = {
-    isPremium: false,  // Set based on your auth system
-    isAdmin: false,    // Set based on your auth system
-    userId: null
+  isPremium: false,
+  isAdmin: false,
+  userId: null,
 };
 
 async function checkUserAccess() {
+  const host = window.location.hostname;
+  // Dev/staging always premium
+  if (
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host.startsWith("192.168.") ||
+    host.startsWith("staging.")
+  ) {
+    USER_ACCESS.isPremium = true;
+    return true;
+  }
+  // Check Stripe subscription
+  const subId = localStorage.getItem("stripe_subscription_id");
+  if (subId) {
     try {
-        // Replace with your actual auth endpoint
-        const response = await fetch('/api/user/status');
-        const data = await response.json();
-        
-        USER_ACCESS.isPremium = data.isPremium || false;
-        USER_ACCESS.isAdmin = data.isAdmin || false;
-        USER_ACCESS.userId = data.userId;
-        
-        return USER_ACCESS.isPremium || USER_ACCESS.isAdmin;
-    } catch (error) {
-        console.log('Auth check failed, using localStorage fallback');
-        
-        // Fallback for testing
-        USER_ACCESS.isPremium = localStorage.getItem('user_is_premium') === 'true';
-        USER_ACCESS.isAdmin = localStorage.getItem('user_is_admin') === 'true';
-        USER_ACCESS.userId = localStorage.getItem('user_id') || 'test_user';
-        
-        return USER_ACCESS.isPremium || USER_ACCESS.isAdmin;
+      const resp = await fetch(
+        `/api/subscription/status?subscription_id=${encodeURIComponent(subId)}`,
+      );
+      const data = await resp.json();
+      USER_ACCESS.isPremium = data.premium === true;
+      return USER_ACCESS.isPremium;
+    } catch (e) {
+      console.warn("Subscription check failed:", e);
     }
+  }
+  USER_ACCESS.isPremium = false;
+  return false;
 }
 
 function hasWebRTCAccess() {
-    return USER_ACCESS.isPremium || USER_ACCESS.isAdmin;
-}
-
-// For testing: Set premium access (remove in production)
-function setTestPremiumAccess(enabled) {
-    USER_ACCESS.isPremium = enabled;
-    localStorage.setItem('user_is_premium', enabled);
-    if (enabled) {
-        document.dispatchEvent(new CustomEvent('webrtc-access-granted'));
-    }
+  return USER_ACCESS.isPremium || USER_ACCESS.isAdmin;
 }

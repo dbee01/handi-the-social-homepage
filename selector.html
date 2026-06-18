@@ -10,15 +10,39 @@
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
         <script src="/js/core/module-registry.js"></script>
         <script>
-            // Premium module check for selector
-            (function () {
+            // Premium module check for selector — unified Stripe subscription flow
+            window.PREMIUM_ACTIVE = false;
+            window._premiumChecked = false;
+            (async function () {
                 var host = window.location.hostname;
-                window.PREMIUM_ACTIVE =
+                // Dev/staging always premium
+                if (
                     host === "localhost" ||
                     host === "127.0.0.1" ||
                     host.startsWith("192.168.") ||
-                    host.startsWith("staging.") ||
-                    host.startsWith("senior.");
+                    host.startsWith("staging.")
+                ) {
+                    window.PREMIUM_ACTIVE = true;
+                    window._premiumChecked = true;
+                    return;
+                }
+                // Check Stripe subscription
+                var subId = localStorage.getItem("stripe_subscription_id");
+                if (subId) {
+                    try {
+                        var resp = await fetch(
+                            `/api/subscription/status?subscription_id=${encodeURIComponent(subId)}`,
+                        );
+                        var data = await resp.json();
+                        window.PREMIUM_ACTIVE = data.premium === true;
+                    } catch (e) {
+                        console.warn("Subscription check failed:", e);
+                        window.PREMIUM_ACTIVE = false;
+                    }
+                }
+                window._premiumChecked = true;
+                // Re-render now that premium status is known
+                if (typeof renderSelector === "function") renderSelector();
             })();
         </script>
         <style>
