@@ -1,4 +1,4 @@
-![alt text](https://senior.handihomepage.com/)
+![alt text](http://handihomepage.com/wp-content/uploads/2026/05/3deviceWebsiteMockup.jpg)
 
 # HandiHomepage
 
