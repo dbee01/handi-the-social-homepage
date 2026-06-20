@@ -7,8 +7,6 @@
 
 **[handihomepage.com](https://handihomepage.com)**
 
----
-
 ## Features
 
 ### Dashboard Features
