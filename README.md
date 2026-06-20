@@ -1,8 +1,10 @@
+![alt text](https://senior.handihomepage.com/)
+
 # HandiHomepage
 
 > A senior-friendly dashboard homepage for Irish users — reclaim the first page of the Web.
 
-**[handihomepage.com](https://handihomepage.com)** · **[ple.ie](https://ple.ie)** · [Codeberg](https://codeberg.org/handi/ple)
+**[handihomepage.com](https://handihomepage.com)**
 
 ---
 
