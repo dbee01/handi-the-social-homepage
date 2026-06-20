@@ -11,6 +11,15 @@
 
 ## Features
 
+### Dashboard Features
+- Drag-and-drop module layout (Packery)
+- Pin modules to top
+- Light/dark theme toggle
+- Elderly-friendly high-contrast theme
+- Module lock buttons (prevent accidental changes)
+- Module info popups with usage instructions
+- Subscription-based premium modules (Stripe)
+
 ### Free Modules
 | Module | Description |
 |---|---|
@@ -28,15 +37,6 @@
 | 📞 **Phone** | One-tap SIM, video & VoIP calling with contact photos |
 | 🚌 **Live Bus** | Real-time Irish bus tracker (3 routes) |
 | 📍 **Location Share** | SMS emergency location sharing via Infobip |
-
-### Dashboard Features
-- Drag-and-drop module layout (Packery)
-- Pin modules to top
-- Light/dark theme toggle
-- Elderly-friendly high-contrast theme
-- Module lock buttons (prevent accidental changes)
-- Module info popups with usage instructions
-- Subscription-based premium modules (Stripe)
 
 ---
 
