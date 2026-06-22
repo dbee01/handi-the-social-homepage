@@ -521,50 +521,52 @@
                                         class="fa-solid fa-lock"
                                         style="color: #cc0000"
                                     ></i>
-                                    Unlock sound: press red lock icon to unlock
-                                    module controls
+                                    Unlock sound: press the red lock icon to
+                                    unlock module controls
                                 </p>
                                 <p style="margin: 2px0">
                                     <i
                                         class="fa-solid fa-volume-high"
                                         style="color: #0047cc"
                                     ></i>
-                                    Mute all: press speaker icon to silence all
-                                    dashboard sound
+                                    Mute all: press the speaker icon to silence
+                                    all dashboard sound
                                 </p>
-                                <p style="margin: 2px0">
-                                    <i
-                                        class="fa-solid fa-user-nurse"
-                                        style="color: #0047cc"
-                                    ></i>
-                                    Call caregiver: press nurse icon to phone
-                                    contact set in Settings → Phone
-                                </p>
-                            </div>
-                            <div style="flex: 1">
                                 <p style="margin: 4px0">
                                     <i
                                         class="fa-solid fa-gear"
                                         style="color: #0047cc"
                                     ></i>
-                                    Settings: press settings icon to configure
-                                    the dashboard
+                                    Settings: press the settings icon to
+                                    configure the dashboard
                                 </p>
+                            </div>
+                            <div style="flex: 1">
+                                <p style="margin: 2px0">
+                                    <i
+                                        class="fa-solid fa-user-nurse"
+                                        style="color: #0047cc"
+                                    ></i>
+                                    Call caregiver: press the nurse icon to
+                                    phone your caregiver contact - configured in
+                                    Settings → Phone
+                                </p>
+
                                 <p style="margin: 2px0">
                                     <i
                                         class="fa-solid fa-sun"
                                         style="color: #0047cc"
                                     ></i>
-                                    Stay awake: press sun icon to keep screen
-                                    awake
+                                    Stay awake: press the sun icon to keep the
+                                    screen awake
                                 </p>
                                 <p style="margin: 2px0">
                                     <i
                                         class="fa-solid fa-circle-info"
                                         style="color: #000"
                                     ></i>
-                                    Help: press 'i' info button for info on any
-                                    element
+                                    Help: press the 'i' info button to get the
+                                    info on any element
                                 </p>
                             </div>
                         </div>
@@ -593,18 +595,6 @@
                         </div>
                     </div>
 
-                    <div style="text-align: center; margin-bottom: 12px">
-                        <a
-                            href="https://buy.stripe.com/14AbJ05WbgWM73pbIfdUY00"
-                            style="
-                                font-size: 1.1rem;
-                                font-weight: bold;
-                                color: #2c7a4d;
-                            "
-                            >✨ Start free trial (no credit card needed)</a
-                        >
-                    </div>
-
                     <div
                         class="consent-box"
                         style="margin-bottom: 12px; font-size: 1rem"
@@ -624,9 +614,17 @@
 
                     <div class="action-buttons" style="margin-bottom: 16px">
                         <button id="resetBtn" class="reset-btn">⟳ Reset</button>
-                        <button id="premiumTrialBtn" class="premium-trial-btn">
-                            ⭐ Add Premium (30 day trial)
-                        </button>
+                        <a
+                            href="https://buy.stripe.com/14AbJ05WbgWM73pbIfdUY00"
+                            class="premium-trial-btn"
+                            style="
+                                text-decoration: none;
+                                display: inline-block;
+                                text-align: center;
+                                line-height: normal;
+                            "
+                            >⭐ Add Premium (30 day trial)</a
+                        >
                         <button id="applyBtn" class="apply-btn">
                             ✓ Submit
                         </button>
@@ -784,24 +782,6 @@
                 );
             }
 
-            function startPremiumTrial() {
-                if (!hasConsent()) {
-                    alert(
-                        "⚠️ Please accept the Privacy Policy to start the Premium trial.",
-                    );
-                    return;
-                }
-                // Activate premium and set 30-day trial expiry
-                let trialEnd = Date.now() + 30 * 24 * 60 * 60 * 1000;
-                localStorage.setItem("handiPremiumTrialEnd", trialEnd);
-                window.PREMIUM_ACTIVE = true;
-                getEnabled(); // auto-activates premium modules
-                renderSelector();
-                alert(
-                    "⭐ Premium trial activated! All Premium modules are now enabled for 30 days.",
-                );
-            }
-
             function applyChanges() {
                 if (!hasConsent()) {
                     alert(
@@ -819,9 +799,6 @@
             document
                 .getElementById("resetBtn")
                 ?.addEventListener("click", resetModules);
-            document
-                .getElementById("premiumTrialBtn")
-                ?.addEventListener("click", startPremiumTrial);
             document
                 .getElementById("applyBtn")
                 ?.addEventListener("click", applyChanges);
