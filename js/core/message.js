@@ -76,7 +76,6 @@
 
   function showInstallBanner() {
     const bannerDiv = document.createElement("div");
-    bannerDiv.style.backgroundColor = "#e6f7ff";
     bannerDiv.style.borderLeft = "6px solid #1890ff";
     bannerDiv.style.borderRadius = "8px";
     bannerDiv.style.padding = "12px 15px";

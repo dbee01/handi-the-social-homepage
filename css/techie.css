@@ -1,0 +1,496 @@
+/*
+ * Copyright (c) 2026 Handi Homepage
+ * IBM Green Phosphor Terminal Theme
+ */
+
+/* =========================================================
+   IBM 3278 / GREEN PHOSPHOR TERMINAL
+========================================================= */
+
+:root {
+    --bg: #001000;
+    --panel: #001800;
+    --text: #33ff33;
+    --text-dim: #1faa1f;
+    --border: #00cc00;
+    --bright: #99ff99;
+    --focus: #ccffcc;
+}
+
+html,
+body {
+    font-size: 20px;
+    line-height: 1.6;
+
+    background: var(--bg);
+    color: var(--text);
+
+    font-family: "IBM Plex Mono", "Courier New", monospace;
+
+    text-shadow:
+        0 0 2px rgba(51, 255, 51, 0.7),
+        0 0 5px rgba(51, 255, 51, 0.25);
+}
+
+/* CRT screen */
+
+body {
+    position: relative;
+    background: radial-gradient(
+        ellipse at center,
+        #002200 0%,
+        #001000 70%,
+        #000800 100%
+    );
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 255, 0, 0.03) 0,
+        rgba(0, 255, 0, 0.03) 1px,
+        transparent 2px,
+        transparent 4px
+    );
+
+    z-index: 9999;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+
+    background: radial-gradient(
+        ellipse at center,
+        transparent 60%,
+        rgba(0, 0, 0, 0.35) 100%
+    );
+
+    z-index: 9998;
+}
+
+/* Remove modern styling */
+
+* {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Links */
+
+a {
+    color: var(--bright);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #ccffcc;
+}
+
+/* Panels */
+
+header,
+footer,
+.dashboard-item,
+.music-now-playing,
+.phone-card,
+.chat-room-card,
+.calendar-event-card,
+.news-article,
+.mastodon-item,
+.radio-list {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    color: var(--text);
+}
+
+/* Titles */
+
+.panel-title,
+.panel-title i,
+.gallery-caption,
+.chat-sender,
+.footer-icon,
+.radio-station i {
+    color: var(--bright);
+}
+
+/* Secondary text */
+
+.module-empty,
+.module-placeholder,
+.track-duration,
+.track-artist {
+    color: var(--text-dim);
+}
+
+/* Buttons */
+
+button,
+.module-controls button,
+.gallery-btn,
+.player-controls button,
+.music-controls button,
+.bus-refresh-btn,
+.news-scroll-btn,
+.settings-link-btn {
+    background: var(--panel);
+    color: var(--text);
+    border: 2px solid var(--border);
+    font-family: inherit;
+}
+
+button:hover,
+.module-controls button:hover,
+.gallery-btn:hover,
+.player-controls button:hover,
+.music-controls button:hover,
+.bus-refresh-btn:hover,
+.news-scroll-btn:hover,
+.settings-link-btn:hover {
+    background: var(--border);
+    color: var(--bg);
+}
+
+.player-controls .play-btn,
+.player-controls .pause-btn,
+.settings-link-btn {
+    background: var(--border);
+    color: var(--bg);
+    font-weight: bold;
+}
+
+/* Lists */
+
+.music-track-item,
+.radio-station {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.music-track-item:hover,
+.radio-station:hover {
+    background: #002500;
+}
+
+.music-track-item.active,
+.radio-station.active-station {
+    background: var(--border);
+    color: var(--bg) !important;
+    border-left: 6px solid var(--bright);
+}
+
+.music-track-item.active *,
+.radio-station.active-station * {
+    color: var(--bg) !important;
+}
+
+/* Gallery */
+
+.gallery-slide-img,
+.gallery-thumb {
+    border: 2px solid var(--border);
+}
+
+.gallery-thumb.active {
+    border-color: var(--bright);
+}
+
+/* News */
+
+.news-title a {
+    color: var(--text);
+}
+
+.news-title a:hover {
+    color: var(--bright);
+}
+
+/* Bus tracker */
+
+.bus-timestamp {
+    background: #002000;
+    border: 1px solid var(--border);
+}
+
+.bus-route {
+    background: var(--border);
+    color: var(--bg);
+    font-weight: bold;
+}
+
+/* Phone */
+
+.phone-call,
+.sim-call,
+.video-call,
+.webrtc-call {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    color: var(--text);
+}
+
+.phone-call:hover,
+.sim-call:hover,
+.video-call:hover,
+.webrtc-call:hover {
+    background: var(--border);
+    color: var(--bg);
+}
+
+/* Calendar */
+
+.calendar-today-header {
+    background: #002000;
+    border-bottom: 2px solid var(--border);
+}
+
+.calendar-notification-badge,
+.new-badge {
+    background: var(--bright);
+    color: var(--bg);
+    font-weight: bold;
+}
+
+/* Inputs */
+
+input,
+select,
+textarea {
+    background: #001500;
+    color: var(--text);
+    border: 2px solid var(--border);
+    font-family: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-dim);
+}
+
+input[type="range"] {
+    accent-color: var(--border);
+}
+
+/* Footer */
+
+footer {
+    border-top: 2px solid var(--border);
+}
+
+.footer-icon:hover {
+    background: #002500;
+}
+
+/* Accessibility */
+
+button:focus,
+a:focus,
+select:focus,
+input:focus,
+textarea:focus {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+}
+
+/* Wake lock */
+
+#footerWakeLockBtn i.fa-sun,
+#footerWakeLockBtn .active-sun {
+    color: var(--bright) !important;
+}
+
+/* =========================================================
+   OVERRIDE INLINE INDEX.HTML STYLES
+========================================================= */
+
+header {
+    background: #001800 !important;
+    border-bottom: 2px solid #00cc00 !important;
+}
+
+.search-wrapper {
+    background: #001800 !important;
+    border: 2px solid #00cc00 !important;
+    border-radius: 0 !important;
+}
+
+.search-wrapper input,
+.search-wrapper select {
+    background: #001000 !important;
+    color: #33ff33 !important;
+    border: 1px solid #00cc00 !important;
+}
+
+.search-wrapper img {
+    filter: grayscale(100%) brightness(0.8) sepia(1) hue-rotate(50deg);
+}
+
+.search-button {
+    background: #001800 !important;
+    color: #33ff33 !important;
+    border: 1px solid #00cc00 !important;
+}
+
+.search-button:hover {
+    background: #00cc00 !important;
+    color: #001000 !important;
+}
+
+.header-weather {
+    background: #001800 !important;
+    border: 1px solid #00cc00 !important;
+}
+
+#weather {
+    color: #33ff33 !important;
+}
+
+.customize-link a {
+    background: #001800 !important;
+    color: #33ff33 !important;
+    border: 2px solid #00cc00 !important;
+    border-radius: 0 !important;
+}
+
+.customize-link a:hover {
+    background: #00cc00 !important;
+    color: #001000 !important;
+}
+
+.brand,
+.brand a,
+.subtitle,
+.subtitle a {
+    color: #33ff33 !important;
+}
+
+.site-branding,
+.logo-link,
+.logo-text,
+.handi-logo {
+    color: #99ff99 !important;
+}
+
+footer,
+.footer-bar {
+    background: #001800 !important;
+}
+
+.footer-icon {
+    color: #33ff33 !important;
+    background: transparent !important;
+}
+
+.footer-icon:hover {
+    background: #00cc00 !important;
+    color: #001000 !important;
+}
+
+/* NEWS */
+
+.news-article,
+.news-article *,
+.mastodon-item,
+.mastodon-item * {
+    background-color: transparent !important;
+}
+
+.news-article,
+.mastodon-item {
+    background: #001800 !important;
+    border: 2px solid #00cc00 !important;
+    color: #33ff33 !important;
+}
+
+.news-article a,
+.news-article h1,
+.news-article h2,
+.news-article h3,
+.news-article h4,
+.news-article p,
+.news-article div,
+.mastodon-item a,
+.mastodon-item p,
+.mastodon-item div {
+    color: #33ff33 !important;
+}
+
+.news-article img,
+.mastodon-item img {
+    border: 1px solid #00cc00 !important;
+    border-radius: 0 !important;
+}
+
+.settings-link-btn,
+.settings-link-btn:visited,
+.settings-link-btn:hover,
+.settings-link-btn:active {
+    background: #001800 !important;
+    color: #33ff33 !important;
+    border: 2px solid #00cc00 !important;
+    border-radius: 0 !important;
+}
+
+.settings-link-btn i {
+    color: #33ff33 !important;
+}
+
+.module-controls button {
+    background: #001800 !important;
+    color: #33ff33 !important;
+    border: 2px solid #00cc00 !important;
+    border-radius: 0 !important;
+}
+
+.module-controls button:hover {
+    background: #00cc00 !important;
+    color: #001000 !important;
+}
+
+.module-empty i {
+    color: #33ff33 !important;
+}
+
+.panel-title {
+    color: #33ff33 !important;
+}
+
+#footerDocsBtn,
+#footerScrollDownBtn,
+#footerScrollUpBtn {
+    display: none !important;
+}
+
+.customizeLink a {
+    color: #33ff33 !important;
+}
+
+.radio-station {
+    color: #33ff33 !important;
+    font-size: 1.5rem !important;
+    line-height: 1.5rem !important;
+    padding: 0.5rem !important;
+    font-family: monospace !important;
+}
+
+body > div:nth-child(2),
+body > header,
+body > div:nth-child(4) {
+    font-family: monospace !important;
+    color: #001000 !important;
+}
+
+.mastodon-list {
+    background-color: unset !important;
+}
