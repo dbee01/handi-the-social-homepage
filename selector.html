@@ -20,8 +20,7 @@
                     host === "localhost" ||
                     host === "127.0.0.1" ||
                     host.startsWith("192.168.") ||
-                    host.startsWith("staging.") ||
-                    host.startsWith("senior.")
+                    host.startsWith("staging.")
                 ) {
                     window.PREMIUM_ACTIVE = true;
                     window._premiumChecked = true;
@@ -242,6 +241,21 @@
                 cursor: pointer;
                 font-size: 17px;
                 font-weight: 600;
+            }
+
+            .premium-trial-btn {
+                background: linear-gradient(135deg, #f0c040, #d4a020);
+                color: #1a1a1a;
+                border: none;
+                padding: 10px 24px;
+                border-radius: 40px;
+                cursor: pointer;
+                font-size: 17px;
+                font-weight: 600;
+            }
+
+            .premium-trial-btn:hover {
+                background: linear-gradient(135deg, #e0b030, #c09010);
             }
 
             .apply-btn {
@@ -610,6 +624,9 @@
 
                     <div class="action-buttons" style="margin-bottom: 16px">
                         <button id="resetBtn" class="reset-btn">⟳ Reset</button>
+                        <button id="premiumTrialBtn" class="premium-trial-btn">
+                            ⭐ Add Premium (30 day trial)
+                        </button>
                         <button id="applyBtn" class="apply-btn">
                             ✓ Submit
                         </button>
@@ -627,11 +644,11 @@
 
             function getEnabled() {
                 let mmr = window.getMMR();
-                // On premium-enabled hosts, auto-activate premium modules that are off (0)
+                // On premium-enabled hosts, auto-activate premium modules that are off (0) or disabled (2)
                 if (window.PREMIUM_ACTIVE === true) {
                     let changed = false;
                     PREMIUM_MODULES.forEach((m) => {
-                        if (mmr[m.id] === 0) {
+                        if (mmr[m.id] === 0 || mmr[m.id] === 2) {
                             mmr[m.id] = 1;
                             changed = true;
                         }
@@ -767,6 +784,24 @@
                 );
             }
 
+            function startPremiumTrial() {
+                if (!hasConsent()) {
+                    alert(
+                        "⚠️ Please accept the Privacy Policy to start the Premium trial.",
+                    );
+                    return;
+                }
+                // Activate premium and set 30-day trial expiry
+                let trialEnd = Date.now() + 30 * 24 * 60 * 60 * 1000;
+                localStorage.setItem("handiPremiumTrialEnd", trialEnd);
+                window.PREMIUM_ACTIVE = true;
+                getEnabled(); // auto-activates premium modules
+                renderSelector();
+                alert(
+                    "⭐ Premium trial activated! All Premium modules are now enabled for 30 days.",
+                );
+            }
+
             function applyChanges() {
                 if (!hasConsent()) {
                     alert(
@@ -784,6 +819,9 @@
             document
                 .getElementById("resetBtn")
                 ?.addEventListener("click", resetModules);
+            document
+                .getElementById("premiumTrialBtn")
+                ?.addEventListener("click", startPremiumTrial);
             document
                 .getElementById("applyBtn")
                 ?.addEventListener("click", applyChanges);

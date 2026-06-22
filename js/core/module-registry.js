@@ -81,7 +81,7 @@ window.HANDI_MODULES = [
     icon: "📞",
     desc: "free worldwide calls",
     tier: "premium",
-    defaultEnabled: 1,
+    defaultEnabled: 2,
     settingsConfig: { contacts: [] },
   },
   {
@@ -90,7 +90,7 @@ window.HANDI_MODULES = [
     icon: "🚌",
     desc: "Live bus times",
     tier: "premium",
-    defaultEnabled: 1,
+    defaultEnabled: 2,
     settingsConfig: { routeIds: "", stopIds: "" },
   },
   {
@@ -99,7 +99,7 @@ window.HANDI_MODULES = [
     icon: "📍",
     desc: "Share your location",
     tier: "premium",
-    defaultEnabled: 1,
+    defaultEnabled: 2,
     settingsConfig: { contacts: [] },
   },
 ];
