@@ -20,13 +20,19 @@
         <script>
             // Load theme CSS based on saved preference
             (function () {
-                var theme = localStorage.getItem("handiTheme") || "senior";
-                var css =
-                    theme === "techie" ? "/css/techie.css" : "/css/elderly.css";
-                var link = document.createElement("link");
-                link.rel = "stylesheet";
-                link.href = css;
-                document.head.appendChild(link);
+                try {
+                    var theme = localStorage.getItem("handiTheme") || "senior";
+                    var css =
+                        theme === "techie"
+                            ? "/css/techie.css"
+                            : "/css/elderly.css";
+                    var link = document.createElement("link");
+                    link.rel = "stylesheet";
+                    link.href = css;
+                    document.head.appendChild(link);
+                } catch (e) {
+                    /* localStorage unavailable — no theme CSS applied */
+                }
             })();
         </script>
 
