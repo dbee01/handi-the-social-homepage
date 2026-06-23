@@ -108,9 +108,9 @@ footer,
 .news-article,
 .mastodon-item,
 .radio-list {
-    background: var(--panel);
-    border: 2px solid var(--border);
-    color: var(--text);
+    background: var(--panel) !important;
+    border: 2px solid var(--border) !important;
+    color: var(--text) !important;
 }
 
 /* Titles */
@@ -240,6 +240,17 @@ button:hover,
     color: var(--text);
 }
 
+.phone-name {
+    color: var(--text) !important;
+}
+
+.search-wrapper input,
+.search-wrapper select {
+    background: #001500 !important;
+    color: var(--text) !important;
+    border: unset !important;
+}
+
 .phone-call:hover,
 .sim-call:hover,
 .video-call:hover,
@@ -255,11 +266,25 @@ button:hover,
     border-bottom: 2px solid var(--border);
 }
 
+.calendar-refresh-btn {
+    background: #001500 !important;
+    border: 2px solid var(--border) !important;
+    color: var(--text) !important;
+    font-weight: bold !important;
+    padding: 8px 16px !important;
+    cursor: pointer !important;
+    transition: background 0.3s !important;
+}
+
 .calendar-notification-badge,
 .new-badge {
-    background: var(--bright);
-    color: var(--bg);
-    font-weight: bold;
+    background: unset !important;
+    color: var(--text) !important;
+    font-weight: bold !important;
+}
+
+.calendar-empty i {
+    color: var(--text) !important;
 }
 
 /* Inputs */
@@ -329,7 +354,13 @@ header {
 .search-wrapper select {
     background: #001000 !important;
     color: #33ff33 !important;
-    border: 1px solid #00cc00 !important;
+    border: unset !important;
+}
+
+.bus-item,
+.bus-departures {
+    background: #001800 !important;
+    color: #33ff33 !important;
 }
 
 .search-wrapper img {
@@ -489,6 +520,61 @@ body > header,
 body > div:nth-child(4) {
     font-family: monospace !important;
     color: #001000 !important;
+}
+
+#weather {
+    color: #33ff33 !important;
+}
+
+.bus-switch-btn {
+    color: #33ff33 !important;
+    background-color: unset !important;
+    border-color: unset !important;
+}
+
+header {
+    border-bottom: unset !important;
+}
+
+.radio-station span:last-child {
+    color: unset !important;
+}
+
+.gallery-slide-img {
+    border-color: unset !important;
+}
+
+.gallery-btn {
+    background-color: unset !important;
+    color: unset !important;
+}
+
+.gallery-caption {
+    color: unset !important;
+}
+
+.calendar-empty,
+.calendar-today-header {
+    background-color: unset !important;
+}
+
+.radio-play-btn {
+    background-color: unset !important;
+    color: unset !important;
+    border-color: unset !important;
+}
+
+.customize-link a {
+    border-color: unset !important;
+    background-color: unset !important;
+}
+
+#mastodon-list {
+    border-color: unset !important;
+}
+
+.radio-station span:last-child {
+    border-color: unset !important;
 }
 
 .mastodon-list {

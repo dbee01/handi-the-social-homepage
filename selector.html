@@ -8,6 +8,7 @@
         />
         <title>Dashboard Modules - HandiHomepage</title>
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
+        <link rel="stylesheet" id="themeStylesheet" href="/css/elderly.css" />
         <script src="/js/core/module-registry.js"></script>
         <script>
             // Premium module check for selector — unified Stripe subscription flow
@@ -386,6 +387,54 @@
                 cursor: pointer;
             }
 
+            .theme-selector {
+                margin-bottom: 24px;
+                padding: 16px 20px;
+                background: #f8f9fa;
+                border-radius: 20px;
+                border: 2px solid #e9ecef;
+            }
+            .theme-selector h3 {
+                font-size: 1.2rem;
+                font-weight: 700;
+                margin-bottom: 12px;
+                color: #1a1a2e;
+            }
+            .theme-options {
+                display: flex;
+                gap: 16px;
+            }
+            .theme-option {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 16px;
+                background: white;
+                border: 2px solid #dee2e6;
+                border-radius: 12px;
+                cursor: pointer;
+                font-size: 1.1rem;
+                font-weight: 600;
+                transition: all 0.2s;
+            }
+            .theme-option:hover {
+                border-color: #0047cc;
+            }
+            .theme-option:has(input:checked) {
+                border-color: #0047cc;
+                background: #e8edff;
+            }
+            .theme-option input[type="radio"] {
+                width: 20px;
+                height: 20px;
+                accent-color: #0047cc;
+                cursor: pointer;
+            }
+            .theme-label {
+                user-select: none;
+            }
+
             @media (max-width: 700px) {
                 body {
                     overflow-x: hidden;
@@ -569,6 +618,28 @@
                                     info on any element
                                 </p>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="theme-selector">
+                        <h3>🎨 SELECT THEME</h3>
+                        <div class="theme-options">
+                            <label class="theme-option">
+                                <input
+                                    type="radio"
+                                    name="theme"
+                                    value="senior"
+                                />
+                                <span class="theme-label">Senior</span>
+                            </label>
+                            <label class="theme-option">
+                                <input
+                                    type="radio"
+                                    name="theme"
+                                    value="techie"
+                                />
+                                <span class="theme-label">Techie</span>
+                            </label>
                         </div>
                     </div>
 
@@ -813,6 +884,42 @@
                 if (e.key === "handiMasterModules") {
                     location.reload();
                 }
+            });
+
+            // ========== THEME SELECTOR ==========
+            const THEME_KEY = "handiTheme";
+            const THEME_CSS = {
+                senior: "/css/elderly.css",
+                techie: "/css/techie.css",
+            };
+
+            function getTheme() {
+                return localStorage.getItem(THEME_KEY) || "senior";
+            }
+
+            function setTheme(theme) {
+                localStorage.setItem(THEME_KEY, theme);
+                var link = document.getElementById("themeStylesheet");
+                if (link) link.href = THEME_CSS[theme];
+            }
+
+            // Apply saved theme on load
+            (function initTheme() {
+                var theme = getTheme();
+                setTheme(theme);
+                var radios = document.getElementsByName("theme");
+                for (var i = 0; i < radios.length; i++) {
+                    if (radios[i].value === theme) {
+                        radios[i].checked = true;
+                    }
+                }
+            })();
+
+            // Listen for theme changes
+            document.getElementsByName("theme").forEach(function (radio) {
+                radio.addEventListener("change", function () {
+                    if (this.checked) setTheme(this.value);
+                });
             });
         </script>
     </body>
