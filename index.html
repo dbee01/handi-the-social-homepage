@@ -17,7 +17,18 @@
         <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
         <link rel="stylesheet" href="/css/main.css" />
-        <link rel="stylesheet" href="/css/techie.css" />
+        <script>
+            // Load theme CSS based on saved preference
+            (function () {
+                var theme = localStorage.getItem("handiTheme") || "senior";
+                var css =
+                    theme === "techie" ? "/css/techie.css" : "/css/elderly.css";
+                var link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = css;
+                document.head.appendChild(link);
+            })();
+        </script>
 
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0047cc" />

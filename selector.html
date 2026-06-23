@@ -8,7 +8,6 @@
         />
         <title>Dashboard Modules - HandiHomepage</title>
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
-        <link rel="stylesheet" id="themeStylesheet" href="/css/elderly.css" />
         <script src="/js/core/module-registry.js"></script>
         <script>
             // Premium module check for selector — unified Stripe subscription flow
@@ -959,10 +958,6 @@
 
             // ========== THEME SELECTOR ==========
             const THEME_KEY = "handiTheme";
-            const THEME_CSS = {
-                senior: "/css/elderly.css",
-                techie: "/css/techie.css",
-            };
 
             function getTheme() {
                 return localStorage.getItem(THEME_KEY) || "senior";
@@ -970,14 +965,10 @@
 
             function setTheme(theme) {
                 localStorage.setItem(THEME_KEY, theme);
-                var link = document.getElementById("themeStylesheet");
-                if (link) link.href = THEME_CSS[theme];
             }
 
-            // Apply saved theme on load
             (function initTheme() {
                 var theme = getTheme();
-                setTheme(theme);
                 var radios = document.getElementsByName("theme");
                 for (var i = 0; i < radios.length; i++) {
                     if (radios[i].value === theme) {
