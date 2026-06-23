@@ -519,6 +519,8 @@
                         document.body.appendChild(flash);
                         _alertFlash = flash;
                     }
+                    flash.style.opacity = "1";
+                    flash.style.pointerEvents = "auto";
                     var colors = ["rgba(220,0,0,0.25)", "rgba(220,0,0,0.50)"];
                     var ci = 0;
                     if (flash._interval) clearInterval(flash._interval);
@@ -527,7 +529,6 @@
                         ci = 1 - ci;
                         flash.style.background = colors[ci];
                     }, 400);
-                    // Dismiss on click/touch
                     flash.onclick = window.clearAlert;
                     flash.ontouchstart = function (e) {
                         e.preventDefault();
