@@ -389,7 +389,7 @@
 
             .theme-selector {
                 margin-bottom: 24px;
-                padding: 16px 20px;
+                padding: 20px 24px;
                 background: #f8f9fa;
                 border-radius: 20px;
                 border: 2px solid #e9ecef;
@@ -397,7 +397,7 @@
             .theme-selector h3 {
                 font-size: 1.2rem;
                 font-weight: 700;
-                margin-bottom: 12px;
+                margin-bottom: 14px;
                 color: #1a1a2e;
             }
             .theme-options {
@@ -407,32 +407,95 @@
             .theme-option {
                 flex: 1;
                 display: flex;
+                flex-direction: column;
                 align-items: center;
                 gap: 8px;
-                padding: 10px 16px;
-                background: white;
-                border: 2px solid #dee2e6;
-                border-radius: 12px;
+                padding: 20px 16px;
+                border: 3px solid #dee2e6;
+                border-radius: 16px;
                 cursor: pointer;
                 font-size: 1.1rem;
                 font-weight: 600;
-                transition: all 0.2s;
+                transition: all 0.25s;
+                position: relative;
+                overflow: hidden;
             }
             .theme-option:hover {
-                border-color: #0047cc;
+                transform: translateY(-2px);
             }
-            .theme-option:has(input:checked) {
-                border-color: #0047cc;
-                background: #e8edff;
+            .theme-option .theme-icon {
+                font-size: 2rem;
+                line-height: 1;
+            }
+            .theme-option .theme-desc {
+                font-size: 0.75rem;
+                font-weight: 400;
+                opacity: 0.7;
+                text-align: center;
             }
             .theme-option input[type="radio"] {
                 width: 20px;
                 height: 20px;
                 accent-color: #0047cc;
                 cursor: pointer;
+                position: absolute;
+                top: 10px;
+                right: 10px;
             }
-            .theme-label {
-                user-select: none;
+
+            /* ── Senior theme card ── */
+            .theme-option.theme-senior {
+                background: linear-gradient(160deg, #ffffff 0%, #eaf2ff 100%);
+                border-color: #c4d8f0;
+                color: #0047cc;
+            }
+            .theme-option.theme-senior:hover {
+                border-color: #0047cc;
+                box-shadow: 0 4px 16px rgba(0, 71, 204, 0.15);
+            }
+            .theme-option.theme-senior:has(input:checked) {
+                border-color: #0047cc;
+                background: linear-gradient(160deg, #e8edff 0%, #d0dfff 100%);
+                box-shadow: 0 4px 20px rgba(0, 71, 204, 0.25);
+            }
+
+            /* ── Techie theme card ── */
+            .theme-option.theme-techie {
+                background: linear-gradient(160deg, #001800 0%, #000c00 100%);
+                border-color: #00aa00;
+                color: #33ff33;
+                font-family: "Courier New", monospace;
+                text-shadow: 0 0 3px rgba(51, 255, 51, 0.5);
+            }
+            .theme-option.theme-techie::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                background: repeating-linear-gradient(
+                    to bottom,
+                    transparent 0,
+                    transparent 2px,
+                    rgba(0, 255, 0, 0.04) 3px,
+                    rgba(0, 255, 0, 0.04) 4px
+                );
+                border-radius: 16px;
+            }
+            .theme-option.theme-techie:hover {
+                border-color: #33ff33;
+                box-shadow: 0 0 20px rgba(51, 255, 51, 0.2);
+            }
+            .theme-option.theme-techie:has(input:checked) {
+                border-color: #33ff33;
+                background: linear-gradient(160deg, #002800 0%, #001800 100%);
+                box-shadow: 0 0 24px rgba(51, 255, 51, 0.35),
+                    inset 0 0 30px rgba(51, 255, 51, 0.06);
+            }
+            .theme-option.theme-techie .theme-desc {
+                opacity: 0.6;
+            }
+            .theme-option.theme-techie input[type="radio"] {
+                accent-color: #33ff33;
             }
 
             @media (max-width: 700px) {
@@ -624,21 +687,29 @@
                     <div class="theme-selector">
                         <h3>🎨 SELECT THEME</h3>
                         <div class="theme-options">
-                            <label class="theme-option">
+                            <label class="theme-option theme-senior">
                                 <input
                                     type="radio"
                                     name="theme"
                                     value="senior"
                                 />
+                                <span class="theme-icon">🧑‍🦳</span>
                                 <span class="theme-label">Senior</span>
+                                <span class="theme-desc"
+                                    >High contrast &amp; large type</span
+                                >
                             </label>
-                            <label class="theme-option">
+                            <label class="theme-option theme-techie">
                                 <input
                                     type="radio"
                                     name="theme"
                                     value="techie"
                                 />
+                                <span class="theme-icon">🖥️</span>
                                 <span class="theme-label">Techie</span>
+                                <span class="theme-desc"
+                                    >Green phosphor terminal</span
+                                >
                             </label>
                         </div>
                     </div>
