@@ -728,25 +728,53 @@ app.get("/api/news", async (req, res) => {
     res.type("application/xml").send(response.data);
     console.log("✅ News feed fetched successfully");
   } catch (error) {
+    // Log all available error details for debugging
     console.error("❌ News API error:", error.message);
-    if (error.response) {
-      console.error("Status:", error.response.status);
+    if (error.code) {
+      console.error("   Code:", error.code); // e.g. ENOTFOUND, ECONNREFUSED, ETIMEDOUT
     }
-    // Return a more useful fallback
+    if (error.response) {
+      console.error("   HTTP Status:", error.response.status);
+      console.error("   Headers:", JSON.stringify(error.response.headers));
+    } else if (error.request) {
+      console.error("   No response received (network/DNS/timeout)");
+    }
+    if (error.config) {
+      console.error("   URL:", error.config.url);
+    }
+
+    // Escape user-facing error message to avoid broken XML
+    const escapedMessage = String(error.message)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+
     const fallbackXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
 <channel>
 <title>News (Fallback)</title>
 <description>Unable to fetch live news at this time</description>
 <item>
-<title>⚠️ Cannot reach RSS feed – check server internet</title>
+<title>⚠️ Cannot reach RSS feed</title>
 <link>#</link>
-<description>Error: ${error.message}</description>
+<description>Error: ${escapedMessage}</description>
 <pubDate>${new Date().toUTCString()}</pubDate>
 </item>
 </channel>
 </rss>`;
-    res.type("application/xml").status(200).send(fallbackXml);
+
+    // Guard against double-send if headers already sent
+    if (res.headersSent) {
+      console.error("   ⚠️ Headers already sent, cannot send fallback");
+      return;
+    }
+    try {
+      res.type("application/xml").status(200).send(fallbackXml);
+    } catch (sendError) {
+      console.error("   ⚠️ Failed to send fallback XML:", sendError.message);
+    }
   }
 });
 
@@ -898,4 +926,23 @@ process.on("SIGTERM", () => {
     console.log("Server closed");
     process.exit(0);
   });
+});
+
+// Global handlers to prevent uncaught errors from crashing the process
+process.on("uncaughtException", (err) => {
+  console.error("💥 UNCAUGHT EXCEPTION:", err.message);
+  console.error(err.stack);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("💥 UNHANDLED REJECTION:", reason);
+});
+
+// Express error-handling middleware (must be registered last, with 4 params)
+app.use((err, req, res, _next) => {
+  console.error("💥 Express error:", err.message);
+  console.error(err.stack);
+  if (!res.headersSent) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
