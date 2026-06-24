@@ -87,6 +87,10 @@ export default async function initMastodon(container) {
         postDiv.style.border = "1px solid #e2e8f0";
         postDiv.style.borderRadius = "12px";
         postDiv.style.display = "flex";
+        postDiv.style.flexDirection = "column";
+        postDiv.style.flexWrap = "nowrap";
+        postDiv.style.alignContent = "center";
+        postDiv.style.alignItems = "center";
         postDiv.style.gap = "12px";
 
         postDiv.innerHTML = `
