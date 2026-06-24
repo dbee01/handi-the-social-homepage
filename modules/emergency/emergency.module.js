@@ -47,7 +47,7 @@ export default async function initEmergency(container) {
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> LOCATION';
+  title.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> LOCATE';
   headerRow.appendChild(title);
 
   const headerActions = document.createElement("div");
@@ -262,7 +262,7 @@ export default async function initEmergency(container) {
         `;
     emergencyBtn.innerHTML = `
             <i class="fa-solid fa-mobile-screen" style="font-size: 2rem;"></i>
-            <span>LOCATION SHARE</span>
+            <span>LOCATE</span>
             <span style="font-size: 0.7rem;">mobile only</span>
         `;
     content.appendChild(emergencyBtn);

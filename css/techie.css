@@ -113,6 +113,12 @@ footer,
     color: var(--text) !important;
 }
 
+.calendar-event-desc {
+    text-align: center;
+    color: unset !important;
+    overflow-wrap: anywhere;
+}
+
 /* Titles */
 
 .panel-title,
@@ -176,6 +182,21 @@ button:hover,
     background: var(--panel);
     border: 1px solid var(--border);
     color: var(--text);
+}
+
+.radio-scroll-btn {
+    background: unset !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    display: none;
+}
+
+.news-scroll-btn {
+    background-color: unset !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
 }
 
 .music-track-item:hover,

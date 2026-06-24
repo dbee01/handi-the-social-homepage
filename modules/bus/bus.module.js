@@ -10,7 +10,7 @@ export default async function initBus(container) {
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-solid fa-bus"></i> BUS TRACKER';
+  title.innerHTML = '<i class="fa-solid fa-bus"></i> BUS';
   container.appendChild(title);
 
   const content = document.createElement("div");

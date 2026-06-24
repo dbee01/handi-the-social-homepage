@@ -36,7 +36,7 @@ export default async function initMastodon(container) {
   // Loading state
   content.innerHTML = `
         <div class="mastodon-scroll-wrapper" style="display: flex; flex-direction: column; gap: 8px;">
-            <div id="mastodon-list" class="mastodon-list" style="padding: 4px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff;"></div>
+            <div id="mastodon-list" class="mastodon-list" style="padding: 4px; border-radius: 8px; background: #ffffff;"></div>
         </div>
     `;
 
@@ -84,13 +84,13 @@ export default async function initMastodon(container) {
         postDiv.style.marginBottom = "16px";
         postDiv.style.padding = "16px";
         postDiv.style.background = "#ffffff";
-        postDiv.style.border = "1px solid #e2e8f0";
         postDiv.style.borderRadius = "12px";
         postDiv.style.display = "flex";
         postDiv.style.flexDirection = "column";
         postDiv.style.flexWrap = "nowrap";
         postDiv.style.alignContent = "center";
         postDiv.style.alignItems = "center";
+        postDiv.style.textAlign = "center";
         postDiv.style.gap = "12px";
 
         postDiv.innerHTML = `
