@@ -13,7 +13,7 @@ export default async function initMastodon(container) {
   // Title
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-brands fa-mastodon"></i> SOCIAL MEDIA';
+  title.innerHTML = '<i class="fa-brands fa-mastodon"></i> SOCIAL';
   container.appendChild(title);
 
   // Content wrapper
