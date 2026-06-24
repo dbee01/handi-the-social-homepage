@@ -23,11 +23,18 @@ export default async function initChat(container) {
   let roomUrls =
     settings.chat?.rooms && settings.chat.rooms.length
       ? settings.chat.rooms
-      : ["", "", ""];
+      : [
+          "#the-ple-room-ireland:matrix.org",
+          "#ple-random-ireland:matrix.org",
+          "",
+        ];
   let refreshSeconds = settings.chat?.refreshInterval || 30;
   let homeserver = settings.chat?.homeserver || "https://matrix.org";
-  let username = settings.chat?.username || "";
-  let password = settings.chat?.password || "";
+  let username = settings.chat?.username || "@bigboyfoolish:matrix.org";
+  let password =
+    settings.chat?.password ||
+    (typeof import.meta !== "undefined" && import.meta.env?.VITE_MATRIX_PASS) ||
+    "";
   // Also support legacy accessToken if provided
   let legacyToken = settings.chat?.accessToken || "";
 

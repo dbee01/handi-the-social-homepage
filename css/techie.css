@@ -149,6 +149,25 @@ button,
     font-family: inherit;
 }
 
+.chat-room-header {
+    background-color: var(--panel) !important;
+    border-bottom: 2px solid var(--border);
+    padding: 16px;
+}
+
+.chat-room-header button {
+    background-color: var(--panel) !important;
+    border-bottom: 2px solid var(--border);
+    padding: 16px;
+    border: unset !important;
+}
+
+.chat-message {
+    background-color: var(--panel);
+    border: unset !important;
+    padding: 16px;
+}
+
 button:hover,
 .module-controls button:hover,
 .gallery-btn:hover,

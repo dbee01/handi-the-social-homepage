@@ -84,6 +84,7 @@ export default async function initMastodon(container) {
         postDiv.style.marginBottom = "16px";
         postDiv.style.padding = "16px";
         postDiv.style.background = "#ffffff";
+        postDiv.style.border = "1px solid #e2e8f0";
         postDiv.style.borderRadius = "12px";
         postDiv.style.display = "flex";
         postDiv.style.flexDirection = "column";

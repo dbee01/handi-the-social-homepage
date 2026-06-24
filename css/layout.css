@@ -999,7 +999,7 @@ header {
 .calendar-event-desc {
     text-align: center;
     color: unset !important;
-    overflow-wrap: anywhere;
+    overflow-wrap: anywhere !important;
 }
 
 .calendar-event-title {
