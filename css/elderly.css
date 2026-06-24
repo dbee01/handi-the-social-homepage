@@ -8,6 +8,7 @@
    ELDERLY THEME – High contrast, large type, colors only
 ========================================================= */
 
+/* ---------- BASE ---------- */
 html,
 body {
     font-size: 20px;
@@ -23,18 +24,49 @@ a {
     font-weight: 700;
     text-decoration: none;
 }
-
 a:hover {
     text-decoration: underline;
 }
 
-/* Header theme */
+/* ---------- HEADER ---------- */
 header {
     background: #ffffff;
     border-bottom: 3px solid #0047cc;
 }
 
-/* Dashboard items */
+/* ---------- SEARCH ---------- */
+.search-wrapper {
+    background: #f5f7fa;
+    border: 1px solid #e2e8f0;
+}
+.search-wrapper:focus-within {
+    border-color: #0047cc;
+    box-shadow: 0 0 0 3px rgba(0, 71, 204, 0.2);
+}
+#searchInput::placeholder {
+    color: #94a3b8;
+}
+.search-button:hover {
+    background: #0037a3;
+}
+
+.header-weather {
+    background: #eaf2ff;
+    border: 1px solid #bfd4ff;
+}
+.header-weather i,
+.panel-title i,
+.module-empty i,
+.radio-station i,
+.calendar-empty i {
+    color: #0047cc;
+}
+
+#weather {
+    color: #1e1e1e;
+}
+
+/* ---------- DASHBOARD ITEMS ---------- */
 .dashboard-item {
     background: #ffffff;
     border: 2px solid #cbd5e1;
@@ -45,476 +77,346 @@ header {
     color: #0047cc;
 }
 
-.panel-title i {
-    color: #0047cc;
-}
-
-/* Module controls */
+/* ---------- MODULE CONTROLS ---------- */
 .module-controls button {
     background: #ffffff;
     border: 2px solid #cbd5e1;
     color: #1e293b;
 }
-
 .module-controls button:hover {
     background: #f1f5f9;
     border-color: #0047cc;
 }
-
 .pin-btn.pinned {
     background: orange;
     border-color: #0047cc;
     color: white;
 }
 
-/* Empty state */
+/* ---------- EMPTY STATE ---------- */
 .module-empty {
     color: #475569;
 }
-
-.module-empty i {
-    color: #0047cc;
-}
-
 .settings-link-btn {
     background: #0047cc;
     color: white;
 }
-
 .settings-link-btn:hover {
     background: #0037a3;
 }
+.settings-link-btn i {
+    color: white !important;
+}
 
-/* Gallery */
+/* ---------- GALLERY ---------- */
 .gallery-slide-img {
     border: 3px solid #0047cc;
 }
-
 .gallery-caption {
     color: #0047cc;
 }
-
 .gallery-btn {
-    background: #ffffff;
-    border: 2px solid #0047cc;
-    color: #0047cc;
+    background: #0047cc !important;
+    color: white !important;
 }
-
 .gallery-btn:hover {
-    background: #0047cc;
-    color: #ffffff;
+    opacity: 0.9 !important;
+}
+.gallery-btn.fullscreen {
+    background: #059669 !important;
 }
 
 .gallery-thumb {
     border: 3px solid #cbd5e1;
 }
-
 .gallery-thumb.active {
     border-color: #0047cc;
 }
+.gallery-thumb:hover {
+    border-color: #0047cc;
+}
 
-/* Music */
+/* Lightbox */
+.gallery-lightbox {
+    background: rgba(0, 0, 0, 0.95) !important;
+}
+.gallery-lightbox-caption {
+    color: white !important;
+}
+.gallery-lightbox-close,
+.gallery-lightbox-prev,
+.gallery-lightbox-next {
+    background: rgba(255, 255, 255, 0.95) !important;
+    color: #0047cc !important;
+    border: 3px solid #0047cc !important;
+}
+.gallery-lightbox-close:hover,
+.gallery-lightbox-prev:hover,
+.gallery-lightbox-next:hover {
+    background: #0047cc !important;
+    color: #ffffff !important;
+}
+
+/* ---------- MUSIC ---------- */
+.music-now-playing {
+    background: #f8fafc;
+    border: 2px solid #0047cc;
+}
+.music-now-playing .track-title {
+    font-weight: 700;
+    color: #1e293b;
+}
+.music-now-playing .track-artist {
+    color: #64748b;
+}
+
 .player-controls button,
 .music-controls button {
     background: #ffffff;
     border: 2px solid #0047cc;
     color: #0047cc;
 }
-
 .player-controls button:hover,
 .music-controls button:hover {
     background: #eaf2ff;
 }
-
-.music-track-item {
-    background: #ffffff;
-    border: 2px solid #e2e8f0;
-    color: #1e293b;
-}
-
-.music-track-item:hover {
-    background: #f8fafc;
-    border-color: #0047cc;
-}
-
-.music-track-item.active {
-    background: #1e2a3a !important;
-    color: #ffffff !important;
-    border-left: 4px solid #00d4ff;
-}
-
-/* =========================================================
-   MUSIC PLAYER MODULE - FIXED LAYOUT
-========================================================= */
-
-.music-content {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-/* Now playing panel */
-.music-now-playing {
-    background: #f8fafc;
-    border: 2px solid #0047cc;
-    border-radius: 16px;
-    padding: 16px;
-    text-align: center;
-}
-
-.music-now-playing .track-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 4px;
-}
-
-.music-now-playing .track-artist {
-    font-size: 0.9rem;
-    color: #64748b;
-}
-
-/* Player controls row */
-.player-controls {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-    margin: 8px 0;
-}
-
-.player-controls button {
-    min-width: 64px;
-    min-height: 64px;
-    padding: 0 20px;
-    font-size: 2rem !important;
-    font-weight: 700;
-    background: #ffffff;
-    border: 2px solid #0047cc;
-    color: #0047cc;
-    border-radius: 40px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.player-controls button:hover {
-    background: #0047cc;
-    color: #ffffff;
-}
-
-/* Play/Pause button special */
 .player-controls .play-btn,
 .player-controls .pause-btn {
     background: #0047cc;
     color: white;
-    min-width: 80px;
 }
-
 .player-controls .play-btn:hover,
 .player-controls .pause-btn:hover {
     background: #0037a3;
 }
 
-#music-synth {
-    width: 100%;
-    height: 100px;
-}
-
-#musicScrollUp,
-#musicScrollDown {
-    width: 100%;
-    padding: 1rem 0;
-}
-
-/* Volume control row */
-.music-volume-control {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin: 8px 0;
-}
-
-.music-volume-control label {
-    font-weight: 600;
-}
-
-.music-volume-control input[type="range"] {
-    width: 150px;
-}
-
-/* Playlist */
-.music-track-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 300px;
-    overflow-y: auto;
-    margin-top: 12px;
-}
-
 .music-track-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
     background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
+    border: 2px solid #e2e8f0;
+    color: #1e293b;
 }
-
 .music-track-item:hover {
     background: #f8fafc;
     border-color: #0047cc;
 }
-
 .music-track-item.active {
-    background: #1e2a3a;
+    background: #1e2a3a !important;
+    color: #ffffff !important;
     border-left: 4px solid #00d4ff;
 }
-
 .music-track-item.active .track-name {
     color: white;
 }
-
-.music-track-item .track-name {
-    flex: 1;
-    font-weight: 500;
-}
-
 .music-track-item .track-duration {
-    font-size: 0.8rem;
     color: #64748b;
 }
-
 .music-track-item.active .track-duration {
     color: #94a3b8;
 }
 
-/* Empty state */
-.module-empty {
-    text-align: center;
-    padding: 40px 20px;
-    color: #64748b;
+.music-scroll-btn {
+    background-color: unset !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
 }
 
-.module-empty i {
-    font-size: 3rem;
-    color: #0047cc;
-    margin-bottom: 16px;
-}
-
-.settings-link-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 16px;
-    font-size: medium;
-    padding: 10px 20px;
-    background: #0047cc;
-    color: white;
-    border: none;
-    border-radius: 40px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-/* Mobile */
-@media (max-width: 550px) {
-    .player-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .player-controls button {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .music-volume-control {
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-
-    .music-volume-control input[type="range"] {
-        flex: 1;
-    }
-}
-
-/* Radio */
+/* ---------- RADIO ---------- */
 .radio-station {
     background: #ffffff;
     border: 2px solid #e2e8f0;
     color: #1e293b;
 }
-
 .radio-station:hover {
     background: #f8fafc;
     border-color: #0047cc;
     color: #0047cc;
 }
-
-.radio-station i {
-    color: #0047cc;
-}
-
 .radio-station.active-station {
     color: #ffffff !important;
     border-left: 4px solid #00d4ff;
 }
-
 .radio-list {
     border: 2px solid #e2e8f0;
-}
-
-/* Phone */
-.phone-card {
     background: #ffffff;
-    border: 2px solid #e2e8f0;
 }
-
-.phone-call {
+.radio-play-btn {
     color: white;
+    background: lightgray;
+}
+.radio-play-btn.playing {
+    background: lightgrey;
+}
+.radio-station span:last-child {
+    color: #1e293b;
 }
 
-.sim-call {
-    background: #008000;
+.radio-scroll-btn {
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+}
+.radio-scroll-btn:hover {
+    background: #e2e8f0;
+    border-color: #0047cc;
+}
+.radio-scroll-btn:disabled {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #1e293b;
 }
 
-.sim-call:hover {
-    background: #006400;
-}
-
-.video-call {
-    background: #0047cc;
-}
-
-.video-call:hover {
-    background: #0037a3;
-}
-
-.webrtc-call {
-    background: #f59e0b;
-}
-
-.webrtc-call:hover {
-    background: #d97706;
-}
-
-/* News */
+/* ---------- NEWS / MASTODON ---------- */
 .news-article,
 .mastodon-item {
     background: #ffffff;
     border: 2px solid #e2e8f0;
 }
-
 .news-title a {
     color: #1e293b;
 }
-
 .news-title a:hover {
     color: #0047cc;
 }
-
 .news-scroll-btn {
     background: #f8fafc;
     border: 2px solid #e2e8f0;
 }
-
 .news-scroll-btn:hover {
     background: #e2e8f0;
     border-color: #0047cc;
 }
 
-/* Bus tracker */
+/* ---------- BUS TRACKER ---------- */
 .bus-timestamp {
     background: #eaf2ff;
 }
-
 .bus-route {
     background: #0047cc;
     color: white;
 }
-
 .bus-refresh-btn {
     background: #ffffff;
     border: 2px solid #0047cc;
     color: #0047cc;
 }
-
 .bus-refresh-btn:hover {
     background: #0047cc;
     color: #ffffff;
 }
-
-/* Module placeholder (pre-init) */
-.module-placeholder {
-    color: #64748b;
-}
-
-.module-placeholder i {
+.bus-switch-btn {
+    background: #eaf2ff;
+    border: 2px solid #0047cc;
     color: #0047cc;
-    opacity: 1;
+}
+.bus-switch-btn:hover {
+    background: #0047cc;
+    color: white;
+}
+.bus-item {
+    background: #f8fafc;
 }
 
-/* Chat */
+/* ---------- PHONE ---------- */
+.phone-card {
+    background: #ffffff;
+    border: 3px solid #0047cc !important;
+}
+.phone-avatar {
+    border: 2px solid #0047cc !important;
+}
+.phone-avatar.placeholder {
+    background: #eaf2ff !important;
+    color: #0047cc !important;
+}
+.phone-name {
+    color: #1e293b !important;
+}
+
+.sim-call {
+    background: #008000 !important;
+}
+.sim-call:hover {
+    background: #006400 !important;
+}
+.video-call {
+    background: #0047cc !important;
+}
+.video-call:hover {
+    background: #0037a3 !important;
+}
+.webrtc-call {
+    background: #f59e0b !important;
+}
+.webrtc-call:hover {
+    background: #d97706 !important;
+}
+.phone-call.locked {
+    background: #94a3b8 !important;
+}
+
+/* ---------- CHAT ---------- */
 .chat-room-card {
     background: #ffffff;
     border: 2px solid #e2e8f0;
 }
-
 .chat-room-header {
     background: #f8fafc;
 }
-
 .new-badge {
     background: #dc2626;
     color: white;
 }
-
 .chat-sender {
     color: #0047cc;
 }
+.chat-message {
+    border-bottom: 1px solid #eee;
+}
 
-/* Calendar */
+/* ---------- CALENDAR ---------- */
 .calendar-today-header {
     background: #eaf2ff;
 }
-
 .calendar-notification-badge {
     background: #0047cc;
     color: white;
 }
-
 .calendar-event-card {
     background: #ffffff;
     border: 2px solid #e2e8f0;
 }
+.calendar-refresh-btn {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+}
+.calendar-refresh-btn:hover {
+    background: #e2e8f0;
+}
 
-/* Footer */
+/* ---------- FOOTER ---------- */
 footer {
     background: #ffffff;
     border-top: 2px solid #e2e8f0;
 }
-
 .footer-bar button i {
     font-size: 3rem;
 }
-
 .footer-icon {
     color: #0047cc;
 }
-
 .footer-icon:hover {
     background: #eaf2ff;
 }
 
-/* Focus outlines for accessibility */
+/* ---------- CUSTOMIZE LINK ---------- */
+.customize-link a {
+    background: #0047cc !important;
+    color: white !important;
+}
+.customize-link a:hover {
+    background: #0033aa !important;
+}
+
+/* ---------- ACCESSIBILITY ---------- */
 button:focus,
 a:focus,
 select:focus,
@@ -523,21 +425,40 @@ input:focus {
     outline-offset: 2px;
 }
 
-.settings-link-btn i {
-    color: white !important;
-}
-
-/* Wake lock button states */
-#footerWakeLockBtn i.fa-sun {
-    transition: color 0.2s;
-}
-
+/* ---------- WAKE LOCK ---------- */
 #footerWakeLockBtn i.fa-sun[style*="color: #f59e0b"],
 #footerWakeLockBtn .active-sun {
     color: #f59e0b !important;
-    border: unset;
 }
-
 #footerWakeLockBtn i.fa-sun[style*="color: #0047cc"] {
     color: #0047cc !important;
+}
+
+/* ---------- MISCELLANEOUS ---------- */
+.module-placeholder {
+    color: #64748b;
+}
+.module-placeholder i {
+    color: #0047cc;
+    opacity: 1;
+}
+
+.subtitle a,
+.brand a,
+.logo-link,
+.logo-text,
+.handi-logo {
+    color: #1e1e1e;
+}
+.logo-link:hover {
+    color: #0047cc;
+}
+
+.music-controls button {
+    gap: 0 !important;
+    font-size: medium !important;
+}
+
+.gallery-thumb.active {
+    box-shadow: 0 0 0 2px rgba(0, 71, 204, 0.3) !important;
 }
