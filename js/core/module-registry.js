@@ -55,7 +55,7 @@ window.HANDI_MODULES = [
     icon: "📅",
     desc: "Reminders",
     tier: "free",
-    defaultEnabled: 1,
+    defaultEnabled: 0,
     settingsConfig: { url: "", notificationMinutes: 30 },
   },
   {
@@ -64,7 +64,7 @@ window.HANDI_MODULES = [
     icon: "💬",
     desc: "Messaging",
     tier: "free",
-    defaultEnabled: 1,
+    defaultEnabled: 0,
     settingsConfig: {
       homeserver: "https://matrix.org",
       accessToken: "",
