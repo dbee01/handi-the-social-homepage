@@ -19,7 +19,7 @@ window.HANDI_MODULES = [
     icon: "🎵",
     desc: "Your playlists",
     tier: "free",
-    defaultEnabled: 1,
+    defaultEnabled: 0,
     settingsConfig: { volume: 100, shuffle: false },
   },
   {
