@@ -169,8 +169,7 @@ footer,
 .calendar-event-card,
 .radio-list,
 .search-wrapper,
-.bus-stop-card,
-.gallery-slideshow {
+.bus-stop-card {
     background: var(--color-bg-panel) !important;
     border: 2px solid var(--color-border) !important;
     color: var(--color-text) !important;
@@ -617,6 +616,7 @@ button:active,
     gap: 16px !important;
     align-items: flex-start !important;
     transition: all 0.2s ease !important;
+    flex-direction: column !important;
 }
 
 .calendar-event-card:hover {
@@ -632,7 +632,6 @@ button:active,
     font-weight: bold !important;
     min-width: 120px !important;
     padding-right: 16px !important;
-    border-right: 2px solid var(--color-border-dark) !important;
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
@@ -756,6 +755,7 @@ button:active,
         padding-bottom: 8px !important;
         padding-right: 0 !important;
         justify-content: flex-start !important;
+        width: 100% !important;
     }
 
     .calendar-event-title {

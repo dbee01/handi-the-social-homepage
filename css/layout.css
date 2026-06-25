@@ -959,7 +959,6 @@ header {
 }
 
 .calendar-event-time {
-    max-width: 130px;
     min-width: 100px;
     display: flex;
     align-items: center;

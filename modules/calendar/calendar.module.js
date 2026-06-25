@@ -598,7 +598,7 @@ export default async function initCalendar(container) {
       for (const event of events) {
         const timeStr = formatEventTime(event);
         html += `
-                    <div class="calendar-event-card" style="display: flex; gap: 16px; background: white; border: 2px solid #cbd5e1; border-radius: 16px; padding: 16px; margin-bottom: 12px;">
+                    <div class="calendar-event-card" >
                         <div class="calendar-event-time" style="min-width: 100px; font-weight: 600; color: #0047cc;">
                             <i class="fa-regular fa-clock"></i> ${escapeHtml(timeStr)}
                         </div>

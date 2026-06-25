@@ -391,7 +391,25 @@ header {
 .calendar-refresh-btn:hover {
     background: #e2e8f0;
 }
-
+.calendar-event-time {
+    font-size: 1.2rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.calendar-event-card {
+    display: flex;
+    gap: 16px;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 16px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
 /* ---------- FOOTER ---------- */
 footer {
     background: #ffffff;
