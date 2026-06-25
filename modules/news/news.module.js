@@ -195,8 +195,8 @@ export default async function initNews(container) {
             <div style="font-size:0.75rem;color:#64748b;">${escapeHtml(article.pubDate)}</div>
           </div>
         </div>
-        <h3 style="font-size:1rem;margin:8px0;"><a href="${article.link}" target="_blank" style="color:#1e1e1e;text-decoration:none;">${escapeHtml(article.title)}</a></h3>
-        <p style="color:#475569;font-size:0.85rem;margin:0;">${escapeHtml(article.excerpt)}</p>
+        <h3 style="font-size:1rem;margin:8px0;"><a href="${article.link}" target="_blank" style="text-decoration:none;">${escapeHtml(article.title)}</a></h3>
+        <p style="font-size:0.85rem;margin:0;">${escapeHtml(article.excerpt)}</p>
       `;
       list.appendChild(div);
       return div;

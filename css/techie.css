@@ -789,26 +789,30 @@ button:active,
 .news-article h4,
 .news-article div,
 .news-article span {
-    color: var(--color-text-bright) !important;
+    color: var(--color-primary) !important;
+}
+
+.news-list div h3 a {
+    color: var(--color-info) !important;
 }
 
 /* News titles - even brighter with cyan accent */
 .news-title,
 .news-title a {
-    color: var(--color-tertiary-bright) !important;
+    color: var(--color-primary) !important;
     font-size: var(--font-size-large) !important;
     font-weight: bold !important;
     text-shadow: 0 0 15px rgba(0, 229, 255, 0.2) !important;
 }
 
 .news-title a:hover {
-    color: var(--color-primary-bright) !important;
+    color: var(--color-border) !important;
     text-shadow: 0 0 20px rgba(51, 255, 51, 0.3) !important;
 }
 
 /* News excerpt - slightly dimmer but still readable */
 .news-excerpt {
-    color: var(--color-text) !important;
+    color: var(--color-info) !important;
     font-size: var(--font-size-medium) !important;
     line-height: 1.8 !important;
     opacity: 0.9;
@@ -868,7 +872,6 @@ button:active,
 /* Mastodon links inside posts */
 .mastodon-item a {
     color: var(--color-tertiary-bright) !important;
-    text-decoration: underline !important;
     font-size: var(--font-size-medium) !important;
 }
 
