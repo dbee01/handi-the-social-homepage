@@ -3,6 +3,14 @@
  * Blossom / Soft Feminine Theme
  */
 
+@font-face {
+    font-family: "Playfair Display";
+    src: url("/css/fonts/playfair-display.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}
+
 /* =========================================================
    WOMAN THEME – Soft pinks & light blues, floral aesthetic
 ========================================================= */
@@ -23,7 +31,7 @@ body {
     line-height: 1.7;
     background: #fef9fb;
     color: #3d2c3a;
-    font-family: "Segoe UI", "Helvetica Neue", Roboto, Arial, sans-serif;
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
     --music-synth-hue: 330;
 }
 

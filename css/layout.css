@@ -339,7 +339,6 @@ header {
     max-width: 100% !important;
     height: 280px !important;
     object-fit: contain !important;
-    border: 3px solid #0047cc !important;
     border-radius: 12px !important;
     display: block !important;
     margin: 0 auto !important;
@@ -810,7 +809,6 @@ header {
     width: 100%;
     padding: 12px 0;
     margin: 8px 0;
-    border: 2px solid #cbd5e1;
     border-radius: 12px;
     cursor: pointer;
     font-size: 1rem;
@@ -927,7 +925,6 @@ header {
 
 .chat-message {
     padding: 8px 0;
-    border-bottom: 1px solid #eee;
 }
 
 .chat-refresh-btn {
@@ -1057,7 +1054,6 @@ header {
     align-items: center;
     gap: 12px;
     padding: 12px 0;
-    border-top: 1px solid #e2e8f0;
 }
 
 .bus-route {
@@ -1211,7 +1207,6 @@ footer {
     gap: 12px !important;
     max-width: 100% !important;
     overflow: hidden !important;
-    border: 3px solid #0047cc !important;
     border-radius: 20px !important;
     padding: 16px 24px !important;
     box-sizing: border-box !important;
@@ -1232,7 +1227,6 @@ footer {
     border-radius: 50% !important;
     object-fit: cover !important;
     flex-shrink: 0 !important;
-    border: 2px solid #0047cc !important;
 }
 
 .phone-avatar.placeholder {

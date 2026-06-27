@@ -3,6 +3,28 @@
  * IBM 3278 / Green Phosphor Terminal Theme - Enhanced
  */
 
+@font-face {
+    font-family: "IBM Plex Mono";
+    src: url("/css/fonts/ibm-plex-mono-400.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "IBM Plex Mono";
+    src: url("/css/fonts/ibm-plex-mono-700.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url("/css/fonts/jetbrains-mono.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}
+
 #footerDocsBtn,
 #footerScrollDownBtn,
 #footerScrollUpBtn {
@@ -86,7 +108,8 @@ body {
     line-height: var(--line-height);
     background: var(--color-bg);
     color: var(--color-text);
-    font-family: var(--font-family);
+    font-family:
+        "IBM Plex Mono", "JetBrains Mono", "Consolas", "Courier New", monospace;
     text-shadow:
         0 0 2px rgba(51, 255, 51, 0.7),
         0 0 8px rgba(51, 255, 51, 0.15);

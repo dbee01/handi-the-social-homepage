@@ -575,21 +575,21 @@ export default async function initCalendar(container) {
     content._allEvents = null; // This is set in fetchCalendar after render
 
     let html = `
-            <div class="calendar-today-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 8px 12px; background: #eaf2ff; border-radius: 12px;">
+            <div class="calendar-today-header">
                 <span><i class="fa-regular fa-sun"></i> Today's Events</span>
-                <span class="calendar-notification-badge" style="background: #0047cc; color: white; padding: 4px 8px; border-radius: 20px; font-size: 0.7rem;">🔔 ${notificationMinutes} min warning</span>
+                <span class="calendar-notification-badge">🔔 ${notificationMinutes} min warning</span>
             </div>
         `;
 
     if (events.length === 0) {
       html += `
-                <div class="calendar-empty" style="text-align: center; padding: 30px; background: white; border-radius: 16px; border: 1px solid #e2e8f0;">
-                    <i class="fa-regular fa-calendar-check" style="font-size: 2rem; color: #0047cc;"></i>
+                <div class="calendar-empty">
+                    <i class="fa-regular fa-calendar-check"></i>
                     <p style="margin-top: 12px;">No events scheduled for today.</p>
             `;
 
       if (tomorrowEvents.length > 0) {
-        html += `<p style="margin-top: 8px; font-size: 0.8rem; color: #64748b;">📅 You have ${tomorrowEvents.length} event(s) tomorrow.</p>`;
+        html += `<p>📅 You have ${tomorrowEvents.length} event(s) tomorrow.</p>`;
       }
 
       html += `</div>`;
@@ -599,13 +599,13 @@ export default async function initCalendar(container) {
         const timeStr = formatEventTime(event);
         html += `
                     <div class="calendar-event-card" >
-                        <div class="calendar-event-time" style="min-width: 100px; font-weight: 600; color: #0047cc;">
+                        <div class="calendar-event-time">
                             <i class="fa-regular fa-clock"></i> ${escapeHtml(timeStr)}
                         </div>
-                        <div class="calendar-event-details" style="flex: 1;">
-                            <div class="calendar-event-title" style="font-weight: 700; font-size: 1rem;">${escapeHtml(event.summary || "Untitled Event")}</div>
-                            ${event.location ? `<div class="calendar-event-location" style="font-size: 0.8rem; color: #64748b; margin-top: 4px;"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(event.location)}</div>` : ""}
-                            ${event.description ? `<div class="calendar-event-desc" style="font-size: 0.8rem; color: #475569; margin-top: 6px;">${escapeHtml(event.description.substring(0, 100))}${event.description.length > 100 ? "…" : ""}</div>` : ""}
+                        <div class="calendar-event-details">
+                            <div class="calendar-event-title">${escapeHtml(event.summary || "Untitled Event")}</div>
+                            ${event.location ? `<div class="calendar-event-location"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(event.location)}</div>` : ""}
+                            ${event.description ? `<div class="calendar-event-desc">${escapeHtml(event.description.substring(0, 100))}${event.description.length > 100 ? "…" : ""}</div>` : ""}
                         </div>
                     </div>
                 `;
@@ -615,12 +615,12 @@ export default async function initCalendar(container) {
 
     // Sync info and refresh button
     html += `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding: 8px 4px;">
-                <span style="font-size: 0.7rem; color: #64748b;">
+            <div class="calendar-sync-info">
+                <span>
                     <i class="fa-regular fa-clock"></i> Last synced: ${formatSyncTime()}
                     ${totalEvents > 0 ? ` | ${totalEvents} total events in feed` : ""}
                 </span>
-                <button id="calendarRefreshBtn" class="calendar-refresh-btn" style="padding: 8px 16px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; cursor: pointer; font-weight: 600;">
+                <button id="calendarRefreshBtn" class="calendar-refresh-btn">
                     ⟳ Refresh
                 </button>
             </div>

@@ -3,6 +3,14 @@
  * Campus / Student Theme — Bold yellow & black
  */
 
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url("/css/fonts/atkinson-hyperlegible.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}
+
 /* =========================================================
    STUDENT THEME – High-energy yellow & black, modern edge
 ========================================================= */
@@ -21,7 +29,7 @@ body {
     background: #0d0d0d;
     color: #f5f5f0;
     font-family:
-        "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-family: "Atkinson Hyperlegible", Georgia, serif;
     --music-synth-hue: 51;
 }
 
