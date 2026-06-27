@@ -761,7 +761,7 @@ header {
 }
 
 .gallery-thumb.active {
-    border-color: var(--green);
+    border-color: var(--color-secondary, var(--green));
 }
 
 /* LIGHTBOX */

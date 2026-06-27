@@ -181,10 +181,10 @@ header {
     border-radius: 6px;
 }
 .gallery-thumb.active {
-    border-color: #ffd700;
+    border-color: #ffe44d;
 }
 .gallery-thumb:hover {
-    border-color: #ffd700;
+    border-color: #ffe44d;
 }
 
 /* Lightbox */

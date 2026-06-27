@@ -205,10 +205,10 @@ header {
     border-radius: 8px;
 }
 .gallery-thumb.active {
-    border-color: #d63384;
+    border-color: #87ceeb;
 }
 .gallery-thumb:hover {
-    border-color: #d63384;
+    border-color: #87ceeb;
 }
 
 /* Lightbox */
@@ -575,7 +575,7 @@ input:focus {
 }
 
 .gallery-thumb.active {
-    box-shadow: 0 0 0 2px rgba(214, 51, 132, 0.3) !important;
+    box-shadow: 0 0 0 2px rgba(135, 206, 235, 0.3) !important;
 }
 
 /* Search engine select */
