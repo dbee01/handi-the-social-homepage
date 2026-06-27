@@ -178,7 +178,12 @@ export default async function initMusic(container) {
         const noise = Math.random() * 0.3;
         const heightPercent = Math.min(0.9, value * 0.7 + noise);
         const barHeight = height * heightPercent;
-        const hue = 200 + heightPercent * 60;
+        const hue =
+          parseInt(
+            getComputedStyle(document.body).getPropertyValue(
+              "--music-synth-hue",
+            ),
+          ) || 200;
         ctx.fillStyle = `hsl(${hue}, 80%, 55%)`;
         ctx.fillRect(i * barWidth, height - barHeight, barWidth - 1, barHeight);
       }

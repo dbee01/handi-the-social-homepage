@@ -13,6 +13,9 @@
     display: none !important;
 }
 
+.music-synth {
+}
+
 /* ---------- BASE ---------- */
 html,
 body {
@@ -21,6 +24,7 @@ body {
     background: #fef9fb;
     color: #3d2c3a;
     font-family: "Segoe UI", "Helvetica Neue", Roboto, Arial, sans-serif;
+    --music-synth-hue: 330;
 }
 
 /* Fixed background decorative elements */
