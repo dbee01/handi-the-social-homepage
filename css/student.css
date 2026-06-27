@@ -1,0 +1,557 @@
+/*
+ * Copyright (c) 2026 Handi Homepage
+ * Campus / Student Theme — Bold yellow & black
+ */
+
+/* =========================================================
+   STUDENT THEME – High-energy yellow & black, modern edge
+========================================================= */
+
+#footerDocsBtn,
+#footerScrollDownBtn,
+#footerScrollUpBtn {
+    display: none !important;
+}
+
+/* ---------- BASE ---------- */
+html,
+body {
+    font-size: 17px;
+    line-height: 1.65;
+    background: #0d0d0d;
+    color: #f5f5f0;
+    font-family:
+        "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+a {
+    color: #ffd700;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+a:hover {
+    border-bottom-color: #ffd700;
+}
+
+/* ---------- HEADER ---------- */
+header {
+    background: #1a1a1a;
+    border-bottom: 3px solid #ffd700;
+}
+
+/* ---------- SEARCH ---------- */
+.search-wrapper {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 8px;
+}
+.search-wrapper:focus-within {
+    border-color: #ffd700;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+#searchInput::placeholder {
+    color: #777;
+}
+.search-button {
+    background: #ffd700;
+    color: #0d0d0d;
+    border: none;
+    font-weight: 700;
+}
+.search-button:hover {
+    background: #ffe44d;
+}
+#themeSwitcher {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    color: #ffd700;
+}
+#themeSwitcher:hover {
+    background: #ffd700;
+    color: #0d0d0d;
+}
+
+.header-weather {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+}
+.header-weather i,
+.panel-title i,
+.module-empty i,
+.radio-station i,
+.calendar-empty i {
+    color: #ffd700;
+}
+
+#weather {
+    color: #f5f5f0;
+}
+
+/* ---------- DASHBOARD ITEMS ---------- */
+.dashboard-item {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(255, 215, 0, 0.05);
+}
+
+.panel-title {
+    color: #ffd700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ---------- MODULE CONTROLS ---------- */
+.module-controls button {
+    background: #222;
+    border: 2px solid #444;
+    color: #f5f5f0;
+    border-radius: 8px;
+}
+.module-controls button:hover {
+    background: #333;
+    border-color: #ffd700;
+}
+.pin-btn.pinned {
+    background: #ffd700;
+    border-color: #ffd700;
+    color: #0d0d0d;
+}
+
+/* ---------- EMPTY STATE ---------- */
+.module-empty {
+    color: #888;
+}
+.settings-link-btn {
+    background: #ffd700;
+    color: #0d0d0d;
+    border-radius: 8px;
+    font-weight: 700;
+}
+.settings-link-btn:hover {
+    background: #ffe44d;
+}
+.settings-link-btn i {
+    color: #0d0d0d !important;
+}
+
+/* ---------- GALLERY ---------- */
+.gallery-slide-img {
+    border: 3px solid #ffd700;
+    border-radius: 8px;
+}
+.gallery-caption {
+    color: #ffd700;
+}
+.gallery-btn {
+    background: #ffd700 !important;
+    color: #0d0d0d !important;
+    border-radius: 8px;
+    font-weight: 700;
+}
+.gallery-btn:hover {
+    background: #ffe44d !important;
+}
+.gallery-btn.fullscreen {
+    background: #444 !important;
+    color: #ffd700 !important;
+}
+
+.gallery-thumb {
+    border: 3px solid #333;
+    border-radius: 6px;
+}
+.gallery-thumb.active {
+    border-color: #ffd700;
+}
+.gallery-thumb:hover {
+    border-color: #ffd700;
+}
+
+/* Lightbox */
+.gallery-lightbox {
+    background: rgba(0, 0, 0, 0.97) !important;
+}
+.gallery-lightbox-caption {
+    color: white !important;
+}
+.gallery-lightbox-close,
+.gallery-lightbox-prev,
+.gallery-lightbox-next {
+    background: rgba(30, 30, 30, 0.95) !important;
+    color: #ffd700 !important;
+    border: 3px solid #ffd700 !important;
+}
+.gallery-lightbox-close:hover,
+.gallery-lightbox-prev:hover,
+.gallery-lightbox-next:hover {
+    background: #ffd700 !important;
+    color: #0d0d0d !important;
+}
+
+/* ---------- MUSIC ---------- */
+.music-now-playing {
+    background: #1a1a1a;
+    border: 2px solid #ffd700;
+    border-radius: 10px;
+}
+.music-now-playing .track-title {
+    font-weight: 700;
+    color: #f5f5f0;
+}
+.music-now-playing .track-artist {
+    color: #aaa;
+}
+
+.player-controls button,
+.music-controls button {
+    background: #222;
+    border: 2px solid #ffd700;
+    color: #ffd700;
+    border-radius: 50%;
+}
+.player-controls button:hover,
+.music-controls button:hover {
+    background: #333;
+}
+.player-controls .play-btn,
+.player-controls .pause-btn {
+    background: #ffd700;
+    color: #0d0d0d;
+}
+.player-controls .play-btn:hover,
+.player-controls .pause-btn:hover {
+    background: #ffe44d;
+}
+
+.music-track-item {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    color: #f5f5f0;
+    border-radius: 8px;
+}
+.music-track-item:hover {
+    background: #222;
+    border-color: #ffd700;
+}
+.music-track-item.active {
+    background: #2a2a00 !important;
+    color: #ffffff !important;
+    border-left: 4px solid #ffd700;
+}
+.music-track-item.active .track-name {
+    color: white;
+}
+.music-track-item .track-duration {
+    color: #888;
+}
+.music-track-item.active .track-duration {
+    color: #ccc;
+}
+
+.music-scroll-btn {
+    background-color: unset !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+}
+
+/* ---------- RADIO ---------- */
+.radio-station {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    color: #f5f5f0;
+    border-radius: 8px;
+}
+.radio-station:hover {
+    background: #222;
+    border-color: #ffd700;
+    color: #ffd700;
+}
+.radio-station.active-station {
+    color: #ffffff !important;
+    border-left: 4px solid #ffd700;
+}
+.radio-list {
+    border: 2px solid #333;
+    background: #1a1a1a;
+    border-radius: 8px;
+}
+.radio-play-btn {
+    color: #0d0d0d;
+    background: #555;
+}
+.radio-play-btn.playing {
+    background: #ffd700;
+}
+.radio-station span:last-child {
+    color: #f5f5f0;
+}
+
+.radio-scroll-btn {
+    background: #222;
+    border: 2px solid #444;
+    border-radius: 8px;
+}
+.radio-scroll-btn:hover {
+    background: #333;
+    border-color: #ffd700;
+}
+.radio-scroll-btn:disabled {
+    background: #1a1a1a;
+    border-color: #333;
+    color: #666;
+}
+
+/* ---------- NEWS / MASTODON ---------- */
+.news-article,
+.mastodon-item {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 8px;
+}
+.news-title a {
+    color: #f5f5f0;
+}
+.news-title a:hover {
+    color: #ffd700;
+}
+.news-scroll-btn {
+    background: #222;
+    border: 2px solid #444;
+    border-radius: 8px;
+    font-size: 16px;
+}
+.news-scroll-btn:hover {
+    background: #333;
+    border-color: #ffd700;
+}
+
+/* ---------- BUS TRACKER ---------- */
+.bus-timestamp {
+    background: #222;
+    border-radius: 6px;
+    color: #ffd700;
+}
+.bus-route {
+    background: #ffd700;
+    color: #0d0d0d;
+    border-radius: 6px;
+    font-weight: 700;
+}
+.bus-refresh-btn {
+    background: #1a1a1a;
+    border: 2px solid #ffd700;
+    color: #ffd700;
+    border-radius: 8px;
+}
+.bus-refresh-btn:hover {
+    background: #ffd700;
+    color: #0d0d0d;
+}
+.bus-switch-btn {
+    background: #222;
+    border: 2px solid #ffd700;
+    color: #ffd700;
+    border-radius: 8px;
+}
+.bus-switch-btn:hover {
+    background: #ffd700;
+    color: #0d0d0d;
+}
+.bus-item {
+    background: #1a1a1a;
+    border-radius: 6px;
+}
+
+/* ---------- PHONE ---------- */
+.phone-card {
+    background: #1a1a1a;
+    border: 3px solid #ffd700 !important;
+    border-radius: 12px;
+}
+.phone-avatar {
+    border: 2px solid #ffd700 !important;
+}
+.phone-avatar.placeholder {
+    background: #222 !important;
+    color: #ffd700 !important;
+}
+.phone-name {
+    color: #f5f5f0 !important;
+}
+
+.sim-call {
+    background: #444 !important;
+    color: #ffd700 !important;
+}
+.sim-call:hover {
+    background: #555 !important;
+}
+.video-call {
+    background: #ffd700 !important;
+    color: #0d0d0d !important;
+}
+.video-call:hover {
+    background: #ffe44d !important;
+}
+.webrtc-call {
+    background: #e6a800 !important;
+}
+.webrtc-call:hover {
+    background: #cc9400 !important;
+}
+.phone-call.locked {
+    background: #333 !important;
+    color: #666 !important;
+}
+
+/* ---------- CHAT ---------- */
+.chat-room-card {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 10px;
+}
+.chat-room-header {
+    background: #222;
+}
+.new-badge {
+    background: #ffd700;
+    color: #0d0d0d;
+    border-radius: 6px;
+    font-weight: 700;
+}
+.chat-sender {
+    color: #ffd700;
+}
+.chat-message {
+    border-bottom: 1px solid #333;
+}
+
+/* ---------- CALENDAR ---------- */
+.calendar-today-header {
+    background: #222;
+    border-radius: 10px;
+}
+.calendar-notification-badge {
+    background: #ffd700;
+    color: #0d0d0d;
+}
+.calendar-event-card {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 10px;
+}
+.calendar-refresh-btn {
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 8px;
+}
+.calendar-refresh-btn:hover {
+    background: #333;
+}
+.calendar-event-time {
+    font-size: 1.2rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.calendar-event-card {
+    display: flex;
+    gap: 16px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 10px;
+    padding: 16px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* ---------- FOOTER ---------- */
+footer {
+    background: #1a1a1a;
+    border-top: 2px solid #ffd700;
+}
+.footer-bar button i {
+    font-size: 3rem;
+}
+.footer-icon {
+    color: #ffd700;
+}
+.footer-icon:hover {
+    background: #222;
+}
+
+/* ---------- CUSTOMIZE LINK ---------- */
+.customize-link a {
+    background: #ffd700 !important;
+    color: #0d0d0d !important;
+    border-radius: 8px;
+    font-weight: 700;
+}
+.customize-link a:hover {
+    background: #ffe44d !important;
+}
+
+/* ---------- ACCESSIBILITY ---------- */
+button:focus,
+a:focus,
+select:focus,
+input:focus {
+    outline: 4px solid #ffd700;
+    outline-offset: 2px;
+}
+
+/* ---------- WAKE LOCK ---------- */
+#footerWakeLockBtn i.fa-sun[style*="color: #f59e0b"],
+#footerWakeLockBtn .active-sun {
+    color: #ffd700 !important;
+}
+#footerWakeLockBtn i.fa-sun[style*="color: #0047cc"] {
+    color: #ffd700 !important;
+}
+
+/* ---------- MISCELLANEOUS ---------- */
+.module-placeholder {
+    color: #888;
+}
+.module-placeholder i {
+    color: #ffd700;
+    opacity: 1;
+}
+
+.subtitle a,
+.brand a,
+.logo-link,
+.logo-text,
+.handi-logo {
+    color: #f5f5f0;
+}
+.logo-link:hover {
+    color: #ffd700;
+}
+
+.music-controls button {
+    gap: 0 !important;
+    font-size: medium !important;
+}
+
+.gallery-thumb.active {
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3) !important;
+}
+
+/* Search engine select */
+#searchEngine {
+    max-width: 130px;
+}
+#searchEngine option {
+    font-size: 16px;
+    background-color: #1a1a1a;
+    color: #f5f5f0;
+}

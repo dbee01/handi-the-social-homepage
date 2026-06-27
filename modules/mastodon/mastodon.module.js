@@ -36,7 +36,7 @@ export default async function initMastodon(container) {
   // Loading state
   content.innerHTML = `
         <div class="mastodon-scroll-wrapper" style="display: flex; flex-direction: column; gap: 8px;">
-            <div id="mastodon-list" class="mastodon-list" style="padding: 4px; border-radius: 8px; background: #ffffff;"></div>
+            <div id="mastodon-list" class="mastodon-list" ></div>
         </div>
     `;
 
@@ -83,8 +83,6 @@ export default async function initMastodon(container) {
         postDiv.className = "mastodon-item";
         postDiv.style.marginBottom = "16px";
         postDiv.style.padding = "16px";
-        postDiv.style.background = "#ffffff";
-        postDiv.style.border = "1px solid #e2e8f0";
         postDiv.style.borderRadius = "12px";
         postDiv.style.display = "flex";
         postDiv.style.flexDirection = "column";
@@ -95,11 +93,11 @@ export default async function initMastodon(container) {
         postDiv.style.gap = "12px";
 
         postDiv.innerHTML = `
-                    ${image ? `<img class="mastodon-image" src="${image}" alt="" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;" onerror="this.style.display='none'">` : '<div style="width: 80px; height: 80px; background: #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-link"></i></div>'}
+                    ${image ? `<img class="mastodon-image" src="${image}" alt="" style="width: 200px; height: auto; object-fit: cover; border-radius: 8px;" onerror="this.style.display='none'">` : '<div ><i class="fa-solid fa-link"></i></div>'}
                     <div class="mastodon-body" style="flex: 1;">
-                        <a class="mastodon-title" href="${urlLink}" target="_blank" rel="noopener noreferrer" style="font-weight: 700; color: #0047cc; text-decoration: none; display: block; margin-bottom: 6px;">${escapeHtml(titleText)}</a>
-                        ${provider ? `<div class="mastodon-provider" style="font-size: 0.75rem; color: #64748b; margin-bottom: 6px;">${escapeHtml(provider)}</div>` : ""}
-                        ${shortDescription ? `<div class="mastodon-desc" style="color: #475569; font-size: 0.85rem;">${escapeHtml(shortDescription)}</div>` : ""}
+                        <a class="mastodon-title" href="${urlLink}" target="_blank" rel="noopener noreferrer" >${escapeHtml(titleText)}</a>
+                        ${provider ? `<div class="mastodon-provider" >${escapeHtml(provider)}</div>` : ""}
+                        ${shortDescription ? `<div class="mastodon-desc" >${escapeHtml(shortDescription)}</div>` : ""}
                     </div>
                 `;
         list.appendChild(postDiv);

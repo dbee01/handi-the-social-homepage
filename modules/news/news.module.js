@@ -172,9 +172,9 @@ export default async function initNews(container) {
 
     content.innerHTML = `
       <div class="news-scroll-wrapper" style="display:flex;flex-direction:column;gap:8px;">
-        <button id="newsScrollUp" class="news-scroll-btn" style="width:100%;padding:12px;background:#e2e8f0;border:none;border-radius:12px;cursor:pointer;font-size:1rem;font-weight:bold;">▲ Scroll Up</button>
+        <button id="newsScrollUp" class="news-scroll-btn">▲ Scroll Up</button>
         <div id="newsList" class="news-list"></div>
-        <button id="newsScrollDown" class="news-scroll-btn" style="width:100%;padding:12px;background:#e2e8f0;border:none;border-radius:12px;cursor:pointer;font-size:1rem;font-weight:bold;">▼ Scroll Down</button>
+        <button id="newsScrollDown" class="news-scroll-btn">▼ Scroll Down</button>
       </div>
     `;
 
@@ -185,18 +185,16 @@ export default async function initNews(container) {
     const articleEls = articles.map((article) => {
       const div = document.createElement("div");
       div.className = "news-article";
-      div.style.cssText =
-        "margin-bottom:16px;padding:16px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;";
       div.innerHTML = `
         <div style="display:flex;gap:12px;margin-bottom:12px;">
-          ${article.imageUrl ? `<img src="${article.imageUrl}" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" onerror="this.style.display='none'">` : '<div style="width:60px;height:60px;background:#e2e8f0;border-radius:8px;"></div>'}
+          ${article.imageUrl ? `<img src="${article.imageUrl}" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" onerror="this.style.display='none'">` : '<div style="width:120px;height:auto;"></div>'}
           <div style="flex:1;">
-            <div style="font-weight:700;color:#0047cc;">${escapeHtml(sourceDisplay)}</div>
-            <div style="font-size:0.75rem;color:#64748b;">${escapeHtml(article.pubDate)}</div>
+            <div>${escapeHtml(sourceDisplay)}</div>
+            <div>${escapeHtml(article.pubDate)}</div>
           </div>
         </div>
-        <h3 style="font-size:1rem;margin:8px0;"><a href="${article.link}" target="_blank" style="text-decoration:none;">${escapeHtml(article.title)}</a></h3>
-        <p style="font-size:0.85rem;margin:0;">${escapeHtml(article.excerpt)}</p>
+        <h3><a href="${article.link}" target="_blank">${escapeHtml(article.title)}</a></h3>
+        <p>${escapeHtml(article.excerpt)}</p>
       `;
       list.appendChild(div);
       return div;
@@ -210,10 +208,10 @@ export default async function initNews(container) {
       // Disable buttons at boundaries
       const upBtn = document.getElementById("newsScrollUp");
       const downBtn = document.getElementById("newsScrollDown");
-      if (upBtn) upBtn.style.opacity = currentStart === 0 ? "0.3" : "1";
+      if (upBtn) upBtn.style.opacity = currentStart === 0 ? "0.7" : "1";
       if (downBtn)
         downBtn.style.opacity =
-          currentStart + VISIBLE >= articleEls.length ? "0.3" : "1";
+          currentStart + VISIBLE >= articleEls.length ? "0.7" : "1";
     }
 
     updateVisibility();

@@ -277,7 +277,7 @@ button,
     border-radius: var(--border-radius-sm) !important;
     font-family: var(--font-family);
     font-size: var(--font-size-medium) !important;
-    padding: 14px 24px !important;
+    padding: 10px !important;
     cursor: pointer;
     transition: all 0.2s ease;
     text-shadow: 0 0 5px rgba(51, 255, 51, 0.3);
@@ -293,7 +293,7 @@ button,
     border: 2px solid var(--color-border) !important;
     border-radius: var(--border-radius-sm) !important;
     font-family: var(--font-family);
-    font-size: var(--font-size-medium) !important;
+    font-size: 16px !important;
     padding: 14px 24px !important;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1032,7 +1032,29 @@ button:active,
     min-width: 48px !important;
 }
 
+#searchEngine {
+    max-width: 130px;
+}
+
+#searchEngine option {
+    font-size: 16px;
+    background-color: var(--color-bg);
+}
+
 .search-button:hover {
+    background: var(--color-border) !important;
+    color: var(--color-bg) !important;
+}
+
+#themeSwitcher {
+    background: var(--color-bg-panel) !important;
+    border: 1px solid var(--color-border) !important;
+    border-radius: var(--border-radius-sm) !important;
+    color: var(--color-text) !important;
+    transition: all 0.2s ease;
+}
+
+#themeSwitcher:hover {
     background: var(--color-border) !important;
     color: var(--color-bg) !important;
 }

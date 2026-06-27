@@ -22,11 +22,15 @@
             (function () {
                 try {
                     var theme = localStorage.getItem("handiTheme") || "senior";
-                    var css =
-                        theme === "techie"
-                            ? "/css/techie.css"
-                            : "/css/elderly.css";
+                    var themes = {
+                        senior: "/css/elderly.css",
+                        techie: "/css/techie.css",
+                        woman: "/css/woman.css",
+                        student: "/css/student.css",
+                    };
+                    var css = themes[theme] || themes.senior;
                     var link = document.createElement("link");
+                    link.id = "theme-link";
                     link.rel = "stylesheet";
                     link.href = css;
                     document.head.appendChild(link);
@@ -101,20 +105,22 @@
                         placeholder="Search privately..."
                     />
                     <select id="searchEngine">
-                        <option value="startpage">Startpage</option>
                         <option value="qwant">Qwant</option>
+                        <option value="startpage">Startpage</option>
                         <option value="ecosia">Ecosia</option>
                         <option value="mojeek">Mojeek</option>
                     </select>
-                    <img
-                        id="searchEngineLogo"
-                        src="/images/startpage.jpg"
-                        alt="Startpage"
-                    />
                     <button id="searchButton" class="search-button">
                         <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
+                <button
+                    id="themeSwitcher"
+                    class="theme-switcher-btn"
+                    title="Switch theme (Elderly / Terminal)"
+                >
+                    <i class="fa-solid fa-palette"></i>
+                </button>
             </div>
             <div class="header-weather">
                 <i class="fa-solid fa-cloud-sun"></i>
@@ -292,20 +298,20 @@
                     const q = searchInput.value.trim();
                     if (!q) return;
                     const urls = {
-                        startpage: `https://www.startpage.com/sp/search?query=${encodeURIComponent(q)}`,
                         qwant: `https://www.qwant.com/?q=${encodeURIComponent(q)}`,
+                        startpage: `https://www.startpage.com/sp/search?query=${encodeURIComponent(q)}`,
                         ecosia: `https://www.ecosia.org/search?q=${encodeURIComponent(q)}`,
                         mojeek: `https://www.mojeek.com/search?q=${encodeURIComponent(q)}`,
                     };
                     window.open(
-                        urls[searchEngine.value] || urls.startpage,
+                        urls[searchEngine.value] || urls.qwant,
                         "_blank",
                     );
                 };
                 searchBtn.onclick = doSearch;
-                searchInput.onkeypress = (e) => {
+                searchInput.addEventListener("keydown", (e) => {
                     if (e.key === "Enter") doSearch();
-                };
+                });
             }
 
             // ========== GLOBAL TEST: alertTrigger for calendar alerts ==========
@@ -538,6 +544,38 @@
                 if (window.location.pathname.includes("/selector.html")) return;
                 localStorage.setItem("handiPopupShown", "true");
                 window.location.href = "/selector.html";
+            })();
+        </script>
+        <!-- ========== THEME SWITCHER (paint icon in header) ========== -->
+        <script>
+            (function () {
+                var btn = document.getElementById("themeSwitcher");
+                var link = document.getElementById("theme-link");
+                if (!btn || !link) return;
+
+                var order = ["senior", "techie", "woman", "student"];
+                var urls = {
+                    senior: "/css/elderly.css",
+                    techie: "/css/techie.css",
+                    woman: "/css/woman.css",
+                    student: "/css/student.css",
+                };
+
+                btn.addEventListener("click", function () {
+                    var current =
+                        localStorage.getItem("handiTheme") || "senior";
+                    var idx = order.indexOf(current);
+                    var next = order[(idx + 1) % order.length];
+
+                    link.href = urls[next];
+                    localStorage.setItem("handiTheme", next);
+
+                    // Pop animation for visual feedback
+                    btn.classList.add("theme-switched");
+                    setTimeout(function () {
+                        btn.classList.remove("theme-switched");
+                    }, 400);
+                });
             })();
         </script>
     </body>

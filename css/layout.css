@@ -46,6 +46,8 @@ header {
     flex: 1 !important;
     display: flex !important;
     justify-content: center !important;
+    align-items: center !important;
+    gap: 10px !important;
     order: 2 !important;
 }
 
@@ -74,10 +76,11 @@ header {
     border: 1px solid #ccc;
 }
 
-#searchEngineLogo {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
+#themeSwitcher {
+    width: 48px;
+    padding: 0;
+    flex-shrink: 0;
+    align-self: stretch;
 }
 
 .search-button {
@@ -148,7 +151,7 @@ header {
         flex: 1;
         order: 2;
     }
-    #searchEngineLogo {
+    #themeSwitcher {
         order: 3;
     }
     .search-button {
@@ -398,6 +401,11 @@ header {
 
 .gallery-btn:hover {
     opacity: 0.9 !important;
+}
+
+.mastodon-provider {
+    font-size: 0.9rem !important;
+    font-weight: 800;
 }
 
 /* Full Screen button - big and prominent for elderly */

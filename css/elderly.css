@@ -279,6 +279,7 @@ header {
 .news-scroll-btn {
     background: #f8fafc;
     border: 2px solid #e2e8f0;
+    font-size: 16px;
 }
 .news-scroll-btn:hover {
     background: #e2e8f0;

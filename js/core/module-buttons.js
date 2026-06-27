@@ -103,7 +103,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
             z-index: 10001;
             display: none;
             align-items: center;
@@ -114,7 +113,6 @@
     modal.style.cssText = `
             max-width: 90%;
             width: 500px;
-            background: #ffffff;
             border-radius: 24px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             padding: 0;
@@ -132,7 +130,7 @@
             </div>
             <div class="help-modal-body" style="padding: 20px;"></div>
             <div style="padding: 12px 20px 20px; text-align: center;">
-                <button class="help-modal-ok" style="background: #0047cc; color: white; border: none; border-radius: 40px; padding: 8px 24px; font-size: 0.9rem; cursor: pointer; font-weight: bold;">Got it</button>
+                <button class="help-modal-ok" style="border: none; border-radius: 40px; padding: 8px 24px; font-size: 0.9rem; cursor: pointer; font-weight: bold;">Got it</button>
             </div>
         `;
     modalOverlay.appendChild(modal);
@@ -304,7 +302,6 @@
       btn.style.width = "44px";
       btn.style.height = "44px";
       btn.style.border = "2px solid #cbd5e1";
-      btn.style.background = "#ffffff";
       btn.style.borderRadius = "12px";
       btn.style.fontSize = "1.2rem";
       btn.style.cursor = "pointer";
