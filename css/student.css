@@ -24,6 +24,20 @@ body {
         "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+/* Fixed background graduation cap */
+body::after {
+    content: "\f19d";
+    font-family: "Font Awesome 7 Free";
+    font-weight: 900;
+    position: fixed;
+    bottom: 40px;
+    right: 60px;
+    font-size: 480px;
+    color: rgba(255, 215, 0, 0.1);
+    pointer-events: none;
+    z-index: 0;
+}
+
 a {
     color: #ffd700;
     font-weight: 700;
