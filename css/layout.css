@@ -850,6 +850,13 @@ header {
     margin-bottom: 12px;
 }
 
+.news-article a,
+.mastodon-item a {
+    color: inherit;
+    text-decoration: none;
+    font-weight: normal;
+}
+
 .news-header {
     display: flex;
     gap: 14px;
