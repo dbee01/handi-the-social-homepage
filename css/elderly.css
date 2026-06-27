@@ -4,6 +4,12 @@
  * See the LICENSE file in the repository root for full details.
  */
 
+#footerDocsBtn,
+#footerScrollDownBtn,
+#footerScrollUpBtn {
+    display: none !important;
+}
+
 /* =========================================================
    ELDERLY THEME – High contrast, large type, colors only
 ========================================================= */

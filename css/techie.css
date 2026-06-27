@@ -3,6 +3,12 @@
  * IBM 3278 / Green Phosphor Terminal Theme - Enhanced
  */
 
+#footerDocsBtn,
+#footerScrollDownBtn,
+#footerScrollUpBtn {
+    display: none !important;
+}
+
 /* =========================================================
    IBM 3278 / GREEN PHOSPHOR TERMINAL - ENHANCED
    with pixel aesthetics, rounded corners, and full palette
@@ -1323,12 +1329,6 @@ textarea:focus {
 
 .panel-title {
     color: var(--color-primary-bright) !important;
-}
-
-#footerDocsBtn,
-#footerScrollDownBtn,
-#footerScrollUpBtn {
-    display: none !important;
 }
 
 .radio-station {
