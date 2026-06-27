@@ -162,7 +162,22 @@ body::after {
     z-index: 9998;
 }
 
-/* Pied Piper background icon */
+/* ---------- HELP MODAL ---------- */
+.help-modal-overlay {
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+.help-modal {
+    background: var(--color-bg-panel) !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border) !important;
+}
+.help-modal-ok {
+    background: var(--color-primary) !important;
+    color: var(--color-bg) !important;
+}
+.help-modal-close:hover {
+    background: var(--color-bg-hover) !important;
+}
 html::after {
     content: "";
     position: fixed;

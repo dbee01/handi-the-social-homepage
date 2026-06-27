@@ -35,6 +35,22 @@ body {
     --music-synth-hue: 330;
 }
 
+/* ---------- HELP MODAL ---------- */
+.help-modal-overlay {
+    background: rgba(30, 10, 25, 0.4) !important;
+}
+.help-modal {
+    background: #ffffff !important;
+    color: #3d2c3a !important;
+}
+.help-modal-ok {
+    background: #d63384 !important;
+    color: #ffffff !important;
+}
+.help-modal-close:hover {
+    background: #fff0f4 !important;
+}
+
 /* Fixed background decorative elements */
 body::before {
     content: "";

@@ -474,6 +474,22 @@ input:focus {
     color: #0047cc !important;
 }
 
+/* ---------- HELP MODAL ---------- */
+.help-modal-overlay {
+    background: rgba(0, 0, 0, 0.3) !important;
+}
+.help-modal {
+    background: #ffffff !important;
+    color: #1e1e1e !important;
+}
+.help-modal-ok {
+    background: #0047cc !important;
+    color: #ffffff !important;
+}
+.help-modal-close:hover {
+    background: #f1f5f9 !important;
+}
+
 /* ---------- MISCELLANEOUS ---------- */
 .module-placeholder {
     color: #64748b;
