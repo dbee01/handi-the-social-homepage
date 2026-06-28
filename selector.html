@@ -72,6 +72,48 @@
                 flex-wrap: wrap;
             }
 
+
+            /* Language flags */
+            .lang-flag {
+                font-size: 7rem;
+                background: none;
+                border-radius: 10px;
+                cursor: pointer;
+                padding: 4px 8px 2px;
+                transition: all 0.2s;
+                line-height: 1;
+               display: flex;
+                flex-flow: column;
+                flex-direction: column;
+                flex-wrap: nowrap;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                font-size: 3.7rem;
+                font-weight: 600;
+                color: #555;
+                line-height: 1;
+                border: unset !important;
+            }
+            .lang-flag:hover {
+                transform: scale(1.15);
+                border-color: #cbd5e1;
+            }
+            .lang-flag.active {
+                border-color: #0047cc;
+                box-shadow: 0 0 0 2px rgba(0, 71, 204, 0.25);
+            }
+            .lang-name {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: #555;
+                line-height: 1;
+            }
+            .lang-emoji {
+                line-height: 1;
+            }
+
+
             .selector-panel h2 {
                 font-size: 28px;
                 margin-bottom: 12px;
@@ -591,7 +633,7 @@
                 .module-item {
                     padding: 14px 16px;
                     flex-wrap: wrap;
-                    gap: 10px;
+                    gap: 14px;
                 }
                 .module-info h4 {
                     font-size: 1.3rem;
@@ -643,9 +685,25 @@
                     font-size: 17px;
                 }
             }
+
+            @media (max-width: 700px) {
         </style>
     </head>
     <body>
+        <script>
+            var lang = "en";
+            try {
+                lang = localStorage.getItem("handiLang") || "en";
+            } catch (e) {}
+            window.handiLang = lang;
+            window.setHandiLang = function (c) {
+                try {
+                    localStorage.setItem("handiLang", c);
+                } catch (e) {}
+                location.reload();
+            };
+            document.write('<script src="/lang/' + lang + '.js"><\/script>');
+        </script>
         <div class="dashboard-app">
             <div class="dashboard-layout">
                 <div class="selector-panel">
@@ -738,6 +796,106 @@
                                 </p>
                             </div>
                         </div>
+                    </div>
+
+                    <h3 style="text-align: center; padding: 1.5rem">
+                        🌐 Language
+                    </h3>
+
+                    <div
+                        class="lang-flags"
+                        style="
+                            display: flex;
+                            flex-wrap: wrap;
+                            justify-content: center;
+                            gap: 14px;
+                            margin-bottom: 20px;
+                        "
+                    >
+                        <button
+                            class="lang-flag"
+                            data-lang="en"
+                            title="English"
+                        >
+                            <span class="lang-emoji">🇬🇧</span
+                            ><span class="lang-name">English</span>
+                        </button>
+                        <button
+                            class="lang-flag"
+                            data-lang="ar"
+                            title="العربية"
+                        >
+                            <span class="lang-emoji">🇸🇦</span
+                            ><span class="lang-name">العربية</span>
+                        </button>
+                        <button
+                            class="lang-flag"
+                            data-lang="de"
+                            title="Deutsch"
+                        >
+                            <span class="lang-emoji">🇩🇪</span
+                            ><span class="lang-name">Deutsch</span>
+                        </button>
+                        <button
+                            class="lang-flag"
+                            data-lang="es"
+                            title="Español"
+                        >
+                            <span class="lang-emoji">🇪🇸</span
+                            ><span class="lang-name">Español</span>
+                        </button>
+                        <button
+                            class="lang-flag"
+                            data-lang="fr"
+                            title="Français"
+                        >
+                            <span class="lang-emoji">🇫🇷</span
+                            ><span class="lang-name">Français</span>
+                        </button>
+                        <button
+                            class="lang-flag"
+                            data-lang="ga"
+                            title="Gaeilge"
+                        >
+                            <span class="lang-emoji">🇮🇪</span
+                            ><span class="lang-name">Gaeilge</span>
+                        </button>
+                        <button
+                            class="lang-flag"
+                            data-lang="it"
+                            title="Italiano"
+                        >
+                            <span class="lang-emoji">🇮🇹</span
+                            ><span class="lang-name">Italiano</span>
+                        </button>
+                        <button
+                            class="lang-flag"
+                            data-lang="nl"
+                            title="Nederlands"
+                        >
+                            <span class="lang-emoji">🇳🇱</span
+                            ><span class="lang-name">Nederlands</span>
+                        </button>
+                        <button class="lang-flag" data-lang="pl" title="Polski">
+                            <span class="lang-emoji">🇵🇱</span
+                            ><span class="lang-name">Polski</span>
+                        </button>
+                        <button
+                            class="lang-flag"
+                            data-lang="pt"
+                            title="Português"
+                        >
+                            <span class="lang-emoji">🇵🇹</span
+                            ><span class="lang-name">Português</span>
+                        </button>
+                        <button
+                            class="lang-flag"
+                            data-lang="cy"
+                            title="Cymraeg"
+                        >
+                            <span class="lang-emoji">🏴󠁧󠁢󠁷󠁬󠁳󠁿</span>
+                            <span class="lang-name">Cymraeg</span>
+                        </button>
                     </div>
 
                     <h3 style="text-align: center; padding: 1.5rem">
@@ -853,6 +1011,101 @@
             </div>
         </div>
 
+        <!-- ========== LANGUAGE POPULATOR ========== -->
+        <script>
+            (function populate() {
+                if (typeof LANG === "undefined") {
+                    setTimeout(populate, 50);
+                    return;
+                }
+
+                // Header
+                var el = document.querySelector(".logo-link span");
+                if (el) el.textContent = LANG.brandName;
+
+                el = document.querySelector(".selector-panel h2");
+                if (el) el.textContent = LANG.instructions;
+
+                // Help tip paragraphs (in order)
+                var tips = document.querySelectorAll(".selector-sub p");
+                var tipKeys = [
+                    "tipUnlock",
+                    "tipMute",
+                    "tipSettings",
+                    "tipSafeSearch",
+                    "tipStayAwake",
+                    "tipHelp",
+                ];
+                tips.forEach(function (p, i) {
+                    if (tipKeys[i] && LANG[tipKeys[i]]) {
+                        // Preserve icon, replace only text after icon
+                        var icon = p.querySelector("i");
+                        p.childNodes.forEach(function (node) {
+                            if (
+                                node.nodeType === 3 &&
+                                node.textContent.trim()
+                            ) {
+                                node.textContent = " " + LANG[tipKeys[i]];
+                            }
+                        });
+                    }
+                });
+
+                // Theme heading (2nd h3)
+                var h3s = document.querySelectorAll(".selector-panel h3");
+                if (h3s[1]) h3s[1].textContent = LANG.selectTheme;
+
+                // Theme labels & descriptions
+                var themeLabels = document.querySelectorAll(".theme-label");
+                var labelKeys = [
+                    "themeEssential",
+                    "themeTechie",
+                    "themeBlossom",
+                    "themeCampus",
+                ];
+                themeLabels.forEach(function (lbl, i) {
+                    if (labelKeys[i]) lbl.textContent = LANG[labelKeys[i]];
+                });
+                var themeDescs = document.querySelectorAll(".theme-desc");
+                var descKeys = [
+                    "themeEssentialDesc",
+                    "themeTechieDesc",
+                    "themeBlossomDesc",
+                    "themeCampusDesc",
+                ];
+                themeDescs.forEach(function (d, i) {
+                    if (descKeys[i]) d.innerHTML = LANG[descKeys[i]];
+                });
+
+                // Module heading (3rd h3)
+                if (h3s[2]) h3s[2].textContent = LANG.selectModules;
+
+                // Free / Premium group titles
+                var ft = document.querySelector(".free-title");
+                if (ft) ft.textContent = LANG.freeModules;
+                var pt = document.querySelector(".premium-title");
+                if (pt) pt.textContent = LANG.premiumModules;
+
+                // Consent text
+                var consentLabel = document.querySelector(".consent-box label");
+                if (consentLabel)
+                    consentLabel.innerHTML =
+                        '<input type="checkbox" id="privacyConsent"> ' +
+                        LANG.consentText;
+
+                // Buttons
+                var resetBtn = document.getElementById("resetBtn");
+                if (resetBtn) resetBtn.textContent = LANG.btnReset;
+                var applyBtn = document.getElementById("applyBtn");
+                if (applyBtn) applyBtn.textContent = LANG.btnSubmit;
+                var premLink = document.querySelector(".premium-trial-btn");
+                if (premLink) premLink.textContent = LANG.btnPremium;
+
+                // Override alert strings used later
+                window.LANG = LANG;
+            })();
+        </script>
+
         <script>
             // ========== MODULE DATABASE - DRIVEN BY MASTER MODULE RECORD ==========
             // MMR states: 0=off (selectable), 1=on (active), 2=disabled (blocked)
@@ -902,13 +1155,13 @@
                             (isDisabled ? " module-disabled" : "");
                         let btnLabel, btnClass;
                         if (isActive) {
-                            btnLabel = "\u2713";
+                            btnLabel = window.LANG.btnRemove;
                             btnClass = "btn-remove";
                         } else if (isDisabled) {
-                            btnLabel = "\u2014";
+                            btnLabel = window.LANG.btnDisabled;
                             btnClass = "btn-add";
                         } else {
-                            btnLabel = "\u2717";
+                            btnLabel = window.LANG.btnAdd;
                             btnClass = "btn-add";
                         }
                         div.innerHTML = `
@@ -946,18 +1199,18 @@
                             (isDisabled ? " module-disabled" : "");
                         let btnLabel, btnClass;
                         if (isActive) {
-                            btnLabel = "\u2713";
+                            btnLabel = window.LANG.btnRemove;
                             btnClass = "btn-remove";
                         } else if (isDisabled) {
-                            btnLabel = "\u2014";
+                            btnLabel = window.LANG.btnDisabled;
                             btnClass = "btn-add";
                         } else {
-                            btnLabel = "\u2717";
+                            btnLabel = window.LANG.btnAdd;
                             btnClass = "btn-add";
                         }
                         div.innerHTML = `
                         <div class="module-info">
-                            <span class="premium-label" style="display:inline-block;margin-bottom:4px;">PREMIUM</span>
+                            <span class="premium-label" style="display:inline-block;margin-bottom:4px;">${window.LANG.labelPremium}</span>
                             <h4>${mod.icon} ${mod.name}</h4>
                             <p>${mod.desc}</p>
                         </div>
@@ -967,12 +1220,9 @@
                         if (!isDisabled) {
                             btn.onclick = () => {
                                 if (mod.tier === "premium" && !consent) {
-                                    alert(
-                                        "\u26A0\uFE0F Please accept the Privacy Policy to add or remove Premium modules.",
-                                    );
+                                    alert(window.LANG.alertConsentModules);
                                     return;
                                 }
-                                // Toggle between 1 (on) and 0 (off)
                                 enabled[mod.id] = isActive ? 0 : 1;
                                 saveEnabled(enabled);
                                 renderSelector();
@@ -990,23 +1240,17 @@
 
             function resetModules() {
                 if (!hasConsent()) {
-                    alert(
-                        "\u26A0\uFE0F Please accept the Privacy Policy to reset.",
-                    );
+                    alert(window.LANG.alertConsentReset);
                     return;
                 }
                 window.resetMMR();
                 renderSelector();
-                alert(
-                    '\u2713 Reset complete! Click "Apply to dashboard" to save changes.',
-                );
+                alert(window.LANG.alertResetDone);
             }
 
             function applyChanges() {
                 if (!hasConsent()) {
-                    alert(
-                        "\u26A0\uFE0F Please accept the Privacy Policy to apply.",
-                    );
+                    alert(window.LANG.alertConsentApply);
                     return;
                 }
 
@@ -1014,7 +1258,14 @@
                 window.location.href = "/index.html";
             }
 
-            renderSelector();
+            // Wait for LANG before initial render
+            (function initRender() {
+                if (typeof LANG === "undefined") {
+                    setTimeout(initRender, 50);
+                    return;
+                }
+                renderSelector();
+            })();
 
             document
                 .getElementById("resetBtn")
@@ -1069,6 +1320,18 @@
                     });
                     this.classList.add("active");
                     setTheme(this.getAttribute("data-theme"));
+                });
+            });
+
+            // ========== LANGUAGE SELECTOR ==========
+            var currentLang = window.handiLang || "en";
+            var langBtns = document.querySelectorAll(".lang-flag[data-lang]");
+            langBtns.forEach(function (btn) {
+                if (btn.getAttribute("data-lang") === currentLang) {
+                    btn.classList.add("active");
+                }
+                btn.addEventListener("click", function () {
+                    window.setHandiLang(this.getAttribute("data-lang"));
                 });
             });
         </script>

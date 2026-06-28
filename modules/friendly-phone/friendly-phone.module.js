@@ -14,7 +14,11 @@ export default async function initPhone(container) {
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-solid fa-phone"></i> PHONE';
+  var name =
+    window.LANG && window.LANG.modules && window.LANG.modules.phone
+      ? window.LANG.modules.phone.name
+      : "PHONE";
+  title.innerHTML = '<i class="fa-solid fa-phone"></i> ' + name;
   container.appendChild(title);
 
   const content = document.createElement("div");

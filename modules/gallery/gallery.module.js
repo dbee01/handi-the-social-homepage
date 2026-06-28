@@ -14,7 +14,11 @@ export default async function initGallery(container) {
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-solid fa-images"></i> GALLERY';
+  var name =
+    window.LANG && window.LANG.modules && window.LANG.modules.gallery
+      ? window.LANG.modules.gallery.name
+      : "GALLERY";
+  title.innerHTML = '<i class="fa-solid fa-images"></i> ' + name;
   container.appendChild(title);
 
   const content = document.createElement("div");

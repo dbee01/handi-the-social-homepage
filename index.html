@@ -15,6 +15,21 @@
 
         <title>HandiHomepage – Senior Dashboard</title>
         <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
+        <script>
+            // Load language synchronously
+            var lang = "en";
+            try {
+                lang = localStorage.getItem("handiLang") || "en";
+            } catch (e) {}
+            window.handiLang = lang;
+            window.setHandiLang = function (c) {
+                try {
+                    localStorage.setItem("handiLang", c);
+                } catch (e) {}
+                location.reload();
+            };
+            document.write('<script src="/lang/' + lang + '.js"><\/script>');
+        </script>
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
         <link rel="stylesheet" href="/css/main.css" />
         <script>
@@ -144,12 +159,7 @@
                     <div class="module-content"></div>
                 </div>
                 <div id="chat" class="dashboard-item module">
-                    <div class="module-content">
-                        <div class="module-placeholder">
-                            <i class="fa-solid fa-comments"></i>
-                            <span>Chat</span>
-                        </div>
-                    </div>
+                    <div class="module-content"></div>
                 </div>
                 <div id="social" class="dashboard-item module">
                     <div class="module-content"></div>

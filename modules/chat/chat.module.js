@@ -11,7 +11,11 @@ export default async function initChat(container) {
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-solid fa-comments"></i> CHAT';
+  var name =
+    window.LANG && window.LANG.modules && window.LANG.modules.chat
+      ? window.LANG.modules.chat.name
+      : "CHAT";
+  title.innerHTML = '<i class="fa-solid fa-comments"></i> ' + name;
   container.appendChild(title);
 
   const content = document.createElement("div");

@@ -917,7 +917,11 @@ export default function initClickToCall(container) {
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-solid fa-phone"></i> CLICK-TO-CALL';
+  var name =
+    window.LANG && window.LANG.modules && window.LANG.modules.phone
+      ? window.LANG.modules.phone.name
+      : "CLICK-TO-CALL";
+  title.innerHTML = '<i class="fa-solid fa-phone"></i> ' + name;
   container.appendChild(title);
 
   const content = document.createElement("div");

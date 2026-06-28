@@ -47,7 +47,11 @@ export default async function initEmergency(container) {
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> LOCATE';
+  var name =
+    window.LANG && window.LANG.modules && window.LANG.modules.emergency_alert
+      ? window.LANG.modules.emergency_alert.name
+      : "LOCATE";
+  title.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> ' + name;
   headerRow.appendChild(title);
 
   const headerActions = document.createElement("div");

@@ -8,7 +8,11 @@ export default async function initCalendar(container) {
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-regular fa-calendar"></i> CALENDAR';
+  var name =
+    window.LANG && window.LANG.modules && window.LANG.modules.calendar
+      ? window.LANG.modules.calendar.name
+      : "CALENDAR";
+  title.innerHTML = '<i class="fa-regular fa-calendar"></i> ' + name;
   container.appendChild(title);
 
   const content = document.createElement("div");

@@ -11,7 +11,11 @@ export default async function initRadio(container) {
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-solid fa-radio"></i> RADIO';
+  var name =
+    window.LANG && window.LANG.modules && window.LANG.modules.radio
+      ? window.LANG.modules.radio.name
+      : "RADIO";
+  title.innerHTML = '<i class="fa-solid fa-radio"></i> ' + name;
   headerRow.appendChild(title);
 
   const headerActions = document.createElement("div");

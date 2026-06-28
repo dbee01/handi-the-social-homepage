@@ -8,7 +8,11 @@ export default async function initNews(container) {
 
   const titleDiv = document.createElement("div");
   titleDiv.className = "panel-title";
-  titleDiv.innerHTML = '<i class="fa-solid fa-newspaper"></i> NEWS';
+  var name =
+    window.LANG && window.LANG.modules && window.LANG.modules.news
+      ? window.LANG.modules.news.name
+      : "NEWS";
+  titleDiv.innerHTML = '<i class="fa-solid fa-newspaper"></i> ' + name;
   container.appendChild(titleDiv);
 
   const content = document.createElement("div");

@@ -5,6 +5,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Settings - Handi Homepage</title>
         <script src="/js/core/module-registry.js"></script>
+        <script>
+            var lang = "en";
+            try {
+                lang = localStorage.getItem("handiLang") || "en";
+            } catch (e) {}
+            window.handiLang = lang;
+            window.setHandiLang = function (c) {
+                try {
+                    localStorage.setItem("handiLang", c);
+                } catch (e) {}
+                location.reload();
+            };
+            document.write('<script src="/lang/' + lang + '.js"><\/script>');
+        </script>
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
 
         <!-- Cache Control Headers for PWA -->

@@ -11,7 +11,11 @@ export default async function initMusic(container) {
   headerRow.className = "music-header-row";
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-solid fa-music"></i> PLAYER';
+  var name =
+    window.LANG && window.LANG.modules && window.LANG.modules.music
+      ? window.LANG.modules.music.name
+      : "PLAYER";
+  title.innerHTML = '<i class="fa-solid fa-music"></i> ' + name;
   headerRow.appendChild(title);
 
   const headerActions = document.createElement("div");
