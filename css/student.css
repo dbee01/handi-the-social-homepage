@@ -358,7 +358,7 @@ header {
     color: #ffd700;
 }
 .news-scroll-btn {
-    background: #222;
+    background: #ffd700;
     border: 2px solid #444;
     border-radius: 8px;
     font-size: 16px;
@@ -547,12 +547,15 @@ input:focus {
 }
 
 /* ---------- WAKE LOCK ---------- */
-#footerWakeLockBtn i.fa-sun[style*="color: #f59e0b"],
-#footerWakeLockBtn .active-sun {
+#footerWakeLockBtn i.fa-sun {
+    color: #ffe44d !important;
+}
+#footerWakeLockBtn i.fa-sun.active-sun {
     color: #ffd700 !important;
 }
-#footerWakeLockBtn i.fa-sun[style*="color: #0047cc"] {
-    color: #ffd700 !important;
+
+button#footerWakeLockBtn:active {
+    color: var(--color-secondary);
 }
 
 /* ---------- MISCELLANEOUS ---------- */

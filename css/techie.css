@@ -1262,14 +1262,14 @@ textarea:focus {
 
 /* ---------- WAKE LOCK ---------- */
 #footerWakeLockBtn i.fa-sun {
+    color: var(--color-secondary) !important;
     transition:
         color 0.3s ease,
         transform 0.3s ease;
 }
 
-#footerWakeLockBtn i.fa-sun,
-#footerWakeLockBtn .active-sun {
-    color: var(--color-warning) !important;
+#footerWakeLockBtn i.fa-sun.active-sun {
+    color: var(--color-primary) !important;
 }
 
 #footerWakeLockBtn i.fa-sun:hover {

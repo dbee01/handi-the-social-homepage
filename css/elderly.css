@@ -466,11 +466,10 @@ input:focus {
 }
 
 /* ---------- WAKE LOCK ---------- */
-#footerWakeLockBtn i.fa-sun[style*="color: #f59e0b"],
-#footerWakeLockBtn .active-sun {
+#footerWakeLockBtn i.fa-sun {
     color: #f59e0b !important;
 }
-#footerWakeLockBtn i.fa-sun[style*="color: #0047cc"] {
+#footerWakeLockBtn i.fa-sun.active-sun {
     color: #0047cc !important;
 }
 

@@ -85,7 +85,7 @@
     if (!wakeLockBtn) return;
     const icon = wakeLockBtn.querySelector("i");
     if (wakeLockActive) {
-      icon.className = "fa-solid fa-sun";
+      icon.className = "fa-solid fa-sun active-sun";
       wakeLockBtn.title = "Screen awake – click to allow sleep";
     } else {
       icon.className = "fa-solid fa-sun";

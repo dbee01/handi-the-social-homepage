@@ -38,7 +38,7 @@ window.HANDI_MODULES = [
     desc: "Top headlines",
     tier: "free",
     defaultEnabled: 1,
-    settingsConfig: { rssUrl: "", refresh: 15, maxArticles: 4 },
+    settingsConfig: { rssUrl: "", refresh: 15, maxArticles: 10 },
   },
   {
     id: "social",

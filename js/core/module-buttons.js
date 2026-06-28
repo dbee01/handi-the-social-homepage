@@ -301,7 +301,6 @@
     buttons.forEach((btn) => {
       btn.style.width = "44px";
       btn.style.height = "44px";
-      btn.style.border = "2px solid #cbd5e1";
       btn.style.borderRadius = "12px";
       btn.style.fontSize = "1.2rem";
       btn.style.cursor = "pointer";
@@ -309,14 +308,8 @@
       btn.style.alignItems = "center";
       btn.style.justifyContent = "center";
       btn.style.transition = "background 0.2s";
-      btn.addEventListener(
-        "mouseenter",
-        () => (btn.style.background = "#f0f2f5"),
-      );
-      btn.addEventListener(
-        "mouseleave",
-        () => (btn.style.background = "#ffffff"),
-      );
+      btn.addEventListener("mouseenter", () => (btn.style.background = ""));
+      btn.addEventListener("mouseleave", () => (btn.style.background = ""));
     });
 
     // Ensure module has relative positioning

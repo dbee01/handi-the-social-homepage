@@ -24,7 +24,7 @@ const DEFAULT_SETTINGS = {
   news: {
     rssUrl: "https://www.thejournal.ie/feed/",
     refreshInterval: 15,
-    maxArticles: 2,
+    maxArticles: 10,
   },
   mastodon: { instanceUrl: "https://mastodon.ie", limit: 4 },
   live_bus: { routeIds: "", stopIds: "" },
@@ -35,7 +35,7 @@ const DEFAULT_SETTINGS = {
     refreshInterval: 30,
     homeserver: "https://matrix.org",
     password: "",
-    userId: "bigBoyFoolish",
+    userId: "bigboyfoolish@matrix.org",
   },
   weather: { location: "Cork", country: "IE" },
   calendar: { url: "", notificationMinutes: 15 },
