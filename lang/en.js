@@ -24,10 +24,10 @@ var LANG = {
   themeCampus: "Campus",
   themeCampusDesc: "Bold yellow &amp; black",
 
-  // Module selector
-  selectModules: "\uD83D\uDD27 Select your modules",
-  freeModules: "\uD83C\uDD93 FREE MODULES",
-  premiumModules: "\uD83D\uDC8E PREMIUM MODULES",
+  // Element selector
+  selectModules: "\uD83D\uDD27 Select your elements",
+  freeModules: "\uD83C\uDD93 FREE ELEMENTS",
+  premiumModules: "\uD83D\uDC8E PREMIUM ELEMENTS",
 
   // Consent
   consentText:
@@ -44,13 +44,13 @@ var LANG = {
 
   // Alerts
   alertConsentModules:
-    "\u26A0\uFE0F Please accept the Privacy Policy to add or remove Premium modules.",
+    "\u26A0\uFE0F Please accept the Privacy Policy to add or remove Premium elements.",
   alertConsentReset: "\u26A0\uFE0F Please accept the Privacy Policy to reset.",
   alertConsentApply: "\u26A0\uFE0F Please accept the Privacy Policy to apply.",
   alertResetDone:
     '\u2713 Reset complete! Click "Apply to dashboard" to save changes.',
 
-  // Module names
+  // Element names
   modules: {
     gallery: { name: "Gallery", desc: "Photos" },
     music: { name: "Player", desc: "Your playlists" },

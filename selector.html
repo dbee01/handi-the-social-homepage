@@ -1153,10 +1153,18 @@
                             btnLabel = window.LANG.btnAdd;
                             btnClass = "btn-add";
                         }
+                        var modName =
+                            window.LANG.modules && window.LANG.modules[mod.id]
+                                ? window.LANG.modules[mod.id].name
+                                : mod.name;
+                        var modDesc =
+                            window.LANG.modules && window.LANG.modules[mod.id]
+                                ? window.LANG.modules[mod.id].desc
+                                : mod.desc;
                         div.innerHTML = `
                     <div class="module-info">
-                        <h4>${mod.icon} ${mod.name}</h4>
-                        <p>${mod.desc}</p>
+                        <h4>${mod.icon} ${modName}</h4>
+                        <p>${modDesc}</p>
                     </div>
                     <button class="toggle-btn ${btnClass}" ${isDisabled ? "disabled" : ""}>${btnLabel}</button>
                 `;
@@ -1197,11 +1205,19 @@
                             btnLabel = window.LANG.btnAdd;
                             btnClass = "btn-add";
                         }
+                        var modName =
+                            window.LANG.modules && window.LANG.modules[mod.id]
+                                ? window.LANG.modules[mod.id].name
+                                : mod.name;
+                        var modDesc =
+                            window.LANG.modules && window.LANG.modules[mod.id]
+                                ? window.LANG.modules[mod.id].desc
+                                : mod.desc;
                         div.innerHTML = `
                         <div class="module-info">
                             <span class="premium-label" style="display:inline-block;margin-bottom:4px;">${window.LANG.labelPremium}</span>
-                            <h4>${mod.icon} ${mod.name}</h4>
-                            <p>${mod.desc}</p>
+                            <h4>${mod.icon} ${modName}</h4>
+                            <p>${modDesc}</p>
                         </div>
                         <button class="toggle-btn ${btnClass}" ${isDisabled ? "disabled" : ""}>${btnLabel}</button>
                     `;

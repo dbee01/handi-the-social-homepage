@@ -21,9 +21,9 @@ var LANG = {
   themeBlossomDesc: "Zarte Rosatöne &amp; Hellblau",
   themeCampus: "Campus",
   themeCampusDesc: "Kräftiges Gelb &amp; Schwarz",
-  selectModules: "\uD83D\uDD27 Wähle deine Module",
-  freeModules: "\uD83C\uDD93 KOSTENLOSE MODULE",
-  premiumModules: "\uD83D\uDC8E PREMIUM MODULE",
+  selectModules: "\uD83D\uDD27 Wähle deine Elemente",
+  freeModules: "\uD83C\uDD93 KOSTENLOSE ELEMENTE",
+  premiumModules: "\uD83D\uDC8E PREMIUM ELEMENTE",
   consentText:
     'Ich stimme der <a href="https://handihomepage.com/privacy">Datenschutzerklärung</a> und den <a href="https://handihomepage.com/terms">AGB</a> zu',
   btnReset: "\u27F3 Zurücksetzen",
@@ -34,7 +34,7 @@ var LANG = {
   btnDisabled: "\u2014",
   labelPremium: "PREMIUM",
   alertConsentModules:
-    "\u26A0\uFE0F Bitte Datenschutzerklärung akzeptieren, um Premium-Module zu verwalten.",
+    "\u26A0\uFE0F Bitte Datenschutzerklärung akzeptieren, um Premium-Element zu verwalten.",
   alertConsentReset:
     "\u26A0\uFE0F Bitte Datenschutzerklärung zum Zurücksetzen akzeptieren.",
   alertConsentApply:
