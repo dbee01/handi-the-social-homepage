@@ -508,18 +508,31 @@ export default async function initCalendar(container) {
   async function fetchCalendar() {
     if (!calendarUrl || calendarUrl.trim() === "") {
       content.innerHTML = `
-                <div class="module-empty">
-                    <i class="fa-solid fa-calendar-days"></i>
-                    <p>No calendar configured.</p>
-                    <button id="calendarSettingsBtn" class="settings-link-btn">
-                        <i class="fa-solid fa-gear"></i> Add Calendar in Settings
-                    </button>
-                </div>
-            `;
-      const settingsBtn = content.querySelector("#calendarSettingsBtn");
-      if (settingsBtn)
-        settingsBtn.onclick = () =>
-          (location.href = "settings.html?args=calendar");
+        <div class="module-empty">
+          <i class="fa-solid fa-calendar-days"></i>
+          <p>No calendar configured.</p>
+          <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+            <input id="calendarUrlInput" type="text" placeholder="Paste iCal URL..." style="padding:8px 12px;border-radius:8px;border:2px solid #cbd5e1;font-size:0.95rem;min-width:240px;">
+            <button id="calendarSaveBtn" class="settings-link-btn">
+              <i class="fa-solid fa-check"></i> Save
+            </button>
+          </div>
+        </div>
+      `;
+      var urlInput = content.querySelector("#calendarUrlInput");
+      var saveBtn = content.querySelector("#calendarSaveBtn");
+      if (saveBtn && urlInput) {
+        saveBtn.onclick = function () {
+          var val = urlInput.value.trim();
+          if (!val) return;
+          var settings = loadSettings();
+          if (!settings.calendar) settings.calendar = {};
+          settings.calendar.url = val;
+          localStorage.setItem("handiSettings", JSON.stringify(settings));
+          calendarUrl = val;
+          initCalendar(container);
+        };
+      }
       return;
     }
 
@@ -624,9 +637,10 @@ export default async function initCalendar(container) {
                     <i class="fa-regular fa-clock"></i> Last synced: ${formatSyncTime()}
                     ${totalEvents > 0 ? ` | ${totalEvents} total events in feed` : ""}
                 </span>
-                <button id="calendarRefreshBtn" class="calendar-refresh-btn">
-                    ⟳ Refresh
-                </button>
+                <div style="display:flex;gap:8px;">
+                    <button id="calendarChangeUrlBtn" class="calendar-refresh-btn" style="font-size:0.8rem;">🔗 Change URL</button>
+                    <button id="calendarRefreshBtn" class="calendar-refresh-btn">⟳ Refresh</button>
+                </div>
             </div>
         `;
 
@@ -634,6 +648,16 @@ export default async function initCalendar(container) {
 
     const refreshBtn = document.getElementById("calendarRefreshBtn");
     if (refreshBtn) refreshBtn.addEventListener("click", () => fetchCalendar());
+
+    const changeUrlBtn = document.getElementById("calendarChangeUrlBtn");
+    if (changeUrlBtn)
+      changeUrlBtn.addEventListener("click", function () {
+        var settings = loadSettings();
+        if (settings.calendar) settings.calendar.url = "";
+        localStorage.setItem("handiSettings", JSON.stringify(settings));
+        calendarUrl = "";
+        initCalendar(container);
+      });
 
     if (window.refreshDashboardLayout) window.refreshDashboardLayout();
   }

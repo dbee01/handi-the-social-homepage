@@ -16,4 +16,10 @@
     } catch (e) {}
     location.reload();
   };
+
+  // Translation helper — call t("key", "English fallback")
+  window.t = function (key, english) {
+    if (window.LANG && window.LANG[key] !== undefined) return window.LANG[key];
+    return english || key;
+  };
 })();

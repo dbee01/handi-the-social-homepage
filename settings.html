@@ -5,20 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Settings - Handi Homepage</title>
         <script src="/js/core/module-registry.js"></script>
-        <script>
-            var lang = "en";
-            try {
-                lang = localStorage.getItem("handiLang") || "en";
-            } catch (e) {}
-            window.handiLang = lang;
-            window.setHandiLang = function (c) {
-                try {
-                    localStorage.setItem("handiLang", c);
-                } catch (e) {}
-                location.reload();
-            };
-            document.write('<script src="/lang/' + lang + '.js"><\/script>');
-        </script>
+        <script src="/lang/loader.js"></script>
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
 
         <!-- Cache Control Headers for PWA -->
@@ -421,23 +408,25 @@
                 </div>
                 <div class="module-config">
                     <div class="config-field">
-                        <label>Default Station:</label>
-                        <select id="radioDefaultStation">
-                            <option value="0">RTÉ Radio 1</option>
-                            <option value="1">Today FM</option>
-                            <option value="2">Newstalk</option>
-                            <option value="3">RTÉ Lyric FM</option>
-                            <option value="4">RTÉ 2FM</option>
-                            <option value="5">Cork 96FM</option>
-                            <option value="6">Dublin FM 104</option>
-                            <option value="7">Galway Bay FM</option>
-                            <option value="8">Classic FM</option>
-                            <option value="9">Live 95 (Limerick)</option>
+                        <label>Default Country Filter:</label>
+                        <select id="radioCountry">
+                            <option value="">— Select country —</option>
+                            <option value="🇮🇪">🇮🇪 Ireland</option>
+                            <option value="🇬🇧">🇬🇧 UK</option>
+                            <option value="🇫🇷">🇫🇷 France</option>
+                            <option value="🇩🇪">🇩🇪 Germany</option>
+                            <option value="🇪🇸">🇪🇸 Spain</option>
+                            <option value="🇮🇹">🇮🇹 Italy</option>
+                            <option value="🇳🇱">🇳🇱 Netherlands</option>
+                            <option value="🇵🇱">🇵🇱 Poland</option>
+                            <option value="🇵🇹">🇵🇹 Portugal</option>
+                            <option value="🇸🇪">🇸🇪 Sweden</option>
+                            <option value="🇳🇴">🇳🇴 Norway</option>
+                            <option value="🇺🇸">🇺🇸 USA</option>
+                            <option value="🇨🇦">🇨🇦 Canada</option>
+                            <option value="🇦🇺">🇦🇺 Australia</option>
+                            <option value="🇳🇿">🇳🇿 New Zealand</option>
                         </select>
-                        <small
-                            >Choose your preferred station. Radio will start
-                            playing when unlocked.</small
-                        >
                     </div>
                     <div class="config-field">
                         <label>Default Volume:</label>
@@ -466,20 +455,85 @@
                 </div>
                 <div class="module-config">
                     <div class="config-field">
-                        <label>RSS Feed:</label
-                        ><select id="newsRssUrl">
-                            <option value="https://www.thejournal.ie/feed/">
-                                The Journal
+                        <label>RSS Feed:</label>
+                        <select id="newsRssUrl">
+                            <option value="">
+                                — Default (page selector) —
                             </option>
                             <option
-                                value="https://www.rte.ie/feeds/rss/?index=/news/"
+                                value="https://www.rte.ie/feeds/rss/news.xml"
                             >
-                                RTÉ News
+                                🇮🇪 Ireland – RTÉ
                             </option>
                             <option
-                                value="https://www.irishexaminer.com/feed/35-top_news.xml"
+                                value="https://feeds.bbci.co.uk/news/rss.xml"
                             >
-                                Irish Examiner
+                                🇬🇧 UK – BBC
+                            </option>
+                            <option value="https://www.lemonde.fr/rss/une.xml">
+                                🇫🇷 France – Le Monde
+                            </option>
+                            <option
+                                value="https://www.spiegel.de/schlagzeilen/index.rss"
+                            >
+                                🇩🇪 Deutschland – Spiegel
+                            </option>
+                            <option
+                                value="https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada"
+                            >
+                                🇪🇸 España – El País
+                            </option>
+                            <option
+                                value="https://www.corriere.it/rss/homepage.xml"
+                            >
+                                🇮🇹 Italia – Corriere
+                            </option>
+                            <option
+                                value="https://feeds.nos.nl/nosnieuwsalgemeen"
+                            >
+                                🇳🇱 Nederland – NOS
+                            </option>
+                            <option value="https://tvn24.pl/najnowsze.xml">
+                                🇵🇱 Polska – TVN24
+                            </option>
+                            <option
+                                value="https://feeds.feedburner.com/PublicoRSS"
+                            >
+                                🇵🇹 Portugal – Público
+                            </option>
+                            <option
+                                value="https://www.standaard.be/rss/section/1f2838d4-99ea-49f0-9102-138784c7ea7c"
+                            >
+                                🇧🇪 België – De Standaard
+                            </option>
+                            <option value="https://www.nzz.ch/recent.rss">
+                                🇨🇭 Schweiz – NZZ
+                            </option>
+                            <option value="https://www.svt.se/nyheter/rss.xml">
+                                🇸🇪 Sverige – SVT
+                            </option>
+                            <option
+                                value="https://www.nrk.no/nyheter/siste.rss"
+                            >
+                                🇳🇴 Norge – NRK
+                            </option>
+                            <option value="https://feeds.npr.org/1001/rss.xml">
+                                🇺🇸 USA – NPR
+                            </option>
+                            <option
+                                value="https://www.cbc.ca/webfeed/rss/rss-topstories"
+                            >
+                                🇨🇦 Canada – CBC
+                            </option>
+                            <option
+                                value="https://www.abc.net.au/news/feed/51120/rss.xml"
+                            >
+                                🇦🇺 Australia – ABC
+                            </option>
+                            <option
+                                value="https://www.rnz.co.nz/rss/national.xml"
+                            >
+                                🇳🇿 New Zealand – RNZ
                             </option>
                         </select>
                     </div>
@@ -507,12 +561,66 @@
                 </div>
                 <div class="module-config">
                     <div class="config-field">
-                        <label>Instance URL:</label
-                        ><input
-                            type="text"
-                            id="mastodonInstance"
-                            value="https://mastodon.ie"
-                        />
+                        <label>Mastodon Server:</label
+                        ><select id="mastodonInstance">
+                            <option value="">
+                                — Default (page selector) —
+                            </option>
+                            <option value="https://mastodon.ie">
+                                🇮🇪 mastodon.ie
+                            </option>
+                            <option value="https://mastodon.social">
+                                🇪🇺 mastodon.social
+                            </option>
+                            <option value="https://mastodon.de">
+                                🇩🇪 mastodon.de
+                            </option>
+                            <option value="https://mamot.fr">
+                                🇫🇷 mamot.fr
+                            </option>
+                            <option value="https://piaille.fr">
+                                🇫🇷 piaille.fr
+                            </option>
+                            <option value="https://mstdn.es">
+                                🇪🇸 mstdn.es
+                            </option>
+                            <option value="https://mastodon.uno">
+                                🇮🇹 mastodon.uno
+                            </option>
+                            <option value="https://mastodon.nl">
+                                🇳🇱 mastodon.nl
+                            </option>
+                            <option value="https://pol.social">
+                                🇵🇱 pol.social
+                            </option>
+                            <option value="https://masto.pt">
+                                🇵🇹 masto.pt
+                            </option>
+                            <option value="https://mastodon.belgium.be">
+                                🇧🇪 mastodon.be
+                            </option>
+                            <option value="https://swiss.social">
+                                🇨🇭 swiss.social
+                            </option>
+                            <option value="https://mastodon.se">
+                                🇸🇪 mastodon.se
+                            </option>
+                            <option value="https://snabelen.no">
+                                🇳🇴 snabelen.no
+                            </option>
+                            <option value="https://mastodon.org.uk">
+                                🇬🇧 mastodon.org.uk
+                            </option>
+                            <option value="https://mstdn.ca">
+                                🇨🇦 mstdn.ca
+                            </option>
+                            <option value="https://aus.social">
+                                🇦🇺 aus.social
+                            </option>
+                            <option value="https://mastodon.nz">
+                                🇳🇿 mastodon.nz
+                            </option>
+                        </select>
                     </div>
                     <div class="config-field">
                         <label>Trending limit:</label
@@ -1419,9 +1527,9 @@
 
                 // Load radio settings
                 if (settings.radio) {
-                    if (document.getElementById("radioDefaultStation")) {
-                        document.getElementById("radioDefaultStation").value =
-                            settings.radio.defaultStation || "0";
+                    if (document.getElementById("radioCountry")) {
+                        document.getElementById("radioCountry").value =
+                            settings.radio.defaultCountry || "";
                     }
                     if (document.getElementById("radioVolume")) {
                         document.getElementById("radioVolume").value =
@@ -1431,6 +1539,49 @@
                         if (volSpan)
                             volSpan.innerText =
                                 (settings.radio.volume || 70) + "%";
+                    }
+                }
+
+                // Load mastodon settings
+                if (settings.social) {
+                    if (
+                        document.getElementById("mastodonInstance") &&
+                        settings.social.instance
+                    ) {
+                        document.getElementById("mastodonInstance").value =
+                            settings.social.instance;
+                    }
+                    if (
+                        document.getElementById("mastodonLimit") &&
+                        settings.social.limit
+                    ) {
+                        document.getElementById("mastodonLimit").value =
+                            settings.social.limit;
+                    }
+                }
+
+                // Load news settings
+                if (settings.news) {
+                    if (
+                        document.getElementById("newsRssUrl") &&
+                        settings.news.rssUrl
+                    ) {
+                        document.getElementById("newsRssUrl").value =
+                            settings.news.rssUrl;
+                    }
+                    if (
+                        document.getElementById("newsRefresh") &&
+                        settings.news.refresh
+                    ) {
+                        document.getElementById("newsRefresh").value =
+                            settings.news.refresh;
+                    }
+                    if (
+                        document.getElementById("newsMaxArticles") &&
+                        settings.news.maxArticles
+                    ) {
+                        document.getElementById("newsMaxArticles").value =
+                            settings.news.maxArticles;
                     }
                 }
             }
@@ -1485,9 +1636,8 @@
                     document.getElementById("musicShuffle")?.value === "true";
 
                 if (!settings.radio) settings.radio = {};
-                settings.radio.defaultStation =
-                    document.getElementById("radioDefaultStation")?.value ||
-                    "0";
+                settings.radio.defaultCountry =
+                    document.getElementById("radioCountry")?.value || "";
                 settings.radio.volume =
                     parseInt(document.getElementById("radioVolume")?.value) ||
                     100;

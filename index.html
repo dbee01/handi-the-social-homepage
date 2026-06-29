@@ -15,21 +15,7 @@
 
         <title>HandiHomepage – Senior Dashboard</title>
         <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
-        <script>
-            // Load language synchronously
-            var lang = "en";
-            try {
-                lang = localStorage.getItem("handiLang") || "en";
-            } catch (e) {}
-            window.handiLang = lang;
-            window.setHandiLang = function (c) {
-                try {
-                    localStorage.setItem("handiLang", c);
-                } catch (e) {}
-                location.reload();
-            };
-            document.write('<script src="/lang/' + lang + '.js"><\/script>');
-        </script>
+        <script src="/lang/loader.js"></script>
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
         <link rel="stylesheet" href="/css/main.css" />
         <script>
@@ -585,6 +571,32 @@
                     setTimeout(function () {
                         btn.classList.remove("theme-switched");
                     }, 400);
+                });
+            })();
+        </script>
+        <!-- ========== FOOTER TRANSLATOR ========== -->
+        <script>
+            (function () {
+                if (!window.t) return;
+                window.addEventListener("load", function () {
+                    setTimeout(function () {
+                        var el = document.querySelector(".customize-link a");
+                        if (el)
+                            el.textContent =
+                                "\u2699\uFE0F " +
+                                window.t(
+                                    "d_customizeDashboard",
+                                    "Customize Dashboard",
+                                );
+                        el = document.querySelector(".brand a");
+                        if (el)
+                            el.textContent =
+                                "\u2728 " +
+                                window.t(
+                                    "d_freeTrial",
+                                    "Start free trial (no credit card needed)",
+                                );
+                    }, 1000);
                 });
             })();
         </script>

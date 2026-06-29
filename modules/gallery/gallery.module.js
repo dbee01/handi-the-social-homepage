@@ -5,7 +5,7 @@
  */
 
 // modules/gallery/gallery.module.js
-import { loadGallery } from "../../js/core/storage.js";
+import { loadGallery, saveGallery } from "../../js/core/storage.js";
 
 export default async function initGallery(container) {
   const pinBtn = container.querySelector(".pin-btn");
@@ -35,20 +35,48 @@ export default async function initGallery(container) {
     console.error("Gallery load error:", err);
   }
 
+  // --- File upload handler ---
+  function createFileInput(onFilesSelected) {
+    var input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.multiple = true;
+    input.style.display = "none";
+    input.addEventListener("change", async function () {
+      var files = Array.from(input.files || []);
+      if (!files.length) return;
+      var newImages = files.map(function (f) {
+        return { name: f.name, file: f, url: URL.createObjectURL(f) };
+      });
+      await saveGallery([...images, ...newImages]);
+      // Reload the module
+      container.innerHTML = "";
+      initGallery(container);
+    });
+    document.body.appendChild(input);
+    input.click();
+    // Remove after use
+    setTimeout(function () {
+      input.remove();
+    }, 1000);
+  }
+
+  // --- Empty state with upload button ---
   if (!images.length) {
     content.innerHTML = `
-            <div class="module-empty">
-                <i class="fa-solid fa-images"></i>
-                <p>No images in gallery.</p>
-                <button id="gallerySettingsBtn" class="settings-link-btn">
-                    <i class="fa-solid fa-gear"></i> Add Images in Settings
-                </button>
-            </div>
-        `;
-    const settingsBtn = content.querySelector("#gallerySettingsBtn");
-    if (settingsBtn)
-      settingsBtn.onclick = () =>
-        (location.href = "settings.html?args=gallery");
+      <div class="module-empty">
+        <i class="fa-solid fa-images"></i>
+        <p>No images in gallery.</p>
+        <button id="galleryUploadBtn" class="settings-link-btn">
+          <i class="fa-solid fa-upload"></i> Upload Images
+        </button>
+      </div>
+    `;
+    var uploadBtn = content.querySelector("#galleryUploadBtn");
+    if (uploadBtn)
+      uploadBtn.onclick = function () {
+        createFileInput();
+      };
     return;
   }
 
@@ -57,7 +85,6 @@ export default async function initGallery(container) {
   let slideshowInterval = null;
   let lightboxInterval = null;
   let isPlaying = true;
-
   const slideSpeed = 5000;
   const lightboxSpeed = 5000;
 
@@ -67,8 +94,6 @@ export default async function initGallery(container) {
 
   const slideImg = document.createElement("img");
   slideImg.className = "gallery-slide-img";
-
-  // Force correct display - prevent cropping
   slideImg.style.maxWidth = "100%";
   slideImg.style.maxHeight = "100%";
   slideImg.style.width = "auto";
@@ -81,13 +106,14 @@ export default async function initGallery(container) {
   const controlsDiv = document.createElement("div");
   controlsDiv.className = "gallery-controls";
   controlsDiv.innerHTML = `
-        <button id="galleryFullscreenBtn" class="gallery-btn fullscreen">🖥️ Full Screen</button>
-        <div class="gallery-control-group">
-            <button id="galleryPrevBtn" class="gallery-btn primary">❮</button>
-            <button id="galleryPlayPauseBtn" class="gallery-btn primary">⏸</button>
-            <button id="galleryNextBtn" class="gallery-btn primary">❯</button>
-        </div>
-    `;
+    <button id="galleryUploadMoreBtn" class="gallery-btn" style="background:#059669;color:white;">📷 Add Images</button>
+    <button id="galleryFullscreenBtn" class="gallery-btn fullscreen">🖥️ Full Screen</button>
+    <div class="gallery-control-group">
+      <button id="galleryPrevBtn" class="gallery-btn primary">❮</button>
+      <button id="galleryPlayPauseBtn" class="gallery-btn primary">⏸ Pause</button>
+      <button id="galleryNextBtn" class="gallery-btn primary">❯</button>
+    </div>
+  `;
 
   const thumbsDiv = document.createElement("div");
   thumbsDiv.className = "gallery-thumbs";
@@ -105,9 +131,14 @@ export default async function initGallery(container) {
   slideshowDiv.appendChild(thumbsDiv);
   content.appendChild(slideshowDiv);
 
-  // Force layout after image loads
+  // Add Images button
+  var uploadMoreBtn = controlsDiv.querySelector("#galleryUploadMoreBtn");
+  if (uploadMoreBtn)
+    uploadMoreBtn.onclick = function () {
+      createFileInput();
+    };
+
   slideImg.onload = () => {
-    // Ensure image is properly displayed
     slideImg.style.maxWidth = "100%";
     slideImg.style.maxHeight = "100%";
     slideImg.style.width = "auto";
@@ -116,7 +147,7 @@ export default async function initGallery(container) {
     if (window.refreshDashboardLayout) window.refreshDashboardLayout();
   };
 
-  // ----- Lightbox (full‑size overlay) -----
+  // ----- Lightbox -----
   const lightbox = document.createElement("div");
   lightbox.className = "gallery-lightbox lightbox";
   const lbImg = document.createElement("img");
@@ -139,7 +170,6 @@ export default async function initGallery(container) {
   lightbox.appendChild(lbNext);
   document.body.appendChild(lightbox);
 
-  // ----- Full Screen Gallery button – opens lightbox on current slide -----
   const fullscreenBtn = controlsDiv.querySelector("#galleryFullscreenBtn");
   fullscreenBtn.addEventListener("click", () => {
     openLightbox(slideIndex);
@@ -153,8 +183,6 @@ export default async function initGallery(container) {
     [...thumbsDiv.children].forEach((t, i) =>
       t.classList.toggle("active", i === slideIndex),
     );
-
-    // Re-apply styles after src change
     setTimeout(() => {
       slideImg.style.maxWidth = "100%";
       slideImg.style.maxHeight = "100%";

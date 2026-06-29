@@ -90,7 +90,10 @@ header {
     box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
 }
 #searchInput::placeholder {
-    color: #777;
+    color: #fff;
+}
+#searchInput {
+    color: #fff;
 }
 .search-button {
     background: #ffd700;

@@ -1,16 +1,34 @@
-// modules/mastodon/mastodon.module.js – shows exactly 2 posts at a time, scroll for more
+// modules/mastodon/mastodon.module.js – Mastodon trending links with server selector
 import { loadSettings } from "../../js/core/settings.js";
+
+// Mastodon servers with country flags
+const MASTODON_SERVERS = [
+  { flag: "🇮🇪", name: "mastodon.ie", url: "https://mastodon.ie" },
+  { flag: "🇪🇺", name: "mastodon.social", url: "https://mastodon.social" },
+  { flag: "🇩🇪", name: "mastodon.de", url: "https://mastodon.de" },
+  { flag: "🇫🇷", name: "mastodon.fr (La Quadrature)", url: "https://mamot.fr" },
+  { flag: "🇫🇷", name: "piaille.fr", url: "https://piaille.fr" },
+  { flag: "🇪🇸", name: "mastodon.es (País)", url: "https://mstdn.es" },
+  { flag: "🇮🇹", name: "mastodon.uno", url: "https://mastodon.uno" },
+  { flag: "🇳🇱", name: "mastodon.nl", url: "https://mastodon.nl" },
+  { flag: "🇵🇱", name: "pol.social", url: "https://pol.social" },
+  { flag: "🇵🇹", name: "masto.pt", url: "https://masto.pt" },
+  { flag: "🇧🇪", name: "mastodon.be", url: "https://mastodon.belgium.be" },
+  { flag: "🇨🇭", name: "swiss.social", url: "https://swiss.social" },
+  { flag: "🇸🇪", name: "mastodon.se", url: "https://mastodon.se" },
+  { flag: "🇳🇴", name: "snabelen.no", url: "https://snabelen.no" },
+  { flag: "🇬🇧", name: "mastodon.org.uk", url: "https://mastodon.org.uk" },
+  { flag: "🇺🇸", name: "mastodon.social (US)", url: "https://mastodon.social" },
+  { flag: "🇨🇦", name: "mstdn.ca", url: "https://mstdn.ca" },
+  { flag: "🇦🇺", name: "aus.social", url: "https://aus.social" },
+  { flag: "🇳🇿", name: "mastodon.nz", url: "https://mastodon.nz" },
+];
 
 export default async function initMastodon(container) {
   const pinBtn = container.querySelector(".pin-btn");
-
-  // Clear existing content
   container.innerHTML = "";
-
-  // Restore pin button
   if (pinBtn) container.appendChild(pinBtn);
 
-  // Title
   const title = document.createElement("div");
   title.className = "panel-title";
   var name =
@@ -20,64 +38,87 @@ export default async function initMastodon(container) {
   title.innerHTML = '<i class="fa-brands fa-mastodon"></i> ' + name;
   container.appendChild(title);
 
-  // Content wrapper
   const content = document.createElement("div");
   content.className = "mastodon-content";
   container.appendChild(content);
 
-  // Mark module type
   const parentItem = container.closest(".dashboard-item");
   if (parentItem) {
     parentItem.dataset.module = "mastodon";
     parentItem.style.minHeight = "unset";
   }
 
-  // Settings
+  const STORAGE_KEY = "handiMastodonServer";
   const settings = loadSettings();
-  const instance = settings.mastodon?.instance || "https://mastodon.ie";
-  const limit = settings.mastodon?.limit || 6; // Get more posts than needed (so scrolling works)
+  const limit = settings.social?.limit || 6;
+  let instance = settings.social?.instance || "";
 
-  // Loading state
-  content.innerHTML = `
-        <div class="mastodon-scroll-wrapper" style="display: flex; flex-direction: column; gap: 8px;">
-            <div id="mastodon-list" class="mastodon-list" ></div>
+  if (!instance) {
+    try {
+      instance = localStorage.getItem(STORAGE_KEY) || "";
+    } catch (e) {}
+  }
+
+  function saveServer(url) {
+    instance = url;
+    try {
+      localStorage.setItem(STORAGE_KEY, url);
+    } catch (e) {}
+  }
+
+  function renderServerSelector() {
+    var name =
+      window.LANG && window.LANG.modules && window.LANG.modules.social
+        ? window.LANG.modules.social.name
+        : "SOCIAL";
+    content.innerHTML = `
+      <div class="module-empty">
+        <i class="fa-brands fa-mastodon"></i>
+        <p>Configure ${name} element</p>
+        <div style="margin-top:12px;">
+          <select id="mastodonServerSelect" style="padding:8px 12px;border-radius:8px;border:2px solid #cbd5e1;font-size:1rem;max-width:100%;">
+            <option value="">— Select a Mastodon server —</option>
+            ${MASTODON_SERVERS.map((s, i) => `<option value="${i}">${s.flag} ${s.name}</option>`).join("")}
+          </select>
         </div>
+      </div>
     `;
-
-  const list = content.querySelector("#mastodon-list");
-
-  if (!list) return;
+    var sel = content.querySelector("#mastodonServerSelect");
+    if (sel) {
+      sel.addEventListener("change", function () {
+        var idx = parseInt(this.value);
+        if (idx >= 0 && MASTODON_SERVERS[idx]) {
+          saveServer(MASTODON_SERVERS[idx].url);
+          fetchMastodon();
+        }
+      });
+    }
+  }
 
   async function fetchMastodon() {
     try {
-      list.innerHTML =
+      content.innerHTML =
         '<div class="module-loading" style="padding: 20px; text-align: center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading trending...</div>';
-
       const url = `${instance}/api/v1/trends/links?limit=${limit}`;
       const res = await fetch(url);
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const data = await res.json();
-
       if (!Array.isArray(data) || !data.length) {
-        list.innerHTML =
+        content.innerHTML =
           '<div class="module-empty" style="padding: 20px; text-align: center;">No trending links</div>';
         refreshPackery();
         return;
       }
 
-      // Clear loading
-      list.innerHTML = "";
-
-      // Add all posts
+      content.innerHTML = "";
       for (const item of data) {
         const titleText = item.title || "Untitled";
         const urlLink = item.url || "#";
         const description = item.description || "";
         const provider = item.provider_name || "";
         const image = item.image || "";
-
         const shortDescription =
           description.length > 150
             ? `${description.substring(0, 150)}...`
@@ -97,20 +138,46 @@ export default async function initMastodon(container) {
         postDiv.style.gap = "12px";
 
         postDiv.innerHTML = `
-                    ${image ? `<img class="mastodon-image" src="${image}" alt="" style="width: 200px; height: auto; object-fit: cover; border-radius: 8px;" onerror="this.style.display='none'">` : '<div ><i class="fa-solid fa-link"></i></div>'}
-                    <div class="mastodon-body" style="flex: 1;">
-                        <a class="mastodon-title" href="${urlLink}" target="_blank" rel="noopener noreferrer" >${escapeHtml(titleText)}</a>
-                        ${provider ? `<div class="mastodon-provider" >${escapeHtml(provider)}</div>` : ""}
-                        ${shortDescription ? `<div class="mastodon-desc" >${escapeHtml(shortDescription)}</div>` : ""}
-                    </div>
-                `;
-        list.appendChild(postDiv);
+          ${image ? `<img class="mastodon-image" src="${image}" alt="" style="width:200px;height:auto;object-fit:cover;border-radius:8px;" onerror="this.style.display='none'">` : '<div><i class="fa-solid fa-link"></i></div>'}
+          <div class="mastodon-body" style="flex:1;">
+            <a class="mastodon-title" href="${urlLink}" target="_blank" rel="noopener noreferrer">${escapeHtml(titleText)}</a>
+            ${provider ? `<div class="mastodon-provider">${escapeHtml(provider)}</div>` : ""}
+            ${shortDescription ? `<div class="mastodon-desc">${escapeHtml(shortDescription)}</div>` : ""}
+          </div>
+        `;
+        content.appendChild(postDiv);
       }
+
+      // Add change server button
+      var changeBtn = document.createElement("div");
+      changeBtn.style.cssText =
+        "text-align:center;margin-top:12px;opacity:0.6;cursor:pointer;font-size:0.85rem;";
+      changeBtn.textContent = "🔄 Change server";
+      changeBtn.onclick = function () {
+        saveServer("");
+        renderServerSelector();
+      };
+      content.appendChild(changeBtn);
 
       refreshPackery();
     } catch (err) {
       console.error("Mastodon module error:", err);
-      list.innerHTML = `<div class="module-error" style="padding: 20px; text-align: center;">Failed to load Mastodon. Check instance URL in Settings.</div>`;
+      content.innerHTML = `
+        <div class="module-empty" style="padding:20px;text-align:center;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <p>Failed to load. Try another server.</p>
+          <button id="mastodonBackBtn" class="settings-link-btn">
+            <i class="fa-solid fa-arrow-left"></i> Choose another server
+          </button>
+        </div>
+      `;
+      var backBtn = content.querySelector("#mastodonBackBtn");
+      if (backBtn) {
+        backBtn.onclick = function () {
+          saveServer("");
+          renderServerSelector();
+        };
+      }
       refreshPackery();
     }
   }
@@ -131,23 +198,22 @@ export default async function initMastodon(container) {
     if (!str) return "";
     return String(str).replace(
       /[&<>]/g,
-      (m) =>
-        ({
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-        })[m],
+      (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m],
     );
   }
 
-  // Initial fetch
-  fetchMastodon();
+  if (instance) {
+    fetchMastodon();
+  } else {
+    renderServerSelector();
+  }
 
-  // Refresh every 15 minutes
-  const refreshInterval = setInterval(fetchMastodon, 15 * 60 * 1000);
+  const refreshInterval = setInterval(
+    () => {
+      if (instance) fetchMastodon();
+    },
+    15 * 60 * 1000,
+  );
 
-  // Cleanup
-  return () => {
-    clearInterval(refreshInterval);
-  };
+  return () => clearInterval(refreshInterval);
 }

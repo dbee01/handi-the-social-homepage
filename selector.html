@@ -72,7 +72,9 @@
                 flex-wrap: wrap;
             }
 
-
+            p {
+                word-break: break-word;
+            }
             /* Language flags */
             .lang-flag {
                 font-size: 7rem;
@@ -690,20 +692,7 @@
         </style>
     </head>
     <body>
-        <script>
-            var lang = "en";
-            try {
-                lang = localStorage.getItem("handiLang") || "en";
-            } catch (e) {}
-            window.handiLang = lang;
-            window.setHandiLang = function (c) {
-                try {
-                    localStorage.setItem("handiLang", c);
-                } catch (e) {}
-                location.reload();
-            };
-            document.write('<script src="/lang/' + lang + '.js"><\/script>');
-        </script>
+        <script src="/lang/loader.js"></script>
         <div class="dashboard-app">
             <div class="dashboard-layout">
                 <div class="selector-panel">

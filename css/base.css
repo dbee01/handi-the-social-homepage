@@ -48,3 +48,7 @@ body {
 body {
     min-height: 100vh;
 }
+
+p {
+    word-break: break-word;
+}

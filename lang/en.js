@@ -1,4 +1,4 @@
-// ple/lang/english.js — English language strings for selector.html
+// ple/lang/en.js — English language strings
 var LANG = {
   // Header
   brandName: "Handi Homepage",
@@ -40,8 +40,6 @@ var LANG = {
   btnAdd: "\u2717",
   btnRemove: "\u2713",
   btnDisabled: "\u2014",
-
-  // Premium label
   labelPremium: "PREMIUM",
 
   // Alerts
@@ -52,7 +50,7 @@ var LANG = {
   alertResetDone:
     '\u2713 Reset complete! Click "Apply to dashboard" to save changes.',
 
-  // Module names & descriptions (for index.html dashboard)
+  // Module names
   modules: {
     gallery: { name: "Gallery", desc: "Photos" },
     music: { name: "Player", desc: "Your playlists" },
@@ -66,4 +64,53 @@ var LANG = {
     emergency_alert: { name: "Location", desc: "Share location" },
     weather: { name: "Weather", desc: "Forecast" },
   },
+
+  // Dashboard component strings
+  d_loading: "Loading...",
+  d_noData: "No data available.",
+  d_error: "Failed to load.",
+  d_retry: "Retry",
+  d_changeSource: "Change source",
+  d_changeServer: "Change server",
+  d_chooseAnother: "Choose another source",
+  d_scrollUp: "Scroll Up",
+  d_scrollDown: "Scroll Down",
+  d_selectFeed: "Select a news source",
+  d_selectServer: "Select a Mastodon server",
+  d_selectCountry: "Select country",
+  d_browseStations: "Select a country above to browse stations",
+  d_configureNews: "Configure NEWS element",
+  d_configureSocial: "Configure SOCIAL element",
+  d_uploadImages: "Upload Images",
+  d_addImages: "Add Images",
+  d_noImages: "No images in gallery.",
+  d_fullScreen: "Full Screen",
+  d_pause: "Pause",
+  d_play: "Play",
+  d_pasteIcal: "Paste iCal URL...",
+  d_save: "Save",
+  d_changeUrl: "Change URL",
+  d_refresh: "Refresh",
+  d_noCalendar: "No calendar configured.",
+  d_todaysEvents: "Today's Events",
+  d_minWarning: "min warning",
+  d_noEventsToday: "No events scheduled for today.",
+  d_eventsTomorrow: "event(s) tomorrow.",
+  d_lastSynced: "Last synced:",
+  d_totalEvents: "total events in feed",
+  d_untitledEvent: "Untitled Event",
+  d_noStation: "No station playing",
+  d_radioLocked: "Radio is locked – unlock to play",
+  d_connecting: "Connecting to",
+  d_nowPlaying: "Now playing:",
+  d_paused: "Paused:",
+  d_playbackFailed: "Playback failed",
+  d_streamUnavailable: "Stream unavailable",
+  d_cannotPlay: "Cannot play this station",
+  d_tryAnother: "Try another source.",
+  d_chooseServer: "Choose another server",
+
+  // Footer
+  d_customizeDashboard: "Customize Dashboard",
+  d_freeTrial: "Start free trial (no credit card needed)",
 };
