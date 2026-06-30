@@ -111,11 +111,52 @@ var LANG = {
   d_unknownError: "Erreur inconnue",
   d_cannotPlayFile: "Lecture impossible",
   d_cannotResume: "Reprise impossible",
+  d_noContacts: "Aucun contact.",
+  d_addContacts: "Ajouter contacts",
+  d_selectdevices: "Sélectionner",
+  d_microphone: "Microphone",
+  d_speaker: "Haut-parleur",
+  d_camera: "Caméra",
+  d_cancel: "Annuler",
+  d_apply: "Appliquer",
+  d_yourmicrophoneismuted: "Microphone coupé",
+  d_default: "Défaut",
+  d_applyingdevices: "Application...",
+  d_devicesupdated: "Appareils mis à jour",
+  d_deviceswitchfailed: "Échec du changement",
+  d_share: null
+d_send: null
+d_locationShared: null
+d_location: null
+d_time: null
+d_noTrustedContacts: null
+d_locate: null
+d_mobileOnly: null
+d_shareLocked: null
+d_shareConfirm: null
+d_shareCancelled: null
+d_gettingLocation: null
+d_geolocationUnsupported: null
+d_locationNotIreland: null
+d_notIreland: null
+d_impreciseGps: null
+d_sendAnyway: null
+d_shareCancelledInaccurate: null
+d_sendingTo: null
+d_contacts: null
+d_sent: null
+d_failed: null
+d_viewOnOsm: null
+d_sendFailed: null
+d_permissionDenied: null
+d_positionUnavailable: null
+d_timeout: null
+d_ringing: "Sonnerie...",
+  d_caregiver: "Soignant",
   d_invalidFile: "Fichier invalide",
   d_dateUnknown: "Date inconnue",
 
-  d_chooseServer: "___",
-
+  
   d_customizeDashboard: "Personnaliser le tableau de bord",
   d_freeTrial: "Essai gratuit (sans carte bancaire)",
 };

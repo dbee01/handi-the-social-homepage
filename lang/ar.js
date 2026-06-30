@@ -110,11 +110,52 @@ var LANG = {
   d_unknownError: "خطأ غير معروف",
   d_cannotPlayFile: "لا يمكن تشغيل الملف",
   d_cannotResume: "لا يمكن الاستئناف",
+  d_noContacts: "لا توجد جهات اتصال.",
+  d_addContacts: "أضف جهات اتصال",
+  d_selectdevices: "اختيار الأجهزة",
+  d_microphone: "ميكروفون",
+  d_speaker: "مكبر صوت",
+  d_camera: "كاميرا",
+  d_cancel: "إلغاء",
+  d_apply: "تطبيق",
+  d_yourmicrophoneismuted: "الميكروفون مكتوم",
+  d_default: "افتراضي",
+  d_applyingdevices: "جار تطبيق الأجهزة...",
+  d_devicesupdated: "تم تحديث الأجهزة",
+  d_deviceswitchfailed: "فشل تبديل الجهاز",
+  d_share: null
+d_send: null
+d_locationShared: null
+d_location: null
+d_time: null
+d_noTrustedContacts: null
+d_locate: null
+d_mobileOnly: null
+d_shareLocked: null
+d_shareConfirm: null
+d_shareCancelled: null
+d_gettingLocation: null
+d_geolocationUnsupported: null
+d_locationNotIreland: null
+d_notIreland: null
+d_impreciseGps: null
+d_sendAnyway: null
+d_shareCancelledInaccurate: null
+d_sendingTo: null
+d_contacts: null
+d_sent: null
+d_failed: null
+d_viewOnOsm: null
+d_sendFailed: null
+d_permissionDenied: null
+d_positionUnavailable: null
+d_timeout: null
+d_ringing: "جار الرنين...",
+  d_caregiver: "مقدم الرعاية",
   d_invalidFile: "ملف غير صالح",
   d_dateUnknown: "تاريخ غير معروف",
 
-  d_chooseServer: "___",
-
+  
   d_customizeDashboard: "تخصيص لوحة القيادة",
   d_freeTrial: "ابدأ النسخة التجريبية المجانية (لا حاجة لبطاقة ائتمان)",
 };

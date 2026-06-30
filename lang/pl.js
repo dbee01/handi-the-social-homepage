@@ -112,11 +112,52 @@ var LANG = {
   d_unknownError: "Nieznany błąd",
   d_cannotPlayFile: "Nie można odtworzyć",
   d_cannotResume: "Nie można wznowić",
+  d_noContacts: "Brak kontaktów.",
+  d_addContacts: "Dodaj kontakty",
+  d_selectdevices: "Wybierz urządzenia",
+  d_microphone: "Mikrofon",
+  d_speaker: "Głośnik",
+  d_camera: "Kamera",
+  d_cancel: "Anuluj",
+  d_apply: "Zastosuj",
+  d_yourmicrophoneismuted: "Mikrofon wyciszony",
+  d_default: "Domyślne",
+  d_applyingdevices: "Stosowanie...",
+  d_devicesupdated: "Urządzenia zaktualizowane",
+  d_deviceswitchfailed: "Przełączenie nieudane",
+  d_share: null
+d_send: null
+d_locationShared: null
+d_location: null
+d_time: null
+d_noTrustedContacts: null
+d_locate: null
+d_mobileOnly: null
+d_shareLocked: null
+d_shareConfirm: null
+d_shareCancelled: null
+d_gettingLocation: null
+d_geolocationUnsupported: null
+d_locationNotIreland: null
+d_notIreland: null
+d_impreciseGps: null
+d_sendAnyway: null
+d_shareCancelledInaccurate: null
+d_sendingTo: null
+d_contacts: null
+d_sent: null
+d_failed: null
+d_viewOnOsm: null
+d_sendFailed: null
+d_permissionDenied: null
+d_positionUnavailable: null
+d_timeout: null
+d_ringing: "Dzwonienie...",
+  d_caregiver: "Opiekun",
   d_invalidFile: "Nieprawidłowy plik",
   d_dateUnknown: "Data nieznana",
 
-  d_chooseServer: "___",
-
+  
   d_customizeDashboard: "Dostosuj pulpit",
   d_freeTrial: "Rozpocznij bezpłatny okres próbny (bez karty)",
 };

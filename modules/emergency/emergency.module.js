@@ -1,28 +1,18 @@
-/*
- * Copyright (c) 2026 Handi Homepage
- * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
- * See the LICENSE file in the repository root for full details.
- */
 // modules/emergency/emergency.module.js
 import { loadSettings } from "../../js/core/settings.js";
 
-// ----------------------------------------------------------------------
-// Convert lat/lon to OSM shortlink code (https://osm.org/go/...)
-// ----------------------------------------------------------------------
 function osmShortlink(lat, lon) {
-  const codeChars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_~";
-  const base = codeChars.length;
-
-  let latInt = Math.floor((lat + 90) * 10000);
-  let lonInt = Math.floor((lon + 180) * 10000);
+  var codeChars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_~",
+    base = codeChars.length;
+  var latInt = Math.floor((lat + 90) * 10000),
+    lonInt = Math.floor((lon + 180) * 10000);
   if (latInt < 0) latInt = 0;
   if (latInt >= 1800000) latInt = 1800000 - 1;
   if (lonInt < 0) lonInt = 0;
   if (lonInt >= 3600000) lonInt = 3600000 - 1;
-
-  let combined = lonInt * 1800000 + latInt;
-  let result = "";
+  var combined = lonInt * 1800000 + latInt,
+    result = "";
   while (combined > 0) {
     result = codeChars[combined % base] + result;
     combined = Math.floor(combined / base);
@@ -30,38 +20,37 @@ function osmShortlink(lat, lon) {
   return result || "0";
 }
 
-// Helper: Check if coordinates are plausibly in Ireland
 function isPlausibleIrelandLocation(lat, lon) {
-  // Ireland bounding box (approximate)
-  const minLat = 51.0;
-  const maxLat = 55.5;
-  const minLon = -11.0;
-  const maxLon = -5.5;
-  return lat >= minLat && lat <= maxLat && lon >= minLon && lon <= maxLon;
+  return lat >= 51.0 && lat <= 55.5 && lon >= -11.0 && lon <= -5.5;
 }
 
 export default async function initEmergency(container) {
-  // ---------- Create header row: title + lock + pin ----------
-  const headerRow = document.createElement("div");
-  headerRow.className = "emergency-header-row";
+  var t =
+    window.t ||
+    function (k, e) {
+      return e || k;
+    };
 
-  const title = document.createElement("div");
+  var headerRow = document.createElement("div");
+  headerRow.className = "emergency-header-row";
+  var title = document.createElement("div");
   title.className = "panel-title";
-  var name =
-    window.LANG && window.LANG.modules && window.LANG.modules.emergency_alert
-      ? window.LANG.modules.emergency_alert.name
-      : "LOCATE";
-  title.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> ' + name;
+  title.innerHTML =
+    '<i class="fa-solid fa-mobile-screen"></i> ' +
+    t(
+      "modules.emergency_alert.name",
+      window.LANG && window.LANG.modules && window.LANG.modules.emergency_alert
+        ? window.LANG.modules.emergency_alert.name
+        : "LOCATE",
+    );
   headerRow.appendChild(title);
 
-  const headerActions = document.createElement("div");
+  var headerActions = document.createElement("div");
   headerActions.className = "emergency-header-actions";
-
-  const lockToggle = document.createElement("button");
+  var lockToggle = document.createElement("button");
   lockToggle.className = "emergency-lock-toggle";
-  const saved = localStorage.getItem("emergencyLocked");
-  let isLocked = saved !== null ? saved === "true" : true;
-
+  var saved = localStorage.getItem("emergencyLocked"),
+    isLocked = saved !== null ? saved === "true" : true;
   function updateLockIcon() {
     lockToggle.innerHTML = isLocked
       ? '<i class="fa-solid fa-lock"></i>'
@@ -69,37 +58,33 @@ export default async function initEmergency(container) {
     lockToggle.style.color = isLocked ? "#cc0000" : "#008000";
   }
   updateLockIcon();
-
-  lockToggle.addEventListener("click", (e) => {
+  lockToggle.addEventListener("click", function (e) {
     e.stopPropagation();
     isLocked = !isLocked;
     localStorage.setItem("emergencyLocked", isLocked);
     updateLockIcon();
-    const btn = content.querySelector("#emergencyTriggerBtn");
+    var btn = content.querySelector("#emergencyTriggerBtn");
     if (btn) applyLockState(btn);
   });
-
   headerActions.appendChild(lockToggle);
 
-  const originalPinBtn = container.querySelector(".pin-btn");
-  let pinBtn = null;
+  var originalPinBtn = container.querySelector(".pin-btn"),
+    pinBtn = null;
   if (originalPinBtn) {
     pinBtn = originalPinBtn.cloneNode(true);
     pinBtn.classList.add("pin-btn-clone");
     originalPinBtn.style.display = "none";
     headerActions.appendChild(pinBtn);
   }
-
   headerRow.appendChild(headerActions);
   container.innerHTML = "";
   container.appendChild(headerRow);
 
-  const contentWrapper = document.createElement("div");
+  var contentWrapper = document.createElement("div");
   contentWrapper.className = "emergency-content-wrapper";
   container.appendChild(contentWrapper);
-
-  const content = document.createElement("div");
-  content.style.cssText = "padding: 10px; text-align: center;";
+  var content = document.createElement("div");
+  content.style.cssText = "padding:10px;text-align:center;";
   contentWrapper.appendChild(content);
 
   function applyLockState(btn) {
@@ -113,16 +98,17 @@ export default async function initEmergency(container) {
       btn.disabled = false;
       btn.style.opacity = "";
       btn.style.cursor = "";
-      btn.innerHTML = `
-                <i class="fa-solid fa-mobile-screen" style="font-size: 2rem;"></i>
-                <span>SHARE</span>
-                <span style="font-size: 0.7rem;">Send</span>
-            `;
-      btn.onmouseenter = () => {
+      btn.innerHTML =
+        '<i class="fa-solid fa-mobile-screen" style="font-size:2rem;"></i><span>' +
+        t("d_share", "SHARE") +
+        '</span><span style="font-size:0.7rem;">' +
+        t("d_send", "Send") +
+        "</span>";
+      btn.onmouseenter = function () {
         btn.style.transform = "scale(1.05)";
         btn.style.boxShadow = "0 0 25px rgba(255,0,0,0.9)";
       };
-      btn.onmouseleave = () => {
+      btn.onmouseleave = function () {
         btn.style.transform = "scale(1)";
         btn.style.boxShadow = "0 0 15px rgba(255,0,0,0.6)";
       };
@@ -130,41 +116,28 @@ export default async function initEmergency(container) {
   }
 
   async function sendSMS(phoneNumber, shortlink) {
-    const settings = loadSettings();
-    // Read Infobip config from phone settings (was webrtc)
-    const webrtc = settings.webrtc || {};
-    const baseUrl = webrtc.baseUrl || "";
-    const apiKey = webrtc.apiKey || "";
-    const from = webrtc.callerId || "InfoSMS";
-
-    console.log("[Emergency] sendSMS called", {
-      phoneNumber,
-      shortlink,
-      baseUrl,
-      from,
-      hasApiKey: !!apiKey,
-    });
-
-    if (!baseUrl || !apiKey) {
-      console.error(
-        "[Emergency] Infobip not configured: missing base URL or API key",
-      );
-      return { success: false, error: "Infobip not configured in Settings" };
-    }
-
-    const fullLink = `https://osm.org/go/${shortlink}`;
-    const message = `📍 Someone shared their location with you.\n\nLocation: ${fullLink}\nTime: ${new Date().toLocaleString()}`;
-
-    // Strip + prefix from phone numbers (Infobip expects E.164 without +)
-    const cleanNumber = phoneNumber.replace(/^\+/, "");
-    console.log("[Emergency] Sending SMS via Infobip v3", {
-      to: cleanNumber,
-      from,
-      messageLength: message.length,
-    });
-
+    var settings = loadSettings(),
+      webrtc = settings.webrtc || {};
+    var baseUrl = webrtc.baseUrl || "",
+      apiKey = webrtc.apiKey || "",
+      from = webrtc.callerId || "InfoSMS";
+    if (!baseUrl || !apiKey)
+      return { success: false, error: "Infobip not configured" };
+    var fullLink = "https://osm.org/go/" + shortlink;
+    var message =
+      "📍 " +
+      t("d_locationShared", "Someone shared their location with you.") +
+      "\n\n" +
+      t("d_location", "Location") +
+      ": " +
+      fullLink +
+      "\n" +
+      t("d_time", "Time") +
+      ": " +
+      new Date().toLocaleString();
+    var cleanNumber = phoneNumber.replace(/^\+/, "");
     try {
-      const response = await fetch(`https://${baseUrl}/sms/3/messages`, {
+      var resp = await fetch("https://" + baseUrl + "/sms/3/messages", {
         method: "POST",
         headers: {
           Authorization: apiKey,
@@ -181,210 +154,231 @@ export default async function initEmergency(container) {
           ],
         }),
       });
-      console.log("[Emergency] Infobip response status:", response.status);
-      if (!response.ok) {
-        let detail = `HTTP ${response.status}`;
+      if (!resp.ok) {
+        var detail = "HTTP " + resp.status;
         try {
-          const errBody = await response.json();
-          if (errBody.violations) {
-            const msgs = errBody.violations
-              .map((v) => `${v.property}: ${v.violation}`)
-              .join("; ");
-            detail += ` — ${errBody.description || ""}: ${msgs}`;
-          } else if (errBody.description) {
-            detail += ` — ${errBody.description}`;
-          } else {
-            detail += ` — ${JSON.stringify(errBody)}`;
-          }
-          console.error("[Emergency] Infobip error:", errBody);
-        } catch (_) {
-          try {
-            const txt = await response.text();
-            detail += ` — ${txt}`;
-          } catch (__) {}
-        }
+          var eb = await resp.json();
+          detail += " — " + (eb.description || JSON.stringify(eb));
+        } catch (e) {}
         throw new Error(detail);
       }
-      const data = await response.json();
-      console.log("[Emergency] SMS sent successfully:", data);
-      return { success: true, data };
+      return { success: true, data: await resp.json() };
     } catch (err) {
-      console.error("[Emergency] SMS send error:", err);
       return { success: false, error: err.message };
     }
   }
 
-  // Re-render whenever settings change (listens for same-tab storage events)
   function render() {
-    const settings = loadSettings();
-    // Read contacts from emergency_alert, fall back to phone contacts with share_location
-    let contacts = settings.emergency_alert?.contacts || [];
-    if (contacts.length === 0) {
-      const phoneContacts = settings.phone?.contacts || [];
-      contacts = phoneContacts.filter((c) => c.share_location);
+    var settings = loadSettings(),
+      contacts = settings.emergency_alert?.contacts || [];
+    if (!contacts.length) {
+      var pc = settings.phone?.contacts || [];
+      contacts = pc.filter(function (c) {
+        return c.share_location;
+      });
     }
-
-    if (contacts.length === 0) {
-      content.innerHTML = `
-                <div class="module-empty">
-                    <i class="fa-solid fa-mobile-screen"></i>
-                    <p>No trusted contacts saved.</p>
-                    <button id="emergencySettingsBtn" class="settings-link-btn">
-                        <i class="fa-solid fa-gear"></i> Add Contacts
-                    </button>
-                </div>
-            `;
-      const settingsBtn = content.querySelector("#emergencySettingsBtn");
-      if (settingsBtn)
-        settingsBtn.onclick = () =>
-          (location.href = "settings.html?args=emergency");
+    if (!contacts.length) {
+      content.innerHTML =
+        '<div class="module-empty"><i class="fa-solid fa-mobile-screen"></i><p>' +
+        t("d_noTrustedContacts", "No trusted contacts saved.") +
+        '</p><button id="emergencySettingsBtn" class="settings-link-btn"><i class="fa-solid fa-gear"></i> ' +
+        t("d_addContacts", "Add Contacts") +
+        "</button></div>";
+      var sb = content.querySelector("#emergencySettingsBtn");
+      if (sb)
+        sb.onclick = function () {
+          location.href = "settings.html?args=emergency";
+        };
       return;
     }
-
     content.innerHTML = "";
-
-    const emergencyBtn = document.createElement("button");
+    var emergencyBtn = document.createElement("button");
     emergencyBtn.id = "emergencyTriggerBtn";
-    emergencyBtn.style.cssText = `
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            border: 3px solid #ffffff;
-            color: white;
-            background: radial-gradient(circle at 30% 30%, #cc0000, #800000) !important;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 10px auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 0 15px rgba(255,0,0,0.6);
-            transition: all 0.2s;
-        `;
-    emergencyBtn.innerHTML = `
-            <i class="fa-solid fa-mobile-screen" style="font-size: 2rem;"></i>
-            <span>LOCATE</span>
-            <span style="font-size: 0.7rem;">mobile only</span>
-        `;
+    emergencyBtn.style.cssText =
+      "width:160px;height:160px;border-radius:50%;border:3px solid #ffffff;color:white;background:radial-gradient(circle at 30% 30%, #cc0000, #800000) !important;font-size:1.2rem;font-weight:bold;cursor:pointer;margin:10px auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:0 0 15px rgba(255,0,0,0.6);transition:all 0.2s;";
+    emergencyBtn.innerHTML =
+      '<i class="fa-solid fa-mobile-screen" style="font-size:2rem;"></i><span>' +
+      t("d_locate", "LOCATE") +
+      '</span><span style="font-size:0.7rem;">' +
+      t("d_mobileOnly", "mobile only") +
+      "</span>";
     content.appendChild(emergencyBtn);
 
-    // Main location sharing flow
     function triggerShare() {
       if (isLocked) {
-        setStatus("Share button is locked – unlock to activate.", true);
+        setStatus(
+          t("d_shareLocked", "Share button is locked – unlock to activate."),
+          true,
+        );
         return;
       }
       if (
         !confirm(
-          "📍 Share your location? This will send your current location to your trusted contacts.",
+          "📍 " +
+            t(
+              "d_shareConfirm",
+              "Share your location? This will send your current location to your trusted contacts.",
+            ),
         )
       ) {
-        setStatus("Share cancelled.", false);
+        setStatus(t("d_shareCancelled", "Share cancelled."), false);
         return;
       }
-
       setStatus(
-        "Getting your location (please allow precise location)...",
+        t(
+          "d_gettingLocation",
+          "Getting your location (please allow precise location)...",
+        ),
         false,
       );
-
       if (!navigator.geolocation) {
-        setStatus("Geolocation is not supported by your browser.", true);
+        setStatus(
+          t(
+            "d_geolocationUnsupported",
+            "Geolocation is not supported by your browser.",
+          ),
+          true,
+        );
         return;
       }
-
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-
-          // Validate location – if not in Ireland, warn and ask to proceed
+        async function (pos) {
+          var lat = pos.coords.latitude,
+            lon = pos.coords.longitude;
           if (!isPlausibleIrelandLocation(lat, lon)) {
-            const proceed = confirm(
-              `⚠️ The location we received (${lat.toFixed(2)}, ${lon.toFixed(2)}) does not appear to be in Ireland.\n` +
-                `This may be because your browser could not get a precise GPS fix.\n\n` +
-                `Do you still want to send your location?`,
+            var proceed = confirm(
+              "⚠️ " +
+                t("d_locationNotIreland", "The location we received") +
+                " (" +
+                lat.toFixed(2) +
+                ", " +
+                lon.toFixed(2) +
+                ") " +
+                t("d_notIreland", "does not appear to be in Ireland.") +
+                "\n" +
+                t(
+                  "d_impreciseGps",
+                  "This may be because your browser could not get a precise GPS fix",
+                ) +
+                "\n\n" +
+                t("d_sendAnyway", "Do you still want to send your location?"),
             );
             if (!proceed) {
-              setStatus("Share cancelled – location inaccurate.", true);
+              setStatus(
+                t(
+                  "d_shareCancelledInaccurate",
+                  "Share cancelled – location inaccurate.",
+                ),
+                true,
+              );
               return;
             }
           }
-
-          const shortCode = osmShortlink(lat, lon);
-          const osmShortUrl = `https://osm.org/go/${shortCode}?z=16`;
-
+          var shortCode = osmShortlink(lat, lon),
+            osmShortUrl = "https://osm.org/go/" + shortCode + "?z=16";
           setStatus(
-            `Location obtained. Sending to ${contacts.length} contact(s)...`,
+            t("d_sendingTo", "Location obtained. Sending to") +
+              " " +
+              contacts.length +
+              " " +
+              t("d_contacts", "contact(s)..."),
             false,
           );
-
-          let successCount = 0;
-          let failCount = 0;
-          for (const contact of contacts) {
-            const result = await sendSMS(contact.number, shortCode);
-            if (result.success) successCount++;
+          var successCount = 0,
+            failCount = 0;
+          for (var i = 0; i < contacts.length; i++) {
+            var r = await sendSMS(contacts[i].number, shortCode);
+            if (r.success) successCount++;
             else failCount++;
-            await new Promise((r) => setTimeout(r, 500));
+            await new Promise(function (rs) {
+              setTimeout(rs, 500);
+            });
           }
-
           if (successCount > 0) {
             setStatus(
-              `✅ Location sent to ${successCount} contact(s). ${failCount > 0 ? `Failed: ${failCount}` : ""}`,
+              "✅ " +
+                t("d_sent", "Location sent to") +
+                " " +
+                successCount +
+                " " +
+                t("d_contacts", "contact(s).") +
+                (failCount > 0
+                  ? " " + t("d_failed", "Failed:") + " " + failCount
+                  : ""),
               false,
             );
-            const linkDiv = document.createElement("div");
+            var linkDiv = document.createElement("div");
             linkDiv.style.cssText =
-              "margin-top: 10px; font-size: 0.7rem; word-break: break-all;";
-            linkDiv.innerHTML = `<a href="${osmShortUrl}" target="_blank" style="color:#00ff41;">📍 View shared location on OpenStreetMap</a>`;
+              "margin-top:10px;font-size:0.7rem;word-break:break-all;";
+            linkDiv.innerHTML =
+              '<a href="' +
+              osmShortUrl +
+              '" target="_blank" style="color:#00ff41;">📍 ' +
+              t("d_viewOnOsm", "View shared location on OpenStreetMap") +
+              "</a>";
             content.appendChild(linkDiv);
-            setTimeout(() => linkDiv.remove(), 15000);
+            setTimeout(function () {
+              linkDiv.remove();
+            }, 15000);
           } else {
             setStatus(
-              "❌ Failed to send location. Check network or contact numbers.",
+              t(
+                "d_sendFailed",
+                "Failed to send location. Check network or contact numbers.",
+              ),
               true,
             );
           }
         },
-        (error) => {
-          let errorMsg = "";
+        function (error) {
+          var em = "";
           switch (error.code) {
             case error.PERMISSION_DENIED:
-              errorMsg =
-                "Location permission denied. Please allow precise location in your browser settings.";
+              em = t(
+                "d_permissionDenied",
+                "Location permission denied. Please allow precise location in your browser settings.",
+              );
               break;
             case error.POSITION_UNAVAILABLE:
-              errorMsg =
-                "Location information unavailable. Please check your GPS or try again.";
+              em = t(
+                "d_positionUnavailable",
+                "Location information unavailable. Please check your GPS or try again.",
+              );
               break;
             case error.TIMEOUT:
-              errorMsg =
-                "Location request timed out. Please move to an area with better GPS signal.";
+              em = t(
+                "d_timeout",
+                "Location request timed out. Please move to an area with better GPS signal.",
+              );
               break;
             default:
-              errorMsg = "Unknown geolocation error.";
+              em = t("d_unknownGeoError", "Unknown geolocation error.");
           }
-          setStatus(errorMsg, true);
+          setStatus(em, true);
         },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 },
       );
     }
 
-    const statusDiv = document.createElement("div");
-    statusDiv.style.cssText =
-      "margin-top: 20px; font-size: 0.8rem; color: #ffb000;";
+    var statusDiv = document.createElement("div");
+    statusDiv.style.cssText = "margin-top:20px;font-size:0.8rem;color:#ffb000;";
     content.appendChild(statusDiv);
-
-    function setStatus(msg, isError = false) {
-      statusDiv.innerHTML = `<i class="fa-solid ${isError ? "fa-exclamation-triangle" : "fa-circle-info"}"></i> ${msg}`;
+    function setStatus(msg, isError) {
+      if (isError === undefined) isError = false;
+      statusDiv.innerHTML =
+        '<i class="fa-solid ' +
+        (isError ? "fa-exclamation-triangle" : "fa-circle-info") +
+        '"></i> ' +
+        msg;
       statusDiv.style.color = isError ? "#ff8888" : "#ffb000";
-      setTimeout(() => {
+      var m = msg;
+      setTimeout(function () {
         if (
           statusDiv.innerHTML ===
-          `<i class="fa-solid ${isError ? "fa-exclamation-triangle" : "fa-circle-info"}"></i> ${msg}`
+          '<i class="fa-solid ' +
+            (isError ? "fa-exclamation-triangle" : "fa-circle-info") +
+            '"></i> ' +
+            m
         )
           statusDiv.innerHTML = "";
       }, 8000);
@@ -394,14 +388,11 @@ export default async function initEmergency(container) {
     applyLockState(emergencyBtn);
   }
 
-  // Initial render
   render();
-
-  // Re-render when settings change (triggered by saving in settings.html)
-  window.addEventListener("storage", (e) => {
+  window.addEventListener("storage", function (e) {
     if (e.key === "handiSettings") render();
   });
-
-  // Also listen for a custom event dispatched from settings page save
-  window.addEventListener("handiSettingsSaved", () => render());
+  window.addEventListener("handiSettingsSaved", function () {
+    render();
+  });
 }

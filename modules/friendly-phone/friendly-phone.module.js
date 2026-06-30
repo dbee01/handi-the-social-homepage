@@ -8,6 +8,11 @@
 import { loadSettings } from "../../js/core/settings.js";
 
 export default async function initPhone(container) {
+  var t =
+    window.t ||
+    function (k, e) {
+      return e || k;
+    };
   const pinBtn = container.querySelector(".pin-btn");
   container.innerHTML = "";
   if (pinBtn) container.prepend(pinBtn);
@@ -45,9 +50,9 @@ export default async function initPhone(container) {
     content.innerHTML = `
       <div class="module-empty">
         <i class="fa-solid fa-address-book"></i>
-        <p>No contacts saved.</p>
+        <p>${t("d_noContacts", "No contacts saved.")}</p>
         <button class="settings-link-btn" id="phoneSettingsBtn">
-          <i class="fa-solid fa-gear"></i> Add Contacts in Settings
+          <i class="fa-solid fa-gear"></i> ${t("d_addContacts", "Add Contacts in Settings")}
         </button>
       </div>`;
     content.querySelector("#phoneSettingsBtn").onclick = () => {
@@ -135,7 +140,7 @@ export default async function initPhone(container) {
           }
           <div class="phone-name">
             ${escapeHtml(c.name)}
-            ${c.caregiver ? '<span style="font-size:0.6rem;background:#f59e0b;color:white;padding:1px 5px;border-radius:6px;margin-left:4px;">Caregiver</span>' : ""}
+            ${c.caregiver ? '<span style="font-size:0.6rem;background:#f59e0b;color:white;padding:1px 5px;border-radius:6px;margin-left:4px;">' + t("d_caregiver", "Caregiver") + "</span>" : ""}
           </div>
           </div>
           <div class="phone-actions">

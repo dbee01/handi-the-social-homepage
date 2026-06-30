@@ -111,11 +111,52 @@ var LANG = {
   d_unknownError: "Gwall anhysbys",
   d_cannotPlayFile: "Methu chwarae ffeil",
   d_cannotResume: "Methu ailddechrau",
+  d_noContacts: "Dim cysylltiadau.",
+  d_addContacts: "Ychwanegu Cysylltiadau",
+  d_selectdevices: "Dewis Dyfeisiau",
+  d_microphone: "Meicroffon",
+  d_speaker: "Siaradwr",
+  d_camera: "Camera",
+  d_cancel: "Canslo",
+  d_apply: "Cymhwyso",
+  d_yourmicrophoneismuted: "Meicroffon wedi tewi",
+  d_default: "Diofyn",
+  d_applyingdevices: "Cymhwyso dyfeisiau...",
+  d_devicesupdated: "Dyfeisiau wedi diweddaru",
+  d_deviceswitchfailed: "Methu newid dyfais",
+  d_share: null
+d_send: null
+d_locationShared: null
+d_location: null
+d_time: null
+d_noTrustedContacts: null
+d_locate: null
+d_mobileOnly: null
+d_shareLocked: null
+d_shareConfirm: null
+d_shareCancelled: null
+d_gettingLocation: null
+d_geolocationUnsupported: null
+d_locationNotIreland: null
+d_notIreland: null
+d_impreciseGps: null
+d_sendAnyway: null
+d_shareCancelledInaccurate: null
+d_sendingTo: null
+d_contacts: null
+d_sent: null
+d_failed: null
+d_viewOnOsm: null
+d_sendFailed: null
+d_permissionDenied: null
+d_positionUnavailable: null
+d_timeout: null
+d_ringing: "Canu...",
+  d_caregiver: "Gofalwr",
   d_invalidFile: "Ffeil annilys",
   d_dateUnknown: "Dyddiad anhysbys",
 
-  d_chooseServer: "___",
-
+  
   d_customizeDashboard: "Addasu'r Dangosfwrdd",
   d_freeTrial: "Dechrau treial am ddim (dim cerdyn credyd)",
 };

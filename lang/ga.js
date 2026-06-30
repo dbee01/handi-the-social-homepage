@@ -123,11 +123,52 @@ var LANG = {
   d_unknownError: "Earráid anaithnid",
   d_cannotPlayFile: "Ní féidir comhad a sheinm",
   d_cannotResume: "Ní féidir leanúint",
+  d_noContacts: "Gan teagmhálacha.",
+  d_addContacts: "Cuir Teagmhálacha Leis",
+  d_selectdevices: "Roghnaigh Gléasanna",
+  d_microphone: "Micreafón",
+  d_speaker: "Callaire",
+  d_camera: "Ceamara",
+  d_cancel: "Cealaigh",
+  d_apply: "Cuir i bhfeidhm",
+  d_yourmicrophoneismuted: "Tá do mhicreafón ciúnaithe",
+  d_default: "Réamhshocrú",
+  d_applyingdevices: "Gléasanna á gcur i bhfeidhm...",
+  d_devicesupdated: "Gléasanna nuashonraithe",
+  d_deviceswitchfailed: "Theip ar athrú gléis",
+  d_share: null
+d_send: null
+d_locationShared: null
+d_location: null
+d_time: null
+d_noTrustedContacts: null
+d_locate: null
+d_mobileOnly: null
+d_shareLocked: null
+d_shareConfirm: null
+d_shareCancelled: null
+d_gettingLocation: null
+d_geolocationUnsupported: null
+d_locationNotIreland: null
+d_notIreland: null
+d_impreciseGps: null
+d_sendAnyway: null
+d_shareCancelledInaccurate: null
+d_sendingTo: null
+d_contacts: null
+d_sent: null
+d_failed: null
+d_viewOnOsm: null
+d_sendFailed: null
+d_permissionDenied: null
+d_positionUnavailable: null
+d_timeout: null
+d_ringing: "Ag bualadh...",
+  d_caregiver: "Cúramóir",
   d_invalidFile: "Comhad neamhbhailí",
   d_dateUnknown: "Dáta anaithnid",
 
-  d_chooseServer: "___",
-
+  
   d_customizeDashboard: "Saincheap an Deais",
   d_freeTrial: "Tosaigh triail saor in aisce (gan cárta creidmheasa)",
 };

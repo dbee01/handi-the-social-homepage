@@ -6,6 +6,11 @@
 import { loadSettings } from "../../js/core/settings.js";
 
 export default function initClickToCall(container) {
+  var t =
+    window.t ||
+    function (k, e) {
+      return e || k;
+    };
   container.innerHTML = "";
 
   const localStreams = {};
@@ -359,22 +364,22 @@ export default function initClickToCall(container) {
   deviceSelector.id = "deviceSelector";
   deviceSelector.className = "device-selector";
   deviceSelector.innerHTML = `
-    <h3>Select Devices</h3>
+    <h3>${t("d_selectDevices", "Select Devices")}</h3>
     <div>
-      <label>Microphone</label>
+      <label>${t("d_microphone", "Microphone")}</label>
       <select id="dsMicSelect"></select>
     </div>
     <div>
-      <label>Speaker</label>
+      <label>${t("d_speaker", "Speaker")}</label>
       <select id="dsSpeakerSelect"></select>
     </div>
     <div id="dsCameraRow">
-      <label>Camera</label>
+      <label>${t("d_camera", "Camera")}</label>
       <select id="dsCameraSelect"></select>
     </div>
     <div class="ds-row">
-      <button class="ds-close" id="dsCloseBtn">Cancel</button>
-      <button class="ds-apply" id="dsApplyBtn">Apply</button>
+      <button class="ds-close" id="dsCloseBtn">${t("d_cancel", "Cancel")}</button>
+      <button class="ds-apply" id="dsApplyBtn">${t("d_apply", "Apply")}</button>
     </div>
   `;
   document.body.appendChild(deviceSelector);
@@ -390,7 +395,7 @@ export default function initClickToCall(container) {
   const muteToast = document.createElement("div");
   muteToast.id = "muteToast";
   muteToast.className = "mute-toast";
-  muteToast.textContent = "⚠️ Your microphone is muted";
+  muteToast.textContent = "⚠️ " + t("d_micMuted", "Your microphone is muted");
   document.body.appendChild(muteToast);
 
   // ── State ───────────────────────────────────────────────────────────────
@@ -407,7 +412,8 @@ export default function initClickToCall(container) {
     dsCameraRow.style.display = showCamera ? "block" : "none";
 
     // Microphones
-    dsMicSelect.innerHTML = '<option value="">Default</option>';
+    dsMicSelect.innerHTML =
+      '<option value="">' + t("d_default", "Default") + "</option>";
     try {
       const mics = await navigator.mediaDevices.enumerateDevices();
       mics
@@ -423,7 +429,8 @@ export default function initClickToCall(container) {
     }
 
     // Speakers
-    dsSpeakerSelect.innerHTML = '<option value="">Default</option>';
+    dsSpeakerSelect.innerHTML =
+      '<option value="">' + t("d_default", "Default") + "</option>";
     try {
       const devs = await navigator.mediaDevices.enumerateDevices();
       devs
@@ -459,7 +466,7 @@ export default function initClickToCall(container) {
   }
 
   async function applyDeviceSelection() {
-    showCallStatus("Applying devices...");
+    showCallStatus(t("d_applyingDevices", "Applying devices..."));
     try {
       const micId = dsMicSelect.value;
       const speakerId = dsSpeakerSelect.value;
@@ -495,11 +502,11 @@ export default function initClickToCall(container) {
         }
       }
 
-      showCallStatus("Devices updated");
+      showCallStatus(t("d_devicesUpdated", "Devices updated"));
       setTimeout(() => hideCallStatus(), 1500);
     } catch (err) {
       console.error("Device switch error:", err);
-      showCallStatus("Device switch failed");
+      showCallStatus(t("d_deviceSwitchFailed", "Device switch failed"));
       setTimeout(() => hideCallStatus(), 2000);
     }
     deviceSelector.classList.remove("active");
@@ -657,7 +664,7 @@ export default function initClickToCall(container) {
 
         currentCall.on("ringing", () => {
           console.log("Ringing...");
-          showCallStatus("Ringing...");
+          showCallStatus(t("d_ringing", "Ringing..."));
         });
 
         currentCall.on("established", (event) => {
@@ -740,7 +747,7 @@ export default function initClickToCall(container) {
 
         currentCall.on("ringing", () => {
           console.log("Ringing...");
-          showCallStatus("Ringing...");
+          showCallStatus(t("d_ringing", "Ringing..."));
         });
 
         currentCall.on("established", (stream) => {

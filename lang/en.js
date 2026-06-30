@@ -134,6 +134,60 @@ var LANG = {
   d_cannotResume: "Cannot resume",
   d_invalidFile: "Invalid file",
 
+  // Phone
+  d_noContacts: "No contacts saved.",
+  d_addContacts: "Add Contacts in Settings",
+  d_caregiver: "Caregiver",
+
+  // Click-to-call
+  d_selectDevices: "Select Devices",
+  d_microphone: "Microphone",
+  d_speaker: "Speaker",
+  d_camera: "Camera",
+  d_cancel: "Cancel",
+  d_apply: "Apply",
+  d_micMuted: "Your microphone is muted",
+  d_default: "Default",
+  d_applyingDevices: "Applying devices...",
+  d_devicesUpdated: "Devices updated",
+  d_deviceSwitchFailed: "Device switch failed",
+  d_ringing: "Ringing...",
+
+  // Emergency / Location
+  d_share: "SHARE",
+  d_send: "Send",
+  d_locationShared: "Someone shared their location with you.",
+  d_location: "Location",
+  d_time: "Time",
+  d_noTrustedContacts: "No trusted contacts saved.",
+  d_locate: "LOCATE",
+  d_mobileOnly: "mobile only",
+  d_shareLocked: "Share button is locked – unlock to activate.",
+  d_shareConfirm:
+    "Share your location? This will send your current location to your trusted contacts.",
+  d_shareCancelled: "Share cancelled.",
+  d_gettingLocation: "Getting your location (please allow precise location)...",
+  d_geolocationUnsupported: "Geolocation is not supported by your browser.",
+  d_locationNotIreland: "The location we received",
+  d_notIreland: "does not appear to be in Ireland.",
+  d_impreciseGps:
+    "This may be because your browser could not get a precise GPS fix",
+  d_sendAnyway: "Do you still want to send your location?",
+  d_shareCancelledInaccurate: "Share cancelled – location inaccurate.",
+  d_sendingTo: "Location obtained. Sending to",
+  d_contacts: "contact(s)...",
+  d_sent: "Location sent to",
+  d_failed: "Failed:",
+  d_viewOnOsm: "View shared location on OpenStreetMap",
+  d_sendFailed: "Failed to send location. Check network or contact numbers.",
+  d_permissionDenied:
+    "Location permission denied. Please allow precise location in your browser settings.",
+  d_positionUnavailable:
+    "Location information unavailable. Please check your GPS or try again.",
+  d_timeout:
+    "Location request timed out. Please move to an area with better GPS signal.",
+  d_unknownGeoError: "Unknown geolocation error.",
+
   // Footer
   d_customizeDashboard: "Customize Dashboard",
   d_freeTrial: "Start free trial (no credit card needed)",

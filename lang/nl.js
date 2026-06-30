@@ -112,11 +112,52 @@ var LANG = {
   d_unknownError: "Onbekende fout",
   d_cannotPlayFile: "Kan bestand niet afspelen",
   d_cannotResume: "Kan niet hervatten",
+  d_noContacts: "Geen contacten.",
+  d_addContacts: "Contacten toevoegen",
+  d_selectdevices: "Apparaten kiezen",
+  d_microphone: "Microfoon",
+  d_speaker: "Luidspreker",
+  d_camera: "Camera",
+  d_cancel: "Annuleren",
+  d_apply: "Toepassen",
+  d_yourmicrophoneismuted: "Microfoon gedempt",
+  d_default: "Standaard",
+  d_applyingdevices: "Apparaten toepassen...",
+  d_devicesupdated: "Apparaten bijgewerkt",
+  d_deviceswitchfailed: "Wisselen mislukt",
+  d_share: null
+d_send: null
+d_locationShared: null
+d_location: null
+d_time: null
+d_noTrustedContacts: null
+d_locate: null
+d_mobileOnly: null
+d_shareLocked: null
+d_shareConfirm: null
+d_shareCancelled: null
+d_gettingLocation: null
+d_geolocationUnsupported: null
+d_locationNotIreland: null
+d_notIreland: null
+d_impreciseGps: null
+d_sendAnyway: null
+d_shareCancelledInaccurate: null
+d_sendingTo: null
+d_contacts: null
+d_sent: null
+d_failed: null
+d_viewOnOsm: null
+d_sendFailed: null
+d_permissionDenied: null
+d_positionUnavailable: null
+d_timeout: null
+d_ringing: "Overgaan...",
+  d_caregiver: "Verzorger",
   d_invalidFile: "Ongeldig bestand",
   d_dateUnknown: "Datum onbekend",
 
-  d_chooseServer: "___",
-
+  
   d_customizeDashboard: "Dashboard aanpassen",
   d_freeTrial: "Start gratis proefversie (geen creditcard nodig)",
 };
