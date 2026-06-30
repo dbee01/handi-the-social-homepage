@@ -289,7 +289,7 @@
             </div>
 
             <div class="header">
-                <h2>Free Modules</h2>
+                <h2>Free Elements</h2>
             </div>
 
             <!-- Weather Module (force enabled) -->
@@ -705,10 +705,7 @@
             <!-- PREMIUM MODULES SECTION (ENABLED TOGGLES - NO DISABLED STYLES) -->
             <!-- ============================================================ -->
             <div class="header">
-                <h2>Premium Modules</h2>
-                <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px">
-                    Enable premium features below
-                </p>
+                <h2>Premium Elements</h2>
             </div>
 
             <!-- Premium 1: Live Bus Tracker -->
@@ -1037,13 +1034,13 @@
                     />
                 </div>
                 <div class="config-field">
-                    <label>Notification time:</label
+                    <label>Notification time (mins):</label
                     ><select id="calendarNotificationMinutes">
-                        <option value="5">5 minutes</option>
-                        <option value="10">10 minutes</option>
-                        <option value="15" selected>15 minutes</option>
-                        <option value="30">30 minutes</option>
-                        <option value="60">1 hour</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15" selected>15</option>
+                        <option value="30">30</option>
+                        <option value="60">60</option>
                     </select>
                 </div>
                 <small
@@ -2447,6 +2444,39 @@
                     location.reload();
                 }
             });
+        </script>
+        <!-- ========== TRANSLATE SETTINGS PAGE ========== -->
+        <script>
+            (function populate() {
+                if (!window.t || typeof window.t !== "function") { setTimeout(populate, 100); return; }
+                var t = window.t;
+                document.title = t("s_settings", "Settings") + " - Handi Homepage";
+                var h1 = document.querySelector("h1"); if (h1) h1.textContent = t("s_settings", "Settings");
+                var h2 = document.querySelector("h2"); if (h2) h2.textContent = t("s_freeElements", "Free Elements");
+                var rb = document.getElementById("resetBtn"); if (rb) rb.textContent = "⟳ " + t("s_resetAll", "Reset All");
+                var sb = document.getElementById("saveExitBtn"); if (sb) sb.textContent = t("s_saveExit", "Save & Exit");
+                var tmap = {weather:"s_weatherLocation",gallery:"s_loadImages",music:"s_musicPlayer",radio:"s_radio",news:"s_news",social:"s_socialMedia",chat:"s_chatMatrix",phone:"s_phone",live_bus:"s_liveBusTracker",emergency_alert:"s_locationShare",calendar:"s_calendar"};
+                document.querySelectorAll(".module-card").forEach(function(card){var h3=card.querySelector("h3");var mod=card.getAttribute("data-module");if(h3&&tmap[mod])h3.textContent=t(tmap[mod],h3.textContent)});
+                document.querySelectorAll("label,button,h4,.group-title").forEach(function(el){var txt=(el.textContent||"").trim();
+                if(txt==="Location:")el.textContent=t("s_location","Location")+":";
+                if(txt==="Country:")el.textContent=t("s_country","Country")+":";
+                if(txt==="Detect My Location")el.textContent=t("s_detectLocation","Detect My Location");
+                if(txt==="Slideshow speed (ms):")el.textContent=t("s_slideshowSpeed","Slideshow speed")+" (ms):";
+                if(txt==="Auto-start:")el.textContent=t("s_autoStart","Auto-start")+":";
+                if(txt.indexOf("Load Images")>-1)el.textContent="📸 "+t("s_loadImages","Load Images");
+                if(txt==="Default volume:")el.textContent=t("s_defaultVolume","Default volume")+":";
+                if(txt==="Default shuffle:")el.textContent=t("s_defaultShuffle","Default shuffle")+":";
+                if(txt.indexOf("Load Music")>-1)el.textContent="🎵 "+t("s_loadMusic","Load Music");
+                if(txt==="Default Country Filter:")el.textContent=t("s_defaultCountryFilter","Default Country Filter")+":";
+                if(txt==="RSS Feed:")el.textContent=t("s_rssFeed","RSS Feed")+":";
+                if(txt==="Refresh interval (minutes):")el.textContent=t("s_refreshMinutes","Refresh interval (minutes)")+":";
+                if(txt==="Max articles:")el.textContent=t("s_maxArticles","Max articles")+":";
+                if(txt==="Mastodon Server:")el.textContent=t("s_mastodonServer","Mastodon Server")+":";
+                if(txt==="Trending limit:")el.textContent=t("s_trendingLimit","Trending limit")+":";
+                if(txt==="Calendar ICS Link:")el.textContent=t("s_calendarIcsLink","Calendar ICS Link")+":";
+                if(txt==="Notification time:")el.textContent=t("s_notificationTime","Notification time")+":";
+                });
+            })();
         </script>
     </body>
 </html>

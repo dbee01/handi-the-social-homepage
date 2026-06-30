@@ -125,33 +125,33 @@ var LANG = {
   d_applyingdevices: "Stosowanie...",
   d_devicesupdated: "Urządzenia zaktualizowane",
   d_deviceswitchfailed: "Przełączenie nieudane",
-  d_share: null
-d_send: null
-d_locationShared: null
-d_location: null
-d_time: null
-d_noTrustedContacts: null
-d_locate: null
-d_mobileOnly: null
-d_shareLocked: null
-d_shareConfirm: null
-d_shareCancelled: null
-d_gettingLocation: null
-d_geolocationUnsupported: null
-d_locationNotIreland: null
-d_notIreland: null
-d_impreciseGps: null
-d_sendAnyway: null
-d_shareCancelledInaccurate: null
-d_sendingTo: null
-d_contacts: null
-d_sent: null
-d_failed: null
-d_viewOnOsm: null
-d_sendFailed: null
-d_permissionDenied: null
-d_positionUnavailable: null
-d_timeout: null
+  d_share: null,
+d_send: null,
+d_locationShared: null,
+d_location: null,
+d_time: null,
+d_noTrustedContacts: null,
+d_locate: null,
+d_mobileOnly: null,
+d_shareLocked: null,
+d_shareConfirm: null,
+d_shareCancelled: null,
+d_gettingLocation: null,
+d_geolocationUnsupported: null,
+d_locationNotIreland: null,
+d_notIreland: null,
+d_impreciseGps: null,
+d_sendAnyway: null,
+d_shareCancelledInaccurate: null,
+d_sendingTo: null,
+d_contacts: null,
+d_sent: null,
+d_failed: null,
+d_viewOnOsm: null,
+d_sendFailed: null,
+d_permissionDenied: null,
+d_positionUnavailable: null,
+d_timeout: null,
 d_ringing: "Dzwonienie...",
   d_caregiver: "Opiekun",
   d_invalidFile: "Nieprawidłowy plik",
@@ -160,4 +160,59 @@ d_ringing: "Dzwonienie...",
   
   d_customizeDashboard: "Dostosuj pulpit",
   d_freeTrial: "Rozpocznij bezpłatny okres próbny (bez karty)",
+  s_settings: "Ustawienia",
+s_resetAll: "Resetuj wszystko",
+s_saveExit: "Zapisz i wyjdź",
+s_freeElements: "Darmowe elementy",
+s_weatherLocation: "Lokalizacja pogody",
+s_location: "Lokalizacja",
+s_country: "Kraj",
+s_detectLocation: "Wykryj lokalizację",
+s_slideshowSpeed: "Prędkość pokazu",
+s_autoStart: "Autostart",
+s_yes: "Tak",
+s_no: "Nie",
+s_loadImages: "Załaduj obrazy",
+s_musicPlayer: "Odtwarzacz muzyki",
+s_defaultVolume: "Domyślna głośność",
+s_defaultShuffle: "Domyślne losowanie",
+s_off: "Wył",
+s_on: "Wł",
+s_loadMusic: "Załaduj muzykę",
+s_radio: "Radio",
+s_defaultCountryFilter: "Filtr kraju",
+s_selectCountry: "-- Wybierz kraj --",
+s_news: "Wiadomości",
+s_rssFeed: "Kanał RSS",
+s_defaultPageSelector: "— Domyślny —",
+s_refreshMinutes: "Interwał (minuty)",
+s_maxArticles: "Maks. artykułów",
+s_socialMedia: "Media społecznościowe",
+s_mastodonServer: "Serwer Mastodon",
+s_trendingLimit: "Limit trendów",
+s_chatMatrix: "Czat (Matrix)",
+s_homeserver: "Serwer",
+s_username: "Nazwa użytkownika",
+s_password: "Hasło",
+s_room: "Pokój",
+s_refreshInterval: "Interwał odświeżania",
+s_premiumElements: "Elementy premium",
+s_liveBusTracker: "Śledzenie autobusu",
+s_route: "Trasa",
+s_busRoute: "Trasa autobusu",
+s_departureStop: "Przystanek początkowy",
+s_selectRoute: "-- Wybierz trasę --",
+s_destinationStop: "Przystanek końcowy",
+s_route3Optional: "Trasa 3 (opcjonalnie)",
+s_phone: "Telefon",
+s_premium: "Premium",
+s_contacts: "Kontakty",
+s_add: "Dodaj",
+s_locationShare: "Udostępnij lokalizację",
+s_locationShareNote: "Udostępnianie lokalizacji jest konfigurowane na kontakt w module Telefon",
+s_calendar: "Kalendarz",
+s_calendarIcsLink: "Link ICS",
+s_notificationTime: "Czas powiadomienia",
+s_getIcsLink: "Pobierz link ICS z Proton Calendar",
+s_freeTrial: "Bezpłatny okres próbny"
 };

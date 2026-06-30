@@ -512,12 +512,17 @@ export default async function initCalendar(container) {
 
   async function fetchCalendar() {
     if (!calendarUrl || calendarUrl.trim() === "") {
-      content.innerHTML = `
+      content.innerHTML =
+        `
         <div class="module-empty">
           <i class="fa-solid fa-calendar-days"></i>
-          <p>" + t("d_noCalendar", "No calendar configured.") + "</p>
+          <p>` +
+        t("d_noCalendar", "No calendar configured.") +
+        `</p>
           <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-            <input id="calendarUrlInput" type="text" placeholder="${t("d_pasteIcal", "Paste iCal URL...")}" style="padding:8px 12px;border-radius:8px;border:2px solid #cbd5e1;font-size:0.95rem;min-width:240px;">
+            <input id="calendarUrlInput" type="text" placeholder="` +
+        t("d_pasteIcal", "Paste iCal URL...") +
+        `" style="padding:8px 12px;border-radius:8px;border:2px solid #cbd5e1;font-size:0.95rem;min-width:240px;">
             <button id="calendarSaveBtn" class="settings-link-btn">
               <i class="fa-solid fa-check"></i> Save
             </button>

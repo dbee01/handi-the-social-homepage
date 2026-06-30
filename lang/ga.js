@@ -136,39 +136,95 @@ var LANG = {
   d_applyingdevices: "Gléasanna á gcur i bhfeidhm...",
   d_devicesupdated: "Gléasanna nuashonraithe",
   d_deviceswitchfailed: "Theip ar athrú gléis",
-  d_share: null
-d_send: null
-d_locationShared: null
-d_location: null
-d_time: null
-d_noTrustedContacts: null
-d_locate: null
-d_mobileOnly: null
-d_shareLocked: null
-d_shareConfirm: null
-d_shareCancelled: null
-d_gettingLocation: null
-d_geolocationUnsupported: null
-d_locationNotIreland: null
-d_notIreland: null
-d_impreciseGps: null
-d_sendAnyway: null
-d_shareCancelledInaccurate: null
-d_sendingTo: null
-d_contacts: null
-d_sent: null
-d_failed: null
-d_viewOnOsm: null
-d_sendFailed: null
-d_permissionDenied: null
-d_positionUnavailable: null
-d_timeout: null
-d_ringing: "Ag bualadh...",
+  d_share: null,
+  d_send: null,
+  d_locationShared: null,
+  d_location: null,
+  d_time: null,
+  d_noTrustedContacts: null,
+  d_locate: null,
+  d_mobileOnly: null,
+  d_shareLocked: null,
+  d_shareConfirm: null,
+  d_shareCancelled: null,
+  d_gettingLocation: null,
+  d_geolocationUnsupported: null,
+  d_locationNotIreland: null,
+  d_notIreland: null,
+  d_impreciseGps: null,
+  d_sendAnyway: null,
+  d_shareCancelledInaccurate: null,
+  d_sendingTo: null,
+  d_contacts: null,
+  d_sent: null,
+  d_failed: null,
+  d_viewOnOsm: null,
+  d_sendFailed: null,
+  d_permissionDenied: null,
+  d_positionUnavailable: null,
+  d_timeout: null,
+  d_ringing: "Ag bualadh...",
   d_caregiver: "Cúramóir",
   d_invalidFile: "Comhad neamhbhailí",
   d_dateUnknown: "Dáta anaithnid",
 
-  
   d_customizeDashboard: "Saincheap an Deais",
   d_freeTrial: "Tosaigh triail saor in aisce (gan cárta creidmheasa)",
+
+  s_settings: "Socruithe",
+  s_resetAll: "Athshocraigh Gach Rud",
+  s_saveExit: "Sábháil & Scoir",
+  s_freeElements: "Eilimintí Saor in Aisce",
+  s_weatherLocation: "Suíomh Aimsire",
+  s_location: "Suíomh",
+  s_country: "Tír",
+  s_detectLocation: "Aimsigh Mo Shuíomh",
+  s_slideshowSpeed: "Luas sleamhnán",
+  s_autoStart: "Tosú uathoibríoch",
+  s_yes: "Tá",
+  s_no: "Níl",
+  s_loadImages: "Lódáil Íomhánna",
+  s_musicPlayer: "Seinnteoir Ceoil",
+  s_defaultVolume: "Toirt réamhshocraithe",
+  s_defaultShuffle: "Suaitheadh réamhshocraithe",
+  s_off: "As",
+  s_on: "Ar",
+  s_loadMusic: "Lódáil Ceol",
+  s_radio: "Raidió",
+  s_defaultCountryFilter: "Scagaire Tíre",
+  s_selectCountry: "-- Roghnaigh tír --",
+  s_news: "Nuacht",
+  s_rssFeed: "Fotha RSS",
+  s_defaultPageSelector: "— Réamhshocrú —",
+  s_refreshMinutes: "Eatramh athnuachana (nóiméid)",
+  s_maxArticles: "Uasmhéid alt",
+  s_socialMedia: "Meáin Shóisialta",
+  s_mastodonServer: "Freastalaí Mastodon",
+  s_trendingLimit: "Teorainn treochta",
+  s_chatMatrix: "Comhrá (Matrix)",
+  s_homeserver: "Freastalaí baile",
+  s_username: "Ainm úsáideora",
+  s_password: "Focal faire",
+  s_room: "Seomra",
+  s_refreshInterval: "Eatramh athnuachana",
+  s_premiumElements: "Eilimintí Préimhe",
+  s_liveBusTracker: "Rianaitheoir Bus Beo",
+  s_route: "Bealach",
+  s_busRoute: "Bealach Bus",
+  s_departureStop: "Stad Imeachta",
+  s_selectRoute: "-- Roghnaigh Bealach --",
+  s_destinationStop: "Stad Ceann Scríbe",
+  s_route3Optional: "Bealach 3 (roghnach)",
+  s_phone: "Fón",
+  s_premium: "Préimh",
+  s_contacts: "Teagmhálacha",
+  s_add: "Cuir Leis",
+  s_locationShare: "Comhroinnt Suímh",
+  s_locationShareNote: "Tá comhroinnt suímh cumraithe sa mhodúl Fóin thuas",
+  s_calendar: "Féilire",
+  s_calendarIcsLink: "Nasc ICS Féilire",
+  s_notificationTime: "Am fógra",
+  s_getIcsLink:
+    'Faigh nasc ICS ó Proton Calendar → Socruithe → Féilirí → "Nasc le haghaidh amharc"',
+  s_freeTrial: "Tosaigh triail saor in aisce (gan cárta creidmheasa)",
 };

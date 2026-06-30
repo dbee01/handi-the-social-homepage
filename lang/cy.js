@@ -124,33 +124,33 @@ var LANG = {
   d_applyingdevices: "Cymhwyso dyfeisiau...",
   d_devicesupdated: "Dyfeisiau wedi diweddaru",
   d_deviceswitchfailed: "Methu newid dyfais",
-  d_share: null
-d_send: null
-d_locationShared: null
-d_location: null
-d_time: null
-d_noTrustedContacts: null
-d_locate: null
-d_mobileOnly: null
-d_shareLocked: null
-d_shareConfirm: null
-d_shareCancelled: null
-d_gettingLocation: null
-d_geolocationUnsupported: null
-d_locationNotIreland: null
-d_notIreland: null
-d_impreciseGps: null
-d_sendAnyway: null
-d_shareCancelledInaccurate: null
-d_sendingTo: null
-d_contacts: null
-d_sent: null
-d_failed: null
-d_viewOnOsm: null
-d_sendFailed: null
-d_permissionDenied: null
-d_positionUnavailable: null
-d_timeout: null
+  d_share: null,
+d_send: null,
+d_locationShared: null,
+d_location: null,
+d_time: null,
+d_noTrustedContacts: null,
+d_locate: null,
+d_mobileOnly: null,
+d_shareLocked: null,
+d_shareConfirm: null,
+d_shareCancelled: null,
+d_gettingLocation: null,
+d_geolocationUnsupported: null,
+d_locationNotIreland: null,
+d_notIreland: null,
+d_impreciseGps: null,
+d_sendAnyway: null,
+d_shareCancelledInaccurate: null,
+d_sendingTo: null,
+d_contacts: null,
+d_sent: null,
+d_failed: null,
+d_viewOnOsm: null,
+d_sendFailed: null,
+d_permissionDenied: null,
+d_positionUnavailable: null,
+d_timeout: null,
 d_ringing: "Canu...",
   d_caregiver: "Gofalwr",
   d_invalidFile: "Ffeil annilys",
@@ -159,4 +159,59 @@ d_ringing: "Canu...",
   
   d_customizeDashboard: "Addasu'r Dangosfwrdd",
   d_freeTrial: "Dechrau treial am ddim (dim cerdyn credyd)",
+  s_settings: "Gosodiadau",
+s_resetAll: "Ailosod popeth",
+s_saveExit: "Cadw a Gadael",
+s_freeElements: "Elfennau am ddim",
+s_weatherLocation: "Lleoliad tywydd",
+s_location: "Lleoliad",
+s_country: "Gwlad",
+s_detectLocation: "Canfod lleoliad",
+s_slideshowSpeed: "Cyflymder sleidiau",
+s_autoStart: "Cychwyn awtomatig",
+s_yes: "Ie",
+s_no: "Na",
+s_loadImages: "Llwytho delweddau",
+s_musicPlayer: "Chwaraewr cerddoriaeth",
+s_defaultVolume: "Cyfrol ddiofyn",
+s_defaultShuffle: "Cymysgu diofyn",
+s_off: "I ffwrdd",
+s_on: "Ymlaen",
+s_loadMusic: "Llwytho cerddoriaeth",
+s_radio: "Radio",
+s_defaultCountryFilter: "Hidlydd gwlad",
+s_selectCountry: "-- Dewis gwlad --",
+s_news: "Newyddion",
+s_rssFeed: "Porthiant RSS",
+s_defaultPageSelector: "— Diofyn —",
+s_refreshMinutes: "Cyfnod adnewyddu (munud)",
+s_maxArticles: "Uchafswm erthyglau",
+s_socialMedia: "Cyfryngau cymdeithasol",
+s_mastodonServer: "Gweinydd Mastodon",
+s_trendingLimit: "Terfyn tueddiadau",
+s_chatMatrix: "Sgwrs (Matrix)",
+s_homeserver: "Gweinydd cartref",
+s_username: "Enw defnyddiwr",
+s_password: "Cyfrinair",
+s_room: "Ystafell",
+s_refreshInterval: "Cyfnod adnewyddu",
+s_premiumElements: "Elfennau premiwm",
+s_liveBusTracker: "Tracivr bws byw",
+s_route: "Llwybr",
+s_busRoute: "Llwybr bws",
+s_departureStop: "Safle gadael",
+s_selectRoute: "-- Dewis llwybr --",
+s_destinationStop: "Safle cyrraedd",
+s_route3Optional: "Llwybr 3 (dewisol)",
+s_phone: "Ffôn",
+s_premium: "Premiwm",
+s_contacts: "Cysylltiadau",
+s_add: "Ychwanegu",
+s_locationShare: "Rhannu lleoliad",
+s_locationShareNote: "Mae rhannu lleoliad wedi'i ffurfweddu fesul cyswllt yn y modiwl Ffôn",
+s_calendar: "Calendr",
+s_calendarIcsLink: "Dolen ICS",
+s_notificationTime: "Amser hysbysu",
+s_getIcsLink: "Cael dolen ICS o Proton Calendar",
+s_freeTrial: "Treial am ddim"
 };

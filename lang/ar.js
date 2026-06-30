@@ -123,33 +123,33 @@ var LANG = {
   d_applyingdevices: "جار تطبيق الأجهزة...",
   d_devicesupdated: "تم تحديث الأجهزة",
   d_deviceswitchfailed: "فشل تبديل الجهاز",
-  d_share: null
-d_send: null
-d_locationShared: null
-d_location: null
-d_time: null
-d_noTrustedContacts: null
-d_locate: null
-d_mobileOnly: null
-d_shareLocked: null
-d_shareConfirm: null
-d_shareCancelled: null
-d_gettingLocation: null
-d_geolocationUnsupported: null
-d_locationNotIreland: null
-d_notIreland: null
-d_impreciseGps: null
-d_sendAnyway: null
-d_shareCancelledInaccurate: null
-d_sendingTo: null
-d_contacts: null
-d_sent: null
-d_failed: null
-d_viewOnOsm: null
-d_sendFailed: null
-d_permissionDenied: null
-d_positionUnavailable: null
-d_timeout: null
+  d_share: null,
+d_send: null,
+d_locationShared: null,
+d_location: null,
+d_time: null,
+d_noTrustedContacts: null,
+d_locate: null,
+d_mobileOnly: null,
+d_shareLocked: null,
+d_shareConfirm: null,
+d_shareCancelled: null,
+d_gettingLocation: null,
+d_geolocationUnsupported: null,
+d_locationNotIreland: null,
+d_notIreland: null,
+d_impreciseGps: null,
+d_sendAnyway: null,
+d_shareCancelledInaccurate: null,
+d_sendingTo: null,
+d_contacts: null,
+d_sent: null,
+d_failed: null,
+d_viewOnOsm: null,
+d_sendFailed: null,
+d_permissionDenied: null,
+d_positionUnavailable: null,
+d_timeout: null,
 d_ringing: "جار الرنين...",
   d_caregiver: "مقدم الرعاية",
   d_invalidFile: "ملف غير صالح",
@@ -158,4 +158,59 @@ d_ringing: "جار الرنين...",
   
   d_customizeDashboard: "تخصيص لوحة القيادة",
   d_freeTrial: "ابدأ النسخة التجريبية المجانية (لا حاجة لبطاقة ائتمان)",
+  s_settings: "الإعدادات",
+s_resetAll: "إعادة تعيين الكل",
+s_saveExit: "حفظ وخروج",
+s_freeElements: "عناصر مجانية",
+s_weatherLocation: "موقع الطقس",
+s_location: "الموقع",
+s_country: "البلد",
+s_detectLocation: "تحديد موقعي",
+s_slideshowSpeed: "سرعة العرض",
+s_autoStart: "بدء تلقائي",
+s_yes: "نعم",
+s_no: "لا",
+s_loadImages: "تحميل الصور",
+s_musicPlayer: "مشغل الموسيقى",
+s_defaultVolume: "الصوت الافتراضي",
+s_defaultShuffle: "خلط افتراضي",
+s_off: "إيقاف",
+s_on: "تشغيل",
+s_loadMusic: "تحميل الموسيقى",
+s_radio: "الراديو",
+s_defaultCountryFilter: "فلتر الدولة",
+s_selectCountry: "-- اختر بلداً --",
+s_news: "الأخبار",
+s_rssFeed: "تغذية RSS",
+s_defaultPageSelector: "— افتراضي —",
+s_refreshMinutes: "فترة التحديث (دقائق)",
+s_maxArticles: "الحد الأقصى للمقالات",
+s_socialMedia: "وسائل التواصل",
+s_mastodonServer: "خادم ماستودون",
+s_trendingLimit: "حد الشائع",
+s_chatMatrix: "الدردشة (Matrix)",
+s_homeserver: "الخادم الرئيسي",
+s_username: "اسم المستخدم",
+s_password: "كلمة المرور",
+s_room: "الغرفة",
+s_refreshInterval: "فترة التحديث",
+s_premiumElements: "عناصر مميزة",
+s_liveBusTracker: "متتبع الحافلة",
+s_route: "المسار",
+s_busRoute: "مسار الحافلة",
+s_departureStop: "محطة المغادرة",
+s_selectRoute: "-- اختر مساراً --",
+s_destinationStop: "محطة الوصول",
+s_route3Optional: "المسار 3 (اختياري)",
+s_phone: "الهاتف",
+s_premium: "مميز",
+s_contacts: "جهات الاتصال",
+s_add: "إضافة",
+s_locationShare: "مشاركة الموقع",
+s_locationShareNote: "مشاركة الموقع مُعدة لكل جهة اتصال في وحدة الهاتف أعلاه",
+s_calendar: "التقويم",
+s_calendarIcsLink: "رابط ICS",
+s_notificationTime: "وقت الإشعار",
+s_getIcsLink: "احصل على رابط ICS من Proton Calendar",
+s_freeTrial: "ابدأ النسخة التجريبية المجانية"
 };

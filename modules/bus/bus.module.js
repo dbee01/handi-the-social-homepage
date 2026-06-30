@@ -73,12 +73,15 @@ export default async function initBus(container) {
   }
 
   if (routesData.length === 0) {
-    content.innerHTML = `
+    content.innerHTML =
+      `
       <div class="module-empty">
         <i class="fa-solid fa-bus"></i>
-        <p>" + t("d_noBusRoutes", "No bus routes configured.") + "</p>
+        <p>` +
+      t("d_noBusRoutes", "No bus routes configured.") +
+      `</p>
         <button class="bus-settings-btn settings-link-btn">
-          <i class="fa-solid fa-gear"></i> Configure in Settings
+          <i class="fa-solid fa-gear"></i> ${t("d_configureSettings", "Configure in Settings")}
         </button>
       </div>`;
     content
@@ -189,7 +192,8 @@ export default async function initBus(container) {
     if (!list) return;
 
     if (!data || data.length === 0) {
-      list.innerHTML = '<div class="bus-no-buses">" + t("d_noUpcoming", "No upcoming") + "</div>';
+      list.innerHTML =
+        '<div class="bus-no-buses">" + t("d_noUpcoming", "No upcoming") + "</div>';
       return;
     }
 
@@ -221,10 +225,14 @@ export default async function initBus(container) {
           });
         }
 
-        const is" + t("d_live", "Live") + " = d.realtime === true;
+        const isLive = d.realtime === true;
         const label = isLive
-          ? '<span style="font-size:1.12rem;color:#16a34a;font-weight:600;">" + t("d_live", "Live") + " <span class="bus-icon-live" style="font-size:1.12rem;">🚌</span></span>'
-          : '<span style="font-size:1.12rem;color:#f59e0b;font-weight:600;">🚏 " + t("d_scheduled", "Scheduled") + "</span>';
+          ? '<span style="font-size:1.12rem;color:#16a34a;font-weight:600;">' +
+            t("d_live", "Live") +
+            ' <span class="bus-icon-live" style="font-size:1.12rem;">🚌</span></span>'
+          : '<span style="font-size:1.12rem;color:#f59e0b;font-weight:600;">🚏 ' +
+            t("d_scheduled", "Scheduled") +
+            "</span>";
 
         return `
           <div class="bus-item">
