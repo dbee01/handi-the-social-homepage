@@ -7,6 +7,11 @@
 import { loadSettings } from "../../js/core/settings.js";
 
 export default async function initWeather(container) {
+  var t =
+    window.t ||
+    function (k, e) {
+      return e || k;
+    };
   const pinBtn = container.querySelector(".pin-btn");
   container.innerHTML = "";
   if (pinBtn) container.prepend(pinBtn);
@@ -35,6 +40,8 @@ export default async function initWeather(container) {
   }
 
   function getWeatherDescription(code) {
+    var desc = t("weather_" + code, "");
+    if (desc) return desc;
     const codes = {
       0: "☀️ Clear",
       1: "🌤️ Clear",
@@ -93,8 +100,8 @@ export default async function initWeather(container) {
       content.innerHTML = `
                 <div class="weather-disabled">
                     <i class="fa-solid fa-cloud-sun"></i>
-                    <p>Weather module disabled.</p>
-                    <small>Enable in Settings → Weather</small>
+                    <p>" + t("d_weatherDisabled", "Weather module disabled.") + "</p>
+                    <small>" + t("d_enableWeather", "Enable in Settings → Weather") + "</small>
                 </div>
             `;
       if (window.refreshDashboardLayout) window.refreshDashboardLayout();
@@ -105,12 +112,12 @@ export default async function initWeather(container) {
     const countryCode = settings.weather?.country || "IE";
 
     content.innerHTML =
-      '<div class="weather-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading weather...</div>';
+      '<div class="weather-loading"><i class="fa-solid fa-spinner fa-spin"></i> " + t("d_loadingWeather", "Loading weather...") + "</div>';
 
     try {
       const coords = await getCoordinates(locationName, countryCode);
       if (!coords) {
-        content.innerHTML = `<div class="weather-error">⚠️ Location "${escapeHtml(locationName)}" not found</div>`;
+        content.innerHTML = `<div class="weather-error">⚠️ Location "${escapeHtml(locationName)}" " + t("d_notFound", "not found") + "</div>`;
         return;
       }
 
@@ -137,11 +144,11 @@ export default async function initWeather(container) {
                     </div>
                 `;
       } else {
-        content.innerHTML = `<div class="weather-error">⚠️ No weather data available</div>`;
+        content.innerHTML = `<div class="weather-error">⚠️ " + t("d_noWeatherData", "No weather data available") + "</div>`;
       }
     } catch (err) {
       console.error("Weather fetch error:", err);
-      content.innerHTML = `<div class="weather-error">⚠️ Failed to load weather</div>`;
+      content.innerHTML = `<div class="weather-error">⚠️ " + t("d_weatherFailed", "Failed to load weather") + "</div>`;
     }
 
     if (window.refreshDashboardLayout) window.refreshDashboardLayout();
