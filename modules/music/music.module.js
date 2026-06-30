@@ -2,29 +2,36 @@
 import { loadMusic } from "../../js/core/storage.js";
 
 function removeFileExtension(filename) {
-  if (!filename) return "";
-  return filename.replace(/\.[^/.]+$/, "");
+  return filename.replace(/\.[^.]+$/, "");
 }
 
 export default async function initMusic(container) {
+  var t =
+    window.t ||
+    function (k, e) {
+      return e || k;
+    };
+
   const headerRow = document.createElement("div");
   headerRow.className = "music-header-row";
   const title = document.createElement("div");
   title.className = "panel-title";
-  var name =
-    window.LANG && window.LANG.modules && window.LANG.modules.music
-      ? window.LANG.modules.music.name
-      : "PLAYER";
-  title.innerHTML = '<i class="fa-solid fa-music"></i> ' + name;
+  title.innerHTML =
+    '<i class="fa-solid fa-music"></i> ' +
+    t(
+      "modules.music.name",
+      window.LANG && window.LANG.modules && window.LANG.modules.music
+        ? window.LANG.modules.music.name
+        : "PLAYER",
+    );
   headerRow.appendChild(title);
 
   const headerActions = document.createElement("div");
   headerActions.className = "music-header-actions";
   const lockToggle = document.createElement("button");
   lockToggle.className = "music-lock-toggle";
-  const saved = localStorage.getItem("musicLocked");
-  let isLocked = saved !== null ? saved === "true" : true;
-
+  var saved = localStorage.getItem("musicLocked"),
+    isLocked = saved !== null ? saved === "true" : true;
   function updateLockIcon() {
     lockToggle.innerHTML = isLocked
       ? '<i class="fa-solid fa-lock"></i>'
@@ -33,366 +40,303 @@ export default async function initMusic(container) {
   }
   updateLockIcon();
   headerActions.appendChild(lockToggle);
-
-  const originalPinBtn = container.querySelector(".pin-btn");
-  let pinBtn = null;
-  if (originalPinBtn) {
-    pinBtn = originalPinBtn.cloneNode(true);
-    pinBtn.classList.add("pin-btn-clone");
-    originalPinBtn.style.display = "none";
-    headerActions.appendChild(pinBtn);
-  }
+  var originalPinBtn = container.querySelector(".pin-btn"),
+    pinBtn = originalPinBtn;
   headerRow.appendChild(headerActions);
   container.innerHTML = "";
   container.appendChild(headerRow);
 
-  const content = document.createElement("div");
+  var content = document.createElement("div");
   content.className = "music-content";
   container.appendChild(content);
-
-  const parentItem = container.closest(".dashboard-item");
+  var parentItem = container.closest(".dashboard-item");
   if (parentItem) {
     parentItem.dataset.module = "music";
     parentItem.style.minHeight = "420px";
   }
 
-  let tracks = [];
+  var tracks = [];
   try {
     tracks = await loadMusic();
   } catch (err) {
-    console.error("Failed to load music:", err);
-    // Detect if storage is blocked
     if (!window.indexedDB) {
-      content.innerHTML = `<div class="module-empty"><i class="fa-solid fa-triangle-exclamation"></i><p>Your browser blocks storage. Check Firefox settings → Privacy → make sure "Never remember history" is OFF.</p></div>`;
+      content.innerHTML =
+        '<div class="module-empty"><i class="fa-solid fa-triangle-exclamation"></i><p>' +
+        t(
+          "d_musicStorageBlocked",
+          'Your browser blocks storage. Check Firefox settings → Privacy → make sure "Never remember history" is OFF.',
+        ) +
+        "</p></div>";
     } else {
-      content.innerHTML = `
-              <div class="module-empty">
-                  <i class="fa-solid fa-exclamation-triangle"></i>
-                  <p>Failed to load music library.</p>
-                  <button id="musicRetryBtn" class="settings-link-btn">
-                      <i class="fa-solid fa-rotate-right"></i> Retry
-                  </button>
-              </div>
-          `;
-      const retryBtn = content.querySelector("#musicRetryBtn");
-      if (retryBtn) retryBtn.onclick = () => location.reload();
-      return;
+      content.innerHTML =
+        '<div class="module-empty"><i class="fa-solid fa-exclamation-triangle"></i><p>' +
+        t("d_musicLoadFailed", "Failed to load music library.") +
+        '</p><button id="musicRetryBtn" class="settings-link-btn"><i class="fa-solid fa-rotate-right"></i> ' +
+        t("d_retry", "Retry") +
+        "</button></div>";
+      var rBtn = content.querySelector("#musicRetryBtn");
+      if (rBtn)
+        rBtn.onclick = function () {
+          location.reload();
+        };
     }
-  }
-
-  // NO validation – assume all tracks are valid
-  // The audio element's onerror will handle playback issues
-  if (tracks.length === 0) {
-    content.innerHTML = `
-            <div class="module-empty">
-                <i class="fa-solid fa-music"></i>
-                <p>No music loaded.</p>
-                <button id="musicSettingsBtn" class="settings-link-btn">
-                    <i class="fa-solid fa-gear"></i> Add Music in Settings
-                </button>
-            </div>
-        `;
-    const settingsBtn = content.querySelector("#musicSettingsBtn");
-    if (settingsBtn)
-      settingsBtn.onclick = () => (location.href = "settings.html?args=music");
     return;
   }
 
-  let currentAudio = null;
-  let currentIndex = -1;
-  let isPlaying = false;
-  let stopVisualiser = null;
+  if (!tracks.length) {
+    content.innerHTML =
+      '<div class="module-empty"><i class="fa-solid fa-music"></i><p>' +
+      t("d_noMusic", "No music loaded.") +
+      '</p><button id="musicSettingsBtn" class="settings-link-btn"><i class="fa-solid fa-gear"></i> ' +
+      t("d_addMusicSettings", "Add Music in Settings") +
+      "</button></div>";
+    var sBtn = content.querySelector("#musicSettingsBtn");
+    if (sBtn)
+      sBtn.onclick = function () {
+        location.href = "settings.html?args=music";
+      };
+    return;
+  }
 
-  console.log(
-    "Loaded tracks:",
-    tracks.map((t) => ({ name: t.name, url: t.url?.substring(0, 100) })),
-  );
+  var currentAudio = null,
+    currentIndex = -1,
+    isPlaying = false,
+    stopVisualiser = null;
 
-  // Global mute
   function applyGlobalMute(muted) {
     if (currentAudio) currentAudio.muted = muted;
   }
-  window.addEventListener("globalMuteToggle", (e) => {
+  window.addEventListener("globalMuteToggle", function (e) {
     applyGlobalMute(e.detail.muted);
   });
-  const initialMute = localStorage.getItem("globalMute") === "true";
-  applyGlobalMute(initialMute);
+  applyGlobalMute(localStorage.getItem("globalMute") === "true");
 
-  // Build UI
-  content.innerHTML = `
-        <div class="music-now-playing">
-            <canvas id="music-synth" class="music-synth"></canvas>
-            <div id="music-status" class="music-status">
-                <span id="music-track-title">—</span>
-                <span class="music-state-text">Ready</span>
-            </div>
-        </div>
-        <div class="music-controls">
-            <button id="music-prev">⏮</button>
-            <button id="music-playpause" class="primary">▶</button>
-            <button id="music-next">⏭</button>
-        </div>
-        <div class="music-scroll-wrapper">
-            <button id="musicScrollUp" class="music-scroll-btn">▲</button>
-            <div id="music-playlist" class="music-playlist"></div>
-            <button id="musicScrollDown" class="music-scroll-btn">▼</button>
-        </div>
-    `;
+  content.innerHTML =
+    '<div class="music-now-playing"><canvas id="music-synth" class="music-synth"></canvas><div id="music-status" class="music-status"><span id="music-track-title">—</span><span class="music-state-text">' +
+    t("d_ready", "Ready") +
+    '</span></div></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-playpause" class="primary">▶</button><button id="music-next">⏭</button></div><div class="music-scroll-wrapper"><button id="musicScrollUp" class="music-scroll-btn">▲</button><div id="music-playlist" class="music-playlist"></div><button id="musicScrollDown" class="music-scroll-btn">▼</button></div>';
 
-  const synthCanvas = content.querySelector("#music-synth");
-  const playlist = content.querySelector("#music-playlist");
-  const up = content.querySelector("#musicScrollUp");
-  const down = content.querySelector("#musicScrollDown");
-  const playPauseBtn = content.querySelector("#music-playpause");
-  const trackTitleSpan = content.querySelector("#music-track-title");
-  const stateSpan = content.querySelector(".music-state-text");
-  const prevBtn = content.querySelector("#music-prev");
-  const nextBtn = content.querySelector("#music-next");
-
+  var synthCanvas = content.querySelector("#music-synth"),
+    playlist = content.querySelector("#music-playlist");
+  var up = content.querySelector("#musicScrollUp"),
+    down = content.querySelector("#musicScrollDown");
+  var playPauseBtn = content.querySelector("#music-playpause"),
+    trackTitleSpan = content.querySelector("#music-track-title");
+  var stateSpan = content.querySelector(".music-state-text"),
+    prevBtn = content.querySelector("#music-prev"),
+    nextBtn = content.querySelector("#music-next");
   if (synthCanvas) synthCanvas.style.display = "none";
 
-  // Visualiser
   function startFakeVisualiser(canvas) {
     if (!canvas) return null;
-    if (stopVisualiser) stopVisualiser();
     canvas.style.display = "block";
-    let animationId = null;
-    const ctx = canvas.getContext("2d");
-
-    function resizeCanvas() {
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width;
-      canvas.height = rect.height;
+    var aid = null,
+      ctx = canvas.getContext("2d");
+    function rc() {
+      var r = canvas.getBoundingClientRect();
+      canvas.width = r.width;
+      canvas.height = r.height;
     }
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
-    let time = 0;
+    rc();
+    window.addEventListener("resize", rc);
+    var tm = 0;
     function draw() {
-      animationId = requestAnimationFrame(draw);
-      time += 0.05;
-      const width = canvas.width;
-      const height = canvas.height;
-      if (width === 0 || height === 0) return;
-      ctx.clearRect(0, 0, width, height);
-      const barCount = 32;
-      const barWidth = width / barCount;
-      for (let i = 0; i < barCount; i++) {
-        const value = (Math.sin(time + i * 0.3) + 1) / 2;
-        const noise = Math.random() * 0.3;
-        const heightPercent = Math.min(0.9, value * 0.7 + noise);
-        const barHeight = height * heightPercent;
-        const hue =
+      aid = requestAnimationFrame(draw);
+      tm += 0.05;
+      var w = canvas.width,
+        h = canvas.height;
+      if (!w || !h) return;
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0, bc = 32, bw = w / bc; i < bc; i++) {
+        var bh =
+          h *
+          Math.min(
+            0.9,
+            ((Math.sin(tm + i * 0.3) + 1) / 2) * 0.7 + Math.random() * 0.3,
+          );
+        var hue =
           parseInt(
             getComputedStyle(document.body).getPropertyValue(
               "--music-synth-hue",
             ),
           ) || 200;
-        ctx.fillStyle = `hsl(${hue}, 80%, 55%)`;
-        ctx.fillRect(i * barWidth, height - barHeight, barWidth - 1, barHeight);
+        ctx.fillStyle = "hsl(" + hue + ", 80%, 55%)";
+        ctx.fillRect(i * bw, h - bh, bw - 1, bh);
       }
     }
     draw();
-    return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener("resize", resizeCanvas);
+    return function () {
+      cancelAnimationFrame(aid);
+      window.removeEventListener("resize", rc);
     };
   }
-
   function stopVisualiserAndClear() {
     if (stopVisualiser) {
       stopVisualiser();
       stopVisualiser = null;
     }
     if (synthCanvas) {
-      const ctx = synthCanvas.getContext("2d");
-      if (ctx) ctx.clearRect(0, 0, synthCanvas.width, synthCanvas.height);
+      var sc = synthCanvas.getContext("2d");
+      if (sc) sc.clearRect(0, 0, synthCanvas.width, synthCanvas.height);
       synthCanvas.style.display = "none";
     }
   }
-
   function ensureVisualiserRunning() {
-    if (isPlaying && currentAudio && currentIndex !== -1 && !isLocked) {
-      if (!stopVisualiser) {
-        stopVisualiser = startFakeVisualiser(synthCanvas);
-      }
+    if (isPlaying && !isLocked) {
+      if (!stopVisualiser) stopVisualiser = startFakeVisualiser(synthCanvas);
     } else {
       stopVisualiserAndClear();
     }
   }
 
   function updateTrackIconsAndActive() {
-    document.querySelectorAll(".music-track-item").forEach((item, idx) => {
-      const iconSpan = item.querySelector(".music-track-icon");
-      const isCurrent = idx === currentIndex;
-      if (isCurrent && isPlaying) {
-        iconSpan.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
-        item.classList.add("active");
-      } else if (isCurrent && !isPlaying && currentIndex !== -1) {
-        iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
-        item.classList.add("active");
-      } else {
-        iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
-        item.classList.remove("active");
+    var items = playlist.querySelectorAll(".music-track-item");
+    items.forEach(function (el, i) {
+      var iconSpan = el.querySelector("span");
+      var isCur = i === currentIndex && isPlaying;
+      if (iconSpan) {
+        iconSpan.innerHTML = isCur
+          ? '<i class="fa-solid fa-pause"></i>'
+          : i === currentIndex
+            ? '<i class="fa-solid fa-play"></i>'
+            : '<i class="fa-solid fa-music"></i>';
       }
+      el.classList.toggle("active", i === currentIndex);
     });
-    ensureVisualiserRunning();
   }
 
-  function stopCurrentAudio(resetIcon = true) {
-    if (currentAudio && typeof currentAudio.pause === "function") {
+  function stopCurrentAudio(keepIndex) {
+    if (currentAudio) {
       try {
         currentAudio.pause();
-      } catch (e) {
-        /* ignore */
-      }
+      } catch (e) {}
       try {
         currentAudio.src = "";
-      } catch (e) {
-        /* ignore */
-      }
+      } catch (e) {}
       currentAudio = null;
     }
-    isPlaying = false;
-    if (resetIcon) updateTrackIconsAndActive();
-    stateSpan.innerText = "Stopped";
-    if (currentIndex === -1) trackTitleSpan.innerText = "—";
+    stopVisualiserAndClear();
+    if (!keepIndex) {
+      currentIndex = -1;
+      trackTitleSpan.innerText = "—";
+      stateSpan.innerText = t("d_ready", "Ready");
+      playPauseBtn.innerHTML = "▶";
+      isPlaying = false;
+    }
+    updateTrackIconsAndActive();
   }
 
-  function showError(message) {
-    stateSpan.innerText = message;
-    setTimeout(() => {
-      if (stateSpan.innerText === message) {
-        if (currentAudio && isPlaying) {
-          stateSpan.innerText = "Playing...";
-        } else if (currentAudio && !isPlaying) {
-          stateSpan.innerText = "Paused";
-        } else {
-          stateSpan.innerText = "Ready";
-        }
+  function showError(msg) {
+    stateSpan.innerText = msg;
+    setTimeout(function () {
+      if (stateSpan.innerText === msg) {
+        if (currentAudio && isPlaying)
+          stateSpan.innerText = t("d_playing", "Playing...");
+        else if (currentAudio && !isPlaying)
+          stateSpan.innerText = t("d_paused", "Paused");
+        else stateSpan.innerText = t("d_ready", "Ready");
       }
     }, 3000);
   }
 
-  function playTrack(index, autoPlay = true) {
+  function playTrack(index, autoPlay) {
+    if (autoPlay === undefined) autoPlay = true;
     if (isLocked) {
-      showError("Player locked – unlock to play");
+      showError(t("d_playerLocked", "Player locked – unlock to play"));
       return;
     }
     if (index < 0 || index >= tracks.length) return;
-
     if (currentAudio && currentIndex === index && isPlaying) return;
-
-    if (currentAudio) {
-      stopCurrentAudio(true);
-    }
-
+    if (currentAudio) stopCurrentAudio(true);
     currentIndex = index;
-    const track = tracks[currentIndex];
-    const displayName = removeFileExtension(track.name);
-    trackTitleSpan.innerText = displayName;
-
+    var track = tracks[currentIndex];
+    trackTitleSpan.innerText = removeFileExtension(track.name);
     try {
-      const audio = document.createElement("audio");
+      var audio = document.createElement("audio");
       audio.src = track.url;
       audio.volume = 1.0;
       audio.muted = localStorage.getItem("globalMute") === "true";
       currentAudio = audio;
-
-      console.log("Attempting to play:", displayName);
-
-      currentAudio.addEventListener("error", (e) => {
-        const error = currentAudio.error;
-        let errorMsg = "Cannot play file";
-        if (error) {
-          switch (error.code) {
+      audio.addEventListener("error", function (e) {
+        var err = currentAudio.error,
+          em = t("d_cannotPlayFile", "Cannot play file");
+        if (err) {
+          switch (err.code) {
             case MediaError.MEDIA_ERR_ABORTED:
-              errorMsg = "Playback aborted";
+              em = t("d_playbackAborted", "Playback aborted");
               break;
             case MediaError.MEDIA_ERR_NETWORK:
-              errorMsg = "Network error";
+              em = t("d_networkError", "Network error");
               break;
             case MediaError.MEDIA_ERR_DECODE:
-              errorMsg = "File corrupted or unsupported format";
+              em = t("d_fileCorrupted", "File corrupted or unsupported format");
               break;
             case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-              errorMsg = "Format not supported";
+              em = t("d_formatNotSupported", "Format not supported");
               break;
             default:
-              errorMsg = "Unknown error";
+              em = t("d_unknownError", "Unknown error");
           }
         }
-        console.error("Audio error:", errorMsg);
-        showError(errorMsg);
+        showError(em);
         isPlaying = false;
         playPauseBtn.innerHTML = "▶";
         updateTrackIconsAndActive();
       });
-
       if (autoPlay) {
-        const playPromise = currentAudio.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              isPlaying = true;
-              playPauseBtn.innerHTML = "⏸";
-              stateSpan.innerText = "Playing...";
-              updateTrackIconsAndActive();
-            })
-            .catch((err) => {
-              console.error("Playback failed:", err.message);
-              showError("Cannot play file");
-              isPlaying = false;
-              playPauseBtn.innerHTML = "▶";
-              updateTrackIconsAndActive();
-            });
+        var pp = audio.play();
+        if (pp !== undefined) {
+          pp.then(function () {
+            isPlaying = true;
+            playPauseBtn.innerHTML = "⏸";
+            stateSpan.innerText = t("d_playing", "Playing...");
+            updateTrackIconsAndActive();
+          }).catch(function (err) {
+            showError(t("d_cannotPlayFile", "Cannot play file"));
+            isPlaying = false;
+            playPauseBtn.innerHTML = "▶";
+            updateTrackIconsAndActive();
+          });
         }
       } else {
         isPlaying = false;
         playPauseBtn.innerHTML = "▶";
-        stateSpan.innerText = "Paused";
+        stateSpan.innerText = t("d_paused", "Paused");
         updateTrackIconsAndActive();
       }
-
-      currentAudio.onended = () => {
-        console.log("Track ended, playing next");
+      audio.onended = function () {
         playNext();
       };
     } catch (err) {
-      console.error("Failed to create audio:", err);
-      showError("Invalid file");
+      showError(t("d_invalidFile", "Invalid file"));
       isPlaying = false;
       playPauseBtn.innerHTML = "▶";
       updateTrackIconsAndActive();
     }
-
     ensureVisualiserRunning();
     updateTrackIconsAndActive();
   }
 
   function playNext() {
     if (isLocked) {
-      showError("Player locked – unlock to play");
+      showError(t("d_playerLocked", "Player locked – unlock to play"));
       return;
     }
-    if (tracks.length === 0) return;
-    const nextIndex = (currentIndex + 1) % tracks.length;
-    playTrack(nextIndex, true);
+    var ni = (currentIndex + 1) % tracks.length;
+    playTrack(ni, true);
   }
-
   function playPrev() {
     if (isLocked) {
-      showError("Player locked – unlock to play");
+      showError(t("d_playerLocked", "Player locked – unlock to play"));
       return;
     }
-    if (tracks.length === 0) return;
-    const prevIndex = (currentIndex - 1 + tracks.length) % tracks.length;
-    playTrack(prevIndex, true);
+    var pi = (currentIndex - 1 + tracks.length) % tracks.length;
+    playTrack(pi, true);
   }
 
   function togglePlayPause() {
     if (isLocked) {
-      showError("Player locked – unlock to play");
+      showError(t("d_playerLocked", "Player locked – unlock to play"));
       return;
     }
     if (currentIndex === -1 || !currentAudio) {
@@ -403,134 +347,106 @@ export default async function initMusic(container) {
       currentAudio.pause();
       isPlaying = false;
       playPauseBtn.innerHTML = "▶";
-      stateSpan.innerText = "Paused";
+      stateSpan.innerText = t("d_paused", "Paused");
       updateTrackIconsAndActive();
     } else {
-      const playPromise = currentAudio.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            isPlaying = true;
-            playPauseBtn.innerHTML = "⏸";
-            stateSpan.innerText = "Playing...";
-            updateTrackIconsAndActive();
-          })
-          .catch((err) => {
-            console.error("Resume failed:", err);
-            showError("Cannot resume");
-          });
+      var pp = currentAudio.play();
+      if (pp !== undefined) {
+        pp.then(function () {
+          isPlaying = true;
+          playPauseBtn.innerHTML = "⏸";
+          stateSpan.innerText = t("d_playing", "Playing...");
+          updateTrackIconsAndActive();
+        }).catch(function (err) {
+          showError(t("d_cannotResume", "Cannot resume"));
+        });
       }
     }
   }
 
   function onTrackClick(index) {
     if (isLocked) {
-      showError("Player locked – unlock to play");
+      showError(t("d_playerLocked", "Player locked – unlock to play"));
       return;
     }
-
-    if (index === currentIndex && currentAudio) {
-      togglePlayPause();
-    } else {
-      playTrack(index, true);
-    }
+    if (index === currentIndex && currentAudio) togglePlayPause();
+    else playTrack(index, true);
   }
 
   function applyLockState() {
     if (isLocked) stopCurrentAudio(true);
-    const allTrackItems = playlist.querySelectorAll(".music-track-item");
-    allTrackItems.forEach((item) => {
-      if (isLocked) {
-        item.style.pointerEvents = "none";
-        item.style.opacity = "0.6";
-      } else {
-        item.style.pointerEvents = "";
-        item.style.opacity = "";
-      }
+    playlist.querySelectorAll(".music-track-item").forEach(function (item) {
+      item.style.pointerEvents = isLocked ? "none" : "";
+      item.style.opacity = isLocked ? "0.6" : "";
     });
-    const controlBtns = [prevBtn, playPauseBtn, nextBtn, up, down];
-    controlBtns.forEach((btn) => {
+    [prevBtn, playPauseBtn, nextBtn, up, down].forEach(function (btn) {
       if (btn) {
-        if (isLocked) {
-          btn.disabled = true;
-          btn.style.opacity = "0.5";
-          btn.style.cursor = "not-allowed";
-        } else {
-          btn.disabled = false;
-          btn.style.opacity = "";
-          btn.style.cursor = "";
-        }
+        btn.disabled = isLocked;
+        btn.style.opacity = isLocked ? "0.5" : "";
+        btn.style.cursor = isLocked ? "not-allowed" : "";
       }
     });
     if (isLocked) {
       stopVisualiserAndClear();
       if (currentIndex === -1) trackTitleSpan.innerText = "—";
-      stateSpan.innerText = "Locked";
+      stateSpan.innerText = t("d_locked", "Locked");
     } else {
       ensureVisualiserRunning();
-      if (currentAudio && isPlaying && currentIndex !== -1) {
-        stateSpan.innerText = "Playing...";
-      } else if (currentIndex !== -1 && !isPlaying) {
-        stateSpan.innerText = "Paused";
-      } else {
-        stateSpan.innerText = "Ready";
-      }
+      if (currentAudio && isPlaying && currentIndex !== -1)
+        stateSpan.innerText = t("d_playing", "Playing...");
+      else if (currentIndex !== -1 && !isPlaying)
+        stateSpan.innerText = t("d_paused", "Paused");
+      else stateSpan.innerText = t("d_ready", "Ready");
     }
   }
 
-  lockToggle.addEventListener("click", (e) => {
+  tracks.forEach(function (tr, i) {
+    var el = document.createElement("div");
+    el.className = "music-track-item";
+    var iconSpan = document.createElement("span");
+    iconSpan.innerHTML = '<i class="fa-solid fa-music"></i>';
+    var nameSpan = document.createElement("span");
+    nameSpan.textContent = removeFileExtension(tr.name);
+    el.appendChild(iconSpan);
+    el.appendChild(nameSpan);
+    el.addEventListener("click", function () {
+      onTrackClick(i);
+    });
+    playlist.appendChild(el);
+  });
+
+  lockToggle.addEventListener("click", function (e) {
     e.stopPropagation();
     isLocked = !isLocked;
     localStorage.setItem("musicLocked", isLocked);
     updateLockIcon();
     applyLockState();
   });
-
-  tracks.forEach((track, i) => {
-    const el = document.createElement("div");
-    el.className = "music-track-item";
-    el.dataset.index = i;
-    const iconSpan = document.createElement("span");
-    iconSpan.className = "music-track-icon";
-    iconSpan.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
-    const nameSpan = document.createElement("span");
-    nameSpan.textContent = escapeHtml(removeFileExtension(track.name));
-    el.appendChild(iconSpan);
-    el.appendChild(nameSpan);
-    el.addEventListener("click", () => onTrackClick(i));
-    playlist.appendChild(el);
-  });
-
-  updateTrackIconsAndActive();
-  up.addEventListener("click", () =>
-    playlist.scrollBy({ top: -300, behavior: "smooth" }),
-  );
-  down.addEventListener("click", () =>
-    playlist.scrollBy({ top: 300, behavior: "smooth" }),
-  );
   prevBtn.addEventListener("click", playPrev);
   nextBtn.addEventListener("click", playNext);
   playPauseBtn.addEventListener("click", togglePlayPause);
+  up.addEventListener("click", function () {
+    playlist.scrollBy({ top: -300, behavior: "smooth" });
+  });
+  down.addEventListener("click", function () {
+    playlist.scrollBy({ top: 300, behavior: "smooth" });
+  });
+
+  if (pinBtn) {
+    headerActions.appendChild(pinBtn);
+  }
   applyLockState();
 
-  return () => {
+  return function () {
     if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.src = "";
+      try {
+        currentAudio.pause();
+      } catch (e) {}
+      try {
+        currentAudio.src = "";
+      } catch (e) {}
       currentAudio = null;
     }
     stopVisualiserAndClear();
   };
-}
-
-function escapeHtml(str) {
-  return (str || "").replace(
-    /[&<>]/g,
-    (m) =>
-      ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-      })[m],
-  );
 }

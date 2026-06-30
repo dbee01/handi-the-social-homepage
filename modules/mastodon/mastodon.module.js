@@ -25,6 +25,11 @@ const MASTODON_SERVERS = [
 ];
 
 export default async function initMastodon(container) {
+  var t =
+    window.t ||
+    function (k, e) {
+      return e || k;
+    };
   const pinBtn = container.querySelector(".pin-btn");
   container.innerHTML = "";
   if (pinBtn) container.appendChild(pinBtn);
@@ -74,10 +79,10 @@ export default async function initMastodon(container) {
     content.innerHTML = `
       <div class="module-empty">
         <i class="fa-brands fa-mastodon"></i>
-        <p>Configure ${name} element</p>
+        <p>${t("d_configureSocial", "Configure " + name + " element")}</p>
         <div style="margin-top:12px;">
           <select id="mastodonServerSelect" style="padding:8px 12px;border-radius:8px;border:2px solid #cbd5e1;font-size:1rem;max-width:100%;">
-            <option value="">— Select a Mastodon server —</option>
+            <option value="">${t("d_selectServer", "Select a Mastodon server")}</option>
             ${MASTODON_SERVERS.map((s, i) => `<option value="${i}">${s.flag} ${s.name}</option>`).join("")}
           </select>
         </div>
@@ -98,7 +103,9 @@ export default async function initMastodon(container) {
   async function fetchMastodon() {
     try {
       content.innerHTML =
-        '<div class="module-loading" style="padding: 20px; text-align: center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading trending...</div>';
+        '<div class="module-loading" style="padding: 20px; text-align: center;"><i class="fa-solid fa-spinner fa-spin"></i> ' +
+        t("d_loading", "Loading...") +
+        "</div>";
       const url = `${instance}/api/v1/trends/links?limit=${limit}`;
       const res = await fetch(url);
 
@@ -107,14 +114,16 @@ export default async function initMastodon(container) {
       const data = await res.json();
       if (!Array.isArray(data) || !data.length) {
         content.innerHTML =
-          '<div class="module-empty" style="padding: 20px; text-align: center;">No trending links</div>';
+          '<div class="module-empty" style="padding: 20px; text-align: center;">' +
+          t("d_noData", "No trending links") +
+          "</div>";
         refreshPackery();
         return;
       }
 
       content.innerHTML = "";
       for (const item of data) {
-        const titleText = item.title || "Untitled";
+        const titleText = item.title || t("d_untitled", "Untitled");
         const urlLink = item.url || "#";
         const description = item.description || "";
         const provider = item.provider_name || "";
@@ -152,7 +161,7 @@ export default async function initMastodon(container) {
       var changeBtn = document.createElement("div");
       changeBtn.style.cssText =
         "text-align:center;margin-top:12px;opacity:0.6;cursor:pointer;font-size:0.85rem;";
-      changeBtn.textContent = "🔄 Change server";
+      changeBtn.textContent = "🔄 " + t("d_changeServer", "Change server");
       changeBtn.onclick = function () {
         saveServer("");
         renderServerSelector();
@@ -165,9 +174,9 @@ export default async function initMastodon(container) {
       content.innerHTML = `
         <div class="module-empty" style="padding:20px;text-align:center;">
           <i class="fa-solid fa-triangle-exclamation"></i>
-          <p>Failed to load. Try another server.</p>
+          <p>${t("d_tryAnother", "Failed to load. Try another server.")}</p>
           <button id="mastodonBackBtn" class="settings-link-btn">
-            <i class="fa-solid fa-arrow-left"></i> Choose another server
+            <i class="fa-solid fa-arrow-left"></i> ${t("d_chooseServer", "Choose another server")}
           </button>
         </div>
       `;

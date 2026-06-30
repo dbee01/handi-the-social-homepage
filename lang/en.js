@@ -109,8 +109,30 @@ var LANG = {
   d_streamUnavailable: "Stream unavailable",
   d_cannotPlay: "Cannot play this station",
   d_tryAnother: "Try another source.",
+  d_tryAnotherServer: "Failed to load. Try another server.",
+  d_untitled: "Untitled",
   d_chooseServer: "Choose another server",
   d_dateUnknown: "Date unknown",
+
+  // Music player
+  d_ready: "Ready",
+  d_playing: "Playing...",
+  d_paused: "Paused",
+  d_locked: "Locked",
+  d_playerLocked: "Player locked – unlock to play",
+  d_musicLoadFailed: "Failed to load music library.",
+  d_musicStorageBlocked:
+    'Your browser blocks storage. Check Firefox settings → Privacy → make sure "Never remember history" is OFF.',
+  d_noMusic: "No music loaded.",
+  d_addMusicSettings: "Add Music in Settings",
+  d_playbackAborted: "Playback aborted",
+  d_networkError: "Network error",
+  d_fileCorrupted: "File corrupted or unsupported format",
+  d_formatNotSupported: "Format not supported",
+  d_unknownError: "Unknown error",
+  d_cannotPlayFile: "Cannot play file",
+  d_cannotResume: "Cannot resume",
+  d_invalidFile: "Invalid file",
 
   // Footer
   d_customizeDashboard: "Customize Dashboard",

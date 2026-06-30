@@ -8,6 +8,11 @@
 import { loadGallery, saveGallery } from "../../js/core/storage.js";
 
 export default async function initGallery(container) {
+  var t =
+    window.t ||
+    function (k, e) {
+      return e || k;
+    };
   const pinBtn = container.querySelector(".pin-btn");
   container.innerHTML = "";
   if (pinBtn) container.appendChild(pinBtn);
@@ -66,9 +71,9 @@ export default async function initGallery(container) {
     content.innerHTML = `
       <div class="module-empty">
         <i class="fa-solid fa-images"></i>
-        <p>No images in gallery.</p>
+        <p>${t("d_noImages", "No images in gallery.")}</p>
         <button id="galleryUploadBtn" class="settings-link-btn">
-          <i class="fa-solid fa-upload"></i> Upload Images
+          <i class="fa-solid fa-upload"></i> ${t("d_uploadImages", "Upload Images")}
         </button>
       </div>
     `;
@@ -106,11 +111,11 @@ export default async function initGallery(container) {
   const controlsDiv = document.createElement("div");
   controlsDiv.className = "gallery-controls";
   controlsDiv.innerHTML = `
-    <button id="galleryUploadMoreBtn" class="gallery-btn" style="background:#059669;color:white;">📷 Add Images</button>
-    <button id="galleryFullscreenBtn" class="gallery-btn fullscreen">🖥️ Full Screen</button>
+    <button id="galleryUploadMoreBtn" class="gallery-btn" style="background:#059669;color:white;">📷 ${t("d_addImages", "Add Images")}</button>
+    <button id="galleryFullscreenBtn" class="gallery-btn fullscreen">🖥️ ${t("d_fullScreen", "Full Screen")}</button>
     <div class="gallery-control-group">
       <button id="galleryPrevBtn" class="gallery-btn primary">❮</button>
-      <button id="galleryPlayPauseBtn" class="gallery-btn primary">⏸ Pause</button>
+      <button id="galleryPlayPauseBtn" class="gallery-btn primary">⏸</button>
       <button id="galleryNextBtn" class="gallery-btn primary">❯</button>
     </div>
   `;
@@ -269,10 +274,10 @@ export default async function initGallery(container) {
     isPlaying = !isPlaying;
     const btn = controlsDiv.querySelector("#galleryPlayPauseBtn");
     if (isPlaying) {
-      btn.textContent = "⏸ Pause";
+      btn.textContent = "⏸";
       startAuto();
     } else {
-      btn.textContent = "▶ Play";
+      btn.textContent = "▶";
       stopAuto();
       stopLightboxAuto();
     }
