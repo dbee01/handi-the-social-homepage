@@ -5,6 +5,11 @@
 import { loadSettings } from "../../js/core/settings.js";
 
 export default async function initChat(container) {
+  var t =
+    window.t ||
+    function (k, e) {
+      return e || k;
+    };
   const pinBtn = container.querySelector(".pin-btn");
   container.innerHTML = "";
   if (pinBtn) container.prepend(pinBtn);
@@ -244,8 +249,8 @@ export default async function initChat(container) {
           <div class="chat-room-header" data-room="${room.index}" style="cursor:pointer;min-height:60px;">
             <div class="chat-room-name">
               <i class="fa-regular fa-comment"></i> ${escapeHtml(room.roomName)}
-              ${room.hasNew ? '<span class="new-badge">New!</span>' : ""}
-              ${room.error ? '<span class="error-badge">Error</span>' : ""}
+              ${room.hasNew ? '<span class="new-badge">' + t("d_new", "New!") + "</span>" : ""}
+              ${room.error ? '<span class="error-badge">' + t("d_errorLabel", "Error") + "</span>" : ""}
             </div>
             <button class="chat-toggle-msgs" data-room="${room.index}" style="min-width:48px;min-height:48px;font-size:1.2rem;cursor:pointer;border-radius:12px;background:#f1f5f9;border:1px solid #cbd5e1;">${isOpen ? "▲" : "▼"}</button>
           </div>
@@ -254,7 +259,10 @@ export default async function initChat(container) {
       if (room.error) {
         html += `<div class="chat-error">⚠️ ${escapeHtml(room.error)}</div>`;
       } else if (!room.messages.length) {
-        html += '<div class="chat-empty">💬 No messages yet</div>';
+        html +=
+          '<div class="chat-empty">💬 ' +
+          t("d_noMessages", "No messages yet") +
+          "</div>";
       } else {
         for (const msg of room.messages.slice(0, 20)) {
           html += `
@@ -271,8 +279,7 @@ export default async function initChat(container) {
     }
     html +=
       '</div></div><div style="display:flex;gap:12px;margin-top:16px;">' +
-      '<button id="chatRefreshBtn" class="chat-refresh-btn" style="flex:1;padding:14px;font-size:1rem;font-weight:bold;">⟳ Refresh</button>' +
-      "</div>";
+      '<button id="chatRefreshBtn" class="chat-refresh-btn" style="flex:1;padding:14px;font-size:1rem;font-weight:bold;">⟳ ' + t("d_refresh", "Refresh") + '</button>' +
 
     content.innerHTML = html;
 
@@ -306,9 +313,9 @@ export default async function initChat(container) {
       content.innerHTML = `
         <div class="module-empty">
           <i class="fa-solid fa-comments"></i>
-          <p>No chat rooms configured.</p>
+          <p>" + t("d_noChatRooms", "No chat rooms configured.") + "</p>
           <button id="chatSettingsBtn" class="settings-link-btn" style="margin-top:12px;">
-            <i class="fa-solid fa-gear"></i> Configure in Settings
+            <i class="fa-solid fa-gear"></i> " + t("d_configureSettings", "Configure in Settings") + "
           </button>
         </div>`;
       content.querySelector("#chatSettingsBtn").onclick = () =>
@@ -317,7 +324,7 @@ export default async function initChat(container) {
     }
 
     content.innerHTML =
-      '<div class="chat-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading Matrix rooms...</div>';
+      '<div class="chat-loading"><i class="fa-solid fa-spinner fa-spin"></i> " + t("d_loadingMatrix", "Loading Matrix rooms...") + "</div>';
 
     const results = [];
     for (let i = 0; i < validRooms.length; i++) {
@@ -358,9 +365,9 @@ export default async function initChat(container) {
       content.innerHTML = `
         <div class="module-empty">
           <i class="fa-solid fa-comments"></i>
-          <p>Matrix chat not configured.</p>
+          <p>" + t("d_matrixNotConfigured", "Matrix chat not configured.") + "</p>
           <button id="chatSettingsBtn" class="settings-link-btn" style="margin-top:12px;">
-            <i class="fa-solid fa-gear"></i> Configure in Settings
+            <i class="fa-solid fa-gear"></i> " + t("d_configureSettings", "Configure in Settings") + "
           </button>
         </div>`;
       content.querySelector("#chatSettingsBtn").onclick = () =>

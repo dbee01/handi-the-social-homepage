@@ -188,6 +188,24 @@ var LANG = {
     "Location request timed out. Please move to an area with better GPS signal.",
   d_unknownGeoError: "Unknown geolocation error.",
 
+  // Chat
+  d_new: "New!",
+  d_errorLabel: "Error",
+  d_noMessages: "No messages yet",
+  d_refresh: "Refresh",
+  d_configureSettings: "Configure in Settings",
+  d_loadingMatrix: "Loading Matrix rooms...",
+  d_matrixNotConfigured: "Matrix chat not configured.",
+  d_noChatRooms: "No chat rooms configured.",
+
+  // Calendar
+  d_noCalendar: "No calendar configured.",
+  d_save: "Save",
+  d_loadingCalendar: "Loading calendar...",
+  d_calendarFailed: "Failed to load calendar.",
+  d_youHave: "You have",
+  d_untitledEvent: "Untitled Event",
+
   // Footer
   d_customizeDashboard: "Customize Dashboard",
   d_freeTrial: "Start free trial (no credit card needed)",

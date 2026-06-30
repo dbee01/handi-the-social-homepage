@@ -2,6 +2,11 @@
 import { loadSettings } from "../../js/core/settings.js";
 
 export default async function initCalendar(container) {
+  var t =
+    window.t ||
+    function (k, e) {
+      return e || k;
+    };
   const pinBtn = container.querySelector(".pin-btn");
   container.innerHTML = "";
   if (pinBtn) container.prepend(pinBtn);
@@ -510,9 +515,9 @@ export default async function initCalendar(container) {
       content.innerHTML = `
         <div class="module-empty">
           <i class="fa-solid fa-calendar-days"></i>
-          <p>No calendar configured.</p>
+          <p>" + t("d_noCalendar", "No calendar configured.") + "</p>
           <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-            <input id="calendarUrlInput" type="text" placeholder="Paste iCal URL..." style="padding:8px 12px;border-radius:8px;border:2px solid #cbd5e1;font-size:0.95rem;min-width:240px;">
+            <input id="calendarUrlInput" type="text" placeholder="${t("d_pasteIcal", "Paste iCal URL...")}" style="padding:8px 12px;border-radius:8px;border:2px solid #cbd5e1;font-size:0.95rem;min-width:240px;">
             <button id="calendarSaveBtn" class="settings-link-btn">
               <i class="fa-solid fa-check"></i> Save
             </button>
@@ -537,7 +542,7 @@ export default async function initCalendar(container) {
     }
 
     content.innerHTML =
-      '<div class="calendar-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading calendar...</div>';
+      '<div class="calendar-loading"><i class="fa-solid fa-spinner fa-spin"></i> " + t("d_loadingCalendar", "Loading calendar...") + "</div>';
 
     try {
       const encodedUrl = encodeURIComponent(calendarUrl);
@@ -577,9 +582,9 @@ export default async function initCalendar(container) {
       content.innerHTML = `
                 <div class="calendar-error">
                     <i class="fa-solid fa-exclamation-triangle"></i>
-                    <p>Failed to load calendar.</p>
+                    <p>" + t("d_calendarFailed", "Failed to load calendar.") + "</p>
                     <small>${escapeHtml(err.message)}</small>
-                    <button id="calendarRetryBtn" class="calendar-retry-btn">Retry</button>
+                    <button id="calendarRetryBtn" class="calendar-retry-btn">" + t("d_retry", "Retry") + " </button>
                 </div>
             `;
       const retryBtn = content.querySelector("#calendarRetryBtn");
@@ -593,8 +598,8 @@ export default async function initCalendar(container) {
 
     let html = `
             <div class="calendar-today-header">
-                <span><i class="fa-regular fa-sun"></i> Today's Events</span>
-                <span class="calendar-notification-badge">🔔 ${notificationMinutes} min warning</span>
+                <span><i class="fa-regular fa-sun"></i> " + t("d_todaysEvents", "Today's Events") + "</span>
+                <span class="calendar-notification-badge">🔔 ${notificationMinutes} " + t("d_minWarning", "min warning") + "</span>
             </div>
         `;
 
@@ -602,11 +607,11 @@ export default async function initCalendar(container) {
       html += `
                 <div class="calendar-empty">
                     <i class="fa-regular fa-calendar-check"></i>
-                    <p style="margin-top: 12px;">No events scheduled for today.</p>
+                    <p style="margin-top: 12px;">" + t("d_noEventsToday", "No events scheduled for today.") + "</p>
             `;
 
       if (tomorrowEvents.length > 0) {
-        html += `<p>📅 You have ${tomorrowEvents.length} event(s) tomorrow.</p>`;
+        html += `<p>📅 " + t("d_youHave", "You have") + " ${tomorrowEvents.length} " + t("d_eventsTomorrow", "event(s) tomorrow.") + "</p>`;
       }
 
       html += `</div>`;
@@ -620,7 +625,7 @@ export default async function initCalendar(container) {
                             <i class="fa-regular fa-clock"></i> ${escapeHtml(timeStr)}
                         </div>
                         <div class="calendar-event-details">
-                            <div class="calendar-event-title">${escapeHtml(event.summary || "Untitled Event")}</div>
+                            <div class="calendar-event-title">${escapeHtml(event.summary || "" + t("d_untitledEvent", "Untitled Event") + "")}</div>
                             ${event.location ? `<div class="calendar-event-location"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(event.location)}</div>` : ""}
                             ${event.description ? `<div class="calendar-event-desc">${escapeHtml(event.description.substring(0, 100))}${event.description.length > 100 ? "…" : ""}</div>` : ""}
                         </div>
@@ -634,12 +639,12 @@ export default async function initCalendar(container) {
     html += `
             <div class="calendar-sync-info">
                 <span>
-                    <i class="fa-regular fa-clock"></i> Last synced: ${formatSyncTime()}
-                    ${totalEvents > 0 ? ` | ${totalEvents} total events in feed` : ""}
+                    <i class="fa-regular fa-clock"></i> " + t("d_lastSynced", "Last synced:") + " ${formatSyncTime()}
+                    ${totalEvents > 0 ? ` | ${totalEvents} " + t("d_totalEvents", "total events in feed") + "` : ""}
                 </span>
                 <div style="display:flex;gap:8px;">
-                    <button id="calendarChangeUrlBtn" class="calendar-refresh-btn" style="font-size:0.8rem;">🔗 Change URL</button>
-                    <button id="calendarRefreshBtn" class="calendar-refresh-btn">⟳ Refresh</button>
+                    <button id="calendarChangeUrlBtn" class="calendar-refresh-btn" style="font-size:0.8rem;">🔗 " + t("d_changeUrl", "Change URL") + "</button>
+                    <button id="calendarRefreshBtn" class="calendar-refresh-btn">⟳ " + t("d_refresh", "Refresh") + "</button>
                 </div>
             </div>
         `;
