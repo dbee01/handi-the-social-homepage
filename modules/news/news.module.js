@@ -3,23 +3,79 @@ import { loadSettings } from "../../js/core/settings.js";
 
 // International news feeds with country flags
 const NEWS_FEEDS = [
-  { flag: '🇮🇪', name: 'Ireland – RTÉ',       url: 'https://www.rte.ie/feeds/rss/news.xml' },
-  { flag: '🇬🇧', name: 'UK – BBC',             url: 'https://feeds.bbci.co.uk/news/rss.xml' },
-  { flag: '🇫🇷', name: 'France – Le Monde',    url: 'https://www.lemonde.fr/rss/une.xml' },
-  { flag: '🇩🇪', name: 'Deutschland – Spiegel', url: 'https://www.spiegel.de/schlagzeilen/index.rss' },
-  { flag: '🇪🇸', name: 'España – El País',     url: 'https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada' },
-  { flag: '🇮🇹', name: 'Italia – Corriere',     url: 'https://www.corriere.it/rss/homepage.xml' },
-  { flag: '🇳🇱', name: 'Nederland – NOS',       url: 'https://feeds.nos.nl/nosnieuwsalgemeen' },
-  { flag: '🇵🇱', name: 'Polska – TVN24',         url: 'https://tvn24.pl/najnowsze.xml' },
-  { flag: '🇵🇹', name: 'Portugal – Público',    url: 'https://feeds.feedburner.com/PublicoRSS' },
-  { flag: '🇧🇪', name: 'België – De Standaard', url: 'https://www.standaard.be/rss/section/1f2838d4-99ea-49f0-9102-138784c7ea7c' },
-  { flag: '🇨🇭', name: 'Schweiz – NZZ',          url: 'https://www.nzz.ch/recent.rss' },
-  { flag: '🇸🇪', name: 'Sverige – SVT',          url: 'https://www.svt.se/nyheter/rss.xml' },
-  { flag: '🇳🇴', name: 'Norge – NRK',            url: 'https://www.nrk.no/nyheter/siste.rss' },
-  { flag: '🇺🇸', name: 'USA – NPR',              url: 'https://feeds.npr.org/1001/rss.xml' },
-  { flag: '🇨🇦', name: 'Canada – CBC',            url: 'https://www.cbc.ca/webfeed/rss/rss-topstories' },
-  { flag: '🇦🇺', name: 'Australia – ABC',         url: 'https://www.abc.net.au/news/feed/51120/rss.xml' },
-  { flag: '🇳🇿', name: 'New Zealand – RNZ',       url: 'https://www.rnz.co.nz/rss/national.xml' },
+  {
+    flag: "🇮🇪",
+    name: "Ireland – RTÉ",
+    url: "https://www.rte.ie/feeds/rss/news.xml",
+  },
+  {
+    flag: "🇬🇧",
+    name: "UK – BBC",
+    url: "https://feeds.bbci.co.uk/news/rss.xml",
+  },
+  {
+    flag: "🇫🇷",
+    name: "France – Le Monde",
+    url: "https://www.lemonde.fr/rss/une.xml",
+  },
+  {
+    flag: "🇩🇪",
+    name: "Deutschland – Spiegel",
+    url: "https://www.spiegel.de/schlagzeilen/index.rss",
+  },
+  {
+    flag: "🇪🇸",
+    name: "España – El País",
+    url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada",
+  },
+  {
+    flag: "🇮🇹",
+    name: "Italia – Corriere",
+    url: "https://www.corriere.it/rss/homepage.xml",
+  },
+  {
+    flag: "🇳🇱",
+    name: "Nederland – NOS",
+    url: "https://feeds.nos.nl/nosnieuwsalgemeen",
+  },
+  { flag: "🇵🇱", name: "Polska – TVN24", url: "https://tvn24.pl/najnowsze.xml" },
+  {
+    flag: "🇵🇹",
+    name: "Portugal – Público",
+    url: "https://feeds.feedburner.com/PublicoRSS",
+  },
+  {
+    flag: "🇧🇪",
+    name: "België – De Standaard",
+    url: "https://www.standaard.be/rss/section/1f2838d4-99ea-49f0-9102-138784c7ea7c",
+  },
+  { flag: "🇨🇭", name: "Schweiz – NZZ", url: "https://www.nzz.ch/recent.rss" },
+  {
+    flag: "🇸🇪",
+    name: "Sverige – SVT",
+    url: "https://www.svt.se/nyheter/rss.xml",
+  },
+  {
+    flag: "🇳🇴",
+    name: "Norge – NRK",
+    url: "https://www.nrk.no/nyheter/siste.rss",
+  },
+  { flag: "🇺🇸", name: "USA – NPR", url: "https://feeds.npr.org/1001/rss.xml" },
+  {
+    flag: "🇨🇦",
+    name: "Canada – CBC",
+    url: "https://www.cbc.ca/webfeed/rss/rss-topstories",
+  },
+  {
+    flag: "🇦🇺",
+    name: "Australia – ABC",
+    url: "https://www.abc.net.au/news/feed/51120/rss.xml",
+  },
+  {
+    flag: "🇳🇿",
+    name: "New Zealand – RNZ",
+    url: "https://www.rnz.co.nz/rss/national.xml",
+  },
 ];
 
 export default async function initNews(container) {
@@ -49,15 +105,6 @@ export default async function initNews(container) {
   let currentStart = 0;
   let refreshIntervalId = null;
   let rssUrl = "";
-
-  // Check settings first, then localStorage, then show selector
-  if (settings.news?.rssUrl) {
-    rssUrl = settings.news.rssUrl;
-  } else {
-    try {
-      rssUrl = localStorage.getItem(STORAGE_KEY) || "";
-    } catch (e) {}
-  }
 
   function saveFeed(url) {
     rssUrl = url;
@@ -263,9 +310,9 @@ export default async function initNews(container) {
           <small style="opacity:0.7;">${escapeHtml(sourceDisplay)}</small>
           <button id="newsChangeSource" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;" title="Change source">🔄 Source</button>
         </div>
-        <button id="newsScrollUp" class="news-scroll-btn">▲ Scroll Up</button>
+        <button id="newsScrollUp" class="news-scroll-btn">▲</button>
         <div id="newsList" class="news-list"></div>
-        <button id="newsScrollDown" class="news-scroll-btn">▼ Scroll Down</button>
+        <button id="newsScrollDown" class="news-scroll-btn">▼</button>
       </div>
     `;
 
