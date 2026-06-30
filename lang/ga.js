@@ -94,6 +94,8 @@ var LANG = {
   d_totalEvents: "imeacht san iomlán",
   d_untitledEvent: "Imeacht Gan Teideal",
   d_noStation: "Gan stáisiún á sheinm",
+  d_radioLockedShort: "Raidió faoi ghlas",
+
   d_radioLocked: "Tá an raidió faoi ghlas – díghlasáil chun seinm",
   d_connecting: "Ag nascadh le",
   d_nowPlaying: "Á sheinm anois:",
@@ -102,6 +104,8 @@ var LANG = {
   d_streamUnavailable: "Sruth ar fáil",
   d_cannotPlay: "Ní féidir an stáisiún seo a sheinm",
   d_tryAnother: "Bain triail as foinse eile.",
+  d_dateUnknown: "Dáta anaithnid",
+
   d_chooseServer: "___",
 
   d_customizeDashboard: "Saincheap an Deais",

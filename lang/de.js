@@ -88,6 +88,8 @@ var LANG = {
   d_totalEvents: "Termine insgesamt",
   d_untitledEvent: "Unbenannter Termin",
   d_noStation: "Kein Sender",
+  d_radioLockedShort: "Radio gesperrt",
+
   d_radioLocked: "Radio gesperrt – zum Abspielen entsperren",
   d_connecting: "Verbinde mit",
   d_nowPlaying: "Jetzt läuft:",
@@ -96,6 +98,8 @@ var LANG = {
   d_streamUnavailable: "Stream nicht verfügbar",
   d_cannotPlay: "Sender kann nicht abgespielt werden",
   d_tryAnother: "Andere Quelle versuchen.",
+  d_dateUnknown: "Datum unbekannt",
+
   d_chooseServer: "___",
 
   d_customizeDashboard: "Dashboard anpassen",

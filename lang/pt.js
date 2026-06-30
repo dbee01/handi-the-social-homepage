@@ -81,6 +81,8 @@ var LANG = {
   d_totalEvents: "eventos no total",
   d_untitledEvent: "Evento sem título",
   d_noStation: "Sem estação",
+  d_radioLockedShort: "Rádio bloqueado",
+
   d_radioLocked: "Rádio bloqueado – desbloquear para reproduzir",
   d_connecting: "A ligar a",
   d_nowPlaying: "A tocar:",
@@ -89,6 +91,8 @@ var LANG = {
   d_streamUnavailable: "Stream indisponível",
   d_cannotPlay: "Não é possível reproduzir",
   d_tryAnother: "Tentar outra fonte.",
+  d_dateUnknown: "Data desconhecida",
+
   d_chooseServer: "___",
 
   d_customizeDashboard: "Personalizar painel",

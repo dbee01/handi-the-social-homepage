@@ -82,6 +82,8 @@ var LANG = {
   d_totalEvents: "événements au total",
   d_untitledEvent: "Événement sans titre",
   d_noStation: "Aucune station",
+  d_radioLockedShort: "Radio verrouillée",
+
   d_radioLocked: "Radio verrouillée – déverrouiller pour lire",
   d_connecting: "Connexion à",
   d_nowPlaying: "En cours :",
@@ -90,6 +92,8 @@ var LANG = {
   d_streamUnavailable: "Flux indisponible",
   d_cannotPlay: "Impossible de lire cette station",
   d_tryAnother: "Essayer une autre source.",
+  d_dateUnknown: "Date inconnue",
+
   d_chooseServer: "___",
 
   d_customizeDashboard: "Personnaliser le tableau de bord",

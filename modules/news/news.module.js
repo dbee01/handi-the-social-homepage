@@ -79,17 +79,22 @@ const NEWS_FEEDS = [
 ];
 
 export default async function initNews(container) {
+  const t =
+    window.t ||
+    function (k, e) {
+      return e || k;
+    };
   const pinBtn = container.querySelector(".pin-btn");
   container.innerHTML = "";
   if (pinBtn) container.prepend(pinBtn);
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  var name =
+  var modName =
     window.LANG && window.LANG.modules && window.LANG.modules.news
       ? window.LANG.modules.news.name
       : "NEWS";
-  title.innerHTML = '<i class="fa-solid fa-newspaper"></i> ' + name;
+  title.innerHTML = '<i class="fa-solid fa-newspaper"></i> ' + modName;
   container.appendChild(title);
 
   const content = document.createElement("div");
@@ -114,18 +119,24 @@ export default async function initNews(container) {
   }
 
   function renderFeedSelector() {
-    var name =
-      window.LANG && window.LANG.modules && window.LANG.modules.news
-        ? window.LANG.modules.news.name
-        : "NEWS";
     content.innerHTML = `
       <div class="module-empty">
         <i class="fa-solid fa-newspaper"></i>
-        <p>Configure ${name} element</p>
+        <p>${t("d_configureNews", "Configure NEWS element")}</p>
         <div style="margin-top:12px;">
           <select id="newsFeedSelect" style="padding:8px 12px;border-radius:8px;border:2px solid #cbd5e1;font-size:1rem;max-width:100%;">
-            <option value="">— Select a news source —</option>
-            ${NEWS_FEEDS.map((f, i) => `<option value="${i}">${f.flag} ${f.name}</option>`).join("")}
+            <option value="">${t("d_selectFeed", "— Select a news source —")}</option>
+            ${NEWS_FEEDS.map(function (f, i) {
+              return (
+                '<option value="' +
+                i +
+                '">' +
+                f.flag +
+                " " +
+                f.name +
+                "</option>"
+              );
+            }).join("")}
           </select>
         </div>
       </div>
@@ -144,106 +155,133 @@ export default async function initNews(container) {
 
   function formatSourceName(url) {
     try {
-      const hostname = new URL(url).hostname;
-      let name = hostname.replace(/^www\./, "").split(".")[0];
-      name = name.replace(/^THE/i, "THE ").toUpperCase();
-      return name + " NEWS";
+      var hostname = new URL(url).hostname;
+      return (
+        hostname
+          .replace(/^www\./, "")
+          .split(".")[0]
+          .replace(/^THE/i, "THE ")
+          .toUpperCase() + " NEWS"
+      );
     } catch (e) {
       return "NEWS";
     }
   }
 
-  function extractImageFromEntry(entry, description = "") {
-    const enclosureLink = entry.querySelector(
-      'link[rel="enclosure"][type^="image"]',
-    );
-    if (enclosureLink && enclosureLink.getAttribute("href")) {
-      return enclosureLink.getAttribute("href");
-    }
-    const mediaContent = entry.querySelector("media\\:content, content");
-    if (mediaContent && mediaContent.getAttribute("url")) {
-      return mediaContent.getAttribute("url");
-    }
-    if (description) {
-      const imgMatch = description.match(/<img[^>]+src="([^">]+)"/);
-      if (imgMatch) return imgMatch[1];
-    }
-    return "";
+  function extractImageFromEntry(entry, description) {
+    description = description || "";
+    var enclosure = entry.querySelector('link[rel="enclosure"][type^="image"]');
+    if (enclosure && enclosure.getAttribute("href"))
+      return enclosure.getAttribute("href");
+    var media = entry.querySelector("media\\:content, content");
+    if (media && media.getAttribute("url")) return media.getAttribute("url");
+    var m = description.match(/<img[^>]+src="([^">]+)"/);
+    return m ? m[1] : "";
   }
 
   async function fetchNews() {
     try {
       content.innerHTML =
-        '<div class="news-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading news...</div>';
-      const response = await fetch(
-        `/api/news?url=${encodeURIComponent(rssUrl)}`,
-      );
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const xmlText = await response.text();
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-      const parseError = xmlDoc.querySelector("parsererror");
-      if (parseError) throw new Error("Invalid XML");
+        '<div class="news-loading"><i class="fa-solid fa-spinner fa-spin"></i> ' +
+        t("d_loading", "Loading news...") +
+        "</div>";
+      var resp = await fetch("/api/news?url=" + encodeURIComponent(rssUrl));
+      if (!resp.ok) throw new Error("HTTP " + resp.status);
+      var xmlText = await resp.text();
+      var xmlDoc = new DOMParser().parseFromString(xmlText, "text/xml");
+      if (xmlDoc.querySelector("parsererror")) throw new Error("Invalid XML");
 
-      let channel, items, channelLink, channelTitle;
-      const rssChannel = xmlDoc.querySelector("channel");
-      const atomFeed = xmlDoc.querySelector("feed");
+      var channel, items, channelLink, channelTitle;
+      var rssChannel = xmlDoc.querySelector("channel");
+      var atomFeed = xmlDoc.querySelector("feed");
 
       if (rssChannel) {
         channel = rssChannel;
-        channelLink = channel.querySelector("link")?.textContent?.trim() || "#";
-        channelTitle =
-          channel.querySelector("title")?.textContent?.trim() || "News";
-        items = xmlDoc.querySelectorAll("item");
-      } else if (atomFeed) {
         channelLink =
-          atomFeed.querySelector('link[rel="self"]')?.getAttribute("href") ||
+          (channel.querySelector("link") &&
+            channel.querySelector("link").textContent &&
+            channel.querySelector("link").textContent.trim()) ||
           "#";
         channelTitle =
-          atomFeed.querySelector("title")?.textContent?.trim() || "News";
+          (channel.querySelector("title") &&
+            channel.querySelector("title").textContent &&
+            channel.querySelector("title").textContent.trim()) ||
+          "News";
+        items = xmlDoc.querySelectorAll("item");
+      } else if (atomFeed) {
+        var selfLink = atomFeed.querySelector('link[rel="self"]');
+        channelLink = selfLink ? selfLink.getAttribute("href") || "#" : "#";
+        channelTitle =
+          (atomFeed.querySelector("title") &&
+            atomFeed.querySelector("title").textContent &&
+            atomFeed.querySelector("title").textContent.trim()) ||
+          "News";
         items = xmlDoc.querySelectorAll("entry");
       } else {
         throw new Error("Unknown feed format");
       }
 
-      const articles = [];
-      const articleLimit = Math.min(items.length, maxArticles);
-      for (let i = 0; i < articleLimit; i++) {
-        const item = items[i];
-        let title, link, pubDateRaw, description, imageUrl;
+      var articles = [];
+      var limit = Math.min(items.length, maxArticles);
+      for (var i = 0; i < limit; i++) {
+        var item = items[i];
+        var artTitle, link, pubDateRaw, description, imageUrl;
 
         if (rssChannel) {
-          title =
-            item.querySelector("title")?.textContent?.trim() || "No title";
-          link = item.querySelector("link")?.textContent?.trim() || "#";
-          pubDateRaw = item.querySelector("pubDate")?.textContent || "";
-          description = item.querySelector("description")?.textContent || "";
-          imageUrl = extractImageFromEntry(item, description);
-        } else {
-          title =
-            item.querySelector("title")?.textContent?.trim() || "No title";
-          const linkElem = item.querySelector('link[rel="alternate"]');
-          link = linkElem
-            ? linkElem.getAttribute("href")
-            : item.querySelector("link")?.getAttribute("href") || "#";
+          artTitle =
+            (item.querySelector("title") &&
+              item.querySelector("title").textContent &&
+              item.querySelector("title").textContent.trim()) ||
+            "No title";
+          link =
+            (item.querySelector("link") &&
+              item.querySelector("link").textContent &&
+              item.querySelector("link").textContent.trim()) ||
+            "#";
           pubDateRaw =
-            item.querySelector("published")?.textContent ||
-            item.querySelector("updated")?.textContent ||
+            (item.querySelector("pubDate") &&
+              item.querySelector("pubDate").textContent) ||
             "";
           description =
-            item.querySelector("summary")?.textContent?.trim() ||
-            item.querySelector("content")?.textContent?.trim() ||
+            (item.querySelector("description") &&
+              item.querySelector("description").textContent) ||
             "";
-          const textDesc = description.replace(/<[^>]*>/g, "");
-          description = textDesc;
+          imageUrl = extractImageFromEntry(item, description);
+        } else {
+          artTitle =
+            (item.querySelector("title") &&
+              item.querySelector("title").textContent &&
+              item.querySelector("title").textContent.trim()) ||
+            "No title";
+          var altLink = item.querySelector('link[rel="alternate"]');
+          link = altLink
+            ? altLink.getAttribute("href")
+            : (item.querySelector("link") &&
+                item.querySelector("link").getAttribute("href")) ||
+              "#";
+          pubDateRaw =
+            (item.querySelector("published") &&
+              item.querySelector("published").textContent) ||
+            (item.querySelector("updated") &&
+              item.querySelector("updated").textContent) ||
+            "";
+          description =
+            (item.querySelector("summary") &&
+              item.querySelector("summary").textContent &&
+              item.querySelector("summary").textContent.trim()) ||
+            (item.querySelector("content") &&
+              item.querySelector("content").textContent &&
+              item.querySelector("content").textContent.trim()) ||
+            "";
+          description = description.replace(/<[^>]*>/g, "");
           imageUrl = extractImageFromEntry(item, description);
         }
 
-        let formattedDate = "";
+        var formattedDate = t("d_dateUnknown", "Date unknown");
         if (pubDateRaw) {
-          const dateObj = new Date(pubDateRaw);
-          if (!isNaN(dateObj.getTime())) {
-            formattedDate = dateObj.toLocaleString("en-IE", {
+          var d = new Date(pubDateRaw);
+          if (!isNaN(d.getTime())) {
+            formattedDate = d.toLocaleString("en-IE", {
               timeZone: "Europe/Dublin",
               day: "2-digit",
               month: "2-digit",
@@ -251,64 +289,55 @@ export default async function initNews(container) {
               hour: "2-digit",
               minute: "2-digit",
             });
-          } else {
-            formattedDate = "Date unknown";
           }
-        } else {
-          formattedDate = "Date unknown";
         }
 
-        const fullExcerpt = description.substring(0, 300);
         articles.push({
-          title,
-          link,
+          title: artTitle,
+          link: link,
           pubDate: formattedDate,
-          excerpt: fullExcerpt,
-          imageUrl,
-          channelLink,
+          excerpt: description.substring(0, 300),
+          imageUrl: imageUrl,
+          channelLink: channelLink,
         });
       }
       renderNews(articles, channelLink, channelTitle);
     } catch (err) {
       console.error("News fetch error:", err);
-      // Show selector + error so user can try another feed
-      var name =
-        window.LANG && window.LANG.modules && window.LANG.modules.news
-          ? window.LANG.modules.news.name
-          : "NEWS";
       content.innerHTML = `
         <div class="module-empty">
           <i class="fa-solid fa-triangle-exclamation"></i>
-          <p>Could not load news. Try another source.</p>
+          <p>${t("d_tryAnother", "Could not load news. Try another source.")}</p>
           <button id="newsBackBtn" class="settings-link-btn">
-            <i class="fa-solid fa-arrow-left"></i> Choose another source
+            <i class="fa-solid fa-arrow-left"></i> ${t("d_chooseAnother", "Choose another source")}
           </button>
         </div>
       `;
       var backBtn = content.querySelector("#newsBackBtn");
-      if (backBtn) {
+      if (backBtn)
         backBtn.onclick = function () {
           saveFeed("");
           renderFeedSelector();
         };
-      }
     }
   }
 
   function renderNews(articles, channelLink, channelTitle) {
     if (!articles.length) {
-      content.innerHTML = '<div class="module-empty">No news available.</div>';
+      content.innerHTML =
+        '<div class="module-empty">' +
+        t("d_noData", "No news available.") +
+        "</div>";
       return;
     }
-
     currentStart = 0;
-    const sourceDisplay = formatSourceName(channelLink);
+    var sourceDisplay = formatSourceName(channelLink);
 
     content.innerHTML = `
       <div class="news-scroll-wrapper" style="display:flex;flex-direction:column;gap:8px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
           <small style="opacity:0.7;">${escapeHtml(sourceDisplay)}</small>
-          <button id="newsChangeSource" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;" title="Change source">🔄 Source</button>
+          <button id="newsChangeSource" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;" title="${t("d_changeSource", "Change source")}">🔄 ${t("d_changeSource", "Source")}</button>
         </div>
         <button id="newsScrollUp" class="news-scroll-btn">▲</button>
         <div id="newsList" class="news-list"></div>
@@ -317,22 +346,21 @@ export default async function initNews(container) {
     `;
 
     var changeBtn = content.querySelector("#newsChangeSource");
-    if (changeBtn) {
+    if (changeBtn)
       changeBtn.onclick = function () {
         saveFeed("");
         renderFeedSelector();
       };
-    }
 
-    const list = document.getElementById("newsList");
+    var list = document.getElementById("newsList");
     if (!list) return;
 
-    const articleEls = articles.map((article) => {
-      const div = document.createElement("div");
+    var articleEls = articles.map(function (article) {
+      var div = document.createElement("div");
       div.className = "news-article";
       div.innerHTML = `
         <div style="display:flex;gap:12px;margin-bottom:12px;">
-          ${article.imageUrl ? `<img src="${article.imageUrl}" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" onerror="this.style.display='none'">` : '<div style="width:120px;height:auto;"></div>'}
+          ${article.imageUrl ? '<img src="' + article.imageUrl + '" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" onerror="this.style.display=\'none\'">' : '<div style="width:120px;height:auto;"></div>'}
           <div style="flex:1;">
             <div>${escapeHtml(sourceDisplay)}</div>
             <div>${escapeHtml(article.pubDate)}</div>
@@ -346,29 +374,27 @@ export default async function initNews(container) {
     });
 
     function updateVisibility() {
-      articleEls.forEach((el, i) => {
+      articleEls.forEach(function (el, i) {
         el.style.display =
           i >= currentStart && i < currentStart + VISIBLE ? "" : "none";
       });
-      const upBtn = document.getElementById("newsScrollUp");
-      const downBtn = document.getElementById("newsScrollDown");
+      var upBtn = document.getElementById("newsScrollUp");
+      var downBtn = document.getElementById("newsScrollDown");
       if (upBtn) upBtn.style.opacity = currentStart === 0 ? "0.7" : "1";
       if (downBtn)
         downBtn.style.opacity =
           currentStart + VISIBLE >= articleEls.length ? "0.7" : "1";
     }
-
     updateVisibility();
 
-    document.getElementById("newsScrollUp").onclick = (e) => {
+    document.getElementById("newsScrollUp").onclick = function (e) {
       e.preventDefault();
       if (currentStart > 0) {
         currentStart = Math.max(0, currentStart - STEP);
         updateVisibility();
       }
     };
-
-    document.getElementById("newsScrollDown").onclick = (e) => {
+    document.getElementById("newsScrollDown").onclick = function (e) {
       e.preventDefault();
       if (currentStart + VISIBLE < articleEls.length) {
         currentStart = Math.min(
@@ -390,10 +416,9 @@ export default async function initNews(container) {
 
   function escapeHtml(str) {
     if (!str) return "";
-    return str.replace(
-      /[&<>]/g,
-      (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m],
-    );
+    return str.replace(/[&<>]/g, function (m) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[m];
+    });
   }
 
   if (rssUrl) {
@@ -402,7 +427,7 @@ export default async function initNews(container) {
     renderFeedSelector();
   }
 
-  return () => {
+  return function () {
     if (refreshIntervalId) clearInterval(refreshIntervalId);
   };
 }

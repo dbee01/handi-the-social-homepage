@@ -81,6 +81,8 @@ var LANG = {
   d_totalEvents: "إجمالي الأحداث",
   d_untitledEvent: "حدث بدون عنوان",
   d_noStation: "لا توجد محطة",
+  d_radioLockedShort: "الراديو مقفل",
+
   d_radioLocked: "الراديو مقفل – افتح للتشغيل",
   d_connecting: "جار الاتصال بـ",
   d_nowPlaying: "قيد التشغيل:",
@@ -89,6 +91,8 @@ var LANG = {
   d_streamUnavailable: "البث غير متاح",
   d_cannotPlay: "لا يمكن تشغيل هذه المحطة",
   d_tryAnother: "جرب مصدراً آخر.",
+  d_dateUnknown: "تاريخ غير معروف",
+
   d_chooseServer: "___",
 
   d_customizeDashboard: "تخصيص لوحة القيادة",

@@ -83,6 +83,8 @@ var LANG = {
   d_totalEvents: "totaal afspraken",
   d_untitledEvent: "Naamloze afspraak",
   d_noStation: "Geen zender",
+  d_radioLockedShort: "Radio vergrendeld",
+
   d_radioLocked: "Radio vergrendeld – ontgrendel om af te spelen",
   d_connecting: "Verbinden met",
   d_nowPlaying: "Nu aan het afspelen:",
@@ -91,6 +93,8 @@ var LANG = {
   d_streamUnavailable: "Stream niet beschikbaar",
   d_cannotPlay: "Kan deze zender niet afspelen",
   d_tryAnother: "Probeer een andere bron.",
+  d_dateUnknown: "Datum onbekend",
+
   d_chooseServer: "___",
 
   d_customizeDashboard: "Dashboard aanpassen",

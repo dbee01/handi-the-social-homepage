@@ -82,6 +82,8 @@ var LANG = {
   d_totalEvents: "cyfanswm digwyddiadau",
   d_untitledEvent: "Digwyddiad di-deitl",
   d_noStation: "Dim gorsaf",
+  d_radioLockedShort: "Radio wedi cloi",
+
   d_radioLocked: "Radio wedi'i gloi – datgloi i chwarae",
   d_connecting: "Cysylltu â",
   d_nowPlaying: "Yn chwarae:",
@@ -90,6 +92,8 @@ var LANG = {
   d_streamUnavailable: "Ffrwd ddim ar gael",
   d_cannotPlay: "Methu chwarae'r orsaf hon",
   d_tryAnother: "Rhowch gynnig ar ffynhonnell arall.",
+  d_dateUnknown: "Dyddiad anhysbys",
+
   d_chooseServer: "___",
 
   d_customizeDashboard: "Addasu'r Dangosfwrdd",

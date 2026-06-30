@@ -83,6 +83,8 @@ var LANG = {
   d_totalEvents: "wydarzeń łącznie",
   d_untitledEvent: "Wydarzenie bez nazwy",
   d_noStation: "Brak stacji",
+  d_radioLockedShort: "Radio zablokowane",
+
   d_radioLocked: "Radio zablokowane – odblokuj, aby odtwarzać",
   d_connecting: "Łączenie z",
   d_nowPlaying: "Teraz gra:",
@@ -91,6 +93,8 @@ var LANG = {
   d_streamUnavailable: "Strumień niedostępny",
   d_cannotPlay: "Nie można odtworzyć",
   d_tryAnother: "Spróbuj innego źródła.",
+  d_dateUnknown: "Data nieznana",
+
   d_chooseServer: "___",
 
   d_customizeDashboard: "Dostosuj pulpit",

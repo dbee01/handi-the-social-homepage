@@ -101,6 +101,7 @@ var LANG = {
   d_untitledEvent: "Untitled Event",
   d_noStation: "No station playing",
   d_radioLocked: "Radio is locked – unlock to play",
+  d_radioLockedShort: "Radio locked",
   d_connecting: "Connecting to",
   d_nowPlaying: "Now playing:",
   d_paused: "Paused:",
@@ -109,6 +110,7 @@ var LANG = {
   d_cannotPlay: "Cannot play this station",
   d_tryAnother: "Try another source.",
   d_chooseServer: "Choose another server",
+  d_dateUnknown: "Date unknown",
 
   // Footer
   d_customizeDashboard: "Customize Dashboard",

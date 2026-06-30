@@ -1,15 +1,15 @@
-/*
- * Copyright (c) 2026 Handi Homepage
- * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
- * See the LICENSE file in the repository root for full details.
- */
 // modules/radio/radio.module.js – international radio stations with country filter
 import { loadSettings } from "../../js/core/settings.js";
 
 export default async function initRadio(container) {
+  var t =
+    window.t ||
+    function (k, e) {
+      return e || k;
+    };
+
   // International radio stations with country flags
   const STATIONS = [
-    // Ireland
     {
       flag: "🇮🇪",
       name: "RTÉ Radio 1",
@@ -32,7 +32,6 @@ export default async function initRadio(container) {
       name: "Cork 96FM",
       url: "https://onic.cork.live.stream.broadcasting.news/stream-96fm",
     },
-    // UK
     {
       flag: "🇬🇧",
       name: "BBC Radio 1",
@@ -53,7 +52,6 @@ export default async function initRadio(container) {
       name: "Capital FM London",
       url: "https://media-ssl.musicradio.com/Capital",
     },
-    // France
     {
       flag: "🇫🇷",
       name: "France Inter",
@@ -74,7 +72,6 @@ export default async function initRadio(container) {
       name: "NRJ",
       url: "https://scdn.nrjaudio.fm/fr/30001/mp3_128.mp3",
     },
-    // Germany
     {
       flag: "🇩🇪",
       name: "Deutschlandfunk",
@@ -95,7 +92,6 @@ export default async function initRadio(container) {
       name: "Bayern 1",
       url: "https://dispatcher.rndfnk.com/br/br1/obb/mp3/mid",
     },
-    // Spain
     {
       flag: "🇪🇸",
       name: "RNE Radio 1",
@@ -111,7 +107,6 @@ export default async function initRadio(container) {
       name: "Los 40 Principales",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3",
     },
-    // Italy
     {
       flag: "🇮🇹",
       name: "Rai Radio 1",
@@ -132,7 +127,6 @@ export default async function initRadio(container) {
       name: "Radio 105",
       url: "https://icecast.unitedradio.it/Radio105.mp3",
     },
-    // Netherlands
     {
       flag: "🇳🇱",
       name: "NPO Radio 1",
@@ -153,7 +147,6 @@ export default async function initRadio(container) {
       name: "Radio 538",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO538.mp3",
     },
-    // Poland
     {
       flag: "🇵🇱",
       name: "Polskie Radio 1",
@@ -174,7 +167,6 @@ export default async function initRadio(container) {
       name: "Radio Zet",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO_ZET.mp3",
     },
-    // Portugal
     {
       flag: "🇵🇹",
       name: "Antena 1",
@@ -190,7 +182,6 @@ export default async function initRadio(container) {
       name: "RFM",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/RFM.mp3",
     },
-    // Sweden
     {
       flag: "🇸🇪",
       name: "Sveriges Radio P1",
@@ -206,7 +197,6 @@ export default async function initRadio(container) {
       name: "Mix Megapol",
       url: "https://live-bauerse-fm-05-hls-sodra.akamaized.net/secure/1/se/radio28/icecast.audio",
     },
-    // Norway
     {
       flag: "🇳🇴",
       name: "NRK P1",
@@ -222,7 +212,6 @@ export default async function initRadio(container) {
       name: "Radio Norge",
       url: "https://live-bauerno.sharp-stream.com/radionorge_no_mp3",
     },
-    // USA
     {
       flag: "🇺🇸",
       name: "NPR 24",
@@ -238,7 +227,6 @@ export default async function initRadio(container) {
       name: "WNYC New York",
       url: "https://fm939.wnyc.org/wnycfm-web",
     },
-    // Canada
     {
       flag: "🇨🇦",
       name: "CBC Radio One",
@@ -254,7 +242,6 @@ export default async function initRadio(container) {
       name: "ICI Musique",
       url: "https://rcavliveaudio.akamaized.net/hls/live/2006998/M-7QMTL0_MTL/master.m3u8",
     },
-    // Australia
     {
       flag: "🇦🇺",
       name: "ABC Radio Sydney",
@@ -270,7 +257,6 @@ export default async function initRadio(container) {
       name: "Double J",
       url: "https://live-radio01.mediahubaustralia.com/DUBW/mp3/",
     },
-    // New Zealand
     {
       flag: "🇳🇿",
       name: "RNZ National",
@@ -288,9 +274,8 @@ export default async function initRadio(container) {
     },
   ];
 
-  // Extract unique countries with their flags
-  var countries = [];
-  var seen = {};
+  var countries = [],
+    seen = {};
   STATIONS.forEach(function (s) {
     if (!seen[s.flag]) {
       seen[s.flag] = true;
@@ -298,26 +283,27 @@ export default async function initRadio(container) {
     }
   });
 
-  // ---------- Create header row ----------
+  // Header
   const headerRow = document.createElement("div");
   headerRow.className = "radio-header-row";
-
   const title = document.createElement("div");
   title.className = "panel-title";
-  var name =
-    window.LANG && window.LANG.modules && window.LANG.modules.radio
-      ? window.LANG.modules.radio.name
-      : "RADIO";
-  title.innerHTML = '<i class="fa-solid fa-radio"></i> ' + name;
+  title.innerHTML =
+    '<i class="fa-solid fa-radio"></i> ' +
+    t(
+      "modules.radio.name",
+      window.LANG && window.LANG.modules && window.LANG.modules.radio
+        ? window.LANG.modules.radio.name
+        : "RADIO",
+    );
   headerRow.appendChild(title);
 
   const headerActions = document.createElement("div");
   headerActions.className = "radio-header-actions";
-
   const lockToggle = document.createElement("button");
   lockToggle.className = "radio-lock-toggle";
-  const saved = localStorage.getItem("radioLocked");
-  let isLocked = saved !== null ? saved === "true" : true;
+  var saved = localStorage.getItem("radioLocked"),
+    isLocked = saved !== null ? saved === "true" : true;
   function updateLockIcon() {
     lockToggle.innerHTML = isLocked
       ? '<i class="fa-solid fa-lock"></i>'
@@ -326,126 +312,96 @@ export default async function initRadio(container) {
   }
   updateLockIcon();
   headerActions.appendChild(lockToggle);
-
-  const pinBtn = container.querySelector(".pin-btn");
+  var pinBtn = container.querySelector(".pin-btn");
   if (pinBtn) headerActions.appendChild(pinBtn);
-
   headerRow.appendChild(headerActions);
   container.innerHTML = "";
   container.appendChild(headerRow);
 
-  const content = document.createElement("div");
+  var content = document.createElement("div");
   content.className = "radio-content";
   container.appendChild(content);
 
-  // Country filter dropdown
   var storedFlag = "";
   try {
-    var radioSettings = loadSettings();
+    var rs = loadSettings();
     storedFlag =
-      (radioSettings.radio && radioSettings.radio.defaultCountry) ||
+      (rs.radio && rs.radio.defaultCountry) ||
       localStorage.getItem("handiRadioCountry") ||
       "";
   } catch (e) {}
   var selectedFlag = storedFlag;
 
-  content.innerHTML = `
-    <div style="text-align:center;margin-bottom:8px;">
-      <select id="radioCountryFilter" style="padding:6px 10px;border-radius:8px;border:2px solid #cbd5e1;font-size:0.9rem;max-width:100%;">
-        <option value="">— Select country —</option>
-        ${countries
-          .map(function (c) {
-            return '<option value="' + c.flag + '">' + c.flag + "</option>";
-          })
-          .join("")}
-      </select>
-    </div>
-    <div class="radio-top-bar">
-      <canvas id="radio-synth" class="radio-synth"></canvas>
-    </div>
-    <div class="radio-now-playing" id="now-playing">No station playing</div>
-    <div class="radio-scroll-wrapper">
-      <button id="radio-up" class="radio-scroll-btn">▲ Scroll Up</button>
-      <div id="stations-list" class="radio-list"></div>
-      <button id="radio-down" class="radio-scroll-btn">▼ Scroll Down</button>
-    </div>
-    <div class="radio-error" id="radio-error"></div>
-  `;
+  content.innerHTML =
+    '<div style="text-align:center;margin-bottom:8px;"><select id="radioCountryFilter" style="padding:6px 10px;border-radius:8px;border:2px solid #cbd5e1;font-size:0.9rem;max-width:100%;"><option value="">' +
+    t("d_selectCountry", "— Select country —") +
+    "</option>" +
+    countries
+      .map(function (c) {
+        return '<option value="' + c.flag + '">' + c.flag + "</option>";
+      })
+      .join("") +
+    '</select></div><div class="radio-top-bar"><canvas id="radio-synth" class="radio-synth"></canvas></div><div class="radio-now-playing" id="now-playing">' +
+    t("d_noStation", "No station playing") +
+    '</div><div class="radio-scroll-wrapper"><button id="radio-up" class="radio-scroll-btn">▲</button><div id="stations-list" class="radio-list"></div><button id="radio-down" class="radio-scroll-btn">▼</button></div><div class="radio-error" id="radio-error"></div>';
 
-  const countryFilter = content.querySelector("#radioCountryFilter");
-  const list = content.querySelector("#stations-list");
-  const nowPlaying = content.querySelector("#now-playing");
-  const error = content.querySelector("#radio-error");
-  const up = content.querySelector("#radio-up");
-  const down = content.querySelector("#radio-down");
-  const synthCanvas = content.querySelector("#radio-synth");
+  var countryFilter = content.querySelector("#radioCountryFilter"),
+    list = content.querySelector("#stations-list");
+  var nowPlaying = content.querySelector("#now-playing"),
+    error = content.querySelector("#radio-error");
+  var up = content.querySelector("#radio-up"),
+    down = content.querySelector("#radio-down");
+  var synthCanvas = content.querySelector("#radio-synth");
   if (synthCanvas) synthCanvas.style.display = "none";
-
-  // Set saved country
   if (selectedFlag) countryFilter.value = selectedFlag;
 
-  let currentAudio = null;
-  let stopVisualiser = null;
-  let activeStationItem = null;
-  let activeStationName = null;
+  var currentAudio = null,
+    stopVisualiser = null,
+    activeStationItem = null,
+    activeStationName = null;
 
-  // Render stations for selected country
   function renderStations() {
     list.innerHTML = "";
     if (!selectedFlag) {
-      var name =
-        window.LANG && window.LANG.modules && window.LANG.modules.radio
-          ? window.LANG.modules.radio.name
-          : "RADIO";
       list.innerHTML =
-        '<div class="module-empty" style="padding:20px;text-align:center;"><i class="fa-solid fa-radio"></i><p>Select a country above to browse stations</p></div>';
-      nowPlaying.innerText = "No station playing";
+        '<div class="module-empty" style="padding:20px;text-align:center;"><i class="fa-solid fa-radio"></i><p>' +
+        t("d_browseStations", "Select a country above to browse stations") +
+        "</p></div>";
+      nowPlaying.innerText = t("d_noStation", "No station playing");
       return;
     }
-    var filtered = STATIONS.filter(function (s) {
+    STATIONS.filter(function (s) {
       return s.flag === selectedFlag;
-    });
-
-    filtered.forEach(function (station) {
-      const stationDiv = document.createElement("div");
-      stationDiv.className = "radio-station";
-      stationDiv.style.display = "flex";
-      stationDiv.style.alignItems = "center";
-      stationDiv.style.gap = "8px";
-
-      var flagSpan = document.createElement("span");
-      flagSpan.style.fontSize = "1.2rem";
-      flagSpan.textContent = station.flag;
-
-      const playIcon = document.createElement("span");
-      playIcon.className = "radio-play-btn";
-      playIcon.innerHTML = '<i class="fa-solid fa-play"></i>';
-
-      const nameSpan = document.createElement("span");
-      nameSpan.textContent = station.name;
-      nameSpan.style.flex = "1";
-
-      stationDiv.appendChild(flagSpan);
-      stationDiv.appendChild(playIcon);
-      stationDiv.appendChild(nameSpan);
-
-      stationDiv.addEventListener("click", function (e) {
+    }).forEach(function (station) {
+      var d = document.createElement("div");
+      d.className = "radio-station";
+      d.style.cssText = "display:flex;align-items:center;gap:8px;";
+      var fs = document.createElement("span");
+      fs.style.fontSize = "1.2rem";
+      fs.textContent = station.flag;
+      var pi = document.createElement("span");
+      pi.className = "radio-play-btn";
+      pi.innerHTML = '<i class="fa-solid fa-play"></i>';
+      var ns = document.createElement("span");
+      ns.textContent = station.name;
+      ns.style.flex = "1";
+      d.appendChild(fs);
+      d.appendChild(pi);
+      d.appendChild(ns);
+      d.addEventListener("click", function (e) {
         if (e.target.closest(".radio-lock-toggle, .pin-btn")) return;
-        playStation(station.url, station.name, stationDiv, playIcon);
+        playStation(station.url, station.name, d, pi);
       });
-
-      stationDiv.stationData = {
+      d.stationData = {
         url: station.url,
         name: station.name,
-        element: stationDiv,
-        playBtn: playIcon,
+        element: d,
+        playBtn: pi,
       };
-      list.appendChild(stationDiv);
+      list.appendChild(d);
     });
   }
-
   renderStations();
-
   countryFilter.addEventListener("change", function () {
     selectedFlag = this.value;
     try {
@@ -455,7 +411,6 @@ export default async function initRadio(container) {
     renderStations();
   });
 
-  // --- GLOBAL MUTE ---
   function applyGlobalMute(muted) {
     if (currentAudio) currentAudio.muted = muted;
   }
@@ -464,47 +419,47 @@ export default async function initRadio(container) {
   });
   applyGlobalMute(localStorage.getItem("globalMute") === "true");
 
-  // --- Visualiser ---
   function startFakeVisualiser(canvas) {
     if (!canvas) return null;
     canvas.style.display = "block";
-    let animationId = null;
-    const ctx = canvas.getContext("2d");
-    function resizeCanvas() {
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width;
-      canvas.height = rect.height;
+    var aid = null,
+      ctx = canvas.getContext("2d");
+    function rc() {
+      var r = canvas.getBoundingClientRect();
+      canvas.width = r.width;
+      canvas.height = r.height;
     }
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-    let time = 0;
+    rc();
+    window.addEventListener("resize", rc);
+    var tm = 0;
     function draw() {
-      animationId = requestAnimationFrame(draw);
-      time += 0.05;
-      const width = canvas.width,
-        height = canvas.height;
-      if (width === 0 || height === 0) return;
-      ctx.clearRect(0, 0, width, height);
-      const barCount = 32,
-        barWidth = width / barCount;
-      for (let i = 0; i < barCount; i++) {
-        const value = (Math.sin(time + i * 0.3) + 1) / 2;
-        const barHeight =
-          height * Math.min(0.9, value * 0.7 + Math.random() * 0.3);
-        const hue =
+      aid = requestAnimationFrame(draw);
+      tm += 0.05;
+      var w = canvas.width,
+        h = canvas.height;
+      if (!w || !h) return;
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0, bc = 32, bw = w / bc; i < bc; i++) {
+        var bh =
+          h *
+          Math.min(
+            0.9,
+            ((Math.sin(tm + i * 0.3) + 1) / 2) * 0.7 + Math.random() * 0.3,
+          );
+        var hue =
           parseInt(
             getComputedStyle(document.body).getPropertyValue(
               "--music-synth-hue",
             ),
           ) || 200;
         ctx.fillStyle = "hsl(" + hue + ", 80%, 55%)";
-        ctx.fillRect(i * barWidth, height - barHeight, barWidth - 1, barHeight);
+        ctx.fillRect(i * bw, h - bh, bw - 1, bh);
       }
     }
     draw();
     return function () {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener("resize", resizeCanvas);
+      cancelAnimationFrame(aid);
+      window.removeEventListener("resize", rc);
     };
   }
 
@@ -514,8 +469,8 @@ export default async function initRadio(container) {
       stopVisualiser = null;
     }
     if (synthCanvas) {
-      const ctx = synthCanvas.getContext("2d");
-      if (ctx) ctx.clearRect(0, 0, synthCanvas.width, synthCanvas.height);
+      var sc = synthCanvas.getContext("2d");
+      if (sc) sc.clearRect(0, 0, synthCanvas.width, synthCanvas.height);
       synthCanvas.style.display = "none";
     }
   }
@@ -531,13 +486,13 @@ export default async function initRadio(container) {
       currentAudio = null;
     }
     stopVisualiserAndClear();
-    nowPlaying.innerText = "No station playing";
+    nowPlaying.innerText = t("d_noStation", "No station playing");
     error.innerText = "";
     if (resetIcon !== false && activeStationItem) {
-      const playBtn = activeStationItem.querySelector(".radio-play-btn");
-      if (playBtn) {
-        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-        playBtn.classList.remove("playing");
+      var pb = activeStationItem.querySelector(".radio-play-btn");
+      if (pb) {
+        pb.innerHTML = '<i class="fa-solid fa-play"></i>';
+        pb.classList.remove("playing");
       }
       activeStationItem.classList.remove("active-station");
       activeStationItem = null;
@@ -545,57 +500,52 @@ export default async function initRadio(container) {
     }
   }
 
-  function playStation(url, stationName, stationItem, playButton) {
+  function playStation(url, sName, sItem, sBtn) {
     if (isLocked) {
-      error.innerText = "Radio is locked – unlock to play";
+      error.innerText = t("d_radioLocked", "Radio is locked – unlock to play");
       return;
     }
-    if (
-      currentAudio &&
-      activeStationName === stationName &&
-      !currentAudio.paused
-    ) {
+    if (currentAudio && activeStationName === sName && !currentAudio.paused) {
       currentAudio.pause();
-      nowPlaying.innerText = "⏸ Paused: " + stationName;
-      if (playButton) {
-        playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
-        playButton.classList.remove("playing");
+      nowPlaying.innerText = "⏸ " + t("d_paused", "Paused:") + " " + sName;
+      if (sBtn) {
+        sBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+        sBtn.classList.remove("playing");
       }
       stopVisualiserAndClear();
       return;
     }
     if (currentAudio) stopPlayback(true);
-    nowPlaying.innerText = "Connecting to " + stationName + "...";
+    nowPlaying.innerText =
+      t("d_connecting", "Connecting to") + " " + sName + "...";
     error.innerText = "";
     try {
-      const audio = document.createElement("audio");
-      audio.src = url;
-      audio.muted = localStorage.getItem("globalMute") === "true";
-      currentAudio = audio;
-      const playPromise = audio.play();
-      if (playPromise === undefined) {
-        onPlaySuccess(audio, stationName, stationItem, playButton);
+      var a = document.createElement("audio");
+      a.src = url;
+      a.muted = localStorage.getItem("globalMute") === "true";
+      currentAudio = a;
+      var pp = a.play();
+      if (pp === undefined) {
+        os(a, sName, sItem, sBtn);
       } else {
-        playPromise
-          .then(function () {
-            onPlaySuccess(audio, stationName, stationItem, playButton);
-          })
-          .catch(function (err) {
-            onPlayError(audio, err);
-          });
+        pp.then(function () {
+          os(a, sName, sItem, sBtn);
+        }).catch(function (er) {
+          oe(a, er);
+        });
       }
-      audio.onerror = function () {
-        onPlayError(audio, new Error("Stream error"));
+      a.onerror = function () {
+        oe(a, new Error("Stream error"));
       };
     } catch (err) {
       console.error(err);
-      error.innerText = "Unable to play stream";
+      error.innerText = t("d_playbackFailed", "Unable to play stream");
       stopPlayback(true);
     }
-
-    function onPlaySuccess(audio, name, item, btn) {
-      if (audio !== currentAudio) return;
-      nowPlaying.innerText = "▶ Now playing: " + name;
+    function os(a2, n2, i2, b2) {
+      if (a2 !== currentAudio) return;
+      nowPlaying.innerText =
+        "▶ " + t("d_nowPlaying", "Now playing:") + " " + n2;
       document.querySelectorAll(".radio-station").forEach(function (el) {
         var b = el.querySelector(".radio-play-btn");
         if (b) {
@@ -604,59 +554,49 @@ export default async function initRadio(container) {
         }
         el.classList.remove("active-station");
       });
-      if (btn) {
-        btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-        btn.classList.add("playing");
+      if (b2) {
+        b2.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        b2.classList.add("playing");
       }
-      item.classList.add("active-station");
-      activeStationItem = item;
-      activeStationName = name;
+      i2.classList.add("active-station");
+      activeStationItem = i2;
+      activeStationName = n2;
       if (!isLocked) stopVisualiser = startFakeVisualiser(synthCanvas);
     }
-    function onPlayError(audio, err) {
-      if (audio !== currentAudio) return;
+    function oe(a2, err) {
+      if (a2 !== currentAudio) return;
       console.warn("Play error:", err);
       error.innerText =
         err.message === "Stream error"
-          ? "Stream unavailable"
-          : "Cannot play this station";
-      nowPlaying.innerText = "Playback failed";
+          ? t("d_streamUnavailable", "Stream unavailable")
+          : t("d_cannotPlay", "Cannot play this station");
+      nowPlaying.innerText = t("d_playbackFailed", "Playback failed");
       stopPlayback(true);
     }
   }
 
   function applyLockState() {
     if (isLocked) stopPlayback(true);
-    list.querySelectorAll(".radio-station").forEach(function (div) {
-      if (isLocked) {
-        div.style.pointerEvents = "none";
-        div.style.opacity = "0.6";
-      } else {
-        div.style.pointerEvents = "";
-        div.style.opacity = "";
-      }
+    list.querySelectorAll(".radio-station").forEach(function (d) {
+      d.style.pointerEvents = isLocked ? "none" : "";
+      d.style.opacity = isLocked ? "0.6" : "";
     });
-    [up, down].forEach(function (btn) {
-      if (isLocked) {
-        btn.disabled = true;
-        btn.style.opacity = "0.5";
-        btn.style.cursor = "not-allowed";
-      } else {
-        btn.disabled = false;
-        btn.style.opacity = "";
-        btn.style.cursor = "";
-      }
+    [up, down].forEach(function (b) {
+      b.disabled = isLocked;
+      b.style.opacity = isLocked ? "0.5" : "";
+      b.style.cursor = isLocked ? "not-allowed" : "";
     });
     if (isLocked) {
       stopVisualiserAndClear();
-      nowPlaying.innerText = "Radio locked";
+      nowPlaying.innerText = t("d_radioLockedShort", "Radio locked");
       error.innerText = "";
     } else {
       if (activeStationItem && currentAudio && !currentAudio.paused) {
         stopVisualiser = startFakeVisualiser(synthCanvas);
-        nowPlaying.innerText = "▶ Now playing: " + activeStationName;
+        nowPlaying.innerText =
+          "▶ " + t("d_nowPlaying", "Now playing:") + " " + activeStationName;
       } else if (!currentAudio || currentAudio.paused) {
-        nowPlaying.innerText = "No station playing";
+        nowPlaying.innerText = t("d_noStation", "No station playing");
       }
       error.innerText = "";
     }
@@ -669,14 +609,12 @@ export default async function initRadio(container) {
     updateLockIcon();
     applyLockState();
   });
-
   up.addEventListener("click", function () {
     list.scrollBy({ top: -300, behavior: "smooth" });
   });
   down.addEventListener("click", function () {
     list.scrollBy({ top: 300, behavior: "smooth" });
   });
-
   applyLockState();
 
   return function () {
