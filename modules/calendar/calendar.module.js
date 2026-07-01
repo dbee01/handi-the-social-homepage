@@ -547,7 +547,7 @@ export default async function initCalendar(container) {
     }
 
     content.innerHTML =
-      '<div class="calendar-loading"><i class="fa-solid fa-spinner fa-spin"></i> " + t("d_loadingCalendar", "Loading calendar...") + "</div>';
+      '<div class="calendar-loading"><i class="fa-solid fa-spinner fa-spin"></i> ' + t("d_loadingCalendar", "Loading calendar...") + '</div>';
 
     try {
       const encodedUrl = encodeURIComponent(calendarUrl);
@@ -587,9 +587,9 @@ export default async function initCalendar(container) {
       content.innerHTML = `
                 <div class="calendar-error">
                     <i class="fa-solid fa-exclamation-triangle"></i>
-                    <p>" + t("d_calendarFailed", "Failed to load calendar.") + "</p>
+                    <p>t("d_calendarFailed", "Failed to load calendar.") + '</p>'
                     <small>${escapeHtml(err.message)}</small>
-                    <button id="calendarRetryBtn" class="calendar-retry-btn">" + t("d_retry", "Retry") + " </button>
+                    <button id="calendarRetryBtn" class="calendar-retry-btn">t("d_retry", "Retry") + ' </button>'
                 </div>
             `;
       const retryBtn = content.querySelector("#calendarRetryBtn");
@@ -603,8 +603,8 @@ export default async function initCalendar(container) {
 
     let html = `
             <div class="calendar-today-header">
-                <span><i class="fa-regular fa-sun"></i> " + t("d_todaysEvents", "Today's Events") + "</span>
-                <span class="calendar-notification-badge">🔔 ${notificationMinutes} " + t("d_minWarning", "min warning") + "</span>
+                <span><i class="fa-regular fa-sun"></i> t("d_todaysEvents", "Today's Events") + '</span>'
+                <span class="calendar-notification-badge">🔔 ${notificationMinutes} t("d_minWarning", "min warning") + '</span>'
             </div>
         `;
 
@@ -612,11 +612,11 @@ export default async function initCalendar(container) {
       html += `
                 <div class="calendar-empty">
                     <i class="fa-regular fa-calendar-check"></i>
-                    <p style="margin-top: 12px;">" + t("d_noEventsToday", "No events scheduled for today.") + "</p>
+                    <p style="margin-top: 12px;">t("d_noEventsToday", "No events scheduled for today.") + '</p>'
             `;
 
       if (tomorrowEvents.length > 0) {
-        html += `<p>📅 " + t("d_youHave", "You have") + " ${tomorrowEvents.length} " + t("d_eventsTomorrow", "event(s) tomorrow.") + "</p>`;
+        html += `<p>📅 t("d_youHave", "You have") + ' ${tomorrowEvents.length} t("d_eventsTomorrow", "event(s) tomorrow.") + '</p>`;
       }
 
       html += `</div>`;
@@ -630,7 +630,7 @@ export default async function initCalendar(container) {
                             <i class="fa-regular fa-clock"></i> ${escapeHtml(timeStr)}
                         </div>
                         <div class="calendar-event-details">
-                            <div class="calendar-event-title">${escapeHtml(event.summary || "" + t("d_untitledEvent", "Untitled Event") + "")}</div>
+                            <div class="calendar-event-title">${escapeHtml(event.summary || t("d_untitledEvent", "Untitled Event"))}</div>
                             ${event.location ? `<div class="calendar-event-location"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(event.location)}</div>` : ""}
                             ${event.description ? `<div class="calendar-event-desc">${escapeHtml(event.description.substring(0, 100))}${event.description.length > 100 ? "…" : ""}</div>` : ""}
                         </div>
@@ -644,12 +644,12 @@ export default async function initCalendar(container) {
     html += `
             <div class="calendar-sync-info">
                 <span>
-                    <i class="fa-regular fa-clock"></i> " + t("d_lastSynced", "Last synced:") + " ${formatSyncTime()}
-                    ${totalEvents > 0 ? ` | ${totalEvents} " + t("d_totalEvents", "total events in feed") + "` : ""}
+                    <i class="fa-regular fa-clock"></i> t("d_lastSynced", "Last synced:") + ' ${formatSyncTime()}
+                    ${totalEvents > 0 ? ` | ${totalEvents} t("d_totalEvents", "total events in feed") + '` : ""}
                 </span>
                 <div style="display:flex;gap:8px;">
-                    <button id="calendarChangeUrlBtn" class="calendar-refresh-btn" style="font-size:0.8rem;">🔗 " + t("d_changeUrl", "Change URL") + "</button>
-                    <button id="calendarRefreshBtn" class="calendar-refresh-btn">⟳ " + t("d_refresh", "Refresh") + "</button>
+                    <button id="calendarChangeUrlBtn" class="calendar-refresh-btn" style="font-size:0.8rem;">🔗 t("d_changeUrl", "Change URL") + '</button>
+                    <button id="calendarRefreshBtn" class="calendar-refresh-btn">⟳ t("d_refresh", "Refresh") + '</button>
                 </div>
             </div>
         `;

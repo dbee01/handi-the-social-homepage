@@ -73,13 +73,10 @@ export default async function initBus(container) {
   }
 
   if (routesData.length === 0) {
-    content.innerHTML =
-      `
+    content.innerHTML = `
       <div class="module-empty">
         <i class="fa-solid fa-bus"></i>
-        <p>` +
-      t("d_noBusRoutes", "No bus routes configured.") +
-      `</p>
+        <p>${t("d_noBusRoutes", "No bus routes configured.")}</p>
         <button class="bus-settings-btn settings-link-btn">
           <i class="fa-solid fa-gear"></i> ${t("d_configureSettings", "Configure in Settings")}
         </button>
@@ -137,20 +134,35 @@ export default async function initBus(container) {
     const depVisible = showingDeparture ? "" : "bus-direction-hidden";
     const retVisible = showingDeparture ? "bus-direction-hidden" : "";
 
-    content.innerHTML = `
+    content.innerHTML =
+      `
       ${tabsHtml}
       <div class="bus-timestamp">
         <i class="fa-solid fa-sync-alt"></i> <span class="bus-time">--:--:--</span>
-        <span class="bus-footnote">Route ${r.route_short}</span>
+        <span class="bus-footnote">Route ` +
+      r.route_short +
+      `</span>
       </div>
-      <div class="bus-direction ${depVisible}" id="bus-direction-dep">
-        <h4 class="bus-stop-label">📍 " + t("d_departure", "Departure") + "</h4>
-        <div class="bus-stop-name">${escapeHtml(r.departure_stop_name)}</div>
+      <div class="bus-direction ` +
+      depVisible +
+      `" id="bus-direction-dep">
+        <h4 class="bus-stop-label">📍 ` +
+      t("d_departure", "Departure") +
+      `</h4>
+        <div class="bus-stop-name">` +
+      escapeHtml(r.departure_stop_name) +
+      `</div>
         <div class="bus-departures"></div>
       </div>
-      <div class="bus-direction ${retVisible}" id="bus-direction-ret">
-        <h4 class="bus-stop-label">📍 " + t("d_return", "Return") + "</h4>
-        <div class="bus-stop-name">${escapeHtml(r.return_stop_name)}</div>
+      <div class="bus-direction ` +
+      retVisible +
+      `" id="bus-direction-ret">
+        <h4 class="bus-stop-label">📍 ` +
+      t("d_return", "Return") +
+      `</h4>
+        <div class="bus-stop-name">` +
+      escapeHtml(r.return_stop_name) +
+      `</div>
         <div class="bus-returns"></div>
       </div>
       <div class="bus-switch-container"></div>
@@ -162,7 +174,8 @@ export default async function initBus(container) {
       const btn = document.createElement("button");
       btn.className = "bus-switch-btn";
       btn.innerHTML =
-        '<i class="fa-solid fa-arrow-right-arrow-left"></i> " + t("d_changeDirection", "Change Direction") + "';
+        '<i class="fa-solid fa-arrow-right-arrow-left"></i>' +
+        t("d_changeDirection", "Change Direction");
       btn.addEventListener("click", () => {
         showingDeparture = !showingDeparture;
         const depDiv = document.getElementById("bus-direction-dep");
@@ -193,7 +206,9 @@ export default async function initBus(container) {
 
     if (!data || data.length === 0) {
       list.innerHTML =
-        '<div class="bus-no-buses">" + t("d_noUpcoming", "No upcoming") + "</div>';
+        '<div class="bus-no-buses">' +
+        t("d_noUpcoming", "No upcoming") +
+        "</div>";
       return;
     }
 
