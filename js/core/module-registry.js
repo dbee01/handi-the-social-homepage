@@ -54,8 +54,8 @@ window.HANDI_MODULES = [
     name: "Calendar",
     icon: "📅",
     desc: "Reminders",
-    tier: "premium",
-    defaultEnabled: 2,
+    tier: "free",
+    defaultEnabled: 0,
     settingsConfig: { url: "", notificationMinutes: 30 },
   },
   {

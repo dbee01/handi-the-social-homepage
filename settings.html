@@ -699,6 +699,44 @@
                         />
                     </div>
                 </div>
+
+            <!-- Calendar Module -->
+            <div class="module-card" data-module="calendar">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-regular fa-calendar"></i>
+                        <h3>Calendar (Proton ICS)</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="module-config">
+                <div class="config-field">
+                    <label>Proton Calendar ICS Link:</label
+                    ><input
+                        type="text"
+                        id="calendarUrl"
+                        placeholder="Paste your ICS link here"
+                    />
+                </div>
+                <div class="config-field">
+                    <label>Notification time (mins):</label
+                    ><select id="calendarNotificationMinutes">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15" selected>15</option>
+                        <option value="30">30</option>
+                        <option value="60">60</option>
+                    </select>
+                </div>
+                <small
+                    >Get ICS link from Proton Calendar → Settings → Calendars →
+                    "Link for viewing"</small
+                >
+            </div>
+        </div>
             </div>
 
             <!-- ============================================================ -->
@@ -1011,44 +1049,6 @@
                     >
                 </div>
             </div>
-
-            <!-- Calendar Module -->
-            <div class="module-card" data-module="calendar">
-                <div class="module-header">
-                    <div class="module-title">
-                        <i class="fa-regular fa-calendar"></i>
-                        <h3>Calendar (Proton ICS)</h3>
-                    </div>
-                    <div class="toggle-switch">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="module-config">
-                <div class="config-field">
-                    <label>Proton Calendar ICS Link:</label
-                    ><input
-                        type="text"
-                        id="calendarUrl"
-                        placeholder="Paste your ICS link here"
-                    />
-                </div>
-                <div class="config-field">
-                    <label>Notification time (mins):</label
-                    ><select id="calendarNotificationMinutes">
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="15" selected>15</option>
-                        <option value="30">30</option>
-                        <option value="60">60</option>
-                    </select>
-                </div>
-                <small
-                    >Get ICS link from Proton Calendar → Settings → Calendars →
-                    "Link for viewing"</small
-                >
-            </div>
-        </div>
 
         <div class="brand">
             <span
