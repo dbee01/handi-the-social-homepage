@@ -315,9 +315,9 @@ export default async function initChat(container) {
       content.innerHTML = `
         <div class="module-empty">
           <i class="fa-solid fa-comments"></i>
-          <p>" + t("d_noChatRooms", "No chat rooms configured.") + "</p>
+          <p>${t("d_noChatRooms", "No chat rooms configured.")}</p>
           <button id="chatSettingsBtn" class="settings-link-btn" style="margin-top:12px;">
-            <i class="fa-solid fa-gear"></i> " + t("d_configureSettings", "Configure in Settings") + "
+            <i class="fa-solid fa-gear"></i> ${t("d_configureSettings", "Configure in Settings")}
           </button>
         </div>`;
       content.querySelector("#chatSettingsBtn").onclick = () =>
@@ -326,7 +326,9 @@ export default async function initChat(container) {
     }
 
     content.innerHTML =
-      '<div class="chat-loading"><i class="fa-solid fa-spinner fa-spin"></i> " + t("d_loadingMatrix", "Loading Matrix rooms...") + "</div>';
+      '<div class="chat-loading"><i class="fa-solid fa-spinner fa-spin"></i> ' +
+      t("d_loadingMatrix", "Loading Matrix rooms...") +
+      "</div>";
 
     const results = [];
     for (let i = 0; i < validRooms.length; i++) {
@@ -367,9 +369,9 @@ export default async function initChat(container) {
       content.innerHTML = `
         <div class="module-empty">
           <i class="fa-solid fa-comments"></i>
-          <p>" + t("d_matrixNotConfigured", "Matrix chat not configured.") + "</p>
+          <p>${t("d_matrixNotConfigured", "Matrix chat not configured.")}</p>
           <button id="chatSettingsBtn" class="settings-link-btn" style="margin-top:12px;">
-            <i class="fa-solid fa-gear"></i> " + t("d_configureSettings", "Configure in Settings") + "
+            <i class="fa-solid fa-gear"></i> ${t("d_configureSettings", "Configure in Settings")}
           </button>
         </div>`;
       content.querySelector("#chatSettingsBtn").onclick = () =>

@@ -524,7 +524,7 @@ export default async function initCalendar(container) {
         t("d_pasteIcal", "Paste iCal URL...") +
         `" style="padding:8px 12px;border-radius:8px;border:2px solid #cbd5e1;font-size:0.95rem;min-width:240px;">
             <button id="calendarSaveBtn" class="settings-link-btn">
-              <i class="fa-solid fa-check"></i> Save
+              <i class="fa-solid fa-check"></i> ${t("d_save", "Save")}
             </button>
           </div>
         </div>
@@ -547,7 +547,9 @@ export default async function initCalendar(container) {
     }
 
     content.innerHTML =
-      '<div class="calendar-loading"><i class="fa-solid fa-spinner fa-spin"></i> ' + t("d_loadingCalendar", "Loading calendar...") + '</div>';
+      '<div class="calendar-loading"><i class="fa-solid fa-spinner fa-spin"></i> ' +
+      t("d_loadingCalendar", "Loading calendar...") +
+      "</div>";
 
     try {
       const encodedUrl = encodeURIComponent(calendarUrl);
@@ -587,9 +589,9 @@ export default async function initCalendar(container) {
       content.innerHTML = `
                 <div class="calendar-error">
                     <i class="fa-solid fa-exclamation-triangle"></i>
-                    <p>t("d_calendarFailed", "Failed to load calendar.") + '</p>'
+                    <p>${t("d_calendarFailed", "Failed to load calendar.")}</p>
                     <small>${escapeHtml(err.message)}</small>
-                    <button id="calendarRetryBtn" class="calendar-retry-btn">t("d_retry", "Retry") + ' </button>'
+                    <button id="calendarRetryBtn" class="calendar-retry-btn">${t("d_retry", "Retry")}</button>
                 </div>
             `;
       const retryBtn = content.querySelector("#calendarRetryBtn");
@@ -598,61 +600,95 @@ export default async function initCalendar(container) {
   }
 
   function renderCalendar(events, tomorrowEvents, totalEvents) {
-    // Store allEvents for periodic alert re-checking
-    content._allEvents = null; // This is set in fetchCalendar after render
+    content._allEvents = null;
 
-    let html = `
-            <div class="calendar-today-header">
-                <span><i class="fa-regular fa-sun"></i> t("d_todaysEvents", "Today's Events") + '</span>'
-                <span class="calendar-notification-badge">🔔 ${notificationMinutes} t("d_minWarning", "min warning") + '</span>'
-            </div>
-        `;
+    var html = "";
+    html += '<div class="calendar-today-header">';
+    html +=
+      '<span><i class="fa-regular fa-sun"></i> ' +
+      t("d_todaysEvents", "Today's Events") +
+      "</span>";
+    html +=
+      '<span class="calendar-notification-badge">🔔 ' +
+      notificationMinutes +
+      " " +
+      t("d_minWarning", "min warning") +
+      "</span>";
+    html += "</div>";
 
     if (events.length === 0) {
-      html += `
-                <div class="calendar-empty">
-                    <i class="fa-regular fa-calendar-check"></i>
-                    <p style="margin-top: 12px;">t("d_noEventsToday", "No events scheduled for today.") + '</p>'
-            `;
+      html += '<div class="calendar-empty">';
+      html += '<i class="fa-regular fa-calendar-check"></i>';
+      html +=
+        '<p style="margin-top:12px;">' +
+        t("d_noEventsToday", "No events scheduled for today.") +
+        "</p>";
 
       if (tomorrowEvents.length > 0) {
-        html += `<p>📅 t("d_youHave", "You have") + ' ${tomorrowEvents.length} t("d_eventsTomorrow", "event(s) tomorrow.") + '</p>`;
+        html +=
+          "<p>📅 " +
+          t("d_youHave", "You have") +
+          " " +
+          tomorrowEvents.length +
+          " " +
+          t("d_eventsTomorrow", "event(s) tomorrow.") +
+          "</p>";
       }
 
-      html += `</div>`;
+      html += "</div>";
     } else {
-      html += `<div class="calendar-events-list">`;
-      for (const event of events) {
-        const timeStr = formatEventTime(event);
-        html += `
-                    <div class="calendar-event-card" >
-                        <div class="calendar-event-time">
-                            <i class="fa-regular fa-clock"></i> ${escapeHtml(timeStr)}
-                        </div>
-                        <div class="calendar-event-details">
-                            <div class="calendar-event-title">${escapeHtml(event.summary || t("d_untitledEvent", "Untitled Event"))}</div>
-                            ${event.location ? `<div class="calendar-event-location"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(event.location)}</div>` : ""}
-                            ${event.description ? `<div class="calendar-event-desc">${escapeHtml(event.description.substring(0, 100))}${event.description.length > 100 ? "…" : ""}</div>` : ""}
-                        </div>
-                    </div>
-                `;
+      html += '<div class="calendar-events-list">';
+      for (var i = 0; i < events.length; i++) {
+        var event = events[i];
+        var timeStr = formatEventTime(event);
+        html += '<div class="calendar-event-card">';
+        html += '<div class="calendar-event-time">';
+        html += '<i class="fa-regular fa-clock"></i> ' + escapeHtml(timeStr);
+        html += "</div>";
+        html += '<div class="calendar-event-details">';
+        html +=
+          '<div class="calendar-event-title">' +
+          escapeHtml(event.summary || t("d_untitledEvent", "Untitled Event")) +
+          "</div>";
+        if (event.location)
+          html +=
+            '<div class="calendar-event-location"><i class="fa-solid fa-location-dot"></i> ' +
+            escapeHtml(event.location) +
+            "</div>";
+        if (event.description)
+          html +=
+            '<div class="calendar-event-desc">' +
+            escapeHtml(event.description.substring(0, 100)) +
+            (event.description.length > 100 ? "…" : "") +
+            "</div>";
+        html += "</div>";
+        html += "</div>";
       }
-      html += `</div>`;
+      html += "</div>";
     }
 
-    // Sync info and refresh button
-    html += `
-            <div class="calendar-sync-info">
-                <span>
-                    <i class="fa-regular fa-clock"></i> t("d_lastSynced", "Last synced:") + ' ${formatSyncTime()}
-                    ${totalEvents > 0 ? ` | ${totalEvents} t("d_totalEvents", "total events in feed") + '` : ""}
-                </span>
-                <div style="display:flex;gap:8px;">
-                    <button id="calendarChangeUrlBtn" class="calendar-refresh-btn" style="font-size:0.8rem;">🔗 t("d_changeUrl", "Change URL") + '</button>
-                    <button id="calendarRefreshBtn" class="calendar-refresh-btn">⟳ t("d_refresh", "Refresh") + '</button>
-                </div>
-            </div>
-        `;
+    html += '<div class="calendar-sync-info">';
+    html += "<span>";
+    html +=
+      '<i class="fa-regular fa-clock"></i> ' +
+      t("d_lastSynced", "Last synced:") +
+      " " +
+      formatSyncTime();
+    if (totalEvents > 0)
+      html +=
+        " | " + totalEvents + " " + t("d_totalEvents", "total events in feed");
+    html += "</span>";
+    html += '<div style="display:flex;gap:8px;">';
+    html +=
+      '<button id="calendarChangeUrlBtn" class="calendar-refresh-btn" style="font-size:0.8rem;">🔗 ' +
+      t("d_changeUrl", "Change URL") +
+      "</button>";
+    html +=
+      '<button id="calendarRefreshBtn" class="calendar-refresh-btn">⟳ ' +
+      t("d_refresh", "Refresh") +
+      "</button>";
+    html += "</div>";
+    html += "</div>";
 
     content.innerHTML = html;
 

@@ -1136,6 +1136,7 @@
                     freeContainer.innerHTML = "";
                     FREE_MODULES.forEach((mod) => {
                         let state = enabled[mod.id];
+                        if (state === 3) return; // hidden — skip entirely
                         let isActive = state === 1;
                         let isDisabled = state === 2;
                         let div = document.createElement("div");
@@ -1188,6 +1189,7 @@
                     premiumContainer.innerHTML = "";
                     PREMIUM_MODULES.forEach((mod) => {
                         let state = enabled[mod.id];
+                        if (state === 3) return; // hidden — skip entirely
                         let isActive = state === 1;
                         let isDisabled = state === 2;
                         let div = document.createElement("div");

@@ -330,7 +330,9 @@ export default async function initRadio(container) {
       localStorage.getItem("handiRadioCountry") ||
       "";
   } catch (e) {}
-  var selectedFlag = storedFlag;
+  var selectedFlag = "";
+
+  // Always show selector, ignore saved country
 
   content.innerHTML =
     '<div style="text-align:center;margin-bottom:8px;"><select id="radioCountryFilter" style="padding:6px 10px;border-radius:8px;border:2px solid #cbd5e1;font-size:0.9rem;max-width:100%;"><option value="">' +
@@ -353,7 +355,6 @@ export default async function initRadio(container) {
     down = content.querySelector("#radio-down");
   var synthCanvas = content.querySelector("#radio-synth");
   if (synthCanvas) synthCanvas.style.display = "none";
-  if (selectedFlag) countryFilter.value = selectedFlag;
 
   var currentAudio = null,
     stopVisualiser = null,

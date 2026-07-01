@@ -47,7 +47,7 @@ window.HANDI_MODULES = [
     desc: "Mastodon feed",
     tier: "free",
     defaultEnabled: 1,
-    settingsConfig: { instance: "https://mastodon.ie", limit: 4 },
+    settingsConfig: { instance: "https://mastodon.ie", limit: 3 },
   },
   {
     id: "calendar",
@@ -90,7 +90,7 @@ window.HANDI_MODULES = [
     icon: "🚌",
     desc: "Bus times",
     tier: "premium",
-    defaultEnabled: 2,
+    defaultEnabled: 3,
     settingsConfig: { routeIds: "", stopIds: "" },
   },
   {
@@ -99,7 +99,7 @@ window.HANDI_MODULES = [
     icon: "📍",
     desc: "Share location",
     tier: "premium",
-    defaultEnabled: 2,
+    defaultEnabled: 3,
     settingsConfig: { contacts: [] },
   },
 ];
@@ -159,6 +159,7 @@ const MMR_KEY = "handiMasterModules";
 window.MMR_OFF = 0;
 window.MMR_ON = 1;
 window.MMR_DISABLED = 2;
+window.MMR_HIDDEN = 3; // completely hidden — not shown in selector, dashboard, or settings
 
 // getMMR() -- reads the live MMR, seeding from registry defaults if absent
 window.getMMR = function () {

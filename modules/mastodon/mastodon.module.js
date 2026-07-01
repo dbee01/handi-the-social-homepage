@@ -55,7 +55,7 @@ export default async function initMastodon(container) {
 
   const STORAGE_KEY = "handiMastodonServer";
   const settings = loadSettings();
-  const limit = settings.social?.limit || 6;
+  const limit = settings.social?.limit || 3;
   let instance = settings.social?.instance || "";
 
   if (!instance) {

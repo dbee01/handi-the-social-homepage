@@ -246,6 +246,7 @@ export default async function initNews(container) {
             (item.querySelector("description") &&
               item.querySelector("description").textContent) ||
             "";
+          description = description.replace(/<[^>]*>/g, "");
           imageUrl = extractImageFromEntry(item, description);
         } else {
           artTitle =

@@ -309,15 +309,7 @@
                 <div class="module-config">
                     <div class="config-field">
                         <label>Location:</label
-                        ><input type="text" id="weatherLocation" value="Cork" />
-                    </div>
-                    <div class="config-field">
-                        <label>Country:</label
-                        ><select id="weatherCountry">
-                            <option value="IE">Ireland</option>
-                            <option value="GB">United Kingdom</option>
-                            <option value="US">United States</option>
-                        </select>
+                        ><input type="text" id="weatherLocation" value="Cork" placeholder="City, Country"/>
                     </div>
                     <button id="detectLocationBtn" class="detect-location-btn">
                         <i class="fa-solid fa-location-dot"></i> Detect My
@@ -624,7 +616,7 @@
                     </div>
                     <div class="config-field">
                         <label>Trending limit:</label
-                        ><input type="number" id="mastodonLimit" value="4" />
+                        <input type="number" id="mastodonLimit" value="3" />
                     </div>
                 </div>
             </div>
@@ -699,6 +691,7 @@
                         />
                     </div>
                 </div>
+            </div>
 
             <!-- Calendar Module -->
             <div class="module-card" data-module="calendar">
@@ -711,344 +704,320 @@
                         <div class="toggle-slider"></div>
                     </div>
                 </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Proton Calendar ICS Link:</label
+                        ><input
+                            type="text"
+                            id="calendarUrl"
+                            placeholder="Paste your ICS link here"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Notification time (mins):</label
+                        ><select id="calendarNotificationMinutes">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15" selected>15</option>
+                            <option value="30">30</option>
+                            <option value="60">60</option>
+                        </select>
+                    </div>
+                    <small
+                        >Get ICS link from Proton Calendar → Settings →
+                        Calendars → "Link for viewing"</small
+                    >
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+        <!-- PREMIUM MODULES SECTION -->
+        <!-- ============================================================ -->
+        <div class="header">
+            <h2>Premium Elements</h2>
+        </div>
+
+        <!-- Premium 1: Live Bus Tracker -->
+
+        <div class="module-card" data-module="live_bus">
+            <div class="module-header">
+                <div class="module-title">
+                    <i class="fa-solid fa-bus"></i>
+                    <h3>Live Bus Tracker</h3>
+                    <span
+                        style="
+                            font-size: 0.7rem;
+                            background: #f59e0b;
+                            padding: 2px 8px;
+                            border-radius: 12px;
+                            margin-left: 8px;
+                        "
+                        >Premium</span
+                    >
+                </div>
+                <div class="toggle-switch">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            <div class="module-config">
+                <div id="busFormsContainer">
+                    <!-- Route 1 -->
+                    <div
+                        class="bus-route-form"
+                        data-route="1"
+                        style="
+                            border: 1px solid #e2e8f0;
+                            border-radius: 12px;
+                            padding: 16px;
+                            margin-bottom: 16px;
+                        "
+                    >
+                        <h4 style="margin: 0 0 12px">Route 1</h4>
+                        <div class="config-field">
+                            <label>Bus Route:</label>
+                            <select class="bus-route-select" data-route="1">
+                                <option value="">-- Select Route --</option>
+                            </select>
+                        </div>
+                        <div class="config-field">
+                            <label>Departure Stop:</label>
+                            <select class="bus-dep-stop-select" data-route="1">
+                                <option value="">
+                                    -- Select Route First --
+                                </option>
+                            </select>
+                            <input
+                                type="hidden"
+                                class="bus-dep-name"
+                                data-route="1"
+                            />
+                        </div>
+                        <div class="config-field">
+                            <label>Destination Stop:</label>
+                            <select class="bus-ret-stop-select" data-route="1">
+                                <option value="">
+                                    -- Select Route First --
+                                </option>
+                            </select>
+                            <input
+                                type="hidden"
+                                class="bus-ret-name"
+                                data-route="1"
+                            />
+                        </div>
+                    </div>
+                    <!-- Route 2 -->
+                    <div
+                        class="bus-route-form"
+                        data-route="2"
+                        style="
+                            border: 1px solid #e2e8f0;
+                            border-radius: 12px;
+                            padding: 16px;
+                            margin-bottom: 16px;
+                        "
+                    >
+                        <h4 style="margin: 0 0 12px">Route 2 (optional)</h4>
+                        <div class="config-field">
+                            <label>Bus Route:</label>
+                            <select class="bus-route-select" data-route="2">
+                                <option value="">-- Select Route --</option>
+                            </select>
+                        </div>
+                        <div class="config-field">
+                            <label>Departure Stop:</label>
+                            <select class="bus-dep-stop-select" data-route="2">
+                                <option value="">
+                                    -- Select Route First --
+                                </option>
+                            </select>
+                            <input
+                                type="hidden"
+                                class="bus-dep-name"
+                                data-route="2"
+                            />
+                        </div>
+                        <div class="config-field">
+                            <label>Destination Stop:</label>
+                            <select class="bus-ret-stop-select" data-route="2">
+                                <option value="">
+                                    -- Select Route First --
+                                </option>
+                            </select>
+                            <input
+                                type="hidden"
+                                class="bus-ret-name"
+                                data-route="2"
+                            />
+                        </div>
+                    </div>
+                    <!-- Route 3 -->
+                    <div
+                        class="bus-route-form"
+                        data-route="3"
+                        style="
+                            border: 1px solid #e2e8f0;
+                            border-radius: 12px;
+                            padding: 16px;
+                            margin-bottom: 16px;
+                        "
+                    >
+                        <h4 style="margin: 0 0 12px">Route 3 (optional)</h4>
+                        <div class="config-field">
+                            <label>Bus Route:</label>
+                            <select class="bus-route-select" data-route="3">
+                                <option value="">-- Select Route --</option>
+                            </select>
+                        </div>
+                        <div class="config-field">
+                            <label>Departure Stop:</label>
+                            <select class="bus-dep-stop-select" data-route="3">
+                                <option value="">
+                                    -- Select Route First --
+                                </option>
+                            </select>
+                            <input
+                                type="hidden"
+                                class="bus-dep-name"
+                                data-route="3"
+                            />
+                        </div>
+                        <div class="config-field">
+                            <label>Destination Stop:</label>
+                            <select class="bus-ret-stop-select" data-route="3">
+                                <option value="">
+                                    -- Select Route First --
+                                </option>
+                            </select>
+                            <input
+                                type="hidden"
+                                class="bus-ret-name"
+                                data-route="3"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium 2: Phone -->
+
+        <div class="module-card" data-module="phone">
+            <div class="module-header">
+                <div class="module-title">
+                    <i class="fa-solid fa-phone"></i>
+                    <h3>Phone</h3>
+                    <span
+                        style="
+                            font-size: 0.7rem;
+                            background: #f59e0b;
+                            padding: 2px 8px;
+                            border-radius: 12px;
+                            margin-left: 8px;
+                        "
+                        >Premium</span
+                    >
+                </div>
+                <div class="toggle-switch">
+                    <div class="toggle-slider"></div>
+                </div>
             </div>
             <div class="module-config">
                 <div class="config-field">
-                    <label>Proton Calendar ICS Link:</label
-                    ><input
+                    <label>Contacts</label>
+                    <div id="phoneContactsList" class="contact-list"></div>
+                </div>
+                <div
+                    style="
+                        display: flex;
+                        gap: 12px;
+                        margin-top: 16px;
+                        margin-bottom: 16px;
+                        flex-wrap: wrap;
+                    "
+                >
+                    <input
                         type="text"
-                        id="calendarUrl"
-                        placeholder="Paste your ICS link here"
+                        id="phoneName"
+                        placeholder="Name"
+                        style="
+                            flex: 1;
+                            min-width: 140px;
+                            font-size: 1.2rem;
+                            padding: 14px 16px;
+                        "
                     />
+                    <input
+                        type="tel"
+                        id="phoneNumber"
+                        placeholder="Phone"
+                        style="
+                            flex: 1;
+                            min-width: 140px;
+                            font-size: 1.2rem;
+                            padding: 14px 16px;
+                        "
+                    />
+                    <input
+                        type="file"
+                        id="phonePhoto"
+                        accept="image/png,image/jpeg,image/webp"
+                        style="display: none"
+                    />
+                    <button
+                        id="phonePhotoBtn"
+                        class="upload-btn"
+                        style="
+                            background: #64748b;
+                            margin: 0;
+                            font-size: 1.1rem;
+                            padding: 14px 20px;
+                        "
+                        type="button"
+                    >
+                        📷
+                    </button>
+                    <button
+                        id="addPhoneInline"
+                        class="upload-btn"
+                        style="margin: 0; font-size: 1.1rem; padding: 14px 28px"
+                        type="button"
+                    >
+                        + Add
+                    </button>
                 </div>
-                <div class="config-field">
-                    <label>Notification time (mins):</label
-                    ><select id="calendarNotificationMinutes">
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="15" selected>15</option>
-                        <option value="30">30</option>
-                        <option value="60">60</option>
-                    </select>
+            </div>
+        </div>
+
+        <!-- Premium 3: Location Share (contacts come from Phone module above) -->
+
+        <div class="module-card" data-module="emergency_alert">
+            <div class="module-header">
+                <div class="module-title">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <h3>Location Share</h3>
+                    <span
+                        style="
+                            font-size: 0.7rem;
+                            background: #f59e0b;
+                            padding: 2px 8px;
+                            border-radius: 12px;
+                            margin-left: 8px;
+                        "
+                        >Premium</span
+                    >
                 </div>
-                <small
-                    >Get ICS link from Proton Calendar → Settings → Calendars →
-                    "Link for viewing"</small
+                <div class="toggle-switch">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            <div class="module-config">
+                <small style="color: #64748b"
+                    >Location sharing is configured per contact in the Phone
+                    module above.</small
                 >
             </div>
         </div>
-            </div>
-
-            <!-- ============================================================ -->
-            <!-- PREMIUM MODULES SECTION (ENABLED TOGGLES - NO DISABLED STYLES) -->
-            <!-- ============================================================ -->
-            <div class="header">
-                <h2>Premium Elements</h2>
-            </div>
-
-            <!-- Premium 1: Live Bus Tracker -->
-
-            <div class="module-card" data-module="live_bus">
-                <div class="module-header">
-                    <div class="module-title">
-                        <i class="fa-solid fa-bus"></i>
-                        <h3>Live Bus Tracker</h3>
-                        <span
-                            style="
-                                font-size: 0.7rem;
-                                background: #f59e0b;
-                                padding: 2px 8px;
-                                border-radius: 12px;
-                                margin-left: 8px;
-                            "
-                            >Premium</span
-                        >
-                    </div>
-                    <div class="toggle-switch">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-                <div class="module-config">
-                    <div id="busFormsContainer">
-                        <!-- Route 1 -->
-                        <div
-                            class="bus-route-form"
-                            data-route="1"
-                            style="
-                                border: 1px solid #e2e8f0;
-                                border-radius: 12px;
-                                padding: 16px;
-                                margin-bottom: 16px;
-                            "
-                        >
-                            <h4 style="margin: 0 0 12px">Route 1</h4>
-                            <div class="config-field">
-                                <label>Bus Route:</label>
-                                <select class="bus-route-select" data-route="1">
-                                    <option value="">-- Select Route --</option>
-                                </select>
-                            </div>
-                            <div class="config-field">
-                                <label>Departure Stop:</label>
-                                <select
-                                    class="bus-dep-stop-select"
-                                    data-route="1"
-                                >
-                                    <option value="">
-                                        -- Select Route First --
-                                    </option>
-                                </select>
-                                <input
-                                    type="hidden"
-                                    class="bus-dep-name"
-                                    data-route="1"
-                                />
-                            </div>
-                            <div class="config-field">
-                                <label>Destination Stop:</label>
-                                <select
-                                    class="bus-ret-stop-select"
-                                    data-route="1"
-                                >
-                                    <option value="">
-                                        -- Select Route First --
-                                    </option>
-                                </select>
-                                <input
-                                    type="hidden"
-                                    class="bus-ret-name"
-                                    data-route="1"
-                                />
-                            </div>
-                        </div>
-                        <!-- Route 2 -->
-                        <div
-                            class="bus-route-form"
-                            data-route="2"
-                            style="
-                                border: 1px solid #e2e8f0;
-                                border-radius: 12px;
-                                padding: 16px;
-                                margin-bottom: 16px;
-                            "
-                        >
-                            <h4 style="margin: 0 0 12px">Route 2 (optional)</h4>
-                            <div class="config-field">
-                                <label>Bus Route:</label>
-                                <select class="bus-route-select" data-route="2">
-                                    <option value="">-- Select Route --</option>
-                                </select>
-                            </div>
-                            <div class="config-field">
-                                <label>Departure Stop:</label>
-                                <select
-                                    class="bus-dep-stop-select"
-                                    data-route="2"
-                                >
-                                    <option value="">
-                                        -- Select Route First --
-                                    </option>
-                                </select>
-                                <input
-                                    type="hidden"
-                                    class="bus-dep-name"
-                                    data-route="2"
-                                />
-                            </div>
-                            <div class="config-field">
-                                <label>Destination Stop:</label>
-                                <select
-                                    class="bus-ret-stop-select"
-                                    data-route="2"
-                                >
-                                    <option value="">
-                                        -- Select Route First --
-                                    </option>
-                                </select>
-                                <input
-                                    type="hidden"
-                                    class="bus-ret-name"
-                                    data-route="2"
-                                />
-                            </div>
-                        </div>
-                        <!-- Route 3 -->
-                        <div
-                            class="bus-route-form"
-                            data-route="3"
-                            style="
-                                border: 1px solid #e2e8f0;
-                                border-radius: 12px;
-                                padding: 16px;
-                                margin-bottom: 16px;
-                            "
-                        >
-                            <h4 style="margin: 0 0 12px">Route 3 (optional)</h4>
-                            <div class="config-field">
-                                <label>Bus Route:</label>
-                                <select class="bus-route-select" data-route="3">
-                                    <option value="">-- Select Route --</option>
-                                </select>
-                            </div>
-                            <div class="config-field">
-                                <label>Departure Stop:</label>
-                                <select
-                                    class="bus-dep-stop-select"
-                                    data-route="3"
-                                >
-                                    <option value="">
-                                        -- Select Route First --
-                                    </option>
-                                </select>
-                                <input
-                                    type="hidden"
-                                    class="bus-dep-name"
-                                    data-route="3"
-                                />
-                            </div>
-                            <div class="config-field">
-                                <label>Destination Stop:</label>
-                                <select
-                                    class="bus-ret-stop-select"
-                                    data-route="3"
-                                >
-                                    <option value="">
-                                        -- Select Route First --
-                                    </option>
-                                </select>
-                                <input
-                                    type="hidden"
-                                    class="bus-ret-name"
-                                    data-route="3"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Premium 2: Phone -->
-
-            <div class="module-card" data-module="phone">
-                <div class="module-header">
-                    <div class="module-title">
-                        <i class="fa-solid fa-phone"></i>
-                        <h3>Phone</h3>
-                        <span
-                            style="
-                                font-size: 0.7rem;
-                                background: #f59e0b;
-                                padding: 2px 8px;
-                                border-radius: 12px;
-                                margin-left: 8px;
-                            "
-                            >Premium</span
-                        >
-                    </div>
-                    <div class="toggle-switch">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-                <div class="module-config">
-                    <div class="config-field">
-                        <label>Contacts</label>
-                        <div id="phoneContactsList" class="contact-list"></div>
-                    </div>
-                    <div
-                        style="
-                            display: flex;
-                            gap: 12px;
-                            margin-top: 16px;
-                            margin-bottom: 16px;
-                            flex-wrap: wrap;
-                        "
-                    >
-                        <input
-                            type="text"
-                            id="phoneName"
-                            placeholder="Name"
-                            style="
-                                flex: 1;
-                                min-width: 140px;
-                                font-size: 1.2rem;
-                                padding: 14px 16px;
-                            "
-                        />
-                        <input
-                            type="tel"
-                            id="phoneNumber"
-                            placeholder="Phone"
-                            style="
-                                flex: 1;
-                                min-width: 140px;
-                                font-size: 1.2rem;
-                                padding: 14px 16px;
-                            "
-                        />
-                        <input
-                            type="file"
-                            id="phonePhoto"
-                            accept="image/png,image/jpeg,image/webp"
-                            style="display: none"
-                        />
-                        <button
-                            id="phonePhotoBtn"
-                            class="upload-btn"
-                            style="
-                                background: #64748b;
-                                margin: 0;
-                                font-size: 1.1rem;
-                                padding: 14px 20px;
-                            "
-                            type="button"
-                        >
-                            📷
-                        </button>
-                        <button
-                            id="addPhoneInline"
-                            class="upload-btn"
-                            style="
-                                margin: 0;
-                                font-size: 1.1rem;
-                                padding: 14px 28px;
-                            "
-                            type="button"
-                        >
-                            + Add
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Premium 3: Location Share (contacts come from Phone module above) -->
-
-            <div class="module-card" data-module="emergency_alert">
-                <div class="module-header">
-                    <div class="module-title">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <h3>Location Share</h3>
-                        <span
-                            style="
-                                font-size: 0.7rem;
-                                background: #f59e0b;
-                                padding: 2px 8px;
-                                border-radius: 12px;
-                                margin-left: 8px;
-                            "
-                            >Premium</span
-                        >
-                    </div>
-                    <div class="toggle-switch">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-                <div class="module-config">
-                    <small style="color: #64748b"
-                        >Location sharing is configured per contact in the Phone
-                        module above.</small
-                    >
-                </div>
-            </div>
 
         <div class="brand">
             <span
@@ -1485,6 +1454,12 @@
                                 card.classList.remove("module-card-disabled");
                             }
                         }
+                        // State 3: hide entirely
+                        if (mmr[moduleId] === 3) {
+                            card.style.display = "none";
+                        } else {
+                            card.style.display = "";
+                        }
                     }
                 });
 
@@ -1589,6 +1564,8 @@
                 const mmr = window.getMMR();
 
                 MODULES.forEach((moduleId) => {
+                    // Preserve hidden modules (state 3) — they have no visible toggle
+                    if (mmr[moduleId] === window.MMR_HIDDEN) return;
                     const card = document.querySelector(
                         `.module-card[data-module="${moduleId}"]`,
                     );
@@ -1614,8 +1591,6 @@
                 if (!settings.weather) settings.weather = {};
                 settings.weather.location =
                     document.getElementById("weatherLocation")?.value || "Cork";
-                settings.weather.country =
-                    document.getElementById("weatherCountry")?.value || "IE";
 
                 if (!settings.gallery) settings.gallery = {};
                 settings.gallery.speed =
@@ -1655,7 +1630,7 @@
                     document.getElementById("mastodonInstance")?.value || "";
                 settings.social.limit =
                     parseInt(document.getElementById("mastodonLimit")?.value) ||
-                    4;
+                                        3;
 
                 if (!settings.calendar) settings.calendar = {};
                 const calendarUrl = document
@@ -1951,8 +1926,6 @@
             // ============================================================
             const weatherLocationInput =
                 document.getElementById("weatherLocation");
-            const weatherCountrySelect =
-                document.getElementById("weatherCountry");
             const detectLocationBtn =
                 document.getElementById("detectLocationBtn");
             const weatherPreview = document.getElementById("weatherPreview");
@@ -1984,8 +1957,8 @@
                 return codes[code] || "🌡️";
             }
 
-            async function getCoordinates(location, countryCode) {
-                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)},${countryCode}&format=json&limit=1`;
+            async function getCoordinates(location) {
+                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json&limit=1`;
                 try {
                     const response = await fetch(url, {
                         headers: { "User-Agent": "HandiHomepage/1.0" },
@@ -2005,7 +1978,6 @@
             async function showWeatherPreview() {
                 if (!weatherPreview) return;
                 const location = weatherLocationInput?.value?.trim();
-                const country = weatherCountrySelect?.value;
                 if (!location) {
                     weatherPreview.style.display = "none";
                     return;
@@ -2014,7 +1986,7 @@
                 weatherPreview.innerHTML =
                     '<i class="fa-solid fa-spinner fa-spin"></i> Fetching weather...';
                 try {
-                    const coords = await getCoordinates(location, country);
+                    const coords = await getCoordinates(location);
                     if (!coords) {
                         weatherPreview.innerHTML =
                             '<span class="error">Location not found.</span>';
@@ -2069,8 +2041,6 @@
                                 "IE";
                             if (city && weatherLocationInput)
                                 weatherLocationInput.value = city;
-                            if (weatherCountrySelect)
-                                weatherCountrySelect.value = countryCode;
                             await showWeatherPreview();
                         } catch {
                             weatherPreview.innerHTML =
@@ -2185,11 +2155,7 @@
                 weatherLocationInput.addEventListener("input", () =>
                     setTimeout(showWeatherPreview, 800),
                 );
-            if (weatherCountrySelect)
-                weatherCountrySelect.addEventListener(
-                    "change",
-                    showWeatherPreview,
-                );
+            showWeatherPreview();
 
             document
                 .getElementById("saveExitBtn")
@@ -2448,34 +2414,106 @@
         <!-- ========== TRANSLATE SETTINGS PAGE ========== -->
         <script>
             (function populate() {
-                if (!window.t || typeof window.t !== "function") { setTimeout(populate, 100); return; }
+                if (!window.t || typeof window.t !== "function") {
+                    setTimeout(populate, 100);
+                    return;
+                }
                 var t = window.t;
-                document.title = t("s_settings", "Settings") + " - Handi Homepage";
-                var h1 = document.querySelector("h1"); if (h1) h1.textContent = t("s_settings", "Settings");
-                var h2 = document.querySelector("h2"); if (h2) h2.textContent = t("s_freeElements", "Free Elements");
-                var rb = document.getElementById("resetBtn"); if (rb) rb.textContent = "⟳ " + t("s_resetAll", "Reset All");
-                var sb = document.getElementById("saveExitBtn"); if (sb) sb.textContent = t("s_saveExit", "Save & Exit");
-                var tmap = {weather:"s_weatherLocation",gallery:"s_loadImages",music:"s_musicPlayer",radio:"s_radio",news:"s_news",social:"s_socialMedia",chat:"s_chatMatrix",phone:"s_phone",live_bus:"s_liveBusTracker",emergency_alert:"s_locationShare",calendar:"s_calendar"};
-                document.querySelectorAll(".module-card").forEach(function(card){var h3=card.querySelector("h3");var mod=card.getAttribute("data-module");if(h3&&tmap[mod])h3.textContent=t(tmap[mod],h3.textContent)});
-                document.querySelectorAll("label,button,h4,.group-title").forEach(function(el){var txt=(el.textContent||"").trim();
-                if(txt==="Location:")el.textContent=t("s_location","Location")+":";
-                if(txt==="Country:")el.textContent=t("s_country","Country")+":";
-                if(txt==="Detect My Location")el.textContent=t("s_detectLocation","Detect My Location");
-                if(txt==="Slideshow speed (ms):")el.textContent=t("s_slideshowSpeed","Slideshow speed")+" (ms):";
-                if(txt==="Auto-start:")el.textContent=t("s_autoStart","Auto-start")+":";
-                if(txt.indexOf("Load Images")>-1)el.textContent="📸 "+t("s_loadImages","Load Images");
-                if(txt==="Default volume:")el.textContent=t("s_defaultVolume","Default volume")+":";
-                if(txt==="Default shuffle:")el.textContent=t("s_defaultShuffle","Default shuffle")+":";
-                if(txt.indexOf("Load Music")>-1)el.textContent="🎵 "+t("s_loadMusic","Load Music");
-                if(txt==="Default Country Filter:")el.textContent=t("s_defaultCountryFilter","Default Country Filter")+":";
-                if(txt==="RSS Feed:")el.textContent=t("s_rssFeed","RSS Feed")+":";
-                if(txt==="Refresh interval (minutes):")el.textContent=t("s_refreshMinutes","Refresh interval (minutes)")+":";
-                if(txt==="Max articles:")el.textContent=t("s_maxArticles","Max articles")+":";
-                if(txt==="Mastodon Server:")el.textContent=t("s_mastodonServer","Mastodon Server")+":";
-                if(txt==="Trending limit:")el.textContent=t("s_trendingLimit","Trending limit")+":";
-                if(txt==="Calendar ICS Link:")el.textContent=t("s_calendarIcsLink","Calendar ICS Link")+":";
-                if(txt==="Notification time:")el.textContent=t("s_notificationTime","Notification time")+":";
-                });
+                document.title =
+                    t("s_settings", "Settings") + " - Handi Homepage";
+                var h1 = document.querySelector("h1");
+                if (h1) h1.textContent = t("s_settings", "Settings");
+                var h2 = document.querySelector("h2");
+                if (h2) h2.textContent = t("s_freeElements", "Free Elements");
+                var rb = document.getElementById("resetBtn");
+                if (rb) rb.textContent = "⟳ " + t("s_resetAll", "Reset All");
+                var sb = document.getElementById("saveExitBtn");
+                if (sb) sb.textContent = t("s_saveExit", "Save & Exit");
+                var tmap = {
+                    weather: "s_weatherLocation",
+                    gallery: "s_loadImages",
+                    music: "s_musicPlayer",
+                    radio: "s_radio",
+                    news: "s_news",
+                    social: "s_socialMedia",
+                    chat: "s_chatMatrix",
+                    phone: "s_phone",
+                    live_bus: "s_liveBusTracker",
+                    emergency_alert: "s_locationShare",
+                    calendar: "s_calendar",
+                };
+                document
+                    .querySelectorAll(".module-card")
+                    .forEach(function (card) {
+                        var h3 = card.querySelector("h3");
+                        var mod = card.getAttribute("data-module");
+                        if (h3 && tmap[mod])
+                            h3.textContent = t(tmap[mod], h3.textContent);
+                    });
+                document
+                    .querySelectorAll("label,button,h4,.group-title")
+                    .forEach(function (el) {
+                        var txt = (el.textContent || "").trim();
+                        if (txt === "Location:")
+                            el.textContent = t("s_location", "Location") + ":";
+                        if (txt === "Country:")
+                            el.textContent = t("s_country", "Country") + ":";
+                        if (txt === "Detect My Location")
+                            el.textContent = t(
+                                "s_detectLocation",
+                                "Detect My Location",
+                            );
+                        if (txt === "Slideshow speed (ms):")
+                            el.textContent =
+                                t("s_slideshowSpeed", "Slideshow speed") +
+                                " (ms):";
+                        if (txt === "Auto-start:")
+                            el.textContent =
+                                t("s_autoStart", "Auto-start") + ":";
+                        if (txt.indexOf("Load Images") > -1)
+                            el.textContent =
+                                "📸 " + t("s_loadImages", "Load Images");
+                        if (txt === "Default volume:")
+                            el.textContent =
+                                t("s_defaultVolume", "Default volume") + ":";
+                        if (txt === "Default shuffle:")
+                            el.textContent =
+                                t("s_defaultShuffle", "Default shuffle") + ":";
+                        if (txt.indexOf("Load Music") > -1)
+                            el.textContent =
+                                "🎵 " + t("s_loadMusic", "Load Music");
+                        if (txt === "Default Country Filter:")
+                            el.textContent =
+                                t(
+                                    "s_defaultCountryFilter",
+                                    "Default Country Filter",
+                                ) + ":";
+                        if (txt === "RSS Feed:")
+                            el.textContent = t("s_rssFeed", "RSS Feed") + ":";
+                        if (txt === "Refresh interval (minutes):")
+                            el.textContent =
+                                t(
+                                    "s_refreshMinutes",
+                                    "Refresh interval (minutes)",
+                                ) + ":";
+                        if (txt === "Max articles:")
+                            el.textContent =
+                                t("s_maxArticles", "Max articles") + ":";
+                        if (txt === "Mastodon Server:")
+                            el.textContent =
+                                t("s_mastodonServer", "Mastodon Server") + ":";
+                        if (txt === "Trending limit:")
+                            el.textContent =
+                                t("s_trendingLimit", "Trending limit") + ":";
+                        if (txt === "Calendar ICS Link:")
+                            el.textContent =
+                                t("s_calendarIcsLink", "Calendar ICS Link") +
+                                ":";
+                        if (txt === "Notification time:")
+                            el.textContent =
+                                t("s_notificationTime", "Notification time") +
+                                ":";
+                    });
             })();
         </script>
     </body>

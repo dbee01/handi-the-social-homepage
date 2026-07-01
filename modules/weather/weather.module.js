@@ -68,9 +68,8 @@ export default async function initWeather(container) {
     return codes[code] || "🌡️ Unknown";
   }
 
-  async function getCoordinates(location, countryCode) {
-    const query = `${location}, ${countryCode}`;
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&addressdetails=1`;
+  async function getCoordinates(location) {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json&limit=1&addressdetails=1`;
     try {
       const response = await fetch(url, {
         headers: { "User-Agent": "HandiHomepage/1.0" },
@@ -109,13 +108,12 @@ export default async function initWeather(container) {
     }
 
     const locationName = settings.weather?.location || "Cork";
-    const countryCode = settings.weather?.country || "IE";
 
     content.innerHTML =
       '<div class="weather-loading"><i class="fa-solid fa-spinner fa-spin"></i> " + t("d_loadingWeather", "Loading weather...") + "</div>';
 
     try {
-      const coords = await getCoordinates(locationName, countryCode);
+      const coords = await getCoordinates(locationName);
       if (!coords) {
         content.innerHTML = `<div class="weather-error">⚠️ Location "${escapeHtml(locationName)}" " + t("d_notFound", "not found") + "</div>`;
         return;
