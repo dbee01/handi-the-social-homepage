@@ -75,7 +75,7 @@ var LANG = {
   d_browseStations: "Roghnaigh tír thuas chun stáisiúin a bhrabhsáil",
   d_configureNews: "Cumraigh eilimint NUACHT",
   d_configureSocial: "Cumraigh eilimint SHÓISIALTA",
-  d_uploadImages: "Uaslódáil Íomhánna",
+  d_uploadImages: "Lódáil Íomhánna",
   d_addImages: "Cuir Íomhánna Leis",
   d_noImages: "Gan íomhánna sa ghailearaí.",
   d_fullScreen: "Lánscáileán",

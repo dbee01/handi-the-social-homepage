@@ -81,7 +81,7 @@ var LANG = {
   d_browseStations: "Select a country above to browse stations",
   d_configureNews: "Configure NEWS element",
   d_configureSocial: "Configure SOCIAL element",
-  d_uploadImages: "Upload Images",
+  d_uploadImages: "Load Images",
   d_addImages: "Add Images",
   d_noImages: "No images in gallery.",
   d_fullScreen: "Full Screen",

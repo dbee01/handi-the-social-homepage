@@ -467,10 +467,10 @@ input:focus {
 
 /* ---------- WAKE LOCK ---------- */
 #footerWakeLockBtn i.fa-sun {
-    color: #f59e0b !important;
+    color: #0047cc !important;
 }
 #footerWakeLockBtn i.fa-sun.active-sun {
-    color: #0047cc !important;
+    color: #f59e0b !important;
 }
 
 /* ---------- HELP MODAL ---------- */

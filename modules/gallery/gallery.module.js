@@ -40,7 +40,7 @@ export default async function initGallery(container) {
     console.error("Gallery load error:", err);
   }
 
-  // --- File upload handler ---
+  // --- File load handler ---
   function createFileInput(onFilesSelected) {
     var input = document.createElement("input");
     input.type = "file";
@@ -73,7 +73,7 @@ export default async function initGallery(container) {
         <i class="fa-solid fa-images"></i>
         <p>${t("d_noImages", "No images in gallery.")}</p>
         <button id="galleryUploadBtn" class="settings-link-btn">
-          <i class="fa-solid fa-upload"></i> ${t("d_uploadImages", "Upload Images")}
+          <i class="fa-solid fa-upload"></i> ${t("d_uploadImages", "Load Images")}
         </button>
       </div>
     `;
