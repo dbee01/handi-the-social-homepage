@@ -183,6 +183,7 @@ var LANG = {
   s_autoStart: "Tosú uathoibríoch",
   s_yes: "Tá",
   s_no: "Níl",
+  s_gallery: "Gailearaí",
   s_loadImages: "Lódáil Íomhánna",
   s_musicPlayer: "Seinnteoir Ceoil",
   s_defaultVolume: "Toirt réamhshocraithe",

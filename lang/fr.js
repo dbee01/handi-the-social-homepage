@@ -170,6 +170,7 @@ var LANG = {
   s_autoStart: "Démarrage auto",
   s_yes: "Oui",
   s_no: "Non",
+  s_gallery: "Galerie",
   s_loadImages: "Charger des images",
   s_musicPlayer: "Lecteur de musique",
   s_defaultVolume: "Volume par défaut",

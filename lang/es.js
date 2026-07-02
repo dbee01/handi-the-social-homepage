@@ -175,6 +175,7 @@ var LANG = {
   s_autoStart: "Inicio automático",
   s_yes: "Sí",
   s_no: "No",
+  s_gallery: "Galería",
   s_loadImages: "Cargar imágenes",
   s_musicPlayer: "Reproductor de música",
   s_defaultVolume: "Volumen predeterminado",

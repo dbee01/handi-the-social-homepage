@@ -169,6 +169,7 @@ var LANG = {
   s_autoStart: "بدء تلقائي",
   s_yes: "نعم",
   s_no: "لا",
+  s_gallery: "معرض الصور",
   s_loadImages: "تحميل الصور",
   s_musicPlayer: "مشغل الموسيقى",
   s_defaultVolume: "الصوت الافتراضي",

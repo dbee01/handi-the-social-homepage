@@ -257,6 +257,7 @@ var LANG = {
   s_autoStart: "Auto-start",
   s_yes: "Yes",
   s_no: "No",
+  s_gallery: "Gallery",
   s_loadImages: "Load Images",
   s_musicPlayer: "Music Player",
   s_defaultVolume: "Default volume",

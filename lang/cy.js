@@ -170,6 +170,7 @@ var LANG = {
   s_autoStart: "Cychwyn awtomatig",
   s_yes: "Ie",
   s_no: "Na",
+  s_gallery: "Oriel",
   s_loadImages: "Llwytho delweddau",
   s_musicPlayer: "Chwaraewr cerddoriaeth",
   s_defaultVolume: "Cyfrol ddiofyn",

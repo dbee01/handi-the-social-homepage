@@ -171,6 +171,7 @@ var LANG = {
   s_autoStart: "Autostart",
   s_yes: "Tak",
   s_no: "Nie",
+  s_gallery: "Galeria",
   s_loadImages: "Załaduj obrazy",
   s_musicPlayer: "Odtwarzacz muzyki",
   s_defaultVolume: "Domyślna głośność",
