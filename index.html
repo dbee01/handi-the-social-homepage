@@ -82,8 +82,8 @@
         <script src="/js/vendor/packery.pkgd.min.js"></script>
         <script src="/js/vendor/Sortable.min.js"></script>
         <script src="/js/vendor/rrule.min.js"></script>
-        <script src="/js/vendor/matrix-js-sdk.bundle.js"></script>
-        <script src="https://rtc.cdn.infobip.com/2.2.7/infobip.rtc.js"></script>
+        <script defer src="/js/vendor/matrix-js-sdk.bundle.js"></script>
+        <script defer src="/js/vendor/infobip.rtc.js"></script>
         <script src="/js/core/module-registry.js"></script>
     </head>
     <body>
@@ -258,19 +258,21 @@
             };
 
             const entries = Object.entries(modules);
-            for (let i = 0; i < entries.length; i++) {
-                const [id, initFn] = entries[i];
+            // Fire all module inits in parallel — no artificial delays
+            const initPromises = entries.map(([id, initFn]) => {
                 const element = document.getElementById(id);
                 if (element && element.querySelector(".module-content")) {
-                    try {
-                        initFn(element.querySelector(".module-content"));
-                    } catch (e) {
-                        console.error(`Failed to init ${id}:`, e);
-                    }
+                    return Promise.resolve()
+                        .then(() =>
+                            initFn(element.querySelector(".module-content")),
+                        )
+                        .catch((e) =>
+                            console.error(`Failed to init ${id}:`, e),
+                        );
                 }
-                // Small delay to avoid rate limiting
-                await new Promise((r) => setTimeout(r, 200));
-            }
+                return Promise.resolve();
+            });
+            await Promise.all(initPromises);
 
             // Re-scan for lock buttons now that modules have initialized
             if (window.refreshModuleControls) window.refreshModuleControls();
