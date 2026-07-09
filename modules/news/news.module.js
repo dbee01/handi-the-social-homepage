@@ -5,8 +5,8 @@ import { loadSettings } from "../../js/core/settings.js";
 const NEWS_FEEDS = [
   {
     flag: "🇮🇪",
-    name: "Ireland – RTÉ",
-    url: "https://www.rte.ie/feeds/rss/news.xml",
+    name: "Ireland – The Journal",
+    url: "https://www.thejournal.ie/feed/",
   },
   {
     flag: "🇬🇧",
@@ -47,7 +47,7 @@ const NEWS_FEEDS = [
   {
     flag: "🇧🇪",
     name: "België – De Standaard",
-    url: "https://www.standaard.be/rss/section/1f2838d4-99ea-49f0-9102-138784c7ea7c",
+    url: "https://www.standaard.be/binnenland/rss/",
   },
   { flag: "🇨🇭", name: "Schweiz – NZZ", url: "https://www.nzz.ch/recent.rss" },
   {

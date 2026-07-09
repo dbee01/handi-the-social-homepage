@@ -116,16 +116,14 @@ async function doImport() {
   importPromise = (async () => {
     try {
       const hostname = require("os").hostname();
-      // Skip import on localhost (dev) if DB already exists
+      // Skip download/import on local dev or when explicitly disabled
       if (
-        fs.existsSync(config.sqlitePath) &&
-        (hostname === "localhost" ||
-          hostname.startsWith("daz-") ||
-          hostname.includes("pav"))
+        process.env.SKIP_GTFS_DOWNLOAD === "true" ||
+        hostname === "localhost" ||
+        hostname.startsWith("daz-") ||
+        hostname.includes("pav")
       ) {
-        console.log(
-          "[GTFS] Dev mode — using existing database, skipping import",
-        );
+        console.log("[GTFS] Dev mode — skipping GTFS download/import");
         importReady = true;
         return;
       }

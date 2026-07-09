@@ -11,11 +11,11 @@ const MASTODON_SERVERS = [
   { flag: "🇪🇸", name: "mastodon.es (País)", url: "https://mstdn.es" },
   { flag: "🇮🇹", name: "mastodon.uno", url: "https://mastodon.uno" },
   { flag: "🇳🇱", name: "mastodon.nl", url: "https://mastodon.nl" },
-  { flag: "🇵🇱", name: "pol.social", url: "https://pol.social" },
+  { flag: "🇵🇱", name: "pol.social", url: "https://mastodon.com.pl" },
   { flag: "🇵🇹", name: "masto.pt", url: "https://masto.pt" },
-  { flag: "🇧🇪", name: "mastodon.be", url: "https://mastodon.belgium.be" },
+  { flag: "🇧🇪", name: "mastodon.be", url: "https://mastodon-belgium.be" },
   { flag: "🇨🇭", name: "swiss.social", url: "https://swiss.social" },
-  { flag: "🇸🇪", name: "mastodon.se", url: "https://mastodon.se" },
+  { flag: "🇸🇪", name: "mastodon.se", url: "https://mastodonsweden.se" },
   { flag: "🇳🇴", name: "snabelen.no", url: "https://snabelen.no" },
   { flag: "🇬🇧", name: "mastodon.org.uk", url: "https://mastodon.org.uk" },
   { flag: "🇺🇸", name: "mastodon.social (US)", url: "https://mastodon.social" },
@@ -122,6 +122,33 @@ export default async function initMastodon(container) {
       }
 
       content.innerHTML = "";
+
+      // Header bar with server name and change button (like News)
+      const serverInfo = MASTODON_SERVERS.find(function (s) {
+        return s.url === instance;
+      });
+      const serverDisplay = serverInfo
+        ? serverInfo.flag + " " + serverInfo.name
+        : instance;
+      var headerBar = document.createElement("div");
+      headerBar.style.cssText =
+        "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;";
+      headerBar.innerHTML =
+        '<small style="opacity:0.7;">' +
+        escapeHtml(serverDisplay) +
+        "</small>" +
+        '<button id="mastodonChangeServer" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;" title="' +
+        t("d_changeServer", "Change server") +
+        '">🔄 ' +
+        t("d_changeServer", "Server") +
+        "</button>";
+      content.appendChild(headerBar);
+
+      // Posts container
+      var postsContainer = document.createElement("div");
+      postsContainer.id = "mastodon-posts";
+      content.appendChild(postsContainer);
+
       for (const item of data) {
         const titleText = item.title || t("d_untitled", "Untitled");
         const urlLink = item.url || "#";
@@ -154,19 +181,17 @@ export default async function initMastodon(container) {
             ${shortDescription ? `<div class="mastodon-desc">${escapeHtml(shortDescription)}</div>` : ""}
           </div>
         `;
-        content.appendChild(postDiv);
+        postsContainer.appendChild(postDiv);
       }
 
-      // Add change server button
-      var changeBtn = document.createElement("div");
-      changeBtn.style.cssText =
-        "text-align:center;margin-top:12px;opacity:0.6;cursor:pointer;font-size:0.85rem;";
-      changeBtn.textContent = "🔄 " + t("d_changeServer", "Change server");
-      changeBtn.onclick = function () {
-        saveServer("");
-        renderServerSelector();
-      };
-      content.appendChild(changeBtn);
+      // Hook up the change server button in the header
+      var changeBtn = content.querySelector("#mastodonChangeServer");
+      if (changeBtn) {
+        changeBtn.onclick = function () {
+          saveServer("");
+          renderServerSelector();
+        };
+      }
 
       refreshPackery();
     } catch (err) {

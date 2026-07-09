@@ -34,18 +34,18 @@ export default async function initRadio(container) {
     },
     {
       flag: "🇬🇧",
-      name: "BBC Radio 1",
-      url: "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_one",
+      name: "Heart UK",
+      url: "https://media-ssl.musicradio.com/HeartUK",
     },
     {
       flag: "🇬🇧",
-      name: "BBC Radio 2",
-      url: "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_two",
+      name: "Smooth Radio UK",
+      url: "https://media-ssl.musicradio.com/SmoothUK",
     },
     {
       flag: "🇬🇧",
-      name: "BBC Radio 4",
-      url: "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_fourfm",
+      name: "LBC UK",
+      url: "https://media-ssl.musicradio.com/LBCUK",
     },
     {
       flag: "🇬🇧",
@@ -120,7 +120,7 @@ export default async function initRadio(container) {
     {
       flag: "🇮🇹",
       name: "Radio Deejay",
-      url: "https://deejay_wr_06.ice.infomaniak.ch/deejay_wr_06-128.mp3",
+      url: "https://4c4b867c89244861ac216426883d1ad0.msvdn.net/radiodeejay/radiodeejay/master.m3u8",
     },
     {
       flag: "🇮🇹",
@@ -149,13 +149,13 @@ export default async function initRadio(container) {
     },
     {
       flag: "🇵🇱",
-      name: "Polskie Radio 1",
-      url: "https://stream85.polskieradio.pl/pr1/pr1.sdp/playlist.m3u8",
+      name: "RMF24",
+      url: "https://rs202-krk.rmfstream.pl/RMF24",
     },
     {
       flag: "🇵🇱",
-      name: "Polskie Radio 3",
-      url: "https://stream85.polskieradio.pl/pr3/pr3.sdp/playlist.m3u8",
+      name: "Meloradio",
+      url: "https://playerservices.streamtheworld.com/api/livestream-redirect/MELORADIO.mp3",
     },
     {
       flag: "🇵🇱",
@@ -169,13 +169,13 @@ export default async function initRadio(container) {
     },
     {
       flag: "🇵🇹",
-      name: "Antena 1",
-      url: "https://streaming-live.rtp.pt/liveradio/antena180a/playlist.m3u8",
+      name: "Observador",
+      url: "https://playerservices.streamtheworld.com/api/livestream-redirect/OBSERVADOR.mp3",
     },
     {
       flag: "🇵🇹",
-      name: "Antena 3",
-      url: "https://streaming-live.rtp.pt/liveradio/antena380a/playlist.m3u8",
+      name: "M80 Rádio",
+      url: "https://playerservices.streamtheworld.com/api/livestream-redirect/M80RADIO.mp3",
     },
     {
       flag: "🇵🇹",
@@ -185,17 +185,22 @@ export default async function initRadio(container) {
     {
       flag: "🇸🇪",
       name: "Sveriges Radio P1",
-      url: "https://sverigesradio.se/topsy/direkt/132-hi-mp3.m3u",
+      url: "https://live1.sr.se/p1-mp3-96",
     },
     {
       flag: "🇸🇪",
       name: "Sveriges Radio P3",
-      url: "https://sverigesradio.se/topsy/direkt/164-hi-mp3.m3u",
+      url: "https://live1.sr.se/p3-mp3-96",
     },
     {
       flag: "🇸🇪",
-      name: "Mix Megapol",
-      url: "https://live-bauerse-fm-05-hls-sodra.akamaized.net/secure/1/se/radio28/icecast.audio",
+      name: "Sveriges Radio P2",
+      url: "https://live1.sr.se/p2-mp3-96",
+    },
+    {
+      flag: "🇸🇪",
+      name: "Sveriges Radio P4 Stockholm",
+      url: "https://live1.sr.se/p4sth-mp3-96",
     },
     {
       flag: "🇳🇴",
@@ -220,7 +225,7 @@ export default async function initRadio(container) {
     {
       flag: "🇺🇸",
       name: "KEXP Seattle",
-      url: "https://kexp.streamguys1.com/kexp160.mp3",
+      url: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3",
     },
     {
       flag: "🇺🇸",
@@ -229,18 +234,18 @@ export default async function initRadio(container) {
     },
     {
       flag: "🇨🇦",
-      name: "CBC Radio One",
-      url: "https://cbcradiolive.akamaized.net/hls/live/2040989/ES_R2ET/master.m3u8",
+      name: "NewsTalk 1010 Toronto",
+      url: "https://playerservices.streamtheworld.com/api/livestream-redirect/CFRBAM.mp3",
     },
     {
       flag: "🇨🇦",
-      name: "CBC Music",
-      url: "https://cbcradiolive.akamaized.net/hls/live/2041050/ES_R2EHC/master.m3u8",
+      name: "CKUA Edmonton",
+      url: "https://ckua.streamon.fm/stream/CKUA-48k.aac",
     },
     {
       flag: "🇨🇦",
-      name: "ICI Musique",
-      url: "https://rcavliveaudio.akamaized.net/hls/live/2006998/M-7QMTL0_MTL/master.m3u8",
+      name: "CJAD 800 Montréal",
+      url: "https://playerservices.streamtheworld.com/api/livestream-redirect/CJADAM.mp3",
     },
     {
       flag: "🇦🇺",
@@ -254,8 +259,8 @@ export default async function initRadio(container) {
     },
     {
       flag: "🇦🇺",
-      name: "Double J",
-      url: "https://live-radio01.mediahubaustralia.com/DUBW/mp3/",
+      name: "ABC Classic",
+      url: "https://live-radio01.mediahubaustralia.com/2FMW/mp3/",
     },
     {
       flag: "🇳🇿",
@@ -269,17 +274,35 @@ export default async function initRadio(container) {
     },
     {
       flag: "🇳🇿",
-      name: "The Rock",
-      url: "https://livestream.mediaworks.nz/radio_ngtm/therock/playlist.m3u8",
+      name: "RNZ Pacific",
+      url: "https://stream-ice.radionz.co.nz/international.mp3",
     },
   ];
+
+  var flagToCountry = {
+    "🇮🇪": "Ireland",
+    "🇬🇧": "United Kingdom",
+    "🇫🇷": "France",
+    "🇩🇪": "Germany",
+    "🇪🇸": "Spain",
+    "🇮🇹": "Italy",
+    "🇳🇱": "Netherlands",
+    "🇵🇱": "Poland",
+    "🇵🇹": "Portugal",
+    "🇸🇪": "Sweden",
+    "🇳🇴": "Norway",
+    "🇺🇸": "United States",
+    "🇨🇦": "Canada",
+    "🇦🇺": "Australia",
+    "🇳🇿": "New Zealand",
+  };
 
   var countries = [],
     seen = {};
   STATIONS.forEach(function (s) {
     if (!seen[s.flag]) {
       seen[s.flag] = true;
-      countries.push({ flag: s.flag });
+      countries.push({ flag: s.flag, name: flagToCountry[s.flag] || s.flag });
     }
   });
 
@@ -340,7 +363,15 @@ export default async function initRadio(container) {
     "</option>" +
     countries
       .map(function (c) {
-        return '<option value="' + c.flag + '">' + c.flag + "</option>";
+        return (
+          '<option value="' +
+          c.flag +
+          '">' +
+          c.flag +
+          " " +
+          c.name +
+          "</option>"
+        );
       })
       .join("") +
     '</select></div><div class="radio-top-bar"><canvas id="radio-synth" class="radio-synth"></canvas></div><div class="radio-now-playing" id="now-playing">' +
