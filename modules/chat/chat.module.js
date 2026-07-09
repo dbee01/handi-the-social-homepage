@@ -5,6 +5,25 @@
 import { loadSettings } from "../../js/core/settings.js";
 
 export default async function initChat(container) {
+  if (!window.matrixcs) {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "/js/vendor/matrix-js-sdk.bundle.js";
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+  if (!window.InfobipRTC) {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "/js/vendor/infobip.rtc.js";
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
   var t =
     window.t ||
     function (k, e) {
