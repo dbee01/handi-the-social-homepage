@@ -20,7 +20,7 @@ window.HANDI_MODULES = [
     desc: "Your playlists",
     tier: "free",
     defaultEnabled: 0,
-    settingsConfig: { volume: 100, shuffle: false },
+    settingsConfig: { volume: 100, shuffle: false, soundLock: false },
   },
   {
     id: "radio",
@@ -29,7 +29,7 @@ window.HANDI_MODULES = [
     desc: "Radio stations",
     tier: "free",
     defaultEnabled: 1,
-    settingsConfig: { defaultStation: "0", volume: 100 },
+    settingsConfig: { defaultStation: "0", volume: 100, soundLock: false },
   },
   {
     id: "news",

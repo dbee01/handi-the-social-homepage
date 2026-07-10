@@ -31,7 +31,11 @@ export default async function initMusic(container) {
   const lockToggle = document.createElement("button");
   lockToggle.className = "music-lock-toggle";
   var saved = localStorage.getItem("musicLocked"),
-    isLocked = saved !== null ? saved === "true" : true;
+    regCfg =
+      (window.HANDI_MODULE_BY_ID &&
+        window.HANDI_MODULE_BY_ID("music")?.settingsConfig?.soundLock) ??
+      true,
+    isLocked = saved !== null ? saved === "true" : regCfg;
   function updateLockIcon() {
     lockToggle.innerHTML = isLocked
       ? '<i class="fa-solid fa-lock"></i>'

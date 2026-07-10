@@ -326,7 +326,11 @@ export default async function initRadio(container) {
   const lockToggle = document.createElement("button");
   lockToggle.className = "radio-lock-toggle";
   var saved = localStorage.getItem("radioLocked"),
-    isLocked = saved !== null ? saved === "true" : true;
+    regCfg =
+      (window.HANDI_MODULE_BY_ID &&
+        window.HANDI_MODULE_BY_ID("radio")?.settingsConfig?.soundLock) ??
+      true,
+    isLocked = saved !== null ? saved === "true" : regCfg;
   function updateLockIcon() {
     lockToggle.innerHTML = isLocked
       ? '<i class="fa-solid fa-lock"></i>'
