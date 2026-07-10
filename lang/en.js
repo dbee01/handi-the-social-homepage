@@ -304,6 +304,36 @@ var LANG = {
     'Get ICS link from Proton Calendar → Settings → Calendars → "Link for viewing"',
   s_freeTrial: "Start free trial (no credit card needed)",
 
+  // Module help texts
+  h_gallery:
+    "<strong>📸 Gallery</strong><br><br>• Upload images in <strong>Settings → Gallery</strong>.<br>• Use <strong>Prev / Next</strong> to browse, <strong>Play/Pause</strong> for slideshow.<br>• Click <strong>Full Screen Gallery</strong> to open the lightbox.<br>• Image filenames appear as captions – use names like <code>my+lovely+horse.jpg</code> for readability.",
+  h_live_bus:
+    "<strong>🚌 Live Bus</strong><br><br>• Shows real‑time arrival times for your chosen stop.<br>• Configure routes and stops in <strong>Settings → Live Bus Tracker</strong>.<br>• Click <strong>Refresh Times</strong> to update manually.<br>• Use <strong>Switch Direction</strong> to toggle between stops.",
+  h_music:
+    "<strong>🎵 Music Player</strong><br><br>• Upload MP3 files in <strong>Settings → Music Player</strong>.<br>• Click a track to play – the visualiser responds to sound.<br>• Use <strong>Prev / Next</strong> and the <strong>lock</strong> to prevent accidental changes.<br>• File extensions (e.g., .mp3) are hidden for cleaner display.",
+  h_news:
+    "<strong>📰 News</strong><br><br>• Fetches the latest headlines from your chosen RSS feed.<br>• Change the feed in <strong>Settings → News</strong>.<br>• Use the <strong>▲ / ▼</strong> buttons to scroll through articles.<br>• Click any headline to read the full story on the source website.",
+  h_social:
+    "<strong>🐘 Social</strong><br><br>• Shows trending links from your Mastodon feed.<br>• Change the instance in <strong>Settings → Social</strong>.<br>• Use <strong>▲ / ▼</strong> to scroll through posts.<br>• Click any link to open it in a new tab.",
+  h_radio:
+    "<strong>📻 Radio</strong><br><br>• Choose from international radio stations.<br>• Click a station to start streaming – may take a few seconds.<br>• The synthesiser animates while playing.<br>• Use the <strong>lock</strong> (🔒) to disable accidental station changes.",
+  h_emergency_alert:
+    "<strong>📍 Location Alert</strong><br><br><strong>📱 Mobile phones only.</strong><br>• Sends an SMS with your GPS location to trusted contacts.<br>• Requires GPS and mobile network (not available on desktop/tablet).<br>• Add contacts in <strong>Settings → Location Share</strong>.<br>• Unlock the button (🔓) then press <strong>SHARE</strong> to send.<br>• Test with your own number first to ensure it works.",
+  h_phone:
+    "<strong>📞 Friendly Phone</strong><br><br>• One‑tap calling to your saved contacts.<br>• Add contacts with photos in <strong>Settings → Friendly Phone</strong>.<br>• The module is <strong>locked by default</strong> – unlock to enable calls.<br>• Photos help identify contacts at a glance.",
+  h_chat:
+    "<strong>💬 Chat (Matrix)</strong><br><br>• Create your own Matrix account at <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> to start private family or friend chat rooms.<br>• Add room URLs, access token, user ID in <strong>Settings → Chat</strong>.<br>• The module checks for new messages every 30 seconds.<br>• Click the room header to expand and view messages.<br>• New message notifications appear as a red badge.",
+  h_calendar:
+    "<strong>📅 Calendar (Proton ICS)</strong><br><br>• Shows today's events from your Proton Calendar.<br>• Get your ICS link from Proton Calendar → Settings → Calendars → 'Share with anyone' → 'Create link'.<br>• Paste the ICS link in <strong>Settings → Calendar</strong>.<br><br><strong>⚠️ Important limitations (Proton, not this module):</strong><br>• The ICS feed updates <strong>every 4–16 hours</strong> – new events take time to appear.<br>• Recurring events may not appear correctly.<br><br><strong>💡 Tips:</strong><br>• If an event doesn't appear, wait a few hours and try again.",
+
+  h_modalTitle: "Module Help",
+  h_gotIt: "Got it",
+  h_noHelp: "No specific help available.",
+  h_helpButton: "Help",
+  h_helpAria: "Help for this module",
+  h_pinToTop: "Pin to top",
+  h_unpin: "Unpin",
+
   // Footer
   d_customizeDashboard: "Customize Dashboard",
   d_freeTrial: "Start free trial (no credit card needed)",

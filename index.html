@@ -16,6 +16,17 @@
         <title>HandiHomepage – Senior Dashboard</title>
         <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
         <script src="/lang/loader.js"></script>
+            <script>
+                // Listen for service worker update messages
+                if (navigator.serviceWorker) {
+                    navigator.serviceWorker.addEventListener("message", function (e) {
+                        if (e.data && e.data.type === "update") {
+                            console.log("[SW] Update detected – reloading page");
+                            location.reload();
+                        }
+                    });
+                }
+            </script>
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
         <link rel="stylesheet" href="/css/main.css" />
         <script>
@@ -473,7 +484,7 @@
             })();
         </script>
 
-        <script src="js/core/module-buttons.js"></script>
+        <script src="js/core/module-buttons.js?v=2"></script>
         <script src="js/core/footer-controls.js"></script>
 
         <!-- ========== CLEANUP - shows/hides modules based on Master Module Record ========== -->
