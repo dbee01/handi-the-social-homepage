@@ -109,7 +109,7 @@ export default async function initNews(container) {
   const STEP = 2;
   let currentStart = 0;
   let refreshIntervalId = null;
-  let rssUrl = "";
+  let rssUrl = localStorage.getItem(STORAGE_KEY) || "";
 
   function saveFeed(url) {
     rssUrl = url;

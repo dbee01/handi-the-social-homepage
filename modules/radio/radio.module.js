@@ -357,27 +357,30 @@ export default async function initRadio(container) {
       localStorage.getItem("handiRadioCountry") ||
       "";
   } catch (e) {}
-  var selectedFlag = "";
+  var selectedFlag = storedFlag;
 
-  // Always show selector, ignore saved country
-
-  content.innerHTML =
-    '<div style="text-align:center;margin-bottom:8px;"><select id="radioCountryFilter" style="padding:6px 10px;border-radius:8px;border:2px solid #cbd5e1;font-size:0.9rem;max-width:100%;"><option value="">' +
+  // Build country dropdown (pre-select saved value)
+  var countryOptions = '<option value="">' +
     t("d_selectCountry", "— Select country —") +
     "</option>" +
     countries
       .map(function (c) {
+        var sel = c.flag === storedFlag ? ' selected' : '';
         return (
           '<option value="' +
           c.flag +
-          '">' +
+          '"' + sel + '>' +
           c.flag +
           " " +
           c.name +
           "</option>"
         );
       })
-      .join("") +
+      .join("");
+
+  content.innerHTML =
+    '<div style="text-align:center;margin-bottom:8px;"><select id="radioCountryFilter" style="padding:6px 10px;border-radius:8px;border:2px solid #cbd5e1;font-size:0.9rem;max-width:100%;">' +
+    countryOptions +
     '</select></div><div class="radio-top-bar"><canvas id="radio-synth" class="radio-synth"></canvas></div><div class="radio-now-playing" id="now-playing">' +
     t("d_noStation", "No station playing") +
     '</div><div class="radio-scroll-wrapper"><button id="radio-up" class="radio-scroll-btn">▲</button><div id="stations-list" class="radio-list"></div><button id="radio-down" class="radio-scroll-btn">▼</button></div><div class="radio-error" id="radio-error"></div>';
