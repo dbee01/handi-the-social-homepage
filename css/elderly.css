@@ -421,6 +421,14 @@ header {
     justify-content: center;
     flex-direction: column;
 }
+.calendar-event-location {
+    font-size: 1rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
 .calendar-event-card {
     display: flex;
     gap: 16px;

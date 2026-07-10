@@ -715,6 +715,14 @@ button:active,
     gap: 6px !important;
 }
 
+.calendar-event-location {
+    font-size: 1rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
 /* Event title - BIGGEST and brightest */
 .calendar-event-title {
     color: var(--color-tertiary-bright) !important;
