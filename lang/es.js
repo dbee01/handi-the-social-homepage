@@ -91,7 +91,7 @@ var LANG = {
 
   d_radioLocked: "Radio bloqueada – desbloquear para reproducir",
   d_connecting: "Conectando con",
-  d_nowPlaying: "Reproduciendo:",
+  d_nowPlaying: " Reproduciendo:",
   d_paused: "Pausado:",
   d_playbackFailed: "Reproducción fallida",
   d_streamUnavailable: "Stream no disponible",

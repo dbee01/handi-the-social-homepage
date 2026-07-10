@@ -92,7 +92,7 @@ var LANG = {
 
   d_radioLocked: "Radio gesperrt – zum Abspielen entsperren",
   d_connecting: "Verbinde mit",
-  d_nowPlaying: "Jetzt läuft:",
+  d_nowPlaying: " Jetzt läuft:",
   d_paused: "Pausiert:",
   d_playbackFailed: "Wiedergabe fehlgeschlagen",
   d_streamUnavailable: "Stream nicht verfügbar",

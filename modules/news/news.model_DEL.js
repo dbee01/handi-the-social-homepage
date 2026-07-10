@@ -1,1 +1,0 @@
-export default class{async fetch(){return fetch("https://api.rss2json.com/v1/api.json?rss_url=https://www.rte.ie/rss/news.xml").then(r=>r.json())}}

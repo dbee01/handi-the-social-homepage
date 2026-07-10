@@ -86,7 +86,7 @@ var LANG = {
 
   d_radioLocked: "Radio wedi'i gloi – datgloi i chwarae",
   d_connecting: "Cysylltu â",
-  d_nowPlaying: "Yn chwarae:",
+  d_nowPlaying: " Yn chwarae:",
   d_paused: "Wedi'i oedi:",
   d_playbackFailed: "Methu chwarae",
   d_streamUnavailable: "Ffrwd ddim ar gael",

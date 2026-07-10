@@ -85,7 +85,7 @@ var LANG = {
 
   d_radioLocked: "Radio bloccata – sblocca per riprodurre",
   d_connecting: "Connessione a",
-  d_nowPlaying: "In riproduzione:",
+  d_nowPlaying: " In riproduzione:",
   d_paused: "In pausa:",
   d_playbackFailed: "Riproduzione fallita",
   d_streamUnavailable: "Stream non disponibile",

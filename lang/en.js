@@ -116,7 +116,7 @@ var LANG = {
 
   // Music player
   d_ready: "Ready",
-  d_playing: "Playing...",
+  d_playing: "...playing",
   d_paused: "Paused",
   d_locked: "Locked",
   d_playerLocked: "Player locked – unlock to play",

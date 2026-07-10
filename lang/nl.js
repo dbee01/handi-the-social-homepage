@@ -87,7 +87,7 @@ var LANG = {
 
   d_radioLocked: "Radio vergrendeld – ontgrendel om af te spelen",
   d_connecting: "Verbinden met",
-  d_nowPlaying: "Nu aan het afspelen:",
+  d_nowPlaying: " Nu aan het afspelen:",
   d_paused: "Gepauzeerd:",
   d_playbackFailed: "Afspelen mislukt",
   d_streamUnavailable: "Stream niet beschikbaar",

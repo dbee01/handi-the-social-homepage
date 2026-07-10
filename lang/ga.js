@@ -98,7 +98,7 @@ var LANG = {
 
   d_radioLocked: "Tá an raidió faoi ghlas – díghlasáil chun seinm",
   d_connecting: "Ag nascadh le",
-  d_nowPlaying: "Á sheinm anois:",
+  d_nowPlaying: " Á sheinm anois:",
   d_paused: "Sos:",
   d_playbackFailed: "Theip ar an tseinm",
   d_streamUnavailable: "Sruth ar fáil",

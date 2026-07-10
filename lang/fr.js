@@ -86,7 +86,7 @@ var LANG = {
 
   d_radioLocked: "Radio verrouillée – déverrouiller pour lire",
   d_connecting: "Connexion à",
-  d_nowPlaying: "En cours :",
+  d_nowPlaying: " En cours :",
   d_paused: "En pause :",
   d_playbackFailed: "Échec de la lecture",
   d_streamUnavailable: "Flux indisponible",

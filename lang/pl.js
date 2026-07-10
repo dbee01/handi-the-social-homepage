@@ -87,7 +87,7 @@ var LANG = {
 
   d_radioLocked: "Radio zablokowane – odblokuj, aby odtwarzać",
   d_connecting: "Łączenie z",
-  d_nowPlaying: "Teraz gra:",
+  d_nowPlaying: " Teraz gra:",
   d_paused: "Wstrzymane:",
   d_playbackFailed: "Odtwarzanie nie powiodło się",
   d_streamUnavailable: "Strumień niedostępny",
