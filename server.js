@@ -114,6 +114,68 @@ app.get("/", (req, res) => {
   }
 });
 
+// -----------------------------------------------------------------------------
+// LOGGING
+// -----------------------------------------------------------------------------
+const LOG_FILE = path.join(__dirname, "log.txt");
+const LOG_USER = process.env.LOG_USERNAME || "admin";
+const LOG_PASS = process.env.LOG_PASSWORD || "handi";
+
+// Ensure log file exists
+if (!fs.existsSync(LOG_FILE)) {
+  fs.writeFileSync(LOG_FILE, "", "utf8");
+}
+
+function logWrite(level, event, details, sid) {
+  const ts = new Date().toISOString();
+  const line = JSON.stringify({ ts, level, event, details, sid: sid || "-" }) + "\n";
+  fs.appendFileSync(LOG_FILE, line, "utf8");
+}
+
+// Basic auth helper
+function basicAuth(req, res, next) {
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith("Basic ")) {
+    res.setHeader("WWW-Authenticate", 'Basic realm="Logs"');
+    return res.status(401).send("Authentication required");
+  }
+  const creds = Buffer.from(auth.slice(6), "base64").toString("utf8");
+  const [user, pass] = creds.split(":");
+  if (user !== LOG_USER || pass !== LOG_PASS) {
+    return res.status(403).send("Invalid credentials");
+  }
+  next();
+}
+
+// POST /api/log — write a log entry (no auth needed from dashboard)
+app.post("/api/log", (req, res) => {
+  const { level, event, details, sid } = req.body;
+  if (!event) return res.status(400).json({ error: "Missing event" });
+  logWrite(level || 1, event, details || {}, sid);
+  res.json({ ok: true });
+});
+
+// GET /api/log — read the log file (requires auth)
+app.get("/api/log", basicAuth, (req, res) => {
+  try {
+    const data = fs.readFileSync(LOG_FILE, "utf8");
+    res.type("text/plain").send(data);
+  } catch (e) {
+    res.status(500).send("Could not read log");
+  }
+});
+
+// GET /api/log/tail — last 50 lines (requires auth)
+app.get("/api/log/tail", basicAuth, (req, res) => {
+  try {
+    const data = fs.readFileSync(LOG_FILE, "utf8");
+    const lines = data.trim().split("\n");
+    res.type("text/plain").send(lines.slice(-50).join("\n"));
+  } catch (e) {
+    res.status(500).send("Could not read log");
+  }
+});
+
 // server.js
 const INFOBIP_API_KEY = process.env.INFOBIP_API_KEY || "YOUR_API_KEY";
 const INFOBIP_BASE_URL = process.env.INFOBIP_BASE_URL

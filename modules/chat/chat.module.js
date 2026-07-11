@@ -107,6 +107,7 @@ export default async function initChat(container) {
     } catch (err) {
       console.error("Matrix login failed:", err);
       matrixClient = null;
+      window.logEvent(1, "matrix_login_failed", { username: username, homeserver: homeserver, error: err.message });
       return false;
     }
   }

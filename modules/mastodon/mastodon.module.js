@@ -194,8 +194,10 @@ export default async function initMastodon(container) {
       }
 
       refreshPackery();
+      window.logEvent(2, "mastodon_load", { server: instance, posts: data.length });
     } catch (err) {
       console.error("Mastodon module error:", err);
+      window.logEvent(1, "mastodon_error", { server: instance, error: err.message });
       content.innerHTML = `
         <div class="module-empty" style="padding:20px;text-align:center;">
           <i class="fa-solid fa-triangle-exclamation"></i>

@@ -1,0 +1,6 @@
+{"ts":"2026-07-11T17:00:53.351Z","level":1,"event":"test","details":{},"sid":"test123"}
+{"ts":"2026-07-11T17:19:26.224Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smrglxbv2ludptt"}
+{"ts":"2026-07-11T17:19:26.231Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smrglxbv2ludptt"}
+{"ts":"2026-07-11T17:20:13.166Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smrglxbv2ludptt"}
+{"ts":"2026-07-11T17:20:13.182Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smrglxbv2ludptt"}
+{"ts":"2026-07-11T17:21:28.481Z","level":1,"event":"page_load","details":{"loadTimeSec":"85.12","theme":"woman","lang":"en"},"sid":"smrglxbv2ludptt"}

@@ -14,6 +14,7 @@
     try {
       localStorage.setItem("handiLang", code);
     } catch (e) {}
+    window.logEvent && window.logEvent(2, "language_change", { lang: code });
     location.reload();
   };
 

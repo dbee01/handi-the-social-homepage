@@ -303,8 +303,10 @@ export default async function initNews(container) {
         });
       }
       renderNews(articles, channelLink, channelTitle);
+      window.logEvent(2, "news_load", { source: formatSourceName(rssUrl), articles: articles.length });
     } catch (err) {
       console.error("News fetch error:", err);
+      window.logEvent(1, "news_error", { source: rssUrl, error: err.message });
       content.innerHTML = `
         <div class="module-empty">
           <i class="fa-solid fa-triangle-exclamation"></i>

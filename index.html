@@ -16,6 +16,7 @@
         <title>HandiHomepage – Senior Dashboard</title>
         <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
         <script src="/lang/loader.js"></script>
+            <script src="/js/core/log.js"></script>
             <style id="theme-flash-fix">
                 /* Prevent FOUC — set background before theme CSS loads */
                 html { background: #f6f8fc; }
@@ -68,6 +69,7 @@
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0047cc" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
+            <meta name="mobile-web-app-capable" content="yes" />
         <meta
             name="apple-mobile-web-app-status-bar-style"
             content="black-translucent"
@@ -222,7 +224,8 @@
         <div class="brand">
             <span
                 ><a href="https://buy.stripe.com/14AbJ05WbgWM73pbIfdUY00"
-                    >✨ Start free trial (no credit card needed)</a
+                    onclick="window.logEvent(1, 'premium_click', {})"
+                    > Try Premium</a
                 ></span
             >
         </div>
@@ -590,6 +593,8 @@
                     link.href = urls[next];
                     localStorage.setItem("handiTheme", next);
 
+                    window.logEvent(2, "theme_change", { from: current, to: next });
+
                     // Pop animation for visual feedback
                     btn.classList.add("theme-switched");
                     setTimeout(function () {
@@ -621,6 +626,20 @@
                                     "Start free trial (no credit card needed)",
                                 );
                     }, 1000);
+                });
+            })();
+        </script>
+        <script>
+            // Page load timing + session info
+            (function () {
+                var start = performance.timing ? performance.timing.navigationStart : Date.now();
+                window.addEventListener("load", function () {
+                    setTimeout(function () {
+                        var loadTime = ((Date.now() - start) / 1000).toFixed(2);
+                        var theme = localStorage.getItem("handiTheme") || "senior";
+                        var lang = localStorage.getItem("handiLang") || "en";
+                        window.logEvent(1, "page_load", { loadTimeSec: loadTime, theme: theme, lang: lang });
+                    }, 500);
                 });
             })();
         </script>

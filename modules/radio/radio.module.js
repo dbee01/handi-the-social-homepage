@@ -601,16 +601,18 @@ export default async function initRadio(container) {
       activeStationItem = i2;
       activeStationName = n2;
       if (!isLocked) stopVisualiser = startFakeVisualiser(synthCanvas);
+      window.logEvent(2, "radio_play", { station: n2, url: url });
     }
     function oe(a2, err) {
       if (a2 !== currentAudio) return;
       console.warn("Play error:", err);
-      error.innerText =
-        err.message === "Stream error"
-          ? t("d_streamUnavailable", "Stream unavailable")
-          : t("d_cannotPlay", "Cannot play this station");
+      var msg = err.message === "Stream error"
+        ? t("d_streamUnavailable", "Stream unavailable")
+        : t("d_cannotPlay", "Cannot play this station");
+      error.innerText = msg;
       nowPlaying.innerText = t("d_playbackFailed", "Playback failed");
       stopPlayback(true);
+      window.logEvent(1, "radio_error", { station: activeStationName, url: url, error: msg });
     }
   }
 
