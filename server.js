@@ -98,8 +98,7 @@ const CACHE_TTL = 30 * 1000; // 30 seconds
 
 // -----------------------------------------------------------------------------
 // Static frontend
-const publicPath = path.join(__dirname, "public");
-const staticPath = fs.existsSync(publicPath) ? publicPath : __dirname;
+const staticPath = __dirname;
 app.use(express.static(staticPath));
 
 app.get("/", (req, res) => {
