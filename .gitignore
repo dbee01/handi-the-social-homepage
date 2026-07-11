@@ -137,3 +137,4 @@ coverage/
 
 # TernJS port file
 .tern-port
+log.txt
