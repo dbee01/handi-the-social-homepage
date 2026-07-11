@@ -217,7 +217,7 @@ export default async function initBus(container) {
         const arrivalText =
           d.arrival_text ||
           (d.minutes_away <= 1
-            ? "Due"
+            ? t("d_due", "Due")
             : `${d.minutes_away} min${d.minutes_away !== 1 ? "s" : ""}`);
 
         let etaStr = "--:--:--";
@@ -315,7 +315,7 @@ export default async function initBus(container) {
           minutes_away: d.minutes_away,
           arrival_text:
             d.minutes_away <= 1
-              ? "Due"
+              ? t("d_due", "Due")
               : `${d.minutes_away} min${d.minutes_away !== 1 ? "s" : ""}`,
           arrival_time: d.arrival_time,
           delay: d.delay_seconds || null,
@@ -338,7 +338,7 @@ export default async function initBus(container) {
       renderBusList(".bus-returns", retBuses);
     } catch (e) {
       console.error("Scheduled fallback error:", e);
-      if (timeSpan) timeSpan.textContent = "Error";
+      if (timeSpan) timeSpan.textContent = t("d_error", "Error");
     }
   }
 

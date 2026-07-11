@@ -617,3 +617,52 @@ input:focus {
     font-size: 16px;
     background-color: #ffffff;
 }
+
+/* =========================================================
+   STANDARDIZED TEXT SIZES (cross-theme)
+========================================================= */
+h3,
+.mastodon-title,
+#music-track-title {
+    font-size: 22px;
+}
+
+.music-state-text,
+.calendar-sync-info span,
+.mastodon-provider {
+    font-size: 16px;
+}
+
+p,
+.music-track-item,
+.mastodon-description,
+.radio-station span,
+#music-status,
+#music-state-text {
+    font-size: 18px;
+}
+
+/* =========================================================
+   STANDARDIZED HEADER / FOOTER (cross-theme)
+========================================================= */
+.logo-text,
+.logo-link,
+.handi-logo {
+    font-size: 20px;
+}
+
+#searchInput,
+#searchEngine,
+.search-button,
+#themeSwitcher {
+    font-size: 16px;
+}
+
+.header-weather,
+#weather {
+    font-size: 14px;
+}
+
+.customize-link a {
+    font-size: 16px;
+}

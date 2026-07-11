@@ -1328,7 +1328,6 @@ textarea:focus {
 .logo-text,
 .handi-logo {
     color: var(--color-primary-bright) !important;
-    font-size: var(--font-size-xl) !important;
 }
 
 .settings-link-btn,
@@ -1471,4 +1470,53 @@ header {
     box-shadow:
         inset 0 0 10px rgba(0, 200, 0, 0.1),
         0 0 10px rgba(0, 200, 0, 0.05);
+}
+
+/* =========================================================
+   STANDARDIZED TEXT SIZES (cross-theme)
+========================================================= */
+h3,
+.mastodon-title,
+#music-track-title {
+    font-size: 22px;
+}
+
+.music-state-text,
+.calendar-sync-info span,
+.mastodon-provider {
+    font-size: 16px;
+}
+
+p,
+.music-track-item,
+.mastodon-description,
+.radio-station span,
+#music-status,
+#music-state-text {
+    font-size: 18px;
+}
+
+/* =========================================================
+   STANDARDIZED HEADER / FOOTER (cross-theme)
+========================================================= */
+.logo-text,
+.logo-link,
+.handi-logo {
+    font-size: 20px;
+}
+
+#searchInput,
+#searchEngine,
+.search-button,
+#themeSwitcher {
+    font-size: 16px;
+}
+
+.header-weather,
+#weather {
+    font-size: 14px;
+}
+
+.customize-link a {
+    font-size: 16px;
 }

@@ -223,7 +223,7 @@ export default async function initMusic(container) {
     if (!keepIndex) {
       currentIndex = -1;
       trackTitleSpan.innerText = "—";
-      stateSpan.innerText = t("d_ready", "Ready");
+      stateSpan.innerText = " | " + t("d_ready", "Ready");
       playPauseBtn.innerHTML = "▶";
       isPlaying = false;
     }
@@ -235,10 +235,10 @@ export default async function initMusic(container) {
     setTimeout(function () {
       if (stateSpan.innerText === msg) {
         if (currentAudio && isPlaying)
-          stateSpan.innerText = t("d_playing", "...playing");
+          stateSpan.innerText = " | " + t("d_playing", "...playing");
         else if (currentAudio && !isPlaying)
-          stateSpan.innerText = t("d_paused", "Paused");
-        else stateSpan.innerText = t("d_ready", "Ready");
+          stateSpan.innerText = " | " + t("d_paused", " Paused");
+        else stateSpan.innerText = " | " + t("d_ready", " Ready");
       }
     }, 3000);
   }
@@ -305,7 +305,7 @@ export default async function initMusic(container) {
       } else {
         isPlaying = false;
         playPauseBtn.innerHTML = "▶";
-        stateSpan.innerText = t("d_paused", "Paused");
+        stateSpan.innerText = " | " + t("d_paused", "Paused");
         updateTrackIconsAndActive();
       }
       audio.onended = function () {
@@ -351,7 +351,7 @@ export default async function initMusic(container) {
       currentAudio.pause();
       isPlaying = false;
       playPauseBtn.innerHTML = "▶";
-      stateSpan.innerText = t("d_paused", "...paused");
+      stateSpan.innerText = " | " + t("d_paused", "...paused");
       updateTrackIconsAndActive();
     } else {
       var pp = currentAudio.play();
@@ -359,7 +359,7 @@ export default async function initMusic(container) {
         pp.then(function () {
           isPlaying = true;
           playPauseBtn.innerHTML = "⏸";
-          stateSpan.innerText = t("d_playing", "...playing");
+          stateSpan.innerText = " | " + t("d_playing", "...playing");
           updateTrackIconsAndActive();
         }).catch(function (err) {
           showError(t("d_cannotResume", "Cannot resume"));
@@ -393,14 +393,14 @@ export default async function initMusic(container) {
     if (isLocked) {
       stopVisualiserAndClear();
       if (currentIndex === -1) trackTitleSpan.innerText = "—";
-      stateSpan.innerText = t("d_locked", "Locked");
+      stateSpan.innerText = " | " + t("d_locked", "Locked");
     } else {
       ensureVisualiserRunning();
       if (currentAudio && isPlaying && currentIndex !== -1)
-        stateSpan.innerText = t("d_playing", "..playing");
+        stateSpan.innerText = " | " + t("d_playing", "Playing");
       else if (currentIndex !== -1 && !isPlaying)
-        stateSpan.innerText = t("d_paused", "..paused");
-      else stateSpan.innerText = t("d_ready", "Ready");
+        stateSpan.innerText = " | " + t("d_paused", "Paused");
+      else stateSpan.innerText = " | " + t("d_ready", "Ready");
     }
   }
 

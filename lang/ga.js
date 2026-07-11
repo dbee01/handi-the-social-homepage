@@ -99,7 +99,7 @@ var LANG = {
   d_radioLocked: "Tá an raidió faoi ghlas – díghlasáil chun seinm",
   d_connecting: "Ag nascadh le",
   d_nowPlaying: " Á sheinm anois:",
-  d_paused: "Sos:",
+  d_paused: " Sos:",
   d_playbackFailed: "Theip ar an tseinm",
   d_streamUnavailable: "Sruth ar fáil",
   d_cannotPlay: "Ní féidir an stáisiún seo a sheinm",
@@ -168,8 +168,30 @@ var LANG = {
   d_invalidFile: "Comhad neamhbhailí",
   d_dateUnknown: "Dáta anaithnid",
 
+  // Chat
+  d_new: "Nua!",
+  d_errorLabel: "Earráid",
+  d_noMessages: "Gan teachtaireachtaí",
+  d_configureSettings: "Cumraigh i Socruithe",
+  d_loadingMatrix: "Seomraí Matrix á lódáil...",
+  d_matrixNotConfigured: "Comhrá Matrix gan chumrú.",
+  d_noChatRooms: "Gan seomraí comhrá cumraithe.",
+  d_invalidRoom: "Seomra neamhbhailí",
+  d_couldNotResolveRoom: "Níorbh fhéidir an seomra a réiteach",
+  d_encryptedMessage: "🔒 Teachtaireacht chriptithe",
+
+  // Bus
+  d_noBusRoutes: "Gan bealaí bus cumraithe.",
+  d_departure: "Imeacht",
+  d_return: "Filleadh",
+  d_changeDirection: "Athraigh Treo",
+  d_noUpcoming: "Gan busanna ag teacht",
+  d_live: "Beo",
+  d_scheduled: "Sceidealaithe",
+  d_due: "Dlite",
+
   d_customizeDashboard: "Saincheap an Deais",
-  d_freeTrial: "Tosaigh triail saor in aisce (gan cárta creidmheasa)",
+  d_freeTrial: "✨ Bain triail as Préimh",
 
   s_settings: "Socruithe",
   s_resetAll: "Athshocraigh Gach Rud",
@@ -227,7 +249,7 @@ var LANG = {
   s_notificationTime: "Am fógra",
   s_getIcsLink:
     'Faigh nasc ICS ó Proton Calendar → Socruithe → Féilirí → "Nasc le haghaidh amharc"',
-  s_freeTrial: "Tosaigh triail saor in aisce (gan cárta creidmheasa)",
+  s_freeTrial: "✨ Bain triail as Préimh",
   h_gallery: "<strong>📸 Gailearaí</strong><br><br>• Uaslódáil íomhánna in <strong>Socruithe → Gailearaí</strong>.<br>• Úsáid <strong>Roimhe / Ar Aghaidh</strong> chun brabhsáil, <strong>Seinn/Sos</strong> le haghaidh taispeántas sleamhnán.<br>• Cliceáil <strong>Gailearaí Lánscáileáin</strong> chun an lightbox a oscailt.<br>• Taispeántar ainmneacha comhaid mar fhotheidil – úsáid ainmneacha mar <code>mo+chapall+deas.jpg</code> le haghaidh inléiteachta.",
   h_live_bus: "<strong>🚌 Bus Beo</strong><br><br>• Taispeánann amanna teachta fíor-ama do do stad roghnaithe.<br>• Cumraigh bealaí agus stadanna in <strong>Socruithe → Rianaitheoir Bus Beo</strong>.<br>• Cliceáil <strong>Athnuaigh Amanna</strong> chun nuashonrú de láimh.<br>• Úsáid <strong>Athraigh Treo</strong> chun aistriú idir stadanna.",
   h_music: "<strong>🎵 Seinnteoir Ceoil</strong><br><br>• Uaslódáil comhaid MP3 in <strong>Socruithe → Seinnteoir Ceoil</strong>.<br>• Cliceáil ar rian lena sheinm – freagraíonn an léirshamhlóir don fhuaim.<br>• Úsáid <strong>Roimhe / Ar Aghaidh</strong> agus an <strong>glas</strong> chun athruithe de thaisme a chosc.<br>• Cuirtear síntí comhaid (m.sh. .mp3) i bhfolach ar mhaithe le taispeáint níos glaine.",

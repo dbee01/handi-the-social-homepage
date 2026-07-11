@@ -197,6 +197,9 @@ var LANG = {
   d_loadingMatrix: "Loading Matrix rooms...",
   d_matrixNotConfigured: "Matrix chat not configured.",
   d_noChatRooms: "No chat rooms configured.",
+  d_invalidRoom: "Invalid Room",
+  d_couldNotResolveRoom: "Could not resolve room",
+  d_encryptedMessage: "🔒 Encrypted message",
 
   // Calendar
   d_noCalendar: "No calendar configured.",
@@ -214,6 +217,7 @@ var LANG = {
   d_noUpcoming: "No upcoming",
   d_live: "Live",
   d_scheduled: "Scheduled",
+  d_due: "Due",
 
   // Weather
   d_weatherDisabled: "Weather module disabled.",
@@ -302,7 +306,7 @@ var LANG = {
   s_notificationTime: "Notification time",
   s_getIcsLink:
     'Get ICS link from Proton Calendar → Settings → Calendars → "Link for viewing"',
-  s_freeTrial: "Start free trial (no credit card needed)",
+  s_freeTrial: "✨ Try Premium",
 
   // Module help texts
   h_gallery:
@@ -336,5 +340,5 @@ var LANG = {
 
   // Footer
   d_customizeDashboard: "Customize Dashboard",
-  d_freeTrial: "Start free trial (no credit card needed)",
+  d_freeTrial: "✨ Try Premium",
 };

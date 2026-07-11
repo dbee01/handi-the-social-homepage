@@ -168,7 +168,7 @@ export default async function initChat(container) {
           origin_server_ts: m.origin_server_ts,
           body:
             m.type === "m.room.encrypted"
-              ? "🔒 Encrypted message"
+              ? t("d_encryptedMessage", "🔒 Encrypted message")
               : m.content?.body || "",
         }))
         .filter((m) => m.body);
@@ -356,8 +356,8 @@ export default async function initChat(container) {
         results.push({
           index: i,
           messages: [],
-          roomName: "Invalid Room",
-          error: "Could not resolve room",
+          roomName: t("d_invalidRoom", "Invalid Room"),
+          error: t("d_couldNotResolveRoom", "Could not resolve room"),
           hasNew: false,
         });
         continue;
