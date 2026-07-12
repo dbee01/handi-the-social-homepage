@@ -340,7 +340,6 @@ button,
     border: 2px solid var(--color-border);
     border-radius: var(--border-radius-sm) !important;
     font-family: var(--font-family);
-    font-size: var(--font-size-medium) !important;
     padding: 10px !important;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -409,7 +408,6 @@ button:active,
     border-color: var(--color-border-light) !important;
     font-weight: bold;
     text-shadow: none !important;
-    font-size: var(--font-size-large) !important;
     padding: 16px 32px !important;
 }
 
@@ -1337,7 +1335,6 @@ textarea:focus {
     color: var(--color-text) !important;
     border: 2px solid var(--color-border) !important;
     border-radius: var(--border-radius-sm) !important;
-    font-size: var(--font-size-medium) !important;
     padding: 12px 20px !important;
 }
 
@@ -1526,5 +1523,5 @@ p,
 }
 
 #musicLoadMoreBtn {
-    font-size: 14px;
+    font-size: 16px;
 }

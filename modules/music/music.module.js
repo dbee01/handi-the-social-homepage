@@ -141,7 +141,7 @@ export default async function initMusic(container) {
   content.innerHTML =
     '<div class="music-now-playing"><canvas id="music-synth" class="music-synth"></canvas><div id="music-status" class="music-status"><span id="music-track-title">—</span><span class="music-state-text">' +
     t("d_ready", "Ready") +
-    '</span></div></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-playpause" class="primary">▶</button><button id="music-next">⏭</button></div><div style="text-align:center;margin-bottom:8px;"><button id="musicLoadMoreBtn" class="settings-link-btn" style="font-size:0.8rem;padding:6px 14px;"><i class="fa-solid fa-upload"></i> ' +
+    '</span></div></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-playpause" class="primary">▶</button><button id="music-next">⏭</button></div><div style="text-align:center;margin-bottom:8px;"><button id="musicLoadMoreBtn" class="settings-link-btn" style="padding:6px 14px;"><i class="fa-solid fa-upload"></i> ' +
     t("d_loadMusic", "Load Music") +
     '</button></div><div class="music-scroll-wrapper"><button id="musicScrollUp" class="music-scroll-btn">▲</button><div id="music-playlist" class="music-playlist"></div><button id="musicScrollDown" class="music-scroll-btn">▼</button></div>';
 
