@@ -62,7 +62,6 @@ function saveAllSettings() {
     if (document.getElementById('calendarUrl')) {
         if (!settings.calendar) settings.calendar = {};
         settings.calendar.url = document.getElementById('calendarUrl')?.value || '';
-        settings.calendar.notificationMinutes = parseInt(document.getElementById('calendarNotificationMinutes')?.value) || 30;
     }
     
     if (document.getElementById('autoDialDelay')) {

@@ -75,6 +75,8 @@ var LANG = {
   d_noCalendar: "Nessun calendario.",
   d_todaysEvents: "Eventi di oggi",
   d_minWarning: "min avviso",
+  d_on: "Avvisi ON",
+  d_off: "Avvisi OFF",
   d_noEventsToday: "Nessun evento oggi.",
   d_eventsTomorrow: "evento(i) domani.",
   d_lastSynced: "Ultima sincronizzazione:",
@@ -245,7 +247,7 @@ var LANG = {
   h_emergency_alert: "<strong>📍 Allarme posizione</strong><br><br><strong>📱 Solo telefoni cellulari.</strong><br>• Invia un SMS con la tua posizione GPS ai contatti fidati.<br>• Richiede GPS e rete mobile (non disponibile su desktop/tablet).<br>• Aggiungi contatti in <strong>Impostazioni → Condividi posizione</strong>.<br>• Sblocca il pulsante (🔓) poi premi <strong>CONDIVIDI</strong> per inviare.<br>• Prova prima con il tuo numero per assicurarti che funzioni.",
   h_phone: "<strong>📞 Telefono amichevole</strong><br><br>• Chiamata con un tocco ai contatti salvati.<br>• Aggiungi contatti con foto in <strong>Impostazioni → Telefono amichevole</strong>.<br>• Il modulo è <strong>bloccato per impostazione predefinita</strong> – sblocca per abilitare le chiamate.<br>• Le foto aiutano a riconoscere i contatti a colpo d'occhio.",
   h_chat: "<strong>💬 Chat (Matrix)</strong><br><br>• Crea il tuo account Matrix su <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> per avviare stanze di chat private per famiglia o amici.<br>• Aggiungi URL delle stanze, token di accesso, ID utente in <strong>Impostazioni → Chat</strong>.<br>• Il modulo controlla nuovi messaggi ogni 30 secondi.<br>• Clicca sull'intestazione della stanza per espandere e visualizzare i messaggi.<br>• Le notifiche di nuovi messaggi appaiono come un badge rosso.",
-  h_calendar: "<strong>📅 Calendario (Proton ICS)</strong><br><br>• Mostra gli eventi di oggi dal tuo Calendario Proton.<br>• Ottieni il tuo link ICS da Proton Calendar → Impostazioni → Calendari → 'Condividi con chiunque' → 'Crea link'.<br>• Incolla il link ICS in <strong>Impostazioni → Calendario</strong>.<br><br><strong>⚠️ Limitazioni importanti (Proton, non questo modulo):</strong><br>• Il feed ICS si aggiorna <strong>ogni 4–16 ore</strong> – i nuovi eventi impiegano tempo ad apparire.<br>• Gli eventi ricorrenti potrebbero non apparire correttamente.<br><br><strong>💡 Suggerimenti:</strong><br>• Se un evento non appare, attendi qualche ora e riprova.",
+  h_calendar: "<strong>📅 Calendario (Proton ICS)</strong><br><br>• Mostra gli eventi di oggi dal tuo Calendario Proton.<br>• Ottieni il tuo link ICS da Proton Calendar → Impostazioni → Calendari → 'Condividi con chiunque' → 'Crea link'.<br>• Incolla il link ICS in <strong>Impostazioni → Calendario</strong>.<br><br><strong>🔔 Avvisi:</strong><br>• Le notifiche sono impostate nella tua app calendario — es. 2 notifiche su un evento = due avvisi su questa dashboard.<br>• Attiva/disattiva gli avvisi con il pulsante in cima al calendario.<br><br><strong>⚠️ Limitazioni importanti (Proton, non questo modulo):</strong><br>• Il feed ICS si aggiorna <strong>ogni 4–16 ore</strong> – i nuovi eventi impiegano tempo ad apparire.<br>• Gli eventi ricorrenti potrebbero non apparire correttamente.<br><br><strong>💡 Suggerimenti:</strong><br>• Se un evento non appare, attendi qualche ora e riprova.",
 
   h_modalTitle: "Aiuto modulo",
   h_gotIt: "Ho capito",

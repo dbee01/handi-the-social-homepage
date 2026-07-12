@@ -88,6 +88,8 @@ var LANG = {
   d_noCalendar: "Gan féilire cumraithe.",
   d_todaysEvents: "Imeachtaí an Lae Inniu",
   d_minWarning: "nóim rabhadh",
+  d_on: "Foláirimh Ar Siúl",
+  d_off: "Foláirimh Múchta",
   d_noEventsToday: "Gan imeachtaí sceidealaithe inniu.",
   d_eventsTomorrow: "imeacht(í) amárach.",
   d_lastSynced: "Sioncronaithe go deireanach:",
@@ -259,7 +261,7 @@ var LANG = {
   h_emergency_alert: "<strong>📍 Foláireamh Suímh</strong><br><br><strong>📱 Fóin phóca amháin.</strong><br>• Seolann SMS le do shuíomh GPS chuig teagmhálacha iontaofa.<br>• Teastaíonn GPS agus líonra soghluaiste (níl sé ar fáil ar ríomhaire/táibléad).<br>• Cuir teagmhálacha leis in <strong>Socruithe → Comhroinnt Suímh</strong>.<br>• Díghlasáil an cnaipe (🔓) ansin brúigh <strong>ROINN</strong> chun seoladh.<br>• Tástáil le d'uimhir féin ar dtús lena chinntiú go n-oibríonn sé.",
   h_phone: "<strong>📞 Fón Cairdiúil</strong><br><br>• Glaoch aon-sconna chuig do theagmhálacha sábháilte.<br>• Cuir teagmhálacha le grianghraif in <strong>Socruithe → Fón Cairdiúil</strong>.<br>• Tá an modúl <strong>faoi ghlas de réir réamhshocraithe</strong> – díghlasáil chun glaonna a chumasú.<br>• Cabhraíonn grianghraif le teagmhálacha a aithint ar an toirt.",
   h_chat: "<strong>💬 Comhrá (Matrix)</strong><br><br>• Cruthaigh do chuntas Matrix féin ag <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> chun seomraí comhrá príobháideacha a thosú do theaghlach nó do chairde.<br>• Cuir URLanna seomraí, comhartha rochtana, ID úsáideora in <strong>Socruithe → Comhrá</strong>.<br>• Seiceálann an modúl teachtaireachtaí nua gach 30 soicind.<br>• Cliceáil ar cheanntásc an tseomra chun é a leathnú agus teachtaireachtaí a fheiceáil.<br>• Taispeántar fógraí teachtaireachtaí nua mar shuaitheantas dearg.",
-  h_calendar: "<strong>📅 Féilire (Proton ICS)</strong><br><br>• Taispeánann imeachtaí an lae inniu ó d'Fhéilire Proton.<br>• Faigh do nasc ICS ó Proton Calendar → Socruithe → Féilirí → 'Roinn le haon duine' → 'Cruthaigh nasc'.<br>• Greamaigh an nasc ICS in <strong>Socruithe → Féilire</strong>.<br><br><strong>⚠️ Teorainneacha tábhachtacha (Proton, ní an modúl seo):</strong><br>• Nuashonraíonn an fotha ICS <strong>gach 4–16 uair an chloig</strong> – tógann imeachtaí nua am le feiceáil.<br>• Seans nach dtaispeánfar imeachtaí athfhillteacha i gceart.<br><br><strong>💡 Leideanna:</strong><br>• Mura bhfeictear imeacht, fan cúpla uair an chloig agus bain triail eile as.",
+  h_calendar: "<strong>📅 Féilire (Proton ICS)</strong><br><br>• Taispeánann imeachtaí an lae inniu ó d'Fhéilire Proton.<br>• Faigh do nasc ICS ó Proton Calendar → Socruithe → Féilirí → 'Roinn le haon duine' → 'Cruthaigh nasc'.<br>• Greamaigh an nasc ICS in <strong>Socruithe → Féilire</strong>.<br><br><strong>🔔 Foláirimh:</strong><br>• Socraítear fógraí i d'aip féilire — m.sh. 2 fhógra ar imeacht = dhá fholáireamh ar an deais seo.<br>• Scoránaigh foláirimh air/as leis an gcnaipe ag barr an fhéilire.<br><br><strong>⚠️ Teorainneacha tábhachtacha (Proton, ní an modúl seo):</strong><br>• Nuashonraíonn an fotha ICS <strong>gach 4–16 uair an chloig</strong> – tógann imeachtaí nua am le feiceáil.<br>• Seans nach dtaispeánfar imeachtaí athfhillteacha i gceart.<br><br><strong>💡 Leideanna:</strong><br>• Mura bhfeictear imeacht, fan cúpla uair an chloig agus bain triail eile as.",
 
   h_modalTitle: "Cabhair an Mhodúil",
   h_gotIt: "Tuigim",

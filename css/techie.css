@@ -277,7 +277,6 @@ footer,
 /* ---------- TITLES ---------- */
 .panel-title {
     color: var(--color-primary-bright) !important;
-    font-size: var(--font-size-xl) !important;
     letter-spacing: 1px;
     text-transform: uppercase;
 }
@@ -1475,6 +1474,11 @@ header {
 /* =========================================================
    STANDARDIZED TEXT SIZES (cross-theme)
 ========================================================= */
+.panel-title {
+    font-size: 20px;
+    font-weight: 700;
+}
+
 h3,
 .mastodon-title,
 #music-track-title {
@@ -1514,7 +1518,7 @@ p,
 
 .header-weather,
 #weather {
-    font-size: 14px;
+    font-size: 19px;
 }
 
 .customize-link a {

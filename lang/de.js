@@ -82,6 +82,8 @@ var LANG = {
   d_noCalendar: "Kein Kalender konfiguriert.",
   d_todaysEvents: "Heutige Termine",
   d_minWarning: "Min. Warnung",
+  d_on: "Alarme Ein",
+  d_off: "Alarme Aus",
   d_noEventsToday: "Keine Termine für heute.",
   d_eventsTomorrow: "Termin(e) morgen.",
   d_lastSynced: "Zuletzt synchronisiert:",
@@ -252,7 +254,7 @@ var LANG = {
   h_emergency_alert: "<strong>📍 Standortalarm</strong><br><br><strong>📱 Nur für Mobiltelefone.</strong><br>• Sendet eine SMS mit deinem GPS-Standort an vertrauenswürdige Kontakte.<br>• Benötigt GPS und Mobilfunknetz (nicht auf Desktop/Tablet verfügbar).<br>• Kontakte hinzufügen unter <strong>Einstellungen → Standort teilen</strong>.<br>• Entsperre die Schaltfläche (🔓) und drücke dann <strong>TEILEN</strong> zum Senden.<br>• Teste zuerst mit deiner eigenen Nummer, um sicherzustellen, dass es funktioniert.",
   h_phone: "<strong>📞 Freundliches Telefon</strong><br><br>• Anruf mit einem Tipp auf gespeicherte Kontakte.<br>• Kontakte mit Fotos hinzufügen unter <strong>Einstellungen → Freundliches Telefon</strong>.<br>• Das Modul ist <strong>standardmäßig gesperrt</strong> – entsperren, um Anrufe zu aktivieren.<br>• Fotos helfen, Kontakte auf einen Blick zu erkennen.",
   h_chat: "<strong>💬 Chat (Matrix)</strong><br><br>• Erstelle dein eigenes Matrix-Konto bei <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a>, um private Familien- oder Freundes-Chaträume zu starten.<br>• Raum-URLs, Zugriffstoken, Benutzer-ID hinzufügen unter <strong>Einstellungen → Chat</strong>.<br>• Das Modul prüft alle 30 Sekunden auf neue Nachrichten.<br>• Klicke auf die Raumkopfzeile, um sie zu erweitern und Nachrichten anzuzeigen.<br>• Benachrichtigungen über neue Nachrichten erscheinen als rotes Abzeichen.",
-  h_calendar: "<strong>📅 Kalender (Proton ICS)</strong><br><br>• Zeigt die heutigen Ereignisse aus deinem Proton Kalender.<br>• ICS-Link abrufen über Proton Calendar → Einstellungen → Kalender → 'Mit jedem teilen' → 'Link erstellen'.<br>• ICS-Link einfügen unter <strong>Einstellungen → Kalender</strong>.<br><br><strong>⚠️ Wichtige Einschränkungen (Proton, nicht dieses Modul):</strong><br>• Der ICS-Feed aktualisiert sich <strong>alle 4–16 Stunden</strong> – neue Ereignisse brauchen Zeit, um zu erscheinen.<br>• Wiederkehrende Ereignisse werden möglicherweise nicht korrekt angezeigt.<br><br><strong>💡 Tipps:</strong><br>• Wenn ein Ereignis nicht erscheint, warte einige Stunden und versuche es erneut.",
+  h_calendar: "<strong>📅 Kalender (Proton ICS)</strong><br><br>• Zeigt die heutigen Ereignisse aus deinem Proton Kalender.<br>• ICS-Link abrufen über Proton Calendar → Einstellungen → Kalender → 'Mit jedem teilen' → 'Link erstellen'.<br>• ICS-Link einfügen unter <strong>Einstellungen → Kalender</strong>.<br><br><strong>🔔 Alarme:</strong><br>• Benachrichtigungen werden in deiner Kalender-App eingestellt — z.B. 2 Benachrichtigungen pro Ereignis = zwei Alarme auf diesem Dashboard.<br>• Alarme mit dem Schalter oben im Kalender ein-/ausschalten.<br><br><strong>⚠️ Wichtige Einschränkungen (Proton, nicht dieses Modul):</strong><br>• Der ICS-Feed aktualisiert sich <strong>alle 4–16 Stunden</strong> – neue Ereignisse brauchen Zeit, um zu erscheinen.<br>• Wiederkehrende Ereignisse werden möglicherweise nicht korrekt angezeigt.<br><br><strong>💡 Tipps:</strong><br>• Wenn ein Ereignis nicht erscheint, warte einige Stunden und versuche es erneut.",
 
   h_modalTitle: "Modul-Hilfe",
   h_gotIt: "Verstanden",

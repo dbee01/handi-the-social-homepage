@@ -29,11 +29,22 @@ export default async function initCalendar(container) {
   // Load existing calendar URL - preserve existing if new input is blank
   let calendarUrl = "";
   let notificationMinutes = 30;
+  let alertsEnabled = true;
 
   if (settings.calendar) {
     // Only use the stored URL if it exists and is not empty
     calendarUrl = settings.calendar.url || "";
     notificationMinutes = settings.calendar.notificationMinutes || 15;
+  }
+
+  // Load alerts toggle state (default: ON)
+  try {
+    var savedAlerts = localStorage.getItem("calendarAlerts");
+    alertsEnabled = savedAlerts !== null ? savedAlerts === "true" : true;
+  } catch (e) {}
+
+  function saveAlertsState() {
+    try { localStorage.setItem("calendarAlerts", alertsEnabled ? "true" : "false"); } catch (e) {}
   }
 
   let refreshIntervalId = null;
@@ -488,6 +499,7 @@ export default async function initCalendar(container) {
   }
 
   function checkForUpcomingEvents(events) {
+    if (!alertsEnabled) return;
     const now = new Date();
     for (const event of events) {
       if (isUpcoming(event, notificationMinutes)) {
@@ -608,13 +620,14 @@ export default async function initCalendar(container) {
       '<span><i class="fa-regular fa-sun"></i> ' +
       t("d_todaysEvents", "Today's Events") +
       "</span>";
+    html += '</div><div style="display:flex;align-items:center;gap:8px;">';
     html +=
-      '<span class="calendar-notification-badge">🔔 ' +
-      notificationMinutes +
-      " " +
-      t("d_minWarning", "min warning") +
-      "</span>";
-    html += "</div>";
+      '<button id="calendarAlertToggle" class="calendar-refresh-btn" style="font-size:0.85rem;' +
+      (alertsEnabled ? 'background:#0047cc;color:#fff;' : '') +
+      '">' +
+      (alertsEnabled ? '🔔 ' + t("d_on", "Alerts On") : '🔕 ' + t("d_off", "Alerts Off")) +
+      '</button>';
+    html += '</div>';
 
     if (events.length === 0) {
       html += '<div class="calendar-empty">';
@@ -706,22 +719,45 @@ export default async function initCalendar(container) {
       });
 
     if (window.refreshDashboardLayout) window.refreshDashboardLayout();
+
+    // Alert toggle handler
+    var alertToggle = document.getElementById("calendarAlertToggle");
+    if (alertToggle) {
+      alertToggle.addEventListener("click", function () {
+        alertsEnabled = !alertsEnabled;
+        saveAlertsState();
+        renderCalendar(events, tomorrowEvents, totalEvents);
+        if (alertsEnabled && content._allEvents) {
+          checkForUpcomingEvents(content._allEvents);
+          startAlertInterval();
+        } else {
+          stopAlertInterval();
+          clearAlert();
+        }
+      });
+    }
+  }
+
+  function startAlertInterval() {
+    if (alertCheckInterval) clearInterval(alertCheckInterval);
+    alertCheckInterval = setInterval(() => {
+      const allEvents = content._allEvents;
+      if (allEvents) checkForUpcomingEvents(allEvents);
+    }, 30 * 1000);
+  }
+
+  function stopAlertInterval() {
+    if (alertCheckInterval) {
+      clearInterval(alertCheckInterval);
+      alertCheckInterval = null;
+    }
   }
 
   function startRefresh() {
     if (refreshIntervalId) clearInterval(refreshIntervalId);
     fetchCalendar();
-    // Refresh every 15 minutes (Proton ICS can take hours to update)
     refreshIntervalId = setInterval(fetchCalendar, 15 * 60 * 1000);
-    // Also check events every 30 seconds for more accurate alert timing
-    alertCheckInterval = setInterval(() => {
-      // Re-check for upcoming events using the last fetched events stored on content
-      // We store allEvents on the content element for re-checking
-      const allEvents = content._allEvents;
-      if (allEvents) {
-        checkForUpcomingEvents(allEvents);
-      }
-    }, 30 * 1000);
+    if (alertsEnabled) startAlertInterval();
   }
 
   function escapeHtml(str) {
@@ -740,7 +776,7 @@ export default async function initCalendar(container) {
 
   return () => {
     if (refreshIntervalId) clearInterval(refreshIntervalId);
-    if (alertCheckInterval) clearInterval(alertCheckInterval);
+    stopAlertInterval();
     clearAlert();
   };
 }

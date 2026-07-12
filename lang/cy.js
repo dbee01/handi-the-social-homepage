@@ -76,6 +76,8 @@ var LANG = {
   d_noCalendar: "Dim calendr.",
   d_todaysEvents: "Digwyddiadau heddiw",
   d_minWarning: "mun rhybudd",
+  d_on: "Rhybuddion Ymlaen",
+  d_off: "Rhybuddion i Ffwrdd",
   d_noEventsToday: "Dim digwyddiadau heddiw.",
   d_eventsTomorrow: "digwyddiad(au) yfory.",
   d_lastSynced: "Cydamserwyd ddiwethaf:",
@@ -246,7 +248,7 @@ var LANG = {
   h_emergency_alert: "<strong>📍 Rhybudd Lleoliad</strong><br><br><strong>📱 Ffonau symudol yn unig.</strong><br>• Yn anfon SMS gyda'ch lleoliad GPS at gysylltiadau dibynadwy.<br>• Mae angen GPS a rhwydwaith symudol (ddim ar gael ar gyfrifiadur/llechen).<br>• Ychwanegwch gysylltiadau yn <strong>Gosodiadau → Rhannu Lleoliad</strong>.<br>• Datgloi'r botwm (🔓) yna pwyswch <strong>RHANNU</strong> i anfon.<br>• Profwch gyda'ch rhif eich hun yn gyntaf i sicrhau ei fod yn gweithio.",
   h_phone: "<strong>📞 Ffôn Cyfeillgar</strong><br><br>• Galwad un-tap i'ch cysylltiadau sydd wedi'u cadw.<br>• Ychwanegwch gysylltiadau gyda lluniau yn <strong>Gosodiadau → Ffôn Cyfeillgar</strong>.<br>• Mae'r modiwl <strong>wedi'i gloi yn ddiofyn</strong> – datgloi i alluogi galwadau.<br>• Mae lluniau'n helpu i adnabod cysylltiadau ar unwaith.",
   h_chat: "<strong>💬 Sgwrs (Matrix)</strong><br><br>• Crëwch eich cyfrif Matrix eich hun yn <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> i ddechrau ystafelloedd sgwrsio preifat i deulu neu ffrindiau.<br>• Ychwanegwch URLau ystafelloedd, tocyn mynediad, ID defnyddiwr yn <strong>Gosodiadau → Sgwrs</strong>.<br>• Mae'r modiwl yn gwirio am negeseuon newydd bob 30 eiliad.<br>• Cliciwch bennawd yr ystafell i ehangu a gweld negeseuon.<br>• Mae hysbysiadau negeseuon newydd yn ymddangos fel bathodyn coch.",
-  h_calendar: "<strong>📅 Calendr (Proton ICS)</strong><br><br>• Yn dangos digwyddiadau heddiw o'ch Calendr Proton.<br>• Cewch eich dolen ICS o Proton Calendar → Gosodiadau → Calendrau → 'Rhannu ag unrhyw un' → 'Creu dolen'.<br>• Gludwch y ddolen ICS yn <strong>Gosodiadau → Calendr</strong>.<br><br><strong>⚠️ Cyfyngiadau pwysig (Proton, nid y modiwl hwn):</strong><br>• Mae'r porthiant ICS yn diweddaru <strong>bob 4–16 awr</strong> – mae digwyddiadau newydd yn cymryd amser i ymddangos.<br>• Efallai na fydd digwyddiadau cylchol yn ymddangos yn gywir.<br><br><strong>💡 Awgrymiadau:</strong><br>• Os nad yw digwyddiad yn ymddangos, arhoswch ychydig oriau a cheisiwch eto.",
+  h_calendar: "<strong>📅 Calendr (Proton ICS)</strong><br><br>• Yn dangos digwyddiadau heddiw o'ch Calendr Proton.<br>• Cewch eich dolen ICS o Proton Calendar → Gosodiadau → Calendrau → 'Rhannu ag unrhyw un' → 'Creu dolen'.<br>• Gludwch y ddolen ICS yn <strong>Gosodiadau → Calendr</strong>.<br><br><strong>🔔 Rhybuddion:</strong><br>• Mae hysbysiadau'n cael eu gosod yn eich ap calendr — e.e. 2 hysbysiad ar ddigwyddiad = dau rybudd ar y dangosfwrdd hwn.<br>• Toglo rhybuddion ymlaen/i ffwrdd gyda'r botwm ar frig y calendr.<br><br><strong>⚠️ Cyfyngiadau pwysig (Proton, nid y modiwl hwn):</strong><br>• Mae'r porthiant ICS yn diweddaru <strong>bob 4–16 awr</strong> – mae digwyddiadau newydd yn cymryd amser i ymddangos.<br>• Efallai na fydd digwyddiadau cylchol yn ymddangos yn gywir.<br><br><strong>💡 Awgrymiadau:</strong><br>• Os nad yw digwyddiad yn ymddangos, arhoswch ychydig oriau a cheisiwch eto.",
 
   h_modalTitle: "Cymorth Modiwl",
   h_gotIt: "Iawn",

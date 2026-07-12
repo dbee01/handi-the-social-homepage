@@ -94,6 +94,8 @@ var LANG = {
   d_noCalendar: "No calendar configured.",
   d_todaysEvents: "Today's Events",
   d_minWarning: "min warning",
+  d_on: "Alerts On",
+  d_off: "Alerts Off",
   d_noEventsToday: "No events scheduled for today.",
   d_eventsTomorrow: "event(s) tomorrow.",
   d_lastSynced: "Last synced:",
@@ -328,7 +330,7 @@ var LANG = {
   h_chat:
     "<strong>💬 Chat (Matrix)</strong><br><br>• Create your own Matrix account at <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> to start private family or friend chat rooms.<br>• Add room URLs, access token, user ID in <strong>Settings → Chat</strong>.<br>• The module checks for new messages every 30 seconds.<br>• Click the room header to expand and view messages.<br>• New message notifications appear as a red badge.",
   h_calendar:
-    "<strong>📅 Calendar (Proton ICS)</strong><br><br>• Shows today's events from your Proton Calendar.<br>• Get your ICS link from Proton Calendar → Settings → Calendars → 'Share with anyone' → 'Create link'.<br>• Paste the ICS link in <strong>Settings → Calendar</strong>.<br><br><strong>⚠️ Important limitations (Proton, not this module):</strong><br>• The ICS feed updates <strong>every 4–16 hours</strong> – new events take time to appear.<br>• Recurring events may not appear correctly.<br><br><strong>💡 Tips:</strong><br>• If an event doesn't appear, wait a few hours and try again.",
+    "<strong>📅 Calendar (Proton ICS)</strong><br><br>• Shows today's events from your Proton Calendar.<br>• Get your ICS link from Proton Calendar → Settings → Calendars → 'Share with anyone' → 'Create link'.<br>• Paste the ICS link in <strong>Settings → Calendar</strong>.<br><br><strong>🔔 Alerts:</strong><br>• Notifications are set in your calendar app — e.g. 2 notifications on a calendar event = two alerts on this dashboard.<br>• Toggle alerts On/Off using the button at the top of the calendar.<br><br><strong>⚠️ Important limitations (Proton, not this module):</strong><br>• The ICS feed updates <strong>every 4–16 hours</strong> – new events take time to appear.<br>• Recurring events may not appear correctly.<br><br><strong>💡 Tips:</strong><br>• If an event doesn't appear, wait a few hours and try again.",
 
   h_modalTitle: "Module Help",
   h_gotIt: "Got it",

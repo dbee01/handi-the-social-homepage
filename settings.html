@@ -651,7 +651,6 @@
                             type="text"
                             id="chatUsername"
                             placeholder="@username:matrix.org"
-                            value="@bigboyfoolish:matrix.org"
                         />
                     </div>
                     <div class="config-field">
@@ -668,7 +667,6 @@
                             type="text"
                             id="chatRoom1"
                             placeholder="#room:matrix.org"
-                            value="#the-ple-room-ireland:matrix.org"
                         />
                     </div>
                     <div class="config-field">
@@ -677,7 +675,6 @@
                             type="text"
                             id="chatRoom2"
                             placeholder="#room:matrix.org"
-                            value="#ple-random-ireland:matrix.org"
                         />
                     </div>
                     <div class="config-field">
@@ -714,16 +711,6 @@
                             id="calendarUrl"
                             placeholder="Paste your ICS link here"
                         />
-                    </div>
-                    <div class="config-field">
-                        <label>Notification time (mins):</label
-                        ><select id="calendarNotificationMinutes">
-                            <option value="5">5</option>
-                            <option value="10">10</option>
-                            <option value="15" selected>15</option>
-                            <option value="30">30</option>
-                            <option value="60">60</option>
-                        </select>
                     </div>
                     <small
                         >Get ICS link from Proton Calendar → Settings →
@@ -1641,11 +1628,6 @@
                 if (calendarUrl !== "") {
                     settings.calendar.url = calendarUrl;
                 }
-                settings.calendar.notificationMinutes =
-                    parseInt(
-                        document.getElementById("calendarNotificationMinutes")
-                            ?.value,
-                    ) || 30;
 
                 if (!settings.phone) settings.phone = {};
                 settings.phone.contacts = phoneContacts.map((c) => ({

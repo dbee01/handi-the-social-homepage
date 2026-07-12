@@ -58,7 +58,7 @@ export default async function initChat(container) {
         ];
   let refreshSeconds = settings.chat?.refreshInterval || 30;
   let homeserver = settings.chat?.homeserver || "https://matrix.org";
-  let username = settings.chat?.username || "@bigboyfoolish:matrix.org";
+  let username = settings.chat?.username;
   let password =
     settings.chat?.password ||
     (typeof import.meta !== "undefined" && import.meta.env?.VITE_MATRIX_PASS) ||

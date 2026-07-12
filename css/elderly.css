@@ -529,6 +529,11 @@ input:focus {
 /* =========================================================
    STANDARDIZED TEXT SIZES (cross-theme)
 ========================================================= */
+.panel-title {
+    font-size: 20px;
+    font-weight: 700;
+}
+
 h3,
 .mastodon-title,
 #music-track-title {
@@ -568,7 +573,7 @@ p,
 
 .header-weather,
 #weather {
-    font-size: 14px;
+    font-size: 19px;
 }
 
 .customize-link a {
