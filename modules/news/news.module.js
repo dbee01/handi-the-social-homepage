@@ -375,7 +375,7 @@ export default async function initNews(container) {
       div.className = "news-article";
       div.innerHTML = `
         <div style="display:flex;gap:12px;margin-bottom:12px;">
-          ${article.imageUrl ? '<img src="' + article.imageUrl + '" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" onerror="this.style.display=\'none\'">' : '<div style="width:120px;height:auto;"></div>'}
+          ${article.imageUrl ? '<img src="' + article.imageUrl + '" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" onerror="this.style.display=\'none\'">' : '<div style="width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:8px;"><i class="fa-solid fa-newspaper" style="font-size:1.5rem;color:#94a3b8;"></i></div>'}
           <div style="flex:1;">
             <div>${escapeHtml(sourceDisplay)}</div>
             <div>${escapeHtml(article.pubDate)}</div>
