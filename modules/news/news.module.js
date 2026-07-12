@@ -170,11 +170,23 @@ export default async function initNews(container) {
 
   function extractImageFromEntry(entry, description) {
     description = description || "";
+    // Try enclosure
     var enclosure = entry.querySelector('link[rel="enclosure"][type^="image"]');
     if (enclosure && enclosure.getAttribute("href"))
       return enclosure.getAttribute("href");
+    // Try media:content (common RSS extension)
     var media = entry.querySelector("media\\:content, content");
     if (media && media.getAttribute("url")) return media.getAttribute("url");
+    // Try media:thumbnail (BBC, Spiegel)
+    var thumb = entry.querySelector("media\\:thumbnail, thumbnail");
+    if (thumb && thumb.getAttribute("url")) return thumb.getAttribute("url");
+    // Try any element with a url attribute that looks like an image
+    var all = entry.querySelectorAll("*");
+    for (var i = 0; i < all.length; i++) {
+      var u = all[i].getAttribute("url");
+      if (u && /\.(jpg|jpeg|png|webp|gif)(\?|$)/i.test(u)) return u;
+    }
+    // Fallback: img tag in description
     var m = description.match(/<img[^>]+src="([^">]+)"/);
     return m ? m[1] : "";
   }
