@@ -1,5 +1,5 @@
 // modules/music/music.module.js
-import { loadMusic } from "../../js/core/storage.js";
+import { loadMusic, saveMusic } from "../../js/core/storage.js";
 
 function removeFileExtension(filename) {
   return filename.replace(/\.[^.]+$/, "");
@@ -91,9 +91,32 @@ export default async function initMusic(container) {
     content.innerHTML =
       '<div class="module-empty"><i class="fa-solid fa-music"></i><p>' +
       t("d_noMusic", "No music loaded.") +
-      '</p><button id="musicSettingsBtn" class="settings-link-btn"><i class="fa-solid fa-gear"></i> ' +
+      '</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">' +
+      '<button id="musicUploadBtn" class="settings-link-btn"><i class="fa-solid fa-upload"></i> ' +
+      t("d_loadMusic", "Load Music") +
+      '</button>' +
+      '<button id="musicSettingsBtn" class="settings-link-btn"><i class="fa-solid fa-gear"></i> ' +
       t("d_addMusicSettings", "Add Music in Settings") +
-      "</button></div>";
+      "</button></div></div>";
+    var uBtn = content.querySelector("#musicUploadBtn");
+    if (uBtn)
+      uBtn.onclick = function () {
+        window.triggerLoad({
+          accept: "audio/*",
+          multiple: true,
+          maxSizeMB: 50,
+          onFiles: async (files) => {
+            var existing = [];
+            try { existing = await loadMusic(); } catch (e) {}
+            await saveMusic([...existing, ...files]);
+            container.innerHTML = "";
+            initMusic(container);
+          },
+          onError: function (msg) {
+            alert(msg);
+          },
+        });
+      };
     var sBtn = content.querySelector("#musicSettingsBtn");
     if (sBtn)
       sBtn.onclick = function () {
@@ -118,7 +141,9 @@ export default async function initMusic(container) {
   content.innerHTML =
     '<div class="music-now-playing"><canvas id="music-synth" class="music-synth"></canvas><div id="music-status" class="music-status"><span id="music-track-title">—</span><span class="music-state-text">' +
     t("d_ready", "Ready") +
-    '</span></div></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-playpause" class="primary">▶</button><button id="music-next">⏭</button></div><div class="music-scroll-wrapper"><button id="musicScrollUp" class="music-scroll-btn">▲</button><div id="music-playlist" class="music-playlist"></div><button id="musicScrollDown" class="music-scroll-btn">▼</button></div>';
+    '</span></div></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-playpause" class="primary">▶</button><button id="music-next">⏭</button></div><div style="text-align:center;margin-bottom:8px;"><button id="musicLoadMoreBtn" class="settings-link-btn" style="font-size:0.8rem;padding:6px 14px;"><i class="fa-solid fa-upload"></i> ' +
+    t("d_loadMusic", "Load Music") +
+    '</button></div><div class="music-scroll-wrapper"><button id="musicScrollUp" class="music-scroll-btn">▲</button><div id="music-playlist" class="music-playlist"></div><button id="musicScrollDown" class="music-scroll-btn">▼</button></div>';
 
   var synthCanvas = content.querySelector("#music-synth"),
     playlist = content.querySelector("#music-playlist");
@@ -435,6 +460,25 @@ export default async function initMusic(container) {
   down.addEventListener("click", function () {
     playlist.scrollBy({ top: 300, behavior: "smooth" });
   });
+
+  var loadMoreBtn = content.querySelector("#musicLoadMoreBtn");
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener("click", function () {
+      window.triggerLoad({
+        accept: "audio/*",
+        multiple: true,
+        maxSizeMB: 50,
+        onFiles: async function (files) {
+          var existing = [];
+          try { existing = await loadMusic(); } catch (e) {}
+          await saveMusic([...existing, ...files]);
+          container.innerHTML = "";
+          initMusic(container);
+        },
+        onError: function (msg) { alert(msg); },
+      });
+    });
+  }
 
   if (pinBtn) {
     headerActions.appendChild(pinBtn);

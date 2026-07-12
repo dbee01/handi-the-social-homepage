@@ -129,31 +129,25 @@ if (resetBtn) resetBtn.addEventListener('click', resetAllData);
 
 // Gallery & Music uploads
 document.getElementById('uploadGalleryBtn')?.addEventListener('click', () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.multiple = true;
-    input.accept = 'image/*';
-    input.onchange = async (e) => {
-        const files = Array.from(e.target.files);
-        const processed = files.map(f => ({ name: f.name, file: f }));
-        await saveGallery(processed);
-        alert(`Saved ${processed.length} images`);
-    };
-    input.click();
+    window.triggerLoad({
+        accept: 'image/*',
+        multiple: true,
+        onFiles: async (files) => {
+            await saveGallery(files);
+            alert('Saved ' + files.length + ' images');
+        }
+    });
 });
 
 document.getElementById('uploadMusicBtn')?.addEventListener('click', () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.multiple = true;
-    input.accept = 'audio/*';
-    input.onchange = async (e) => {
-        const files = Array.from(e.target.files);
-        const processed = files.map(f => ({ name: f.name, file: f }));
-        await saveMusic(processed);
-        alert(`Saved ${processed.length} music files`);
-    };
-    input.click();
+    window.triggerLoad({
+        accept: 'audio/*',
+        multiple: true,
+        onFiles: async (files) => {
+            await saveMusic(files);
+            alert('Saved ' + files.length + ' music files');
+        }
+    });
 });
 
 // Volume slider

@@ -20,6 +20,7 @@ const PRECACHE = [
   "/css/vendor/fa-7.2.0/css/all.min.css",
   "/js/core/module-registry.js",
   "/js/core/log.js",
+  /js/core/load.js
   "/js/core/module-buttons.js",
   "/js/core/settings.js",
   "/js/core/storage.js",

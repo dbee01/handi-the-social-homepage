@@ -662,3 +662,7 @@ p,
 .customize-link a {
     font-size: 16px;
 }
+
+#musicLoadMoreBtn {
+    font-size: 14px;
+}

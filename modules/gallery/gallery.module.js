@@ -41,29 +41,16 @@ export default async function initGallery(container) {
   }
 
   // --- File load handler ---
-  function createFileInput(onFilesSelected) {
-    var input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.multiple = true;
-    input.style.display = "none";
-    input.addEventListener("change", async function () {
-      var files = Array.from(input.files || []);
-      if (!files.length) return;
-      var newImages = files.map(function (f) {
-        return { name: f.name, file: f, url: URL.createObjectURL(f) };
-      });
-      await saveGallery([...images, ...newImages]);
-      // Reload the module
-      container.innerHTML = "";
-      initGallery(container);
+  function createFileInput() {
+    window.triggerLoad({
+      accept: "image/*",
+      multiple: true,
+      onFiles: async function (newImages) {
+        await saveGallery([...images, ...newImages]);
+        container.innerHTML = "";
+        initGallery(container);
+      },
     });
-    document.body.appendChild(input);
-    input.click();
-    // Remove after use
-    setTimeout(function () {
-      input.remove();
-    }, 1000);
   }
 
   // --- Empty state with upload button ---

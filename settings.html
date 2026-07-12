@@ -7,6 +7,7 @@
         <script src="/js/core/module-registry.js"></script>
         <script src="/lang/loader.js"></script>
             <script src="/js/core/log.js"></script>
+            <script src="/js/core/load.js"></script>
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
 
         <!-- Cache Control Headers for PWA -->
@@ -345,8 +346,9 @@
                         </select>
                     </div>
                     <button class="upload-btn" id="uploadGalleryBtn">
-                        📸 Load Images
-                    </button>
+                            📸 Load Images
+                        </button>
+                        <span class="upload-status" id="galleryStatus"></span>
                     <small
                         >Rename image filenames in caption format:
                         My+Lovely+Horse.jpg -> My Lovely Horse</small
@@ -384,8 +386,9 @@
                         </select>
                     </div>
                     <button class="upload-btn" id="uploadMusicBtn">
-                        🎵 Load Music
-                    </button>
+                            🎵 Load Music
+                        </button>
+                        <span class="upload-status" id="musicStatus"></span>
                 </div>
             </div>
 
@@ -2050,76 +2053,52 @@
             }
 
             // ============================================================
-            // FILE UPLOADS (using EXACT storage.js API)
+            // FILE LOADS (using triggerLoad + storage.js)
             // ============================================================
             document
                 .getElementById("uploadGalleryBtn")
-                ?.addEventListener("click", async () => {
-                    const input = document.createElement("input");
-                    input.type = "file";
-                    input.multiple = true;
-                    input.accept = "image/png,image/jpeg,image/webp";
-                    input.onchange = async (e) => {
-                        const files = Array.from(e.target.files);
-                        const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
-                        const oversized = files.filter(
-                            (f) => f.size > MAX_SIZE,
-                        );
-                        if (oversized.length > 0) {
-                            alert(
-                                `Some images exceed the 10 MB limit:\n${oversized.map((f) => f.name).join("\n")}`,
-                            );
-                            return;
-                        }
-                        const processed = files.map((f) => ({
-                            name: f.name,
-                            file: f,
-                        }));
-                        try {
-                            await saveGallery(processed);
-                        } catch (err) {
-                            alert(
-                                "Upload failed. Storage may be blocked or full.",
-                            );
-                            return;
-                        }
-                    };
-                    input.click();
+                ?.addEventListener("click", () => {
+                    window.triggerLoad({
+                        accept: "image/*",
+                        multiple: true,
+                        maxSizeMB: 10,
+                        onFiles: async (files) => {
+                            await saveGallery(files);
+                            var el = document.getElementById("galleryStatus");
+                            if (el) {
+                                el.textContent = "✅ " + window.t("d_imagesLoaded", files.length + " images loaded");
+                                el.style.color = "#16a34a";
+                                setTimeout(function () { el.textContent = ""; }, 4000);
+                            }
+                        },
+                        onError: (msg) => {
+                            var el = document.getElementById("galleryStatus");
+                            if (el) { el.textContent = "❌ " + msg; el.style.color = "#dc2626"; }
+                        },
+                    });
                 });
 
             document
                 .getElementById("uploadMusicBtn")
-                ?.addEventListener("click", async () => {
-                    const input = document.createElement("input");
-                    input.type = "file";
-                    input.multiple = true;
-                    input.accept = "audio/mpeg,audio/mp3,audio/wav,audio/x-wav";
-                    input.onchange = async (e) => {
-                        const files = Array.from(e.target.files);
-                        const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
-                        const oversized = files.filter(
-                            (f) => f.size > MAX_SIZE,
-                        );
-                        if (oversized.length > 0) {
-                            alert(
-                                `Some music files exceed the 50 MB limit:\n${oversized.map((f) => f.name).join("\n")}`,
-                            );
-                            return;
-                        }
-                        const processed = files.map((f) => ({
-                            name: f.name,
-                            file: f,
-                        }));
-                        try {
-                            await saveMusic(processed);
-                        } catch (err) {
-                            alert(
-                                "Upload failed. Storage may be blocked or full.",
-                            );
-                            return;
-                        }
-                    };
-                    input.click();
+                ?.addEventListener("click", () => {
+                    window.triggerLoad({
+                        accept: "audio/*",
+                        multiple: true,
+                        maxSizeMB: 50,
+                        onFiles: async (files) => {
+                            await saveMusic(files);
+                            var el = document.getElementById("musicStatus");
+                            if (el) {
+                                el.textContent = "✅ " + window.t("d_musicLoaded", files.length + " music files loaded");
+                                el.style.color = "#16a34a";
+                                setTimeout(function () { el.textContent = ""; }, 4000);
+                            }
+                        },
+                        onError: (msg) => {
+                            var el = document.getElementById("musicStatus");
+                            if (el) { el.textContent = "❌ " + msg; el.style.color = "#dc2626"; }
+                        },
+                    });
                 });
 
             // ============================================================
