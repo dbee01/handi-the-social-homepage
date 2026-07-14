@@ -7,6 +7,14 @@
 /* =========================================================
    BASE LAYOUT
 ========================================================= */
+.elderlyShow { display: none !important; }
+
+.phoneCaregiver {
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+    min-width: 160px;
+}
 
 * {
     margin: 0;
@@ -148,7 +156,7 @@ header {
         order: 1;
     }
     #searchEngine {
-        flex: 1;
+        flex: 1 1 100%;
         order: 2;
     }
     #themeSwitcher {
@@ -161,6 +169,12 @@ header {
     }
     #weather {
         font-size: 0.9rem !important;
+    }
+}
+
+@media (max-width: 500px) {
+    #searchEngine {
+        width: 100% !important;
     }
 }
 

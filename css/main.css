@@ -9,7 +9,7 @@
 ========================================================= */
 
 /* Layout only (no colors, no themes) */
-@import url("/css/layout.css");
+@import url("/css/layout.css?v=2");
 
 /* Theme will be loaded dynamically based on user preference */
 /* Either elderly.css or techie.css will be loaded after this */

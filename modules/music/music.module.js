@@ -94,10 +94,7 @@ export default async function initMusic(container) {
       '</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">' +
       '<button id="musicUploadBtn" class="settings-link-btn"><i class="fa-solid fa-upload"></i> ' +
       t("d_loadMusic", "Load Music") +
-      '</button>' +
-      '<button id="musicSettingsBtn" class="settings-link-btn"><i class="fa-solid fa-gear"></i> ' +
-      t("d_addMusicSettings", "Add Music in Settings") +
-      "</button></div></div>";
+      '</button></div></div>';
     var uBtn = content.querySelector("#musicUploadBtn");
     if (uBtn)
       uBtn.onclick = function () {
@@ -116,11 +113,6 @@ export default async function initMusic(container) {
             alert(msg);
           },
         });
-      };
-    var sBtn = content.querySelector("#musicSettingsBtn");
-    if (sBtn)
-      sBtn.onclick = function () {
-        location.href = "settings.html?args=music";
       };
     return;
   }

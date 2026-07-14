@@ -148,7 +148,7 @@
               hidden.style.display = "none";
               document.body.appendChild(hidden);
               const mod =
-                await import("/modules/click-to-call/click-to-call.module.js");
+                await import("/modules/friendly-phone/click-to-call.module.js");
               await mod.default(hidden);
               for (let i = 0; i < 20; i++) {
                 if (typeof window.makeAudioCall === "function") break;

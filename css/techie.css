@@ -25,12 +25,6 @@
     font-display: swap;
 }
 
-#footerDocsBtn,
-#footerScrollDownBtn,
-#footerScrollUpBtn {
-    display: none !important;
-}
-
 /* =========================================================
    IBM 3278 / GREEN PHOSPHOR TERMINAL - ENHANCED
    with pixel aesthetics, rounded corners, and full palette
@@ -1102,9 +1096,7 @@ button:active,
     min-width: 48px !important;
 }
 
-#searchEngine {
-    max-width: 130px;
-}
+
 
 #searchEngine option {
     font-size: 16px;

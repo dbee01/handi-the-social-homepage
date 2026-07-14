@@ -89,7 +89,7 @@ export default async function initPhone(container) {
       const hidden = document.createElement("div");
       hidden.style.display = "none";
       document.body.appendChild(hidden);
-      const mod = await import("../click-to-call/click-to-call.module.js");
+      const mod = await import("./click-to-call.module.js");
       await mod.default(hidden);
       // Wait for makeAudioCall to appear
       for (let i = 0; i < 20; i++) {

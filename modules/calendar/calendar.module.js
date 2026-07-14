@@ -660,20 +660,20 @@ export default async function initCalendar(container) {
         html += "</div>";
         html += '<div class="calendar-event-details">';
         html +=
-          '<div class="calendar-event-title">' +
+          '<p class="calendar-event-title">' +
           escapeHtml(event.summary || t("d_untitledEvent", "Untitled Event")) +
-          "</div>";
+          "</p>";
         if (event.location)
           html +=
-            '<div class="calendar-event-location"><i class="fa-solid fa-location-dot"></i> ' +
+            '<p class="calendar-event-location"><i class="fa-solid fa-location-dot"></i> ' +
             escapeHtml(event.location) +
-            "</div>";
+            "</p>";
         if (event.description)
           html +=
-            '<div class="calendar-event-desc">' +
+            '<p class="calendar-event-desc">' +
             escapeHtml(event.description.substring(0, 100)) +
             (event.description.length > 100 ? "…" : "") +
-            "</div>";
+            "</p>";
         html += "</div>";
         html += "</div>";
       }
