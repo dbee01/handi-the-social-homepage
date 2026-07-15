@@ -54,8 +54,8 @@
 
             body {
                 font-family:
-                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                    sans-serif;
+                                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                                    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
                 background: #e9ecef;
                 padding: 30px;
                 font-size: 17px;
@@ -73,32 +73,28 @@
             }
 
             p {
-                word-break: break-word;
-            }
-            /* Language flags */
+                            word-break: break-word;
+                        }
+                        /* Language flags */
             .lang-flag {
-                font-size: 7rem;
-                background: none;
-                border-radius: 10px;
-                cursor: pointer;
-                padding: 4px 8px 2px;
-                transition: all 0.2s;
-                line-height: 1;
-               display: flex;
-                flex-flow: column;
+                display: flex;
                 flex-direction: column;
-                flex-wrap: nowrap;
                 align-items: center;
                 justify-content: center;
-                gap: 4px;
-                font-size: 3.7rem;
+                gap: 6px;
+                background: none;
+                border: 2px solid transparent;
+                border-radius: 10px;
+                cursor: pointer;
+                padding: 10px 12px 8px;
+                transition: all 0.2s;
+                font-size: 0.9rem;
                 font-weight: 600;
                 color: #555;
-                line-height: 1;
-                border: unset !important;
+                min-width: 80px;
             }
             .lang-flag:hover {
-                transform: scale(1.15);
+                transform: scale(1.08);
                 border-color: #cbd5e1;
             }
             .lang-flag.active {
@@ -106,13 +102,13 @@
                 box-shadow: 0 0 0 2px rgba(0, 71, 204, 0.25);
             }
             .lang-name {
-                font-size: 0.9rem;
-                font-weight: 600;
-                color: #555;
                 line-height: 1;
             }
-            .lang-emoji {
-                line-height: 1;
+            .lang-flag svg {
+                width: 63px;
+                                height: 42px;
+                border-radius: 2px;
+                flex-shrink: 0;
             }
 
 
@@ -802,88 +798,48 @@
                             margin-bottom: 20px;
                         "
                     >
-                        <button
-                            class="lang-flag"
-                            data-lang="en"
-                            title="English"
-                        >
-                            <span class="lang-emoji">🇬🇧</span
-                            ><span class="lang-name">English</span>
+                        <button class="lang-flag" data-lang="en" title="English">
+                            <svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#012169"/><path d="M0 0l30 20M30 0L0 20" stroke="#fff" stroke-width="4"/><path d="M0 0l30 20M30 0L0 20" stroke="#c8102e" stroke-width="2"/><line x1="15" y1="0" x2="15" y2="20" stroke="#fff" stroke-width="6"/><line x1="0" y1="10" x2="30" y2="10" stroke="#fff" stroke-width="6"/><line x1="15" y1="0" x2="15" y2="20" stroke="#c8102e" stroke-width="3"/><line x1="0" y1="10" x2="30" y2="10" stroke="#c8102e" stroke-width="3"/></svg>
+                            <span class="lang-name">English</span>
                         </button>
-                        <button
-                            class="lang-flag"
-                            data-lang="ar"
-                            title="العربية"
-                        >
-                            <span class="lang-emoji">🇸🇦</span
-                            ><span class="lang-name">العربية</span>
+                        <button class="lang-flag" data-lang="ar" title="العربية">
+                            <svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#006c35"/><text x="15" y="14" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">ﷲ</text></svg>
+                            <span class="lang-name">العربية</span>
                         </button>
-                        <button
-                            class="lang-flag"
-                            data-lang="de"
-                            title="Deutsch"
-                        >
-                            <span class="lang-emoji">🇩🇪</span
-                            ><span class="lang-name">Deutsch</span>
+                        <button class="lang-flag" data-lang="de" title="Deutsch">
+                            <svg viewBox="0 0 30 20"><rect width="30" height="6.67" fill="#000"/><rect y="6.67" width="30" height="6.67" fill="#d00"/><rect y="13.34" width="30" height="6.66" fill="#fc0"/></svg>
+                            <span class="lang-name">Deutsch</span>
                         </button>
-                        <button
-                            class="lang-flag"
-                            data-lang="es"
-                            title="Español"
-                        >
-                            <span class="lang-emoji">🇪🇸</span
-                            ><span class="lang-name">Español</span>
+                        <button class="lang-flag" data-lang="es" title="Español">
+                            <svg viewBox="0 0 30 20"><rect width="30" height="5" fill="#c60b1e"/><rect y="5" width="30" height="10" fill="#ffc400"/><rect y="15" width="30" height="5" fill="#c60b1e"/></svg>
+                            <span class="lang-name">Español</span>
                         </button>
-                        <button
-                            class="lang-flag"
-                            data-lang="fr"
-                            title="Français"
-                        >
-                            <span class="lang-emoji">🇫🇷</span
-                            ><span class="lang-name">Français</span>
+                        <button class="lang-flag" data-lang="fr" title="Français">
+                            <svg viewBox="0 0 30 20"><rect width="10" height="20" fill="#002395"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ed2939"/></svg>
+                            <span class="lang-name">Français</span>
                         </button>
-                        <button
-                            class="lang-flag"
-                            data-lang="ga"
-                            title="Gaeilge"
-                        >
-                            <span class="lang-emoji">🇮🇪</span
-                            ><span class="lang-name">Gaeilge</span>
+                        <button class="lang-flag" data-lang="ga" title="Gaeilge">
+                            <svg viewBox="0 0 30 20"><rect width="10" height="20" fill="#169b62"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ff883e"/></svg>
+                            <span class="lang-name">Gaeilge</span>
                         </button>
-                        <button
-                            class="lang-flag"
-                            data-lang="it"
-                            title="Italiano"
-                        >
-                            <span class="lang-emoji">🇮🇹</span
-                            ><span class="lang-name">Italiano</span>
+                        <button class="lang-flag" data-lang="it" title="Italiano">
+                            <svg viewBox="0 0 30 20"><rect width="10" height="20" fill="#009246"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce2b37"/></svg>
+                            <span class="lang-name">Italiano</span>
                         </button>
-                        <button
-                            class="lang-flag"
-                            data-lang="nl"
-                            title="Nederlands"
-                        >
-                            <span class="lang-emoji">🇳🇱</span
-                            ><span class="lang-name">Nederlands</span>
+                        <button class="lang-flag" data-lang="nl" title="Nederlands">
+                            <svg viewBox="0 0 30 20"><rect width="30" height="6.67" fill="#ae1c28"/><rect y="6.67" width="30" height="6.67" fill="#fff"/><rect y="13.34" width="30" height="6.66" fill="#21468b"/></svg>
+                            <span class="lang-name">Nederlands</span>
                         </button>
                         <button class="lang-flag" data-lang="pl" title="Polski">
-                            <span class="lang-emoji">🇵🇱</span
-                            ><span class="lang-name">Polski</span>
+                            <svg viewBox="0 0 30 20"><rect width="30" height="10" fill="#fff"/><rect y="10" width="30" height="10" fill="#dc143c"/></svg>
+                            <span class="lang-name">Polski</span>
                         </button>
-                        <button
-                            class="lang-flag"
-                            data-lang="pt"
-                            title="Português"
-                        >
-                            <span class="lang-emoji">🇵🇹</span
-                            ><span class="lang-name">Português</span>
+                        <button class="lang-flag" data-lang="pt" title="Português">
+                            <svg viewBox="0 0 30 20"><rect width="12" height="20" fill="#006600"/><rect x="12" width="18" height="20" fill="#f00"/><circle cx="12" cy="10" r="4" fill="#fc0" stroke="#000" stroke-width=".5"/></svg>
+                            <span class="lang-name">Português</span>
                         </button>
-                        <button
-                            class="lang-flag"
-                            data-lang="cy"
-                            title="Cymraeg"
-                        >
-                            <span class="lang-emoji">🏴󠁧󠁢󠁷󠁬󠁳󠁿</span>
+                        <button class="lang-flag" data-lang="cy" title="Cymraeg">
+                            <svg viewBox="0 0 30 20"><rect width="15" height="20" fill="#fff"/><rect x="15" width="15" height="20" fill="#00ad36"/><polygon points="15,2 13,7 18,7" fill="#d30731"/><polygon points="15,18 13,13 18,13" fill="#d30731"/></svg>
                             <span class="lang-name">Cymraeg</span>
                         </button>
                     </div>
