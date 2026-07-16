@@ -74,6 +74,16 @@ window.HANDI_MODULES = [
     },
   },
 
+  {
+    id: "task",
+    name: "Tasks",
+    icon: "📋",
+    desc: "To-do list",
+    tier: "free",
+    defaultEnabled: 1,
+    settingsConfig: {},
+  },
+
   // ─── Premium modules ───────────────────────────────────────────────────
   {
     id: "phone",

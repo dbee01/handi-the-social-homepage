@@ -434,6 +434,22 @@ header {
     justify-content: center;
     flex-direction: column;
 }
+/* ---------- TASK ---------- */
+.task-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+}
+.task-input {
+    background: #ffffff;
+    border-color: #cbd5e1;
+}
+.task-create-btn {
+    background: #0047cc;
+}
+.task-create-btn:hover {
+    background: #0037a3;
+}
+
 /* ---------- FOOTER ---------- */
 footer {
     background: #ffffff;

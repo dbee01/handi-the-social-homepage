@@ -520,6 +520,57 @@ header {
     flex-direction: column;
 }
 
+/* ---------- TASK ---------- */
+.task-card {
+    background: #1a1a1a;
+    border-color: #333;
+}
+.task-card:hover {
+    border-color: #ffd700;
+}
+.task-input {
+    background: #222;
+    border-color: #444;
+    color: #f5f5f0;
+}
+.task-input:focus {
+    border-color: #ffd700;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
+}
+.task-create {
+    border-bottom-color: #333;
+}
+.task-create-btn {
+    background: #ffd700;
+    color: #0d0d0d;
+}
+.task-create-btn:hover {
+    background: #ffe44d;
+}
+.task-subtask-remove:hover {
+    background: #3a1a1a;
+    color: #ef4444;
+}
+.task-remove:hover {
+    background: #3a1a1a;
+    color: #ef4444;
+}
+.task-add-subtask {
+    border-color: #444;
+    color: #888;
+}
+.task-add-subtask:hover {
+    border-color: #ffd700;
+    color: #ffd700;
+}
+.task-checkbox {
+    accent-color: #ffd700;
+}
+.task-label-select {
+    background: #222;
+    border-color: #444;
+}
+
 /* ---------- FOOTER ---------- */
 footer {
     background: #1a1a1a;
