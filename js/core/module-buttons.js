@@ -21,7 +21,8 @@
     phone: "h_phone",
     chat: "h_chat",
     calendar: "h_calendar",
-  };
+        llm: "h_llm",
+      };
 
   // Shortcut for translations (also used below in addModuleControls)
   function tr(key, fallback) {

@@ -33,9 +33,15 @@ export default async function initLlm(container) {
   if (pinBtn) container.prepend(pinBtn);
 
   const title = document.createElement("div");
-  title.className = "panel-title";
-  title.innerHTML = '<i class="fa-solid fa-brain"></i> ' + t("d_llm", "llm");
-  container.appendChild(title);
+    title.className = "panel-title";
+    title.innerHTML = '<i class="fa-solid fa-brain"></i> ' + t("d_llm", "llm");
+
+    const helpBtn = document.createElement("button");
+    helpBtn.className = "llm-help-btn";
+    helpBtn.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+    helpBtn.title = t("d_help", "Help");
+    title.appendChild(helpBtn);
+    container.appendChild(title);
 
   const content = document.createElement("div");
   content.className = "llm-content";
@@ -101,9 +107,15 @@ export default async function initLlm(container) {
         );
         engine = await CreateMLCEngine(selectedModel, {
           initProgressCallback: (p) => {
-            const text = p.text.replace(/\[.*\]/g, "").trim();
-            renderProgress(t("d_llmDownloading", "Downloading") + ` ${text || Math.round(p.progress * 100) + "%"}`);
-          },
+                      const pct = Math.round(p.progress * 100);
+                      content.innerHTML = `
+                        <div class="llm-progress">
+                          <i class="fa-solid fa-download fa-bounce"></i>
+                          <p>${t("d_llmDownloading", "Loading")} ${pct}%</p>
+                          <div class="llm-progress-bar"><div style="width:${pct}%"></div></div>
+                        </div>
+                      `;
+                    },
         });
         render();
       } catch (e) {
@@ -156,7 +168,22 @@ export default async function initLlm(container) {
     });
   }
 
-  // Check WebGPU support
+  // Help popup
+    helpBtn.addEventListener("click", () => {
+      const existing = document.querySelector(".llm-help-popup");
+      if (existing) { existing.remove(); return; }
+      const popup = document.createElement("div");
+      popup.className = "llm-help-popup";
+      popup.innerHTML = `
+        <p><strong>${t("d_llmHelpTitle", "Private AI Chat")}</strong></p>
+        <p>${t("d_llmHelpBody", "Downloads an LLM to your browser. Runs 100% on your device — no data leaves your computer. Requires WebGPU (Chrome/Edge). First load downloads ~600MB-2GB.")}</p>
+        <button class="llm-help-close">${t("d_llmHelpOk", "Got it")}</button>
+      `;
+      popup.querySelector(".llm-help-close").addEventListener("click", () => popup.remove());
+      container.appendChild(popup);
+    });
+
+    // Check WebGPU support
   if (!navigator.gpu) {
     content.innerHTML = `<div class="module-empty"><i class="fa-solid fa-triangle-exclamation"></i><p>${t("d_llmNoWebgpu", "WebGPU not available. Requires Chrome 113+ or Edge 113+.")}</p></div>`;
     return;

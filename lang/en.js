@@ -265,6 +265,9 @@ var LANG = {
     d_llmFailed: "Failed to load model. Requires Chrome/Edge with WebGPU.",
     d_llmNoWebgpu: "WebGPU not available. Requires Chrome 113+ or Edge 113+.",
     d_llmYou: "You",
+      d_llmHelpTitle: "Private AI Chat",
+      d_llmHelpBody: "Downloads an LLM to your browser. Runs 100% on your device — no data leaves your computer. Requires WebGPU (Chrome/Edge). First load downloads ~600MB-2GB.",
+      d_llmHelpOk: "Got it",
 
     // Weather
   d_weatherDisabled: "Weather module disabled.",
@@ -375,9 +378,12 @@ var LANG = {
   h_chat:
     "<strong>💬 Chat (Matrix)</strong><br><br>• Create your own Matrix account at <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> to start private family or friend chat rooms.<br>• Add room URLs, access token, user ID in <strong>Settings → Chat</strong>.<br>• The module checks for new messages every 30 seconds.<br>• Click the room header to expand and view messages.<br>• New message notifications appear as a red badge.",
   h_calendar:
-    "<strong>📅 Calendar (Proton ICS)</strong><br><br>• Shows today's events from your Proton Calendar.<br>• Get your ICS link from Proton Calendar → Settings → Calendars → 'Share with anyone' → 'Create link'.<br>• Paste the ICS link in <strong>Settings → Calendar</strong>.<br><br><strong>🔔 Alerts:</strong><br>• Notifications are set in your calendar app — e.g. 2 notifications on a calendar event = two alerts on this dashboard.<br>• Toggle alerts On/Off using the button at the top of the calendar.<br><br><strong>⚠️ Important limitations (Proton, not this module):</strong><br>• The ICS feed updates <strong>every 4–16 hours</strong> – new events take time to appear.<br>• Recurring events may not appear correctly.<br><br><strong>💡 Tips:</strong><br>• If an event doesn't appear, wait a few hours and try again.",
+      "<strong>📅 Calendar (Proton ICS)</strong><br><br>• Shows today's events from your Proton Calendar.<br>• Get your ICS link from Proton Calendar → Settings → Calendars → 'Share with anyone' → 'Create link'.<br>• Paste the ICS link in <strong>Settings → Calendar</strong>.<br><br><strong>🔔 Alerts:</strong><br>• Notifications are set in your calendar app — e.g. 2 notifications on a calendar event = two alerts on this dashboard.<br>• Toggle alerts On/Off using the button at the top of the calendar.<br><br><strong>⚠️ Important limitations (Proton, not this module):</strong><br>• The ICS feed updates <strong>every 4–16 hours</strong> – new events take time to appear.<br>• Recurring events may not appear correctly.<br><br><strong>💡 Tips:</strong><br>• If an event doesn't appear, wait a few hours and try again.",
 
-  h_modalTitle: "Module Help",
+    h_llm:
+      "<strong>🧠 Private AI (LLM)</strong><br><br>• Downloads a language model directly to your browser.<br>• <strong>100% private</strong> — no data ever leaves your device.<br>• Pick a model and click <strong>Load</strong> — first download is ~600MB–2GB.<br>• <strong>Requires WebGPU</strong> (Chrome/Edge 113+, Vivaldi with <code>#enable-unsafe-webgpu</code> flag).<br>• Once loaded, chat runs entirely offline on your GPU.<br>• Use <strong>Clear</strong> to reset the conversation.<br>• Chat history saved locally (last 100 messages).",
+
+    h_modalTitle: "Module Help",
   h_gotIt: "Got it",
   h_noHelp: "No specific help available.",
   h_helpButton: "Help",
