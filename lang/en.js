@@ -224,7 +224,49 @@ var LANG = {
   d_scheduled: "Scheduled",
   d_due: "Due",
 
-  // Weather
+  // Task
+  d_tasks: "tasks",
+  d_taskTitle: "Task title",
+  d_taskDesc: "Description (optional)",
+  d_noLabel: "No label",
+  d_labelName: "Label name",
+  d_addSubtask: "Add subtask",
+  d_addTask: "Add Task",
+  d_noTasks: "No tasks yet",
+  d_subtask: "Subtask",
+  d_delete: "Delete",
+  d_taskDeleted: "Task deleted",
+  d_undo: "Undo",
+
+  // Task
+    d_tasks: "tasks",
+    d_taskTitle: "Task title",
+    d_taskDesc: "Description (optional)",
+    d_noLabel: "No label",
+    d_labelName: "Label name",
+    d_addSubtask: "Add subtask",
+    d_addTask: "Add Task",
+    d_noTasks: "No tasks yet",
+    d_subtask: "Subtask",
+    d_delete: "Delete",
+    d_taskDeleted: "Task deleted",
+    d_undo: "Undo",
+
+    // LLM
+    d_llm: "llm",
+    d_llmSelect: "Select model...",
+    d_llmLoad: "Load",
+    d_llmLoaded: "Loaded",
+    d_llmClear: "Clear chat",
+    d_llmEmpty: "Load a model and start chatting.",
+    d_llmPlaceholder: "Ask something...",
+    d_llmSend: "Send",
+    d_llmDownloading: "Downloading",
+    d_llmFailed: "Failed to load model. Requires Chrome/Edge with WebGPU.",
+    d_llmNoWebgpu: "WebGPU not available. Requires Chrome 113+ or Edge 113+.",
+    d_llmYou: "You",
+
+    // Weather
   d_weatherDisabled: "Weather module disabled.",
   d_enableWeather: "Enable in Settings → Weather",
   d_loadingWeather: "Loading weather...",

@@ -82,9 +82,19 @@ window.HANDI_MODULES = [
     tier: "free",
     defaultEnabled: 1,
     settingsConfig: {},
-  },
+      },
 
-  // ─── Premium modules ───────────────────────────────────────────────────
+      {
+        id: "llm",
+        name: "LLM",
+        icon: "🧠",
+        desc: "Private AI chat",
+        tier: "premium",
+        defaultEnabled: 2,
+        settingsConfig: {},
+      },
+
+      // ─── Premium modules ───────────────────────────────────────────────────
   {
     id: "phone",
     name: "Phone",

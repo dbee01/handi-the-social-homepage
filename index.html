@@ -179,11 +179,14 @@
                                     <div class="module-content"></div>
                                 </div>
                                 <div id="task" class="dashboard-item module">
-                                    <div class="module-content"></div>
-                                </div>
+                                                    <div class="module-content"></div>
+                                                </div>
 
-                <!-- PREMIUM MODULES -->
-                <div id="phone" class="dashboard-item module">
+                                                <!-- PREMIUM MODULES -->
+                                                <div id="llm" class="dashboard-item module">
+                                                    <div class="module-content"></div>
+                                                </div>
+                                                <div id="phone" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
                 <div id="live_bus" class="dashboard-item module">
@@ -266,7 +269,8 @@
             import initSocial from "./modules/mastodon/mastodon.module.js";
             import initCalendar from "./modules/calendar/calendar.module.js";
                         import initTask from "./modules/task/task.module.js";
-                        import initBus from "./modules/bus/bus.module.js";
+                                    import initLlm from "./modules/llm/llm.module.js";
+                                    import initBus from "./modules/bus/bus.module.js";
             import initRadio from "./modules/radio/radio.module.js";
             import initPhone from "./modules/friendly-phone/friendly-phone.module.js";
 
@@ -280,7 +284,8 @@
                 news: initNews,
                 calendar: initCalendar,
                                 task: initTask,
-                                phone: initPhone,
+                                                llm: initLlm,
+                                                phone: initPhone,
                 live_bus: initBus,
                 chat: initChat,
                 social: initSocial,

@@ -555,6 +555,20 @@ header {
     background: #b82d6e;
 }
 
+/* ---------- LLM ---------- */
+.llm-model-select {
+    background: #fff;
+    border-color: #e8c0d0;
+}
+.llm-load-btn,
+.llm-send-btn {
+    background: #d63384;
+}
+.llm-load-btn:hover,
+.llm-send-btn:hover {
+    background: #b82d6e;
+}
+
 /* ---------- FOOTER ---------- */
 footer {
     background: #ffffff;

@@ -45,7 +45,7 @@ export default async function initTask(container) {
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-solid fa-list-check"></i> ' + t("d_tasks", "Tasks");
+  title.innerHTML = '<i class="fa-solid fa-list-check"></i> ' + t("d_tasks", "tasks");
   container.appendChild(title);
 
   const content = document.createElement("div");

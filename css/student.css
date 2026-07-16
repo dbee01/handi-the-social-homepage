@@ -521,6 +521,17 @@ header {
 }
 
 /* ---------- TASK ---------- */
+.task-content {
+    color: #f5f5f0;
+}
+.task-card-desc,
+.task-subtask-item {
+    color: #f5f5f0;
+    opacity: 1;
+}
+.task-subtask-item input:checked + span {
+    color: #888;
+}
 .task-card {
     background: #1a1a1a;
     border-color: #333;
@@ -569,6 +580,42 @@ header {
 .task-label-select {
     background: #222;
     border-color: #444;
+}
+
+/* ---------- LLM ---------- */
+.llm-model-select {
+    background: #222;
+    border-color: #444;
+    color: #f5f5f0;
+}
+.llm-load-btn,
+.llm-send-btn {
+    background: #ffd700;
+    color: #0d0d0d;
+}
+.llm-load-btn:hover,
+.llm-send-btn:hover {
+    background: #ffe44d;
+}
+.llm-msg-assistant {
+    background: #222;
+    color: #f5f5f0;
+}
+.llm-msg-user {
+    background: #ffd700;
+    color: #0d0d0d;
+}
+.llm-input {
+    background: #222;
+    border-color: #444;
+    color: #f5f5f0;
+}
+.llm-input:focus {
+    border-color: #ffd700;
+}
+.llm-clear-btn {
+    border-color: #444;
+    color: #888;
 }
 
 /* ---------- FOOTER ---------- */

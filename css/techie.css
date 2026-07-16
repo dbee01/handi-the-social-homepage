@@ -1196,6 +1196,17 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 /* ---------- TASK ---------- */
+.task-content {
+    color: #f5f5f0;
+}
+.task-card-desc,
+.task-subtask-item {
+    color: #f5f5f0;
+    opacity: 1;
+}
+.task-subtask-item input:checked + span {
+    color: #888;
+}
 .task-card {
     background: var(--color-bg-panel);
     border-color: var(--color-border);
@@ -1244,6 +1255,42 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .task-label-select {
     background: var(--color-bg-active);
     border-color: var(--color-border);
+}
+
+/* ---------- LLM ---------- */
+.llm-model-select {
+    background: var(--color-bg-active);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+.llm-load-btn,
+.llm-send-btn {
+    background: var(--color-primary);
+    color: var(--color-bg);
+}
+.llm-load-btn:hover,
+.llm-send-btn:hover {
+    background: #44ff44;
+}
+.llm-msg-assistant {
+    background: var(--color-bg-active);
+    color: var(--color-text);
+}
+.llm-msg-user {
+    background: var(--color-primary);
+    color: var(--color-bg);
+}
+.llm-input {
+    background: var(--color-bg-active);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+.llm-input:focus {
+    border-color: var(--color-primary);
+}
+.llm-clear-btn {
+    border-color: var(--color-border);
+    color: var(--color-text-dim);
 }
 
 /* ---------- FOOTER ---------- */

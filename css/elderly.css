@@ -450,6 +450,16 @@ header {
     background: #0037a3;
 }
 
+/* ---------- LLM ---------- */
+.llm-msg-assistant {
+    background: #f1f5f9;
+    color: #1e1e1e;
+}
+.llm-model-select {
+    background: #fff;
+    border-color: #cbd5e1;
+}
+
 /* ---------- FOOTER ---------- */
 footer {
     background: #ffffff;
