@@ -1,5 +1,18 @@
+
+/*
+ * Copyright (c) 2026 Handi Homepage
+ * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
+ * See the LICENSE file in the repository root for full details.
+ */
+
 // js/core/module-registry.js
 // Single source of truth for all modules across dashboard, settings, and selector.
+//
+// defaultEnabled values:
+//   0 = Off      — Not displayed on dashboard, toggleable in selector
+//   1 = On       — Displayed on dashboard, toggleable in selector
+//   2 = Disabled — Admin-only, greyed out, not toggleable by user
+//   3 = Hidden   — Completely hidden from selector, dashboard, and settings
 // =============================================================================
 
 window.HANDI_MODULES = [
@@ -90,7 +103,7 @@ window.HANDI_MODULES = [
     icon: "🧠",
     desc: "Private AI chat",
     tier: "premium",
-    defaultEnabled: 0,
+    defaultEnabled: 3,
     settingsConfig: {},
   },
 
@@ -120,7 +133,7 @@ window.HANDI_MODULES = [
     icon: "🚌",
     desc: "Bus times (Ireland)",
     tier: "premium",
-    defaultEnabled: 0,
+    defaultEnabled: 2,
     settingsConfig: { routeIds: "", stopIds: "" },
   },
   {

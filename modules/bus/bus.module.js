@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2026 Handi Homepage
+ * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
+ * See the LICENSE file in the repository root for full details.
+ */
+
 // modules/bus/bus.module.js
 // Bus Tracker v2 — realtime arrivals from GTFS-RT TripUpdates + Vehicles.
 // Supports up to 3 routes, each with departure/destination stops, tabbed UI.

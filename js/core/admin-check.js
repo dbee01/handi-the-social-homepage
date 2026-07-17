@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2026 Handi Homepage
+ * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
+ * See the LICENSE file in the repository root for full details.
+ */
+
 // js/admin-check.js - Check if user has premium access (Stripe subscription)
 const USER_ACCESS = {
   isPremium: false,
