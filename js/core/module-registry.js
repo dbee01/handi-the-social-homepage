@@ -129,7 +129,7 @@ window.HANDI_MODULES = [
   },
   {
     id: "live_bus",
-    name: "Live Bus",
+    name: "Bus times (Ireland)",
     icon: "🚌",
     desc: "Bus times (Ireland)",
     tier: "premium",
