@@ -148,14 +148,15 @@
     let lockBtn = null;
     if (
       !controlsDiv.querySelector(
-        ".emergency-lock-toggle, .radio-lock-toggle, .music-lock-toggle, .phone-lock-toggle",
+        ".emergency-lock-toggle, .radio-lock-toggle, .music-lock-toggle, .phone-lock-toggle, .cast-lock-toggle",
       )
     ) {
       const possibleLockSelectors = [
         ".radio-lock-toggle",
-        ".music-lock-toggle",
-        ".phone-lock-toggle",
-        ".emergency-lock-toggle",
+                ".music-lock-toggle",
+                ".phone-lock-toggle",
+                ".emergency-lock-toggle",
+                ".cast-lock-toggle",
       ];
       for (const sel of possibleLockSelectors) {
         const found = moduleElement.querySelector(sel);

@@ -5,7 +5,7 @@
  */
 // js/core/storage.js
 const DB_NAME = 'pleie_storage';
-const DB_VERSION = 2; // Incremented version
+const DB_VERSION = 3; // Incremented version
 
 let db = null;
 
@@ -28,6 +28,9 @@ function initDB() {
             }
             if (!database.objectStoreNames.contains('gallery')) {
                 database.createObjectStore('gallery', { keyPath: 'id', autoIncrement: true });
+            if (!database.objectStoreNames.contains('cast')) {
+                database.createObjectStore('cast', { keyPath: 'id', autoIncrement: true });
+            }
             }
         };
     });
@@ -94,10 +97,42 @@ export async function loadGallery() {
             resolve(images);
         };
         req.onerror = () => resolve([]);
-    });
-}
+            });
+        }
 
-export async function clearMusic() {
+        export async function saveCast(files) {
+            const database = await initDB();
+            return new Promise((resolve, reject) => {
+                const tx = database.transaction(['cast'], 'readwrite');
+                const store = tx.objectStore('cast');
+                store.clear();
+                files.forEach((file, i) => {
+                    store.add({ id: i, name: file.name, type: file.type, file: file.file || file });
+                });
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
+
+        export async function loadCast() {
+            const database = await initDB();
+            return new Promise((resolve) => {
+                const tx = database.transaction(['cast'], 'readonly');
+                const store = tx.objectStore('cast');
+                const req = store.getAll();
+                req.onsuccess = () => {
+                    const files = req.result.map(f => ({
+                        name: f.name,
+                        file: f.file,
+                        url: URL.createObjectURL(f.file)
+                    }));
+                    resolve(files);
+                };
+                req.onerror = () => resolve([]);
+            });
+        }
+
+        export async function clearMusic() {
     const database = await initDB();
     return new Promise((resolve, reject) => {
         const tx = database.transaction(['music'], 'readwrite');

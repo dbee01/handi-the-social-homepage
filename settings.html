@@ -726,8 +726,24 @@
                 </div>
             </div>
 
-            <!-- ============================================================ -->
-        <!-- PREMIUM MODULES SECTION -->
+                        <!-- Tasks Module -->
+                        <div class="module-card" data-module="task">
+                            <div class="module-header">
+                                <div class="module-title">
+                                    <i class="fa-solid fa-list-check"></i>
+                                    <h3>Tasks</h3>
+                                </div>
+                                <div class="toggle-switch">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                            <div class="module-config">
+                                <small style="color:#64748b">Create and manage tasks with labels and subtasks.</small>
+                            </div>
+                        </div>
+
+                        <!-- ============================================================ -->
+                    <!-- PREMIUM MODULES SECTION -->
         <!-- ============================================================ -->
         <div class="header">
             <h2>Premium Elements</h2>
@@ -1027,13 +1043,52 @@
             </div>
             <div class="module-config">
                 <small style="color: #64748b"
-                    >Location sharing is configured per contact in the Phone
-                    module above.</small
-                >
-            </div>
-        </div>
+                    Location sharing is configured per contact in the Phone
+                                        module above.</small
+                                    >
+                                </div>
+                            </div>
 
-        <div class="brand">
+                            <!-- Premium 4: AI -->
+
+                            <div class="module-card" data-module="llm">
+                                <div class="module-header">
+                                    <div class="module-title">
+                                        <i class="fa-solid fa-brain"></i>
+                                        <h3>AI</h3>
+                                        <span style="font-size:0.7rem;background:#f59e0b;padding:2px 8px;border-radius:12px;margin-left:8px;">Premium</span>
+                                    </div>
+                                    <div class="toggle-switch">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                                <div class="module-config">
+                                    <small style="color:#64748b">Private AI chat runs entirely in your browser. No data leaves your device.</small>
+                                </div>
+                            </div>
+
+                            <!-- Premium 5: Cast (Podcasts) -->
+
+                            <div class="module-card" data-module="cast">
+                                <div class="module-header">
+                                    <div class="module-title">
+                                        <i class="fa-solid fa-podcast"></i>
+                                        <h3>Cast</h3>
+                                        <span style="font-size:0.7rem;background:#f59e0b;padding:2px 8px;border-radius:12px;margin-left:8px;">Premium</span>
+                                    </div>
+                                    <div class="toggle-switch">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                                <div class="module-config">
+                                                    <small style="color:#64748b">Load and play podcasts. 250MB file limit.</small>
+                                                    <div style="margin-top:10px;">
+                                                        <button class="upload-btn" onclick="window.triggerLoad({accept:'audio/*',multiple:true,maxSizeMB:250,onFiles:async(f)=>{const{loadCast,saveCast}=await import('/js/core/storage.js');const e=await loadCast().catch(()=>[]);await saveCast([...e,...f]);location.reload()},onError:m=>alert(m)})"><i class="fa-solid fa-upload"></i> Load Podcasts</button>
+                                                    </div>
+                                                </div>
+                            </div>
+
+                            <div class="brand">
             <span
                 ><a href="https://buy.stripe.com/14AbJ05WbgWM73pbIfdUY00"
                     >✨ Start free trial (no credit card needed)</a

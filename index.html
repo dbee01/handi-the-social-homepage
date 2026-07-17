@@ -161,9 +161,9 @@
                     <div class="module-content"></div>
                 </div>
                 <div id="music" class="dashboard-item module">
-                    <div class="module-content"></div>
-                </div>
-                <div id="news" class="dashboard-item module">
+                                    <div class="module-content"></div>
+                                </div>
+                                <div id="news" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
                 <div id="calendar" class="dashboard-item module">
@@ -187,9 +187,12 @@
                                                     <div class="module-content"></div>
                                                 </div>
                                                 <div id="phone" class="dashboard-item module">
-                    <div class="module-content"></div>
-                </div>
-                <div id="live_bus" class="dashboard-item module">
+                                                                    <div class="module-content"></div>
+                                                                </div>
+                                                                <div id="cast" class="dashboard-item module">
+                                                                    <div class="module-content"></div>
+                                                                </div>
+                                                                <div id="live_bus" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
                 <div id="emergency_alert" class="dashboard-item module">
@@ -264,7 +267,8 @@
             import { startWeatherUpdates } from "./js/core/weather.js";
             import initGallery from "./modules/gallery/gallery.module.js";
             import initMusic from "./modules/music/music.module.js";
-            import initChat from "./modules/chat/chat.module.js";
+                        import initCast from "./modules/cast/cast.module.js";
+                        import initChat from "./modules/chat/chat.module.js";
             import initNews from "./modules/news/news.module.js";
             import initSocial from "./modules/mastodon/mastodon.module.js";
             import initCalendar from "./modules/calendar/calendar.module.js";
@@ -281,7 +285,8 @@
             const modules = {
                 gallery: initGallery,
                 music: initMusic,
-                news: initNews,
+                                cast: initCast,
+                                news: initNews,
                 calendar: initCalendar,
                                 task: initTask,
                                                 llm: initLlm,

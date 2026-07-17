@@ -75,6 +75,16 @@ window.HANDI_MODULES = [
   },
 
   {
+    id: "cast",
+        name: "Cast",
+        icon: "🎙️",
+        desc: "Podcast player",
+        tier: "premium",
+        defaultEnabled: 2,
+    settingsConfig: { volume: 100, soundLock: false },
+  },
+
+  {
     id: "task",
     name: "Tasks",
     icon: "📋",

@@ -54,7 +54,8 @@ var LANG = {
   modules: {
     gallery: { name: "Gallery", desc: "Photos" },
     music: { name: "Player", desc: "Your playlists" },
-    radio: { name: "Radio", desc: "Radio stations" },
+        cast: { name: "Cast", desc: "Podcast player" },
+        radio: { name: "Radio", desc: "Radio stations" },
     news: { name: "News", desc: "Top headlines" },
     social: { name: "Social", desc: "Mastodon feed" },
     calendar: { name: "Calendar", desc: "Reminders" },
@@ -257,7 +258,12 @@ var LANG = {
       d_llmHelpBody: "Downloads an LLM to your browser. Runs 100% on your device — no data leaves your computer. Requires WebGPU (Chrome/Edge). First load downloads ~600MB-2GB.",
       d_llmHelpOk: "Got it",
 
-      // Weather
+      d_noCast: "Load your podcasts here",
+        d_loadCast: "Load Podcasts",
+        d_castLoadFailed: "Failed to load podcast library.",
+        d_castStorageBlocked: 'Your browser blocks storage. Check Firefox settings → Privacy → make sure "Never remember history" is OFF.',
+
+        // Weather
   d_weatherDisabled: "Weather module disabled.",
   d_enableWeather: "Enable in Settings → Weather",
   d_loadingWeather: "Loading weather...",

@@ -745,6 +745,50 @@ header {
 }
 
 /* =========================================================
+   CAST LAYOUT (podcasts — mirrors music layout)
+========================================================= */
+
+.cast-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.cast-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    margin: 14px 0;
+}
+
+.cast-controls button {
+    min-width: 64px;
+    min-height: 64px;
+    padding: 0 20px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 2rem;
+}
+
+.cast-track-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.cast-track-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+/* =========================================================
    RADIO LAYOUT
 ========================================================= */
 
