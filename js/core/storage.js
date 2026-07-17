@@ -5,7 +5,7 @@
  */
 // js/core/storage.js
 const DB_NAME = 'pleie_storage';
-const DB_VERSION = 3; // Incremented version
+const DB_VERSION = 4;
 
 let db = null;
 
@@ -28,9 +28,9 @@ function initDB() {
             }
             if (!database.objectStoreNames.contains('gallery')) {
                 database.createObjectStore('gallery', { keyPath: 'id', autoIncrement: true });
+            }
             if (!database.objectStoreNames.contains('cast')) {
                 database.createObjectStore('cast', { keyPath: 'id', autoIncrement: true });
-            }
             }
         };
     });

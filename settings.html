@@ -1081,10 +1081,21 @@
                                     </div>
                                 </div>
                                 <div class="module-config">
-                                                    <small style="color:#64748b">Load and play podcasts. 250MB file limit.</small>
-                                                    <div style="margin-top:10px;">
-                                                        <button class="upload-btn" onclick="window.triggerLoad({accept:'audio/*',multiple:true,maxSizeMB:250,onFiles:async(f)=>{const{loadCast,saveCast}=await import('/js/core/storage.js');const e=await loadCast().catch(()=>[]);await saveCast([...e,...f]);location.reload()},onError:m=>alert(m)})"><i class="fa-solid fa-upload"></i> Load Podcasts</button>
+                                                    <div class="config-field">
+                                                        <label>Default volume:</label>
+                                                        <input type="range" id="castVolume" min="0" max="100" value="100">
+                                                        <span id="castVolumeValue">100%</span>
                                                     </div>
+                                                    <div class="config-field">
+                                                        <label>Sound lock (disabled by default):</label>
+                                                        <select id="castSoundLock">
+                                                            <option value="false">Off</option>
+                                                            <option value="true">On</option>
+                                                        </select>
+                                                    </div>
+                                                    <button class="upload-btn" id="loadCastBtn">
+                                                        🎙️ Load Podcasts
+                                                    </button>
                                                 </div>
                             </div>
 
@@ -1674,9 +1685,16 @@
                     parseInt(document.getElementById("musicVolume")?.value) ||
                     100;
                 settings.music.shuffle =
-                    document.getElementById("musicShuffle")?.value === "true";
+                                    document.getElementById("musicShuffle")?.value === "true";
 
-                if (!settings.radio) settings.radio = {};
+                                if (!settings.cast) settings.cast = {};
+                                settings.cast.volume =
+                                    parseInt(document.getElementById("castVolume")?.value) ||
+                                    100;
+                                settings.cast.soundLock =
+                                    document.getElementById("castSoundLock")?.value === "true";
+
+                                if (!settings.radio) settings.radio = {};
                 settings.radio.defaultCountry =
                     document.getElementById("radioCountry")?.value || "";
                 settings.radio.volume =
@@ -2182,14 +2200,41 @@
             // INITIALIZATION
             // ============================================================
             const volSlider = document.getElementById("musicVolume");
-            const volSpan = document.getElementById("volumeValue");
-            if (volSlider && volSpan)
-                volSlider.addEventListener(
-                    "input",
-                    () => (volSpan.innerText = volSlider.value + "%"),
-                );
+                        const volSpan = document.getElementById("volumeValue");
+                        if (volSlider && volSpan)
+                            volSlider.addEventListener(
+                                "input",
+                                () => (volSpan.innerText = volSlider.value + "%"),
+                            );
 
-            if (detectLocationBtn)
+                        // Cast volume slider
+                        const castVolSlider = document.getElementById("castVolume");
+                        const castVolSpan = document.getElementById("castVolumeValue");
+                        if (castVolSlider && castVolSpan)
+                            castVolSlider.addEventListener(
+                                "input",
+                                () => (castVolSpan.innerText = castVolSlider.value + "%"),
+                            );
+
+                        // Cast Load Podcasts button
+                        const castLoadBtn = document.getElementById("loadCastBtn");
+                        if (castLoadBtn) {
+                            castLoadBtn.addEventListener("click", () => {
+                                window.triggerLoad({
+                                    accept: "audio/*",
+                                    multiple: true,
+                                    maxSizeMB: 250,
+                                    onFiles: async (files) => {
+                                                                            const { saveCast } = await import("/js/core/storage.js");
+                                                                            await saveCast(files);
+                                                                            location.reload();
+                                                                        },
+                                    onError: (msg) => alert(msg),
+                                });
+                            });
+                        }
+
+                        if (detectLocationBtn)
                 detectLocationBtn.addEventListener("click", detectMyLocation);
             if (weatherLocationInput)
                 weatherLocationInput.addEventListener("input", () =>

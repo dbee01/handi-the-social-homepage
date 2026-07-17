@@ -14,7 +14,7 @@ export default async function initCast(container) {
     };
 
   const headerRow = document.createElement("div");
-  headerRow.className = "cast-header-row";
+  headerRow.className = "music-header-row";
   const title = document.createElement("div");
   title.className = "panel-title";
   title.innerHTML =
@@ -28,9 +28,9 @@ export default async function initCast(container) {
   headerRow.appendChild(title);
 
   const headerActions = document.createElement("div");
-  headerActions.className = "cast-header-actions";
+  headerActions.className = "music-header-actions";
   const lockToggle = document.createElement("button");
-  lockToggle.className = "cast-lock-toggle";
+  lockToggle.className = "music-lock-toggle";
   var saved = localStorage.getItem("castLocked"),
     regCfg =
       (window.HANDI_MODULE_BY_ID &&
@@ -52,11 +52,11 @@ export default async function initCast(container) {
   container.appendChild(headerRow);
 
   var content = document.createElement("div");
-  content.className = "cast-content";
+  content.className = "music-content";
   container.appendChild(content);
   var parentItem = container.closest(".dashboard-item");
   if (parentItem) {
-    parentItem.dataset.module = "cast";
+    parentItem.dataset.module = "music";
     parentItem.style.minHeight = "420px";
   }
 
@@ -83,12 +83,10 @@ export default async function initCast(container) {
           multiple: true,
           maxSizeMB: 250,
           onFiles: async (files) => {
-            var existing = [];
-            try { existing = await loadCast(); } catch (e) {}
-            await saveCast([...existing, ...files]);
-            container.innerHTML = "";
-            initCast(container);
-          },
+                      await saveCast(files);
+                      container.innerHTML = "";
+                      initCast(container);
+                    },
           onError: function (msg) {
             alert(msg);
           },
@@ -111,25 +109,25 @@ export default async function initCast(container) {
   applyGlobalMute(localStorage.getItem("globalMute") === "true");
 
   content.innerHTML =
-    '<div class="cast-now-playing"><canvas id="cast-synth" class="cast-synth"></canvas><div id="cast-status" class="cast-status"><span id="cast-track-title">—</span><span class="cast-state-text">' +
+    '<div class="music-now-playing"><canvas id="castSynth" class="music-synth"></canvas><div id="music-status" class="music-status"><span id="music-track-title">—</span><span class="music-state-text">' +
     t("d_ready", "Ready") +
-    '</span></div></div><div class="cast-controls"><button id="cast-prev">⏮</button><button id="cast-playpause" class="primary">▶</button><button id="cast-next">⏭</button></div><div style="text-align:center;margin-bottom:8px;"><button id="castLoadMoreBtn" class="settings-link-btn" style="padding:6px 14px;"><i class="fa-solid fa-cloud-arrow-up"></i> ' +
+    '</span></div></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-playpause" class="primary">▶</button><button id="music-next">⏭</button></div><div style="text-align:center;margin-bottom:8px;"><button id="castLoadMoreBtn" class="settings-link-btn" style="padding:6px 14px;"><i class="fa-solid fa-cloud-arrow-up"></i> ' +
     t("d_loadCast", "Load Podcasts") +
-        '</button></div><div class="cast-scroll-wrapper"><button id="castScrollUp" class="cast-scroll-btn">▲</button><div id="cast-playlist" class="cast-playlist"></div><button id="castScrollDown" class="cast-scroll-btn">▼</button></div>';
+        '</button></div><div class="music-scroll-wrapper"><button id="castScrollUp" class="music-scroll-btn">▲</button><div id="music-playlist" class="music-playlist"></div><button id="castScrollDown" class="music-scroll-btn">▼</button></div>';
 
-  var synthCanvas = content.querySelector("#cast-synth"),
-    playlist = content.querySelector("#cast-playlist");
+  var synthCanvas = content.querySelector("#castSynth"),
+    playlist = content.querySelector("#music-playlist");
   var up = content.querySelector("#castScrollUp"),
     down = content.querySelector("#castScrollDown");
-  var playPauseBtn = content.querySelector("#cast-playpause"),
-    trackTitleSpan = content.querySelector("#cast-track-title");
-  var stateSpan = content.querySelector(".cast-state-text"),
-    prevBtn = content.querySelector("#cast-prev"),
-    nextBtn = content.querySelector("#cast-next");
+  var playPauseBtn = content.querySelector("#music-playpause"),
+    trackTitleSpan = content.querySelector("#music-track-title");
+  var stateSpan = content.querySelector(".music-state-text"),
+    prevBtn = content.querySelector("#music-prev"),
+    nextBtn = content.querySelector("#music-next");
   if (synthCanvas) synthCanvas.style.display = "none";
 
   function startFakeVisualiser(canvas) {
-    if (!canvas) return null;
+      if (!canvas) return null;
     canvas.style.display = "block";
     var aid = null,
       ctx = canvas.getContext("2d");
@@ -158,7 +156,7 @@ export default async function initCast(container) {
         var hue =
           parseInt(
             getComputedStyle(document.body).getPropertyValue(
-              "--cast-synth-hue",
+              "--music-synth-hue",
             ),
           ) || 200;
         ctx.fillStyle = "hsl(" + hue + ", 80%, 55%)";
@@ -183,7 +181,7 @@ export default async function initCast(container) {
     }
   }
   function ensureVisualiserRunning() {
-    if (isPlaying && !isLocked) {
+      if (isPlaying && !isLocked) {
       if (!stopVisualiser) stopVisualiser = startFakeVisualiser(synthCanvas);
     } else {
       stopVisualiserAndClear();
@@ -191,7 +189,7 @@ export default async function initCast(container) {
   }
 
   function updateTrackIconsAndActive() {
-    var items = playlist.querySelectorAll(".cast-track-item");
+    var items = playlist.querySelectorAll(".music-track-item");
     items.forEach(function (el, i) {
       var iconSpan = el.querySelector("span");
       var isCur = i === currentIndex && isPlaying;
@@ -288,11 +286,12 @@ export default async function initCast(container) {
         var pp = audio.play();
         if (pp !== undefined) {
           pp.then(function () {
-            isPlaying = true;
-            playPauseBtn.innerHTML = "⏸";
-            stateSpan.innerText = t("d_playing", "...playing");
-            updateTrackIconsAndActive();
-          }).catch(function (err) {
+                      isPlaying = true;
+                      playPauseBtn.innerHTML = "⏸";
+                      stateSpan.innerText = t("d_playing", "...playing");
+                      updateTrackIconsAndActive();
+                      ensureVisualiserRunning();
+                    }).catch(function (err) {
             showError(t("d_cannotPlayFile", "Cannot play file"));
             isPlaying = false;
             playPauseBtn.innerHTML = "▶";
@@ -354,11 +353,12 @@ export default async function initCast(container) {
       var pp = currentAudio.play();
       if (pp !== undefined) {
         pp.then(function () {
-          isPlaying = true;
-          playPauseBtn.innerHTML = "⏸";
-          stateSpan.innerText = " | " + t("d_playing", "...playing");
-          updateTrackIconsAndActive();
-        }).catch(function (err) {
+                  isPlaying = true;
+                  playPauseBtn.innerHTML = "⏸";
+                  stateSpan.innerText = " | " + t("d_playing", "...playing");
+                  updateTrackIconsAndActive();
+                  ensureVisualiserRunning();
+                }).catch(function (err) {
           showError(t("d_cannotResume", "Cannot resume"));
         });
       }
@@ -376,7 +376,7 @@ export default async function initCast(container) {
 
   function applyLockState() {
     if (isLocked) stopCurrentAudio(true);
-    playlist.querySelectorAll(".cast-track-item").forEach(function (item) {
+    playlist.querySelectorAll(".music-track-item").forEach(function (item) {
       item.style.pointerEvents = isLocked ? "none" : "";
       item.style.opacity = isLocked ? "0.6" : "";
     });
@@ -403,7 +403,7 @@ export default async function initCast(container) {
 
   tracks.forEach(function (tr, i) {
     var el = document.createElement("div");
-    el.className = "cast-track-item";
+    el.className = "music-track-item";
     var iconSpan = document.createElement("span");
     iconSpan.innerHTML = '<i class="fa-solid fa-podcast"></i>';
     var nameSpan = document.createElement("span");
@@ -441,12 +441,10 @@ export default async function initCast(container) {
         multiple: true,
         maxSizeMB: 250,
         onFiles: async function (files) {
-          var existing = [];
-          try { existing = await loadCast(); } catch (e) {}
-          await saveCast([...existing, ...files]);
-          container.innerHTML = "";
-          initCast(container);
-        },
+                  await saveCast(files);
+                  container.innerHTML = "";
+                  initCast(container);
+                },
         onError: function (msg) { alert(msg); },
       });
     });

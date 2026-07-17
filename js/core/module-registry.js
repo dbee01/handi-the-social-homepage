@@ -75,6 +75,27 @@ window.HANDI_MODULES = [
   },
 
   {
+    id: "task",
+    name: "Tasks",
+    icon: "📋",
+    desc: "To-do list",
+    tier: "free",
+    defaultEnabled: 1,
+    settingsConfig: {},
+  },
+      // ─── Premium modules ───────────────────────────────────────────────────
+  {
+    id: "llm",
+    name: "LLM",
+    icon: "🧠",
+    desc: "Private AI chat",
+    tier: "premium",
+    defaultEnabled: 2,
+    settingsConfig: {},
+  },
+
+
+  {
     id: "cast",
         name: "Cast",
         icon: "🎙️",
@@ -84,27 +105,6 @@ window.HANDI_MODULES = [
     settingsConfig: { volume: 100, soundLock: false },
   },
 
-  {
-    id: "task",
-    name: "Tasks",
-    icon: "📋",
-    desc: "To-do list",
-    tier: "free",
-    defaultEnabled: 1,
-    settingsConfig: {},
-      },
-
-      {
-        id: "llm",
-        name: "LLM",
-        icon: "🧠",
-        desc: "Private AI chat",
-        tier: "premium",
-        defaultEnabled: 2,
-        settingsConfig: {},
-      },
-
-      // ─── Premium modules ───────────────────────────────────────────────────
   {
     id: "phone",
     name: "Phone",
@@ -120,7 +120,7 @@ window.HANDI_MODULES = [
     icon: "🚌",
     desc: "Bus times",
     tier: "premium",
-    defaultEnabled: 3,
+    defaultEnabled: 2,
     settingsConfig: { routeIds: "", stopIds: "" },
   },
   {
@@ -129,7 +129,7 @@ window.HANDI_MODULES = [
     icon: "📍",
     desc: "Share location",
     tier: "premium",
-    defaultEnabled: 3,
+    defaultEnabled: 2,
     settingsConfig: { contacts: [] },
   },
 ];

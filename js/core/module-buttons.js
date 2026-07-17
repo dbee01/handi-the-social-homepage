@@ -145,27 +145,30 @@
     }
 
     // 1. Lock button (move existing if present, skip if already in controls)
-    let lockBtn = null;
-    if (
-      !controlsDiv.querySelector(
-        ".emergency-lock-toggle, .radio-lock-toggle, .music-lock-toggle, .phone-lock-toggle, .cast-lock-toggle",
-      )
-    ) {
-      const possibleLockSelectors = [
-        ".radio-lock-toggle",
-                ".music-lock-toggle",
-                ".phone-lock-toggle",
-                ".emergency-lock-toggle",
-                ".cast-lock-toggle",
-      ];
-      for (const sel of possibleLockSelectors) {
-        const found = moduleElement.querySelector(sel);
-        if (found) {
-          lockBtn = found;
-          break;
+        let lockBtn = null;
+        // Skip modules that don't have sound locks
+        if (!["task", "news", "calendar", "chat", "social", "gallery", "live_bus", "llm"].includes(moduleId)) {
+        if (
+          !controlsDiv.querySelector(
+            ".emergency-lock-toggle, .radio-lock-toggle, .music-lock-toggle, .phone-lock-toggle, .cast-lock-toggle",
+          )
+        ) {
+          const possibleLockSelectors = [
+            ".radio-lock-toggle",
+            ".music-lock-toggle",
+            ".phone-lock-toggle",
+            ".emergency-lock-toggle",
+            ".cast-lock-toggle",
+          ];
+          for (const sel of possibleLockSelectors) {
+            const found = moduleElement.querySelector(sel);
+            if (found) {
+              lockBtn = found;
+              break;
+            }
+          }
         }
-      }
-    }
+        }
     if (lockBtn) {
       lockBtn.style.order = "0";
       // Move lock button into controls (preserve its event listeners)
