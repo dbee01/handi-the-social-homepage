@@ -100,6 +100,10 @@ const CACHE_TTL = 30 * 1000; // 30 seconds
 // Static frontend
 const publicPath = path.join(__dirname, "public");
 const staticPath = fs.existsSync(publicPath) ? publicPath : __dirname;
+// Block sensitive files from static serving
+app.use("/log.txt", (req, res) => res.status(404).send());
+app.use("/.env", (req, res) => res.status(404).send());
+app.use("/.env.example", (req, res) => res.status(404).send());
 app.use(express.static(staticPath));
 
 app.get("/", (req, res) => {
@@ -134,15 +138,20 @@ function logWrite(level, event, details, sid) {
 
 // Basic auth helper
 function basicAuth(req, res, next) {
+  // Allow CORS preflight without auth
+  if (req.method === "OPTIONS") return next();
   const auth = req.headers.authorization;
   if (!auth || !auth.startsWith("Basic ")) {
-    res.setHeader("WWW-Authenticate", 'Basic realm="Logs"');
-    return res.status(401).send("Authentication required");
+    res.writeHead(401, { "WWW-Authenticate": 'Basic realm="Logs"' });
+    res.end("Authentication required");
+    return;
   }
   const creds = Buffer.from(auth.slice(6), "base64").toString("utf8");
   const [user, pass] = creds.split(":");
   if (user !== LOG_USER || pass !== LOG_PASS) {
-    return res.status(403).send("Invalid credentials");
+    res.writeHead(403);
+    res.end("Invalid credentials");
+    return;
   }
   next();
 }

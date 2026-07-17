@@ -1,6 +1,8 @@
 /*
  * Copyright (c) 2026 Handi Homepage
  * Client-side logging utility — sends events to server log.txt
+ * This logging functionality anonymizes all user data and collects non-sensitive data functionality
+ * Eg. this feature is used to track whether external radio, chat, social media and news integrations work on an ongoing basis
  * Usage: logEvent(level, event, details)
  *   level: 1 = important, 2 = verbose
  */
