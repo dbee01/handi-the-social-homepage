@@ -137,7 +137,6 @@ header {
 
 .panel-title {
     color: #ffd700;
-    text-transform: uppercase;
     letter-spacing: 1px;
 }
 
@@ -565,6 +564,10 @@ header {
 .task-remove:hover {
     background: #3a1a1a;
     color: #ef4444;
+}
+.task-edit:hover {
+    background: #2a2a00;
+    color: #ffd700;
 }
 .task-add-subtask {
     border-color: #444;

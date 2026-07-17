@@ -45,7 +45,7 @@ export default async function initTask(container) {
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  title.innerHTML = '<i class="fa-solid fa-list-check"></i> ' + t("d_tasks", "tasks");
+  title.innerHTML = '<i class="fa-solid fa-list-check"></i> ' + t("d_tasks", "TASK");
   container.appendChild(title);
 
   const content = document.createElement("div");
@@ -56,8 +56,9 @@ export default async function initTask(container) {
   if (parentItem) parentItem.dataset.module = "task";
 
   let tasks = loadTasks();
-  let undoTask = null;
-  let undoTimeout = null;
+    let undoTask = null;
+    let undoTimeout = null;
+    let editingIndex = null;
 
   // ── Undo toast ──────────────────────────────────────────────────────────
   function showUndo(task) {
@@ -98,8 +99,8 @@ export default async function initTask(container) {
         </div>
         <div class="task-subtasks" id="taskSubtasks"></div>
         <button id="taskAddSubtask" class="task-add-subtask">+ ${t("d_addSubtask", "Add subtask")}</button>
-        <button id="taskCreateBtn" class="task-create-btn">${t("d_addTask", "Add Task")}</button>
-      </div>
+        <button id="taskCreateBtn" class="task-create-btn">${editingIndex !== null ? t("d_updateTask", "Update Task") : t("d_addTask", "Add Task")}</button>
+                ${editingIndex !== null ? `<button id="taskCancelEdit" class="task-cancel-btn">${t("d_cancel", "Cancel")}</button>` : ""}</div>
       <div class="task-list" id="taskList"></div>
     `;
     content.scrollTop = scrollTop;
@@ -129,31 +130,60 @@ export default async function initTask(container) {
     }
 
     content.querySelector("#taskAddSubtask").addEventListener("click", () => {
-      subtasks.push("");
-      renderSubtaskInputs();
-    });
+          subtasks.push("");
+          renderSubtaskInputs();
+        });
 
-    // Create task
-    content.querySelector("#taskCreateBtn").addEventListener("click", () => {
-      const titleInput = content.querySelector("#taskTitle");
-      const descInput = content.querySelector("#taskDesc");
-      const labelColor = content.querySelector("#taskLabelColor").value;
-      const labelText = content.querySelector("#taskLabelText").value.trim();
-      const titleVal = titleInput.value.trim();
-      if (!titleVal) return;
+        // Pre-fill form when editing
+        if (editingIndex !== null) {
+          const task = tasks[editingIndex];
+          content.querySelector("#taskTitle").value = task.title;
+          content.querySelector("#taskDesc").value = task.desc || "";
+          if (task.label) {
+            content.querySelector("#taskLabelColor").value = task.label.color;
+            content.querySelector("#taskLabelText").value = task.label.text;
+          }
+          if (task.subtasks) {
+            task.subtasks.forEach(st => subtasks.push(st.text));
+            renderSubtaskInputs();
+          }
+        }
 
-      tasks.unshift({
-        id: Date.now(),
-        title: titleVal,
-        desc: descInput.value.trim(),
-        label: labelText ? { text: labelText, color: labelColor || "#64748b" } : null,
-        subtasks: subtasks.filter(s => s.trim()).map(s => ({ text: s, done: false })),
-        done: false,
-        created: new Date().toISOString(),
-      });
-      saveTasks(tasks);
-      renderTasks();
-    });
+        // Cancel edit
+        const cancelBtn = content.querySelector("#taskCancelEdit");
+        if (cancelBtn) {
+          cancelBtn.addEventListener("click", () => {
+            editingIndex = null;
+            renderTasks();
+          });
+        }
+
+        // Create or update task
+            content.querySelector("#taskCreateBtn").addEventListener("click", () => {
+              const titleInput = content.querySelector("#taskTitle");
+              const descInput = content.querySelector("#taskDesc");
+              const labelColor = content.querySelector("#taskLabelColor").value;
+              const labelText = content.querySelector("#taskLabelText").value.trim();
+              const titleVal = titleInput.value.trim();
+              if (!titleVal) return;
+
+              const taskData = {
+                title: titleVal,
+                desc: descInput.value.trim(),
+                label: labelText ? { text: labelText, color: labelColor || "#64748b" } : null,
+                subtasks: subtasks.filter(s => s.trim()).map(s => ({ text: s, done: false })),
+                done: false,
+              };
+
+              if (editingIndex !== null) {
+                tasks[editingIndex] = { ...tasks[editingIndex], ...taskData };
+                editingIndex = null;
+              } else {
+                tasks.unshift({ id: Date.now(), ...taskData, created: new Date().toISOString() });
+              }
+              saveTasks(tasks);
+              renderTasks();
+            });
 
     // Task list
     const list = content.querySelector("#taskList");
@@ -162,10 +192,11 @@ export default async function initTask(container) {
       : tasks.map((task, i) => `
         <div class="task-card ${task.done ? "task-done" : ""}">
           <div class="task-card-header">
-            <input type="checkbox" class="task-checkbox" data-idx="${i}" ${task.done ? "checked" : ""}>
-            <div class="task-card-title">${escapeHtml(task.title)}</div>
-            <button class="task-remove" data-idx="${i}" title="${t("d_delete", "Delete")}">✖</button>
-          </div>
+                      <input type="checkbox" class="task-checkbox" data-idx="${i}" ${task.done ? "checked" : ""}>
+                      <div class="task-card-title">${escapeHtml(task.title)}</div>
+                      <button class="task-edit" data-idx="${i}" title="${t("d_edit", "Edit")}">✎</button>
+                      <button class="task-remove" data-idx="${i}" title="${t("d_delete", "Delete")}">✖</button>
+                    </div>
           ${task.desc ? `<div class="task-card-desc">${escapeHtml(task.desc)}</div>` : ""}
           ${task.label ? `<span class="task-label" style="background:${task.label.color}">${escapeHtml(task.label.text)}</span>` : ""}
           ${task.subtasks && task.subtasks.length ? `
@@ -195,6 +226,14 @@ export default async function initTask(container) {
       cb.addEventListener("change", () => {
         tasks[cb.dataset.idx].subtasks[cb.dataset.si].done = cb.checked;
         saveTasks(tasks);
+      });
+    });
+
+    // Edit handlers
+    list.querySelectorAll(".task-edit").forEach(btn => {
+      btn.addEventListener("click", () => {
+        editingIndex = parseInt(btn.dataset.idx);
+        renderTasks();
       });
     });
 

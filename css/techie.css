@@ -272,7 +272,6 @@ footer,
 .panel-title {
     color: var(--color-primary-bright) !important;
     letter-spacing: 1px;
-    text-transform: uppercase;
 }
 
 .panel-title i {
@@ -1240,6 +1239,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .task-remove:hover {
     background: rgba(255, 51, 51, 0.15);
     color: #ff3333;
+}
+.task-edit:hover {
+    background: rgba(51, 255, 51, 0.1);
+    color: var(--color-primary);
 }
 .task-add-subtask {
     border-color: var(--color-border);

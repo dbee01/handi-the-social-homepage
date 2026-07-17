@@ -961,7 +961,6 @@ header {
 ========================================================= */
 
 .dashboard-item[data-module="task"] {
-    max-height: 600px;
     overflow: hidden;
 }
 
@@ -1086,6 +1085,22 @@ header {
     background: #2563eb;
 }
 
+.task-cancel-btn {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #d1d5db;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.task-cancel-btn:hover {
+    background: #e5e7eb;
+}
+
 .task-list {
     flex: 1;
     min-height: 0;
@@ -1133,6 +1148,22 @@ header {
     flex: 1;
     font-weight: 600;
     font-size: 1rem;
+}
+
+.task-edit {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.15s;
+}
+
+.task-edit:hover {
+    background: #e0f2fe;
+    color: #3b82f6;
 }
 
 .task-remove {

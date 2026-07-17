@@ -34,7 +34,7 @@ export default async function initLlm(container) {
 
   const title = document.createElement("div");
     title.className = "panel-title";
-    title.innerHTML = '<i class="fa-solid fa-brain"></i> ' + t("d_llm", "llm");
+    title.innerHTML = '<i class="fa-solid fa-brain"></i> ' + t("d_llm", "AI");
 
     const helpBtn = document.createElement("button");
     helpBtn.className = "llm-help-btn";

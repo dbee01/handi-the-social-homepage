@@ -225,21 +225,7 @@ var LANG = {
   d_due: "Due",
 
   // Task
-  d_tasks: "tasks",
-  d_taskTitle: "Task title",
-  d_taskDesc: "Description (optional)",
-  d_noLabel: "No label",
-  d_labelName: "Label name",
-  d_addSubtask: "Add subtask",
-  d_addTask: "Add Task",
-  d_noTasks: "No tasks yet",
-  d_subtask: "Subtask",
-  d_delete: "Delete",
-  d_taskDeleted: "Task deleted",
-  d_undo: "Undo",
-
-  // Task
-    d_tasks: "tasks",
+    d_tasks: "Tasks",
     d_taskTitle: "Task title",
     d_taskDesc: "Description (optional)",
     d_noLabel: "No label",
@@ -249,11 +235,13 @@ var LANG = {
     d_noTasks: "No tasks yet",
     d_subtask: "Subtask",
     d_delete: "Delete",
+    d_edit: "Edit",
+    d_updateTask: "Update Task",
     d_taskDeleted: "Task deleted",
     d_undo: "Undo",
 
     // LLM
-    d_llm: "llm",
+    d_llm: "AI",
     d_llmSelect: "Select model...",
     d_llmLoad: "Load",
     d_llmLoaded: "Loaded",
@@ -269,7 +257,7 @@ var LANG = {
       d_llmHelpBody: "Downloads an LLM to your browser. Runs 100% on your device — no data leaves your computer. Requires WebGPU (Chrome/Edge). First load downloads ~600MB-2GB.",
       d_llmHelpOk: "Got it",
 
-    // Weather
+      // Weather
   d_weatherDisabled: "Weather module disabled.",
   d_enableWeather: "Enable in Settings → Weather",
   d_loadingWeather: "Loading weather...",
