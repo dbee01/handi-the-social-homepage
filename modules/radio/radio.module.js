@@ -11,290 +11,290 @@ export default async function initRadio(container) {
   // International radio stations with country flags
   const STATIONS = [
     {
-      flag: "🇮🇪",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#169b62'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ff883e'/></svg>",
       name: "RTÉ Radio 1",
       url: "https://25553.live.streamtheworld.com/RTE_1_INT.mp3?tdsdk=rte",
     },
-    { flag: "🇮🇪", name: "Today FM", url: "https://edgex.audioxi.com/TD" },
-    { flag: "🇮🇪", name: "Newstalk", url: "https://edgex.audioxi.com/NT" },
+    { flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#169b62'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ff883e'/></svg>", name: "Today FM", url: "https://edgex.audioxi.com/TD" },
+    { flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#169b62'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ff883e'/></svg>", name: "Newstalk", url: "https://edgex.audioxi.com/NT" },
     {
-      flag: "🇮🇪",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#169b62'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ff883e'/></svg>",
       name: "RTÉ Lyric FM",
       url: "https://29083.live.streamtheworld.com/RTE_LYRIC_FM.mp3?tdsdk=rte",
     },
     {
-      flag: "🇮🇪",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#169b62'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ff883e'/></svg>",
       name: "RTÉ 2FM",
       url: "https://27793.live.streamtheworld.com/RTE_2FM_INT.mp3?tdsdk=rte",
     },
     {
-      flag: "🇮🇪",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#169b62'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ff883e'/></svg>",
       name: "Cork 96FM",
       url: "https://onic.cork.live.stream.broadcasting.news/stream-96fm",
     },
     {
-      flag: "🇬🇧",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#012169'/><path d='M0 0l30 20M30 0L0 20' stroke='#fff' stroke-width='4'/><path d='M0 0l30 20M30 0L0 20' stroke='#c8102e' stroke-width='2'/><line x1='15' y1='0' x2='15' y2='20' stroke='#fff' stroke-width='6'/><line x1='0' y1='10' x2='30' y2='10' stroke='#fff' stroke-width='6'/><line x1='15' y1='0' x2='15' y2='20' stroke='#c8102e' stroke-width='3'/><line x1='0' y1='10' x2='30' y2='10' stroke='#c8102e' stroke-width='3'/></svg>",
       name: "Heart UK",
       url: "https://media-ssl.musicradio.com/HeartUK",
     },
     {
-      flag: "🇬🇧",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#012169'/><path d='M0 0l30 20M30 0L0 20' stroke='#fff' stroke-width='4'/><path d='M0 0l30 20M30 0L0 20' stroke='#c8102e' stroke-width='2'/><line x1='15' y1='0' x2='15' y2='20' stroke='#fff' stroke-width='6'/><line x1='0' y1='10' x2='30' y2='10' stroke='#fff' stroke-width='6'/><line x1='15' y1='0' x2='15' y2='20' stroke='#c8102e' stroke-width='3'/><line x1='0' y1='10' x2='30' y2='10' stroke='#c8102e' stroke-width='3'/></svg>",
       name: "Smooth Radio UK",
       url: "https://media-ssl.musicradio.com/SmoothUK",
     },
     {
-      flag: "🇬🇧",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#012169'/><path d='M0 0l30 20M30 0L0 20' stroke='#fff' stroke-width='4'/><path d='M0 0l30 20M30 0L0 20' stroke='#c8102e' stroke-width='2'/><line x1='15' y1='0' x2='15' y2='20' stroke='#fff' stroke-width='6'/><line x1='0' y1='10' x2='30' y2='10' stroke='#fff' stroke-width='6'/><line x1='15' y1='0' x2='15' y2='20' stroke='#c8102e' stroke-width='3'/><line x1='0' y1='10' x2='30' y2='10' stroke='#c8102e' stroke-width='3'/></svg>",
       name: "LBC UK",
       url: "https://media-ssl.musicradio.com/LBCUK",
     },
     {
-      flag: "🇬🇧",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#012169'/><path d='M0 0l30 20M30 0L0 20' stroke='#fff' stroke-width='4'/><path d='M0 0l30 20M30 0L0 20' stroke='#c8102e' stroke-width='2'/><line x1='15' y1='0' x2='15' y2='20' stroke='#fff' stroke-width='6'/><line x1='0' y1='10' x2='30' y2='10' stroke='#fff' stroke-width='6'/><line x1='15' y1='0' x2='15' y2='20' stroke='#c8102e' stroke-width='3'/><line x1='0' y1='10' x2='30' y2='10' stroke='#c8102e' stroke-width='3'/></svg>",
       name: "Capital FM London",
       url: "https://media-ssl.musicradio.com/Capital",
     },
     {
-      flag: "🇫🇷",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#002395'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ed2939'/></svg>",
       name: "France Inter",
       url: "https://stream.radiofrance.fr/franceinter/franceinter.m3u8",
     },
     {
-      flag: "🇫🇷",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#002395'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ed2939'/></svg>",
       name: "France Info",
       url: "https://stream.radiofrance.fr/franceinfo/franceinfo.m3u8",
     },
     {
-      flag: "🇫🇷",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#002395'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ed2939'/></svg>",
       name: "FIP",
       url: "https://stream.radiofrance.fr/fip/fip.m3u8",
     },
     {
-      flag: "🇫🇷",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#002395'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ed2939'/></svg>",
       name: "NRJ",
       url: "https://scdn.nrjaudio.fm/fr/30001/mp3_128.mp3",
     },
     {
-      flag: "🇩🇪",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='6.67' fill='#000'/><rect y='6.67' width='30' height='6.67' fill='#d00'/><rect y='13.34' width='30' height='6.66' fill='#fc0'/></svg>",
       name: "Deutschlandfunk",
       url: "https://st01.sslstream.dlf.de/dlf/01/128/mp3/stream.mp3",
     },
     {
-      flag: "🇩🇪",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='6.67' fill='#000'/><rect y='6.67' width='30' height='6.67' fill='#d00'/><rect y='13.34' width='30' height='6.66' fill='#fc0'/></svg>",
       name: "WDR 2",
       url: "https://wdr-wdr2-rheinland.icecastssl.wdr.de/wdr/wdr2/rheinland/mp3/128/stream.mp3",
     },
     {
-      flag: "🇩🇪",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='6.67' fill='#000'/><rect y='6.67' width='30' height='6.67' fill='#d00'/><rect y='13.34' width='30' height='6.66' fill='#fc0'/></svg>",
       name: "Radio Eins",
       url: "https://dispatcher.rndfnk.com/rbb/radioeins/live/mp3/mid",
     },
     {
-      flag: "🇩🇪",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='6.67' fill='#000'/><rect y='6.67' width='30' height='6.67' fill='#d00'/><rect y='13.34' width='30' height='6.66' fill='#fc0'/></svg>",
       name: "Bayern 1",
       url: "https://dispatcher.rndfnk.com/br/br1/obb/mp3/mid",
     },
     {
-      flag: "🇪🇸",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='5' fill='#c60b1e'/><rect y='5' width='30' height='10' fill='#ffc400'/><rect y='15' width='30' height='5' fill='#c60b1e'/></svg>",
       name: "RNE Radio 1",
       url: "https://dispatcher.rndfnk.com/crtve/rne1/main/mp3/high",
     },
     {
-      flag: "🇪🇸",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='5' fill='#c60b1e'/><rect y='5' width='30' height='10' fill='#ffc400'/><rect y='15' width='30' height='5' fill='#c60b1e'/></svg>",
       name: "Cadena SER",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/CADENASER.mp3",
     },
     {
-      flag: "🇪🇸",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='5' fill='#c60b1e'/><rect y='5' width='30' height='10' fill='#ffc400'/><rect y='15' width='30' height='5' fill='#c60b1e'/></svg>",
       name: "Los 40 Principales",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3",
     },
     {
-      flag: "🇮🇹",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#009246'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ce2b37'/></svg>",
       name: "Rai Radio 1",
       url: "https://icestreaming.rai.it/1.mp3",
     },
     {
-      flag: "🇮🇹",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#009246'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ce2b37'/></svg>",
       name: "Rai Radio 2",
       url: "https://icestreaming.rai.it/2.mp3",
     },
     {
-      flag: "🇮🇹",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#009246'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ce2b37'/></svg>",
       name: "Radio Deejay",
       url: "https://4c4b867c89244861ac216426883d1ad0.msvdn.net/radiodeejay/radiodeejay/master.m3u8",
     },
     {
-      flag: "🇮🇹",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#009246'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ce2b37'/></svg>",
       name: "Radio 105",
       url: "https://icecast.unitedradio.it/Radio105.mp3",
     },
     {
-      flag: "🇳🇱",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='6.67' fill='#ae1c28'/><rect y='6.67' width='30' height='6.67' fill='#fff'/><rect y='13.34' width='30' height='6.66' fill='#21468b'/></svg>",
       name: "NPO Radio 1",
       url: "https://icecast.omroep.nl/radio1-bb-mp3",
     },
     {
-      flag: "🇳🇱",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='6.67' fill='#ae1c28'/><rect y='6.67' width='30' height='6.67' fill='#fff'/><rect y='13.34' width='30' height='6.66' fill='#21468b'/></svg>",
       name: "NPO Radio 2",
       url: "https://icecast.omroep.nl/radio2-bb-mp3",
     },
     {
-      flag: "🇳🇱",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='6.67' fill='#ae1c28'/><rect y='6.67' width='30' height='6.67' fill='#fff'/><rect y='13.34' width='30' height='6.66' fill='#21468b'/></svg>",
       name: "NPO 3FM",
       url: "https://icecast.omroep.nl/3fm-bb-mp3",
     },
     {
-      flag: "🇳🇱",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='6.67' fill='#ae1c28'/><rect y='6.67' width='30' height='6.67' fill='#fff'/><rect y='13.34' width='30' height='6.66' fill='#21468b'/></svg>",
       name: "Radio 538",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO538.mp3",
     },
     {
-      flag: "🇵🇱",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='10' fill='#fff'/><rect y='10' width='30' height='10' fill='#dc143c'/></svg>",
       name: "RMF24",
       url: "https://rs202-krk.rmfstream.pl/RMF24",
     },
     {
-      flag: "🇵🇱",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='10' fill='#fff'/><rect y='10' width='30' height='10' fill='#dc143c'/></svg>",
       name: "Meloradio",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/MELORADIO.mp3",
     },
     {
-      flag: "🇵🇱",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='10' fill='#fff'/><rect y='10' width='30' height='10' fill='#dc143c'/></svg>",
       name: "RMF FM",
       url: "https://rs202-krk.rmfstream.pl/RMFFM48",
     },
     {
-      flag: "🇵🇱",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='10' fill='#fff'/><rect y='10' width='30' height='10' fill='#dc143c'/></svg>",
       name: "Radio Zet",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO_ZET.mp3",
     },
     {
-      flag: "🇵🇹",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='12' height='20' fill='#006600'/><rect x='12' width='18' height='20' fill='#f00'/><circle cx='12' cy='10' r='4' fill='#fc0' stroke='#000' stroke-width='.5'/></svg>",
       name: "Observador",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/OBSERVADOR.mp3",
     },
     {
-      flag: "🇵🇹",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='12' height='20' fill='#006600'/><rect x='12' width='18' height='20' fill='#f00'/><circle cx='12' cy='10' r='4' fill='#fc0' stroke='#000' stroke-width='.5'/></svg>",
       name: "M80 Rádio",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/M80RADIO.mp3",
     },
     {
-      flag: "🇵🇹",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='12' height='20' fill='#006600'/><rect x='12' width='18' height='20' fill='#f00'/><circle cx='12' cy='10' r='4' fill='#fc0' stroke='#000' stroke-width='.5'/></svg>",
       name: "RFM",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/RFM.mp3",
     },
     {
-      flag: "🇸🇪",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#006aa7'/><line x1='10' y1='0' x2='10' y2='20' stroke='#fecc00' stroke-width='4'/><line x1='0' y1='8' x2='30' y2='12' stroke='#fecc00' stroke-width='4'/></svg>",
       name: "Sveriges Radio P1",
       url: "https://live1.sr.se/p1-mp3-96",
     },
     {
-      flag: "🇸🇪",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#006aa7'/><line x1='10' y1='0' x2='10' y2='20' stroke='#fecc00' stroke-width='4'/><line x1='0' y1='8' x2='30' y2='12' stroke='#fecc00' stroke-width='4'/></svg>",
       name: "Sveriges Radio P3",
       url: "https://live1.sr.se/p3-mp3-96",
     },
     {
-      flag: "🇸🇪",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#006aa7'/><line x1='10' y1='0' x2='10' y2='20' stroke='#fecc00' stroke-width='4'/><line x1='0' y1='8' x2='30' y2='12' stroke='#fecc00' stroke-width='4'/></svg>",
       name: "Sveriges Radio P2",
       url: "https://live1.sr.se/p2-mp3-96",
     },
     {
-      flag: "🇸🇪",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#006aa7'/><line x1='10' y1='0' x2='10' y2='20' stroke='#fecc00' stroke-width='4'/><line x1='0' y1='8' x2='30' y2='12' stroke='#fecc00' stroke-width='4'/></svg>",
       name: "Sveriges Radio P4 Stockholm",
       url: "https://live1.sr.se/p4sth-mp3-96",
     },
     {
-      flag: "🇳🇴",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#ef2b2d'/><line x1='8' y1='0' x2='8' y2='20' stroke='#fff' stroke-width='4'/><line x1='0' y1='8' x2='30' y2='12' stroke='#fff' stroke-width='4'/><line x1='10' y1='0' x2='10' y2='20' stroke='#002868' stroke-width='2'/><line x1='0' y1='9' x2='30' y2='11' stroke='#002868' stroke-width='2'/></svg>",
       name: "NRK P1",
       url: "https://lyd.nrk.no/nrk_radio_p1_ostlandssendingen_mp3_h",
     },
     {
-      flag: "🇳🇴",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#ef2b2d'/><line x1='8' y1='0' x2='8' y2='20' stroke='#fff' stroke-width='4'/><line x1='0' y1='8' x2='30' y2='12' stroke='#fff' stroke-width='4'/><line x1='10' y1='0' x2='10' y2='20' stroke='#002868' stroke-width='2'/><line x1='0' y1='9' x2='30' y2='11' stroke='#002868' stroke-width='2'/></svg>",
       name: "NRK P3",
       url: "https://lyd.nrk.no/nrk_radio_p3_mp3_h",
     },
     {
-      flag: "🇳🇴",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#ef2b2d'/><line x1='8' y1='0' x2='8' y2='20' stroke='#fff' stroke-width='4'/><line x1='0' y1='8' x2='30' y2='12' stroke='#fff' stroke-width='4'/><line x1='10' y1='0' x2='10' y2='20' stroke='#002868' stroke-width='2'/><line x1='0' y1='9' x2='30' y2='11' stroke='#002868' stroke-width='2'/></svg>",
       name: "Radio Norge",
       url: "https://live-bauerno.sharp-stream.com/radionorge_no_mp3",
     },
     {
-      flag: "🇺🇸",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='1.54' fill='#b22234'/><rect y='1.54' width='30' height='1.54' fill='#fff'/><rect y='3.08' width='30' height='1.54' fill='#b22234'/><rect y='4.62' width='30' height='1.54' fill='#fff'/><rect y='6.15' width='30' height='1.54' fill='#b22234'/><rect y='7.69' width='30' height='1.54' fill='#fff'/><rect y='9.23' width='30' height='1.54' fill='#b22234'/><rect y='10.77' width='30' height='1.54' fill='#fff'/><rect y='12.31' width='30' height='1.54' fill='#b22234'/><rect y='13.85' width='30' height='1.54' fill='#fff'/><rect y='15.38' width='30' height='1.54' fill='#b22234'/><rect y='16.92' width='30' height='1.54' fill='#fff'/><rect y='18.46' width='30' height='1.54' fill='#b22234'/><rect width='10' height='10.77' fill='#3c3b6e'/></svg>",
       name: "NPR 24",
       url: "https://npr-ice.streamguys1.com/live.mp3",
     },
     {
-      flag: "🇺🇸",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='1.54' fill='#b22234'/><rect y='1.54' width='30' height='1.54' fill='#fff'/><rect y='3.08' width='30' height='1.54' fill='#b22234'/><rect y='4.62' width='30' height='1.54' fill='#fff'/><rect y='6.15' width='30' height='1.54' fill='#b22234'/><rect y='7.69' width='30' height='1.54' fill='#fff'/><rect y='9.23' width='30' height='1.54' fill='#b22234'/><rect y='10.77' width='30' height='1.54' fill='#fff'/><rect y='12.31' width='30' height='1.54' fill='#b22234'/><rect y='13.85' width='30' height='1.54' fill='#fff'/><rect y='15.38' width='30' height='1.54' fill='#b22234'/><rect y='16.92' width='30' height='1.54' fill='#fff'/><rect y='18.46' width='30' height='1.54' fill='#b22234'/><rect width='10' height='10.77' fill='#3c3b6e'/></svg>",
       name: "KEXP Seattle",
       url: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3",
     },
     {
-      flag: "🇺🇸",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='1.54' fill='#b22234'/><rect y='1.54' width='30' height='1.54' fill='#fff'/><rect y='3.08' width='30' height='1.54' fill='#b22234'/><rect y='4.62' width='30' height='1.54' fill='#fff'/><rect y='6.15' width='30' height='1.54' fill='#b22234'/><rect y='7.69' width='30' height='1.54' fill='#fff'/><rect y='9.23' width='30' height='1.54' fill='#b22234'/><rect y='10.77' width='30' height='1.54' fill='#fff'/><rect y='12.31' width='30' height='1.54' fill='#b22234'/><rect y='13.85' width='30' height='1.54' fill='#fff'/><rect y='15.38' width='30' height='1.54' fill='#b22234'/><rect y='16.92' width='30' height='1.54' fill='#fff'/><rect y='18.46' width='30' height='1.54' fill='#b22234'/><rect width='10' height='10.77' fill='#3c3b6e'/></svg>",
       name: "WNYC New York",
       url: "https://fm939.wnyc.org/wnycfm-web",
     },
     {
-      flag: "🇨🇦",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#f00'/><rect x='7.5' width='15' height='20' fill='#fff'/><path d='M15 3l1.5 4.5h5l-4 3 1.5 4.5-4-3-4 3 1.5-4.5-4-3h5z' fill='#f00'/></svg>",
       name: "NewsTalk 1010 Toronto",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/CFRBAM.mp3",
     },
     {
-      flag: "🇨🇦",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#f00'/><rect x='7.5' width='15' height='20' fill='#fff'/><path d='M15 3l1.5 4.5h5l-4 3 1.5 4.5-4-3-4 3 1.5-4.5-4-3h5z' fill='#f00'/></svg>",
       name: "CKUA Edmonton",
       url: "https://ckua.streamon.fm/stream/CKUA-48k.aac",
     },
     {
-      flag: "🇨🇦",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#f00'/><rect x='7.5' width='15' height='20' fill='#fff'/><path d='M15 3l1.5 4.5h5l-4 3 1.5 4.5-4-3-4 3 1.5-4.5-4-3h5z' fill='#f00'/></svg>",
       name: "CJAD 800 Montréal",
       url: "https://playerservices.streamtheworld.com/api/livestream-redirect/CJADAM.mp3",
     },
     {
-      flag: "🇦🇺",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#00008b'/><circle cx='15' cy='10' r='4' fill='#fff'/><circle cx='13' cy='9' r='.8' fill='#00008b'/><circle cx='17' cy='9' r='.8' fill='#00008b'/><circle cx='15' cy='11' r='.6' fill='#00008b'/></svg>",
       name: "ABC Radio Sydney",
       url: "https://live-radio01.mediahubaustralia.com/2LRW/mp3/",
     },
     {
-      flag: "🇦🇺",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#00008b'/><circle cx='15' cy='10' r='4' fill='#fff'/><circle cx='13' cy='9' r='.8' fill='#00008b'/><circle cx='17' cy='9' r='.8' fill='#00008b'/><circle cx='15' cy='11' r='.6' fill='#00008b'/></svg>",
       name: "triple j",
       url: "https://live-radio01.mediahubaustralia.com/2TJW/mp3/",
     },
     {
-      flag: "🇦🇺",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#00008b'/><circle cx='15' cy='10' r='4' fill='#fff'/><circle cx='13' cy='9' r='.8' fill='#00008b'/><circle cx='17' cy='9' r='.8' fill='#00008b'/><circle cx='15' cy='11' r='.6' fill='#00008b'/></svg>",
       name: "ABC Classic",
       url: "https://live-radio01.mediahubaustralia.com/2FMW/mp3/",
     },
     {
-      flag: "🇳🇿",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#00008b'/><circle cx='15' cy='10' r='4' fill='#fff'/><circle cx='13' cy='9' r='.8' fill='#00008b'/><circle cx='17' cy='9' r='.8' fill='#00008b'/><circle cx='15' cy='11' r='.6' fill='#00008b'/></svg>",
       name: "RNZ National",
       url: "https://stream-ice.radionz.co.nz/national.mp3",
     },
     {
-      flag: "🇳🇿",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#00008b'/><circle cx='15' cy='10' r='4' fill='#fff'/><circle cx='13' cy='9' r='.8' fill='#00008b'/><circle cx='17' cy='9' r='.8' fill='#00008b'/><circle cx='15' cy='11' r='.6' fill='#00008b'/></svg>",
       name: "RNZ Concert",
       url: "https://stream-ice.radionz.co.nz/concert.mp3",
     },
     {
-      flag: "🇳🇿",
+      flag: "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#00008b'/><circle cx='15' cy='10' r='4' fill='#fff'/><circle cx='13' cy='9' r='.8' fill='#00008b'/><circle cx='17' cy='9' r='.8' fill='#00008b'/><circle cx='15' cy='11' r='.6' fill='#00008b'/></svg>",
       name: "RNZ Pacific",
       url: "https://stream-ice.radionz.co.nz/international.mp3",
     },
   ];
 
   var flagToCountry = {
-    "🇮🇪": "Ireland",
-    "🇬🇧": "United Kingdom",
-    "🇫🇷": "France",
-    "🇩🇪": "Germany",
-    "🇪🇸": "Spain",
-    "🇮🇹": "Italy",
-    "🇳🇱": "Netherlands",
-    "🇵🇱": "Poland",
-    "🇵🇹": "Portugal",
-    "🇸🇪": "Sweden",
-    "🇳🇴": "Norway",
-    "🇺🇸": "United States",
-    "🇨🇦": "Canada",
-    "🇦🇺": "Australia",
-    "🇳🇿": "New Zealand",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#169b62'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ff883e'/></svg>": "Ireland",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#012169'/><path d='M0 0l30 20M30 0L0 20' stroke='#fff' stroke-width='4'/><path d='M0 0l30 20M30 0L0 20' stroke='#c8102e' stroke-width='2'/><line x1='15' y1='0' x2='15' y2='20' stroke='#fff' stroke-width='6'/><line x1='0' y1='10' x2='30' y2='10' stroke='#fff' stroke-width='6'/><line x1='15' y1='0' x2='15' y2='20' stroke='#c8102e' stroke-width='3'/><line x1='0' y1='10' x2='30' y2='10' stroke='#c8102e' stroke-width='3'/></svg>": "United Kingdom",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#002395'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ed2939'/></svg>": "France",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='6.67' fill='#000'/><rect y='6.67' width='30' height='6.67' fill='#d00'/><rect y='13.34' width='30' height='6.66' fill='#fc0'/></svg>": "Germany",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='5' fill='#c60b1e'/><rect y='5' width='30' height='10' fill='#ffc400'/><rect y='15' width='30' height='5' fill='#c60b1e'/></svg>": "Spain",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#009246'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ce2b37'/></svg>": "Italy",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='6.67' fill='#ae1c28'/><rect y='6.67' width='30' height='6.67' fill='#fff'/><rect y='13.34' width='30' height='6.66' fill='#21468b'/></svg>": "Netherlands",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='10' fill='#fff'/><rect y='10' width='30' height='10' fill='#dc143c'/></svg>": "Poland",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='12' height='20' fill='#006600'/><rect x='12' width='18' height='20' fill='#f00'/><circle cx='12' cy='10' r='4' fill='#fc0' stroke='#000' stroke-width='.5'/></svg>": "Portugal",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#006aa7'/><line x1='10' y1='0' x2='10' y2='20' stroke='#fecc00' stroke-width='4'/><line x1='0' y1='8' x2='30' y2='12' stroke='#fecc00' stroke-width='4'/></svg>": "Sweden",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#ef2b2d'/><line x1='8' y1='0' x2='8' y2='20' stroke='#fff' stroke-width='4'/><line x1='0' y1='8' x2='30' y2='12' stroke='#fff' stroke-width='4'/><line x1='10' y1='0' x2='10' y2='20' stroke='#002868' stroke-width='2'/><line x1='0' y1='9' x2='30' y2='11' stroke='#002868' stroke-width='2'/></svg>": "Norway",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='1.54' fill='#b22234'/><rect y='1.54' width='30' height='1.54' fill='#fff'/><rect y='3.08' width='30' height='1.54' fill='#b22234'/><rect y='4.62' width='30' height='1.54' fill='#fff'/><rect y='6.15' width='30' height='1.54' fill='#b22234'/><rect y='7.69' width='30' height='1.54' fill='#fff'/><rect y='9.23' width='30' height='1.54' fill='#b22234'/><rect y='10.77' width='30' height='1.54' fill='#fff'/><rect y='12.31' width='30' height='1.54' fill='#b22234'/><rect y='13.85' width='30' height='1.54' fill='#fff'/><rect y='15.38' width='30' height='1.54' fill='#b22234'/><rect y='16.92' width='30' height='1.54' fill='#fff'/><rect y='18.46' width='30' height='1.54' fill='#b22234'/><rect width='10' height='10.77' fill='#3c3b6e'/></svg>": "United States",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#f00'/><rect x='7.5' width='15' height='20' fill='#fff'/><path d='M15 3l1.5 4.5h5l-4 3 1.5 4.5-4-3-4 3 1.5-4.5-4-3h5z' fill='#f00'/></svg>": "Canada",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#00008b'/><circle cx='15' cy='10' r='4' fill='#fff'/><circle cx='13' cy='9' r='.8' fill='#00008b'/><circle cx='17' cy='9' r='.8' fill='#00008b'/><circle cx='15' cy='11' r='.6' fill='#00008b'/></svg>": "Australia",
+    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#00008b'/><circle cx='15' cy='10' r='4' fill='#fff'/><circle cx='13' cy='9' r='.8' fill='#00008b'/><circle cx='17' cy='9' r='.8' fill='#00008b'/><circle cx='15' cy='11' r='.6' fill='#00008b'/></svg>": "New Zealand",
   };
 
   var countries = [],
@@ -379,20 +379,34 @@ export default async function initRadio(container) {
       .join("");
 
   content.innerHTML =
-    '<div style="text-align:center;margin-bottom:8px;"><select id="radioCountryFilter" style="padding:6px 10px;border-radius:8px;border:2px solid #cbd5e1;font-size:0.9rem;max-width:100%;">' +
-    countryOptions +
-    '</select></div><div class="radio-top-bar"><canvas id="radio-synth" class="radio-synth"></canvas></div><div class="radio-now-playing" id="now-playing">' +
-    t("d_noStation", "No station playing") +
-    '</div><div class="radio-scroll-wrapper"><button id="radio-up" class="radio-scroll-btn">▲</button><div id="stations-list" class="radio-list"></div><button id="radio-down" class="radio-scroll-btn">▼</button></div><div class="radio-error" id="radio-error"></div>';
+      '<div class="radio-country-list" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:8px;">' +
+      countries.map(function (c) {
+        var cls = c.flag === selectedFlag ? ' radio-country-item active' : 'radio-country-item';
+        return '<button class="' + cls + '" data-flag="' + c.flag + '" style="display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;border:1px solid #cbd5e1;cursor:pointer;background:none;font-size:0.85rem;">' + c.flag + '<span>' + c.name + '</span></button>';
+      }).join("") +
+      '</div><div class="radio-top-bar"><canvas id="radio-synth" class="radio-synth"></canvas></div><div class="radio-now-playing" id="now-playing">' +
+      t("d_noStation", "No station playing") +
+      '</div><div class="radio-scroll-wrapper"><button id="radio-up" class="radio-scroll-btn">▲</button><div id="stations-list" class="radio-list"></div><button id="radio-down" class="radio-scroll-btn">▼</button></div><div class="radio-error" id="radio-error"></div>';
 
-  var countryFilter = content.querySelector("#radioCountryFilter"),
-    list = content.querySelector("#stations-list");
-  var nowPlaying = content.querySelector("#now-playing"),
-    error = content.querySelector("#radio-error");
-  var up = content.querySelector("#radio-up"),
-    down = content.querySelector("#radio-down");
-  var synthCanvas = content.querySelector("#radio-synth");
-  if (synthCanvas) synthCanvas.style.display = "none";
+    var countryBtns = content.querySelectorAll(".radio-country-item");
+    var list = content.querySelector("#stations-list");
+    var nowPlaying = content.querySelector("#now-playing"),
+      error = content.querySelector("#radio-error");
+    var up = content.querySelector("#radio-up"),
+      down = content.querySelector("#radio-down");
+    var synthCanvas = content.querySelector("#radio-synth");
+    if (synthCanvas) synthCanvas.style.display = "none";
+
+    countryBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        selectedFlag = this.getAttribute("data-flag");
+        try { localStorage.setItem("handiRadioCountry", selectedFlag); } catch (e) {}
+        stopPlayback(true);
+        renderStations();
+        countryBtns.forEach(function (b) { b.classList.remove("active"); b.style.background = ""; });
+        this.classList.add("active");
+      });
+    });
 
   var currentAudio = null,
     stopVisualiser = null,
@@ -417,7 +431,7 @@ export default async function initRadio(container) {
       d.style.cssText = "display:flex;align-items:center;gap:8px;";
       var fs = document.createElement("span");
       fs.style.fontSize = "1.2rem";
-      fs.textContent = station.flag;
+      fs.innerHTML = station.flag;
       var pi = document.createElement("span");
       pi.className = "radio-play-btn";
       pi.innerHTML = '<i class="fa-solid fa-play"></i>';
@@ -441,16 +455,8 @@ export default async function initRadio(container) {
     });
   }
   renderStations();
-  countryFilter.addEventListener("change", function () {
-    selectedFlag = this.value;
-    try {
-      localStorage.setItem("handiRadioCountry", selectedFlag);
-    } catch (e) {}
-    stopPlayback(true);
-    renderStations();
-  });
 
-  function applyGlobalMute(muted) {
+    function applyGlobalMute(muted) {
     if (currentAudio) currentAudio.muted = muted;
   }
   window.addEventListener("globalMuteToggle", function (e) {

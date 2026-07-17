@@ -3,79 +3,23 @@ import { loadSettings } from "../../js/core/settings.js";
 
 // International news feeds with country flags
 const NEWS_FEEDS = [
-  {
-    flag: "🇮🇪",
-    name: "Ireland – The Journal",
-    url: "https://www.thejournal.ie/feed/",
-  },
-  {
-    flag: "🇬🇧",
-    name: "UK – BBC",
-    url: "https://feeds.bbci.co.uk/news/rss.xml",
-  },
-  {
-    flag: "🇫🇷",
-    name: "France – Le Monde",
-    url: "https://www.lemonde.fr/rss/une.xml",
-  },
-  {
-    flag: "🇩🇪",
-    name: "Deutschland – Spiegel",
-    url: "https://www.spiegel.de/schlagzeilen/index.rss",
-  },
-  {
-    flag: "🇪🇸",
-    name: "España – El País",
-    url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada",
-  },
-  {
-    flag: "🇮🇹",
-    name: "Italia – Corriere",
-    url: "https://www.corriere.it/rss/homepage.xml",
-  },
-  {
-    flag: "🇳🇱",
-    name: "Nederland – NOS",
-    url: "https://feeds.nos.nl/nosnieuwsalgemeen",
-  },
-  { flag: "🇵🇱", name: "Polska – TVN24", url: "https://tvn24.pl/najnowsze.xml" },
-  {
-    flag: "🇵🇹",
-    name: "Portugal – Público",
-    url: "https://feeds.feedburner.com/PublicoRSS",
-  },
-  {
-    flag: "🇧🇪",
-    name: "België – De Standaard",
-    url: "https://www.standaard.be/binnenland/rss/",
-  },
-  { flag: "🇨🇭", name: "Schweiz – NZZ", url: "https://www.nzz.ch/recent.rss" },
-  {
-    flag: "🇸🇪",
-    name: "Sverige – SVT",
-    url: "https://www.svt.se/nyheter/rss.xml",
-  },
-  {
-    flag: "🇳🇴",
-    name: "Norge – NRK",
-    url: "https://www.nrk.no/nyheter/siste.rss",
-  },
-  { flag: "🇺🇸", name: "USA – NPR", url: "https://feeds.npr.org/1001/rss.xml" },
-  {
-    flag: "🇨🇦",
-    name: "Canada – CBC",
-    url: "https://www.cbc.ca/webfeed/rss/rss-topstories",
-  },
-  {
-    flag: "🇦🇺",
-    name: "Australia – ABC",
-    url: "https://www.abc.net.au/news/feed/51120/rss.xml",
-  },
-  {
-    flag: "🇳🇿",
-    name: "New Zealand – RNZ",
-    url: "https://www.rnz.co.nz/rss/national.xml",
-  },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="10" height="20" fill="#169b62"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ff883e"/></svg>', name: "Ireland – The Journal", url: "https://www.thejournal.ie/feed/" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="20" fill="#012169"/><path d="M0 0l30 20M30 0L0 20" stroke="#fff" stroke-width="4"/><path d="M0 0l30 20M30 0L0 20" stroke="#c8102e" stroke-width="2"/><line x1="15" y1="0" x2="15" y2="20" stroke="#fff" stroke-width="6"/><line x1="0" y1="10" x2="30" y2="10" stroke="#fff" stroke-width="6"/><line x1="15" y1="0" x2="15" y2="20" stroke="#c8102e" stroke-width="3"/><line x1="0" y1="10" x2="30" y2="10" stroke="#c8102e" stroke-width="3"/></svg>', name: "UK – BBC", url: "https://feeds.bbci.co.uk/news/rss.xml" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="10" height="20" fill="#002395"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ed2939"/></svg>', name: "France – Le Monde", url: "https://www.lemonde.fr/rss/une.xml" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="6.67" fill="#000"/><rect y="6.67" width="30" height="6.67" fill="#d00"/><rect y="13.34" width="30" height="6.66" fill="#fc0"/></svg>', name: "Deutschland – Spiegel", url: "https://www.spiegel.de/schlagzeilen/index.rss" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="5" fill="#c60b1e"/><rect y="5" width="30" height="10" fill="#ffc400"/><rect y="15" width="30" height="5" fill="#c60b1e"/></svg>', name: "España – El País", url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="10" height="20" fill="#009246"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce2b37"/></svg>', name: "Italia – Corriere", url: "https://www.corriere.it/rss/homepage.xml" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="6.67" fill="#ae1c28"/><rect y="6.67" width="30" height="6.67" fill="#fff"/><rect y="13.34" width="30" height="6.66" fill="#21468b"/></svg>', name: "Nederland – NOS", url: "https://feeds.nos.nl/nosnieuwsalgemeen" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="10" fill="#fff"/><rect y="10" width="30" height="10" fill="#dc143c"/></svg>', name: "Polska – TVN24", url: "https://tvn24.pl/najnowsze.xml" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="12" height="20" fill="#006600"/><rect x="12" width="18" height="20" fill="#f00"/><circle cx="12" cy="10" r="4" fill="#fc0" stroke="#000" stroke-width=".5"/></svg>', name: "Portugal – Público", url: "https://feeds.feedburner.com/PublicoRSS" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="10" height="20" fill="#000"/><rect x="10" width="10" height="20" fill="#fae042"/><rect x="20" width="10" height="20" fill="#ed2939"/></svg>', name: "België – De Standaard", url: "https://www.standaard.be/binnenland/rss/" },
+  { flag: '<svg viewBox="0 0 20 20" width="20" height="14"><rect width="20" height="20" fill="#d52b1e"/><line x1="7" y1="5" x2="13" y2="15" stroke="#fff" stroke-width="2.5"/><line x1="13" y1="5" x2="7" y2="15" stroke="#fff" stroke-width="2.5"/></svg>', name: "Schweiz – NZZ", url: "https://www.nzz.ch/recent.rss" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="20" fill="#006aa7"/><line x1="10" y1="0" x2="10" y2="20" stroke="#fecc00" stroke-width="4"/><line x1="0" y1="8" x2="30" y2="12" stroke="#fecc00" stroke-width="4"/></svg>', name: "Sverige – SVT", url: "https://www.svt.se/nyheter/rss.xml" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="20" fill="#ef2b2d"/><line x1="8" y1="0" x2="8" y2="20" stroke="#fff" stroke-width="4"/><line x1="0" y1="8" x2="30" y2="12" stroke="#fff" stroke-width="4"/><line x1="10" y1="0" x2="10" y2="20" stroke="#002868" stroke-width="2"/><line x1="0" y1="9" x2="30" y2="11" stroke="#002868" stroke-width="2"/></svg>', name: "Norge – NRK", url: "https://www.nrk.no/nyheter/siste.rss" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="1.54" fill="#b22234"/><rect y="1.54" width="30" height="1.54" fill="#fff"/><rect y="3.08" width="30" height="1.54" fill="#b22234"/><rect y="4.62" width="30" height="1.54" fill="#fff"/><rect y="6.15" width="30" height="1.54" fill="#b22234"/><rect y="7.69" width="30" height="1.54" fill="#fff"/><rect y="9.23" width="30" height="1.54" fill="#b22234"/><rect y="10.77" width="30" height="1.54" fill="#fff"/><rect y="12.31" width="30" height="1.54" fill="#b22234"/><rect y="13.85" width="30" height="1.54" fill="#fff"/><rect y="15.38" width="30" height="1.54" fill="#b22234"/><rect y="16.92" width="30" height="1.54" fill="#fff"/><rect y="18.46" width="30" height="1.54" fill="#b22234"/><rect width="10" height="10.77" fill="#3c3b6e"/></svg>', name: "USA – NPR", url: "https://feeds.npr.org/1001/rss.xml" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="20" fill="#f00"/><rect x="7.5" width="15" height="20" fill="#fff"/><path d="M15 3l1.5 4.5h5l-4 3 1.5 4.5-4-3-4 3 1.5-4.5-4-3h5z" fill="#f00"/></svg>', name: "Canada – CBC", url: "https://www.cbc.ca/webfeed/rss/rss-topstories" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="20" fill="#00008b"/><circle cx="15" cy="10" r="4" fill="#fff"/><circle cx="13" cy="9" r=".8" fill="#00008b"/><circle cx="17" cy="9" r=".8" fill="#00008b"/><circle cx="15" cy="11" r=".6" fill="#00008b"/></svg>', name: "Australia – ABC", url: "https://www.abc.net.au/news/feed/51120/rss.xml" },
+  { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="20" fill="#00008b"/><circle cx="15" cy="10" r="4" fill="#fff"/><circle cx="13" cy="9" r=".8" fill="#00008b"/><circle cx="17" cy="9" r=".8" fill="#00008b"/><circle cx="15" cy="11" r=".6" fill="#00008b"/></svg>', name: "New Zealand – RNZ", url: "https://www.rnz.co.nz/rss/national.xml" },
 ];
 
 export default async function initNews(container) {
@@ -119,39 +63,27 @@ export default async function initNews(container) {
   }
 
   function renderFeedSelector() {
-    content.innerHTML = `
-      <div class="module-empty">
-        <i class="fa-solid fa-newspaper"></i>
-        <p>${t("d_configureNews", "Configure NEWS element")}</p>
-        <div style="margin-top:12px;">
-          <select id="newsFeedSelect" style="padding:8px 12px;border-radius:8px;border:2px solid #cbd5e1;font-size:1rem;max-width:100%;">
-            <option value="">${t("d_selectFeed", "— Select a news source —")}</option>
-            ${NEWS_FEEDS.map(function (f, i) {
-              return (
-                '<option value="' +
-                i +
-                '">' +
-                f.flag +
-                " " +
-                f.name +
-                "</option>"
-              );
-            }).join("")}
-          </select>
+      content.innerHTML = `
+        <div class="module-empty">
+          <i class="fa-solid fa-newspaper"></i>
+          <p>${t("d_configureNews", "Configure NEWS element")}</p>
         </div>
-      </div>
-    `;
-    var sel = content.querySelector("#newsFeedSelect");
-    if (sel) {
-      sel.addEventListener("change", function () {
-        var idx = parseInt(this.value);
-        if (idx >= 0 && NEWS_FEEDS[idx]) {
-          saveFeed(NEWS_FEEDS[idx].url);
-          fetchNews();
-        }
+        <div class="news-feed-list" style="display:flex;flex-direction:column;gap:4px;margin-top:8px;max-height:300px;overflow-y:auto;">
+          ${NEWS_FEEDS.map(function (f, i) {
+            return `<div class="news-feed-item" data-idx="${i}" style="display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;border-radius:8px;border:1px solid #e5e7eb;">${f.flag}<span>${f.name}</span></div>`;
+          }).join("")}
+        </div>
+      `;
+      content.querySelectorAll(".news-feed-item").forEach(function (el) {
+        el.addEventListener("click", function () {
+          var idx = parseInt(el.getAttribute("data-idx"));
+          if (idx >= 0 && NEWS_FEEDS[idx]) {
+            saveFeed(NEWS_FEEDS[idx].url);
+            fetchNews();
+          }
+        });
       });
     }
-  }
 
   function formatSourceName(url) {
     try {

@@ -28,7 +28,7 @@ window.HANDI_MODULES = [
     icon: "📻",
     desc: "Radio stations",
     tier: "free",
-    defaultEnabled: 1,
+    defaultEnabled: 0,
     settingsConfig: { defaultStation: "0", volume: 100, soundLock: false },
   },
   {
@@ -90,7 +90,7 @@ window.HANDI_MODULES = [
     icon: "🧠",
     desc: "Private AI chat",
     tier: "premium",
-    defaultEnabled: 2,
+    defaultEnabled: 0,
     settingsConfig: {},
   },
 
@@ -101,7 +101,7 @@ window.HANDI_MODULES = [
         icon: "🎙️",
         desc: "Podcast player",
         tier: "premium",
-        defaultEnabled: 2,
+        defaultEnabled: 0,
     settingsConfig: { volume: 100, soundLock: false },
   },
 
@@ -111,16 +111,16 @@ window.HANDI_MODULES = [
     icon: "📞",
     desc: "Free calls",
     tier: "premium",
-    defaultEnabled: 2,
+    defaultEnabled: 0,
     settingsConfig: { contacts: [] },
   },
   {
     id: "live_bus",
     name: "Live Bus",
     icon: "🚌",
-    desc: "Bus times",
+    desc: "Bus times (Ireland)",
     tier: "premium",
-    defaultEnabled: 2,
+    defaultEnabled: 0,
     settingsConfig: { routeIds: "", stopIds: "" },
   },
   {

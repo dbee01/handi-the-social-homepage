@@ -251,7 +251,7 @@ var LANG = {
     d_llmPlaceholder: "Ask something...",
     d_llmSend: "Send",
     d_llmDownloading: "Downloading",
-    d_llmFailed: "Failed to load model. Requires Chrome/Edge with WebGPU.",
+    d_llmFailed: "No compatible GPU found. WebGPU requires Chrome 113+ or Edge 113+. Visit webgpureport.org to check your browser.",
     d_llmNoWebgpu: "WebGPU not available. Requires Chrome 113+ or Edge 113+.",
     d_llmYou: "You",
       d_llmHelpTitle: "Private AI Chat",

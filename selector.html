@@ -1060,20 +1060,8 @@
             const PREMIUM_MODULES = window.HANDI_PREMIUM_MODULES();
 
             function getEnabled() {
-                let mmr = window.getMMR();
-                // On premium-enabled hosts, auto-activate premium modules that are off (0) or disabled (2)
-                if (window.PREMIUM_ACTIVE === true) {
-                    let changed = false;
-                    PREMIUM_MODULES.forEach((m) => {
-                        if (mmr[m.id] === 0 || mmr[m.id] === 2) {
-                            mmr[m.id] = 1;
-                            changed = true;
+                            return window.getMMR();
                         }
-                    });
-                    if (changed) window.saveMMR(mmr);
-                }
-                return mmr;
-            }
 
             function saveEnabled(enabled) {
                 return window.saveMMR(enabled);
@@ -1183,15 +1171,11 @@
                         let btn = div.querySelector("button");
                         if (!isDisabled) {
                             btn.onclick = () => {
-                                if (mod.tier === "premium" && !consent) {
-                                    alert(window.LANG.alertConsentModules);
-                                    return;
-                                }
-                                enabled[mod.id] = isActive ? 0 : 1;
-                                saveEnabled(enabled);
-                                renderSelector();
-                                renderDashboard();
-                            };
+                                                            enabled[mod.id] = isActive ? 0 : 1;
+                                                            saveEnabled(enabled);
+                                                            renderSelector();
+                                                            renderDashboard();
+                                                        };
                         }
                         premiumContainer.appendChild(div);
                     });
@@ -1213,22 +1197,36 @@
             }
 
             function applyChanges() {
-                if (!hasConsent()) {
-                    alert(window.LANG.alertConsentApply);
-                    return;
-                }
+                            if (!hasConsent()) {
+                                var box = document.getElementById("privacyConsent");
+                                if (box) {
+                                    box.style.outline = "3px solid red";
+                                    setTimeout(function () { box.style.outline = ""; }, 2000);
+                                }
+                                alert(window.LANG.alertConsentApply);
+                                return;
+                            }
+                            window.location.href = "/index.html";
+                                        }
 
-                // MMR is already saved live — just redirect
-                window.location.href = "/index.html";
-            }
-
-            // Wait for LANG before initial render
-            (function initRender() {
-                if (typeof LANG === "undefined") {
-                    setTimeout(initRender, 50);
-                    return;
-                }
-                renderSelector();
+                                        // Wait for LANG before initial render
+                        (function initRender() {
+                            if (typeof LANG === "undefined") {
+                                setTimeout(initRender, 50);
+                                return;
+                            }
+                            if (window.PREMIUM_ACTIVE === true) {
+                                let mmr = window.getMMR();
+                                let changed = false;
+                                PREMIUM_MODULES.forEach((m) => {
+                                    if (mmr[m.id] === 0 || mmr[m.id] === 2) {
+                                        mmr[m.id] = 1;
+                                        changed = true;
+                                    }
+                                });
+                                if (changed) window.saveMMR(mmr);
+                            }
+                            renderSelector();
             })();
 
             document
