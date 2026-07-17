@@ -259,6 +259,10 @@ var LANG = {
   h_chat: "<strong>💬 Chat (Matrix)</strong><br><br>• Erstelle dein eigenes Matrix-Konto bei <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a>, um private Familien- oder Freundes-Chaträume zu starten.<br>• Raum-URLs, Zugriffstoken, Benutzer-ID hinzufügen unter <strong>Einstellungen → Chat</strong>.<br>• Das Modul prüft alle 30 Sekunden auf neue Nachrichten.<br>• Klicke auf die Raumkopfzeile, um sie zu erweitern und Nachrichten anzuzeigen.<br>• Benachrichtigungen über neue Nachrichten erscheinen als rotes Abzeichen.",
   h_calendar: "<strong>📅 Kalender (Proton ICS)</strong><br><br>• Zeigt die heutigen Ereignisse aus deinem Proton Kalender.<br>• ICS-Link abrufen über Proton Calendar → Einstellungen → Kalender → 'Mit jedem teilen' → 'Link erstellen'.<br>• ICS-Link einfügen unter <strong>Einstellungen → Kalender</strong>.<br><br><strong>🔔 Alarme:</strong><br>• Benachrichtigungen werden in deiner Kalender-App eingestellt — z.B. 2 Benachrichtigungen pro Ereignis = zwei Alarme auf diesem Dashboard.<br>• Alarme mit dem Schalter oben im Kalender ein-/ausschalten.<br><br><strong>⚠️ Wichtige Einschränkungen (Proton, nicht dieses Modul):</strong><br>• Der ICS-Feed aktualisiert sich <strong>alle 4–16 Stunden</strong> – neue Ereignisse brauchen Zeit, um zu erscheinen.<br>• Wiederkehrende Ereignisse werden möglicherweise nicht korrekt angezeigt.<br><br><strong>💡 Tipps:</strong><br>• Wenn ein Ereignis nicht erscheint, warte einige Stunden und versuche es erneut.",
 
+  h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
+  h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",
+  h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
+
   h_modalTitle: "Modul-Hilfe",
   h_gotIt: "Verstanden",
   h_noHelp: "Keine spezifische Hilfe verfügbar.",

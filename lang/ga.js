@@ -266,6 +266,10 @@ var LANG = {
   h_chat: "<strong>💬 Comhrá (Matrix)</strong><br><br>• Cruthaigh do chuntas Matrix féin ag <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> chun seomraí comhrá príobháideacha a thosú do theaghlach nó do chairde.<br>• Cuir URLanna seomraí, comhartha rochtana, ID úsáideora in <strong>Socruithe → Comhrá</strong>.<br>• Seiceálann an modúl teachtaireachtaí nua gach 30 soicind.<br>• Cliceáil ar cheanntásc an tseomra chun é a leathnú agus teachtaireachtaí a fheiceáil.<br>• Taispeántar fógraí teachtaireachtaí nua mar shuaitheantas dearg.",
   h_calendar: "<strong>📅 Féilire (Proton ICS)</strong><br><br>• Taispeánann imeachtaí an lae inniu ó d'Fhéilire Proton.<br>• Faigh do nasc ICS ó Proton Calendar → Socruithe → Féilirí → 'Roinn le haon duine' → 'Cruthaigh nasc'.<br>• Greamaigh an nasc ICS in <strong>Socruithe → Féilire</strong>.<br><br><strong>🔔 Foláirimh:</strong><br>• Socraítear fógraí i d'aip féilire — m.sh. 2 fhógra ar imeacht = dhá fholáireamh ar an deais seo.<br>• Scoránaigh foláirimh air/as leis an gcnaipe ag barr an fhéilire.<br><br><strong>⚠️ Teorainneacha tábhachtacha (Proton, ní an modúl seo):</strong><br>• Nuashonraíonn an fotha ICS <strong>gach 4–16 uair an chloig</strong> – tógann imeachtaí nua am le feiceáil.<br>• Seans nach dtaispeánfar imeachtaí athfhillteacha i gceart.<br><br><strong>💡 Leideanna:</strong><br>• Mura bhfeictear imeacht, fan cúpla uair an chloig agus bain triail eile as.",
 
+  h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
+  h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",
+  h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
+
   h_modalTitle: "Cabhair an Mhodúil",
   h_gotIt: "Tuigim",
   h_noHelp: "Níl aon chabhair shonrach ar fáil.",

@@ -375,7 +375,13 @@ var LANG = {
       "<strong>📅 Calendar (Proton ICS)</strong><br><br>• Shows today's events from your Proton Calendar.<br>• Get your ICS link from Proton Calendar → Settings → Calendars → 'Share with anyone' → 'Create link'.<br>• Paste the ICS link in <strong>Settings → Calendar</strong>.<br><br><strong>🔔 Alerts:</strong><br>• Notifications are set in your calendar app — e.g. 2 notifications on a calendar event = two alerts on this dashboard.<br>• Toggle alerts On/Off using the button at the top of the calendar.<br><br><strong>⚠️ Important limitations (Proton, not this module):</strong><br>• The ICS feed updates <strong>every 4–16 hours</strong> – new events take time to appear.<br>• Recurring events may not appear correctly.<br><br><strong>💡 Tips:</strong><br>• If an event doesn't appear, wait a few hours and try again.",
 
     h_llm:
-      "<strong>🧠 Private AI (LLM)</strong><br><br>• Downloads a language model directly to your browser.<br>• <strong>100% private</strong> — no data ever leaves your device.<br>• Pick a model and click <strong>Load</strong> — first download is ~600MB–2GB.<br>• <strong>Requires WebGPU</strong> (Chrome/Edge 113+, Vivaldi with <code>#enable-unsafe-webgpu</code> flag).<br>• Once loaded, chat runs entirely offline on your GPU.<br>• Use <strong>Clear</strong> to reset the conversation.<br>• Chat history saved locally (last 100 messages).",
+        "<strong>🧠 Private AI (LLM)</strong><br><br>• Downloads a language model directly to your browser.<br>• <strong>100% private</strong> — no data ever leaves your device.<br>• Pick a model and click <strong>Load</strong> — first download is ~600MB–2GB.<br>• <strong>Requires WebGPU</strong> (Chrome/Edge 113+, Vivaldi with <code>#enable-unsafe-webgpu</code> flag).<br>• Once loaded, chat runs entirely offline on your GPU.<br>• Use <strong>Clear</strong> to reset the conversation.<br>• Chat history saved locally (last 100 messages).",
+
+      h_task:
+        "<strong>📋 Tasks</strong><br><br>• Create tasks with titles, descriptions, and colour labels.<br>• Add subtasks within each task.<br>• Check off completed tasks to remove them.<br>• Use the ✎ icon to edit a task, ✖ to delete.<br>• Deleted tasks can be undone for 5 seconds.<br>• All data is saved locally in your browser.",
+
+      h_cast:
+        "<strong>🎙️ Cast (Podcasts)</strong><br><br>• Upload podcast audio files (250MB limit per file).<br>• Use the lock icon to unlock, then click a track to play.<br>• Use ⏮ ⏭ buttons to navigate between tracks.<br>• The visualiser animates while playing.<br>• Podcasts are stored locally in your browser.",
 
     h_modalTitle: "Module Help",
   h_gotIt: "Got it",

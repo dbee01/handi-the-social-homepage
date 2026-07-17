@@ -251,6 +251,10 @@ var LANG = {
   h_chat: "<strong>💬 الدردشة (Matrix)</strong><br><br>• أنشئ حساب Matrix الخاص بك على <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> لبدء غرف دردشة خاصة للعائلة أو الأصدقاء.<br>• أضف روابط الغرف ورمز الوصول ومعرف المستخدم في <strong>الإعدادات → الدردشة</strong>.<br>• تتحقق الوحدة من الرسائل الجديدة كل 30 ثانية.<br>• انقر على رأس الغرفة لتوسيعها وعرض الرسائل.<br>• تظهر إشعارات الرسائل الجديدة كشارة حمراء.",
   h_calendar: "<strong>📅 التقويم (Proton ICS)</strong><br><br>• يعرض أحداث اليوم من تقويم Proton الخاص بك.<br>• احصل على رابط ICS من Proton Calendar → الإعدادات → التقويمات → 'مشاركة مع أي شخص' → 'إنشاء رابط'.<br>• الصق رابط ICS في <strong>الإعدادات → التقويم</strong>.<br><br><strong>🔔 التنبيهات:</strong><br>• يتم ضبط الإشعارات في تطبيق التقويم الخاص بك — مثال: إشعاران على حدث = تنبيهان على لوحة القيادة هذه.<br>• قم بتشغيل/إيقاف التنبيهات باستخدام الزر أعلى التقويم.<br><br><strong>⚠️ قيود هامة (Proton، وليس هذه الوحدة):</strong><br>• يتم تحديث تغذية ICS <strong>كل 4–16 ساعة</strong> – تستغرق الأحداث الجديدة وقتاً للظهور.<br>• قد لا تظهر الأحداث المتكررة بشكل صحيح.<br><br><strong>💡 نصائح:</strong><br>• إذا لم يظهر حدث، انتظر بضع ساعات وحاول مرة أخرى.",
 
+  h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
+  h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",
+  h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
+
   h_modalTitle: "مساعدة الوحدة",
   h_gotIt: "فهمت",
   h_noHelp: "لا توجد مساعدة محددة متاحة.",

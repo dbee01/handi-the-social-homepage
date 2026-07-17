@@ -253,6 +253,10 @@ var LANG = {
   h_chat: "<strong>💬 Chat (Matrix)</strong><br><br>• Créez votre propre compte Matrix sur <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> pour démarrer des salons de discussion privés pour la famille ou les amis.<br>• Ajoutez les URL des salons, le jeton d'accès et l'ID utilisateur dans <strong>Paramètres → Chat</strong>.<br>• Le module vérifie les nouveaux messages toutes les 30 secondes.<br>• Cliquez sur l'en-tête du salon pour l'agrandir et voir les messages.<br>• Les notifications de nouveaux messages apparaissent sous forme de badge rouge.",
   h_calendar: "<strong>📅 Calendrier (Proton ICS)</strong><br><br>• Affiche les événements du jour de votre calendrier Proton.<br>• Obtenez votre lien ICS depuis Proton Calendar → Paramètres → Calendriers → « Partager avec tout le monde » → « Créer un lien ».<br>• Collez le lien ICS dans <strong>Paramètres → Calendrier</strong>.<br><br><strong>🔔 Alertes :</strong><br>• Les notifications sont définies dans votre application de calendrier — ex. 2 notifications sur un événement = deux alertes sur ce tableau de bord.<br>• Activez/désactivez les alertes avec le bouton en haut du calendrier.<br><br><strong>⚠️ Limitations importantes (Proton, pas ce module) :</strong><br>• Le flux ICS se met à jour <strong>toutes les 4 à 16 heures</strong> – les nouveaux événements prennent du temps à apparaître.<br>• Les événements récurrents peuvent ne pas s'afficher correctement.<br><br><strong>💡 Conseils :</strong><br>• Si un événement n'apparaît pas, attendez quelques heures et réessayez.",
 
+  h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
+  h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",
+  h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
+
   h_modalTitle: "Aide du module",
   h_gotIt: "J'ai compris",
   h_noHelp: "Aucune aide spécifique disponible.",

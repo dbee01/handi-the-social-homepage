@@ -253,6 +253,10 @@ var LANG = {
   h_chat: "<strong>💬 Sgwrs (Matrix)</strong><br><br>• Crëwch eich cyfrif Matrix eich hun yn <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> i ddechrau ystafelloedd sgwrsio preifat i deulu neu ffrindiau.<br>• Ychwanegwch URLau ystafelloedd, tocyn mynediad, ID defnyddiwr yn <strong>Gosodiadau → Sgwrs</strong>.<br>• Mae'r modiwl yn gwirio am negeseuon newydd bob 30 eiliad.<br>• Cliciwch bennawd yr ystafell i ehangu a gweld negeseuon.<br>• Mae hysbysiadau negeseuon newydd yn ymddangos fel bathodyn coch.",
   h_calendar: "<strong>📅 Calendr (Proton ICS)</strong><br><br>• Yn dangos digwyddiadau heddiw o'ch Calendr Proton.<br>• Cewch eich dolen ICS o Proton Calendar → Gosodiadau → Calendrau → 'Rhannu ag unrhyw un' → 'Creu dolen'.<br>• Gludwch y ddolen ICS yn <strong>Gosodiadau → Calendr</strong>.<br><br><strong>🔔 Rhybuddion:</strong><br>• Mae hysbysiadau'n cael eu gosod yn eich ap calendr — e.e. 2 hysbysiad ar ddigwyddiad = dau rybudd ar y dangosfwrdd hwn.<br>• Toglo rhybuddion ymlaen/i ffwrdd gyda'r botwm ar frig y calendr.<br><br><strong>⚠️ Cyfyngiadau pwysig (Proton, nid y modiwl hwn):</strong><br>• Mae'r porthiant ICS yn diweddaru <strong>bob 4–16 awr</strong> – mae digwyddiadau newydd yn cymryd amser i ymddangos.<br>• Efallai na fydd digwyddiadau cylchol yn ymddangos yn gywir.<br><br><strong>💡 Awgrymiadau:</strong><br>• Os nad yw digwyddiad yn ymddangos, arhoswch ychydig oriau a cheisiwch eto.",
 
+  h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
+  h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",
+  h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
+
   h_modalTitle: "Cymorth Modiwl",
   h_gotIt: "Iawn",
   h_noHelp: "Dim cymorth penodol ar gael.",

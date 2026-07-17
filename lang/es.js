@@ -258,6 +258,10 @@ var LANG = {
   h_chat: "<strong>💬 Chat (Matrix)</strong><br><br>• Crea tu propia cuenta de Matrix en <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> para iniciar salas de chat privadas para familiares o amigos.<br>• Añade URL de salas, token de acceso e ID de usuario en <strong>Ajustes → Chat</strong>.<br>• El módulo busca nuevos mensajes cada 30 segundos.<br>• Haz clic en el encabezado de la sala para expandir y ver los mensajes.<br>• Las notificaciones de nuevos mensajes aparecen como una insignia roja.",
   h_calendar: "<strong>📅 Calendario (Proton ICS)</strong><br><br>• Muestra los eventos de hoy de tu Calendario Proton.<br>• Obtén tu enlace ICS desde Proton Calendar → Ajustes → Calendarios → 'Compartir con cualquiera' → 'Crear enlace'.<br>• Pega el enlace ICS en <strong>Ajustes → Calendario</strong>.<br><br><strong>🔔 Alertas:</strong><br>• Las notificaciones se configuran en tu app de calendario — ej. 2 notificaciones en un evento = dos alertas en este panel.<br>• Activa/desactiva las alertas con el botón en la parte superior del calendario.<br><br><strong>⚠️ Limitaciones importantes (Proton, no este módulo):</strong><br>• El feed ICS se actualiza <strong>cada 4–16 horas</strong> – los nuevos eventos tardan en aparecer.<br>• Los eventos recurrentes pueden no aparecer correctamente.<br><br><strong>💡 Consejos:</strong><br>• Si un evento no aparece, espera unas horas e inténtalo de nuevo.",
 
+  h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
+  h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",
+  h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
+
   h_modalTitle: "Ayuda del módulo",
   h_gotIt: "Entendido",
   h_noHelp: "No hay ayuda específica disponible.",
