@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Dashboard Pack — Handi Homepage</title>
+    <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f6f8fc;
+            color: #1e1e1e;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        h1 { font-size: 1.8rem; margin-bottom: 8px; }
+        h1 i { color: #0047cc; }
+        p.desc { color: #64748b; margin-bottom: 24px; font-size: 1rem; }
+        .drop-zone {
+            border: 3px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 20px;
+            transition: border-color 0.2s, background 0.2s;
+            cursor: pointer;
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: #0047cc;
+            background: #eaf2ff;
+        }
+        .drop-zone i { font-size: 3rem; color: #94a3b8; margin-bottom: 12px; display: block; }
+        .drop-zone p { color: #64748b; }
+        .drop-zone .browse { color: #0047cc; font-weight: 700; text-decoration: underline; }
+        input[type="file"] { display: none; }
+        .progress { display: none; margin: 20px 0; }
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .progress-bar div {
+            height: 100%;
+            background: #0047cc;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .status { font-size: 0.9rem; color: #64748b; }
+        .log { text-align: left; font-size: 0.85rem; color: #475569; max-height: 200px; overflow-y: auto; margin-top: 16px; display: none; }
+        .log-item { padding: 4px 0; border-bottom: 1px solid #f1f5f9; }
+        .log-item.done { color: #16a34a; }
+        .log-item.skip { color: #94a3b8; }
+        .back-link { display: block; margin-top: 24px; color: #0047cc; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1><i class="fa-solid fa-file-zipper"></i> Upload Dashboard Pack</h1>
+    <p class="desc">Drop a <strong>.zip</strong> file containing your dashboard assets (music, images, podcasts, theme, config)</p>
+
+    <div class="drop-zone" id="dropZone">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <p>Drag &amp; drop your ZIP here<br>or <span class="browse">browse files</span></p>
+    </div>
+    <input type="file" id="fileInput" accept=".zip">
+
+    <div class="progress" id="progress">
+        <div class="progress-bar"><div id="progressFill" style="width:0%"></div></div>
+        <div class="status" id="status"></div>
+    </div>
+
+    <div class="log" id="log"></div>
+
+    <a href="/selector.html" class="back-link">← Back to Element Selector</a>
+</div>
+
+<script type="module">
+import JSZip from 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm';
+
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+const progress = document.getElementById("progress");
+const progressFill = document.getElementById("progressFill");
+const status = document.getElementById("status");
+const log = document.getElementById("log");
+
+function addLog(msg, cls) {
+    const d = document.createElement("div");
+    d.className = "log-item " + (cls || "");
+    d.textContent = msg;
+    log.appendChild(d);
+    log.style.display = "block";
+    log.scrollTop = log.scrollHeight;
+}
+
+function setProgress(pct, msg) {
+    progress.style.display = "block";
+    progressFill.style.width = pct + "%";
+    status.textContent = msg;
+}
+
+dropZone.addEventListener("click", () => fileInput.click());
+dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("dragover"); });
+dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
+    if (e.dataTransfer.files.length) processZip(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener("change", () => {
+    if (fileInput.files.length) processZip(fileInput.files[0]);
+});
+
+async function processZip(file) {
+    log.innerHTML = "";
+    setProgress(0, "Reading ZIP...");
+    addLog("Reading: " + file.name);
+
+    try {
+        const zip = await JSZip.loadAsync(file);
+        const files = Object.keys(zip.files).filter(f => !f.startsWith("__MACOSX") && !f.endsWith("/"));
+        const total = files.length;
+
+        setProgress(5, `Found ${total} files in ZIP`);
+
+        let musicFiles = [], imageFiles = [], castFiles = [];
+        let themeCss = null, configJson = null;
+        let processed = 0;
+
+        for (const [path, entry] of Object.entries(zip.files)) {
+            if (path.startsWith("__MACOSX") || entry.dir) continue;
+
+            const name = path.split("/").pop();
+            const ext = name.split(".").pop().toLowerCase();
+            const blob = await entry.async("blob");
+            const fileObj = new File([blob], name, { type: blob.type || "application/octet-stream" });
+
+            if (path.includes("/music/") && ["mp3", "wav", "ogg", "m4a", "flac"].includes(ext)) {
+                            musicFiles.push(fileObj);
+                            addLog("🎵 " + path, "done");
+                        } else if (path.includes("/img/") && ["jpg", "jpeg", "png", "webp", "gif"].includes(ext)) {
+                            imageFiles.push(fileObj);
+                            addLog("🖼️ " + path, "done");
+                        } else if (path.includes("/podcasts/") && ["mp3", "wav", "ogg", "m4a", "flac"].includes(ext)) {
+                            castFiles.push(fileObj);
+                            addLog("🎙️ " + path, "done");
+                        } else if (path.endsWith("theme.css")) {
+                            themeCss = await entry.async("text");
+                            addLog("🎨 theme.css", "done");
+                        } else if (path.endsWith("config.json")) {
+                            configJson = await entry.async("text");
+                            addLog("⚙️ config.json", "done");
+                        } else {
+                            addLog("⏭️ " + path + " (skipped)", "skip");
+                        }
+
+            processed++;
+            setProgress(5 + Math.round((processed / total) * 85), `Processing ${processed}/${total}...`);
+        }
+
+        // Store files
+        setProgress(90, "Saving to dashboard...");
+
+        const { saveMusic, saveCast, saveGallery } = await import("/js/core/storage.js");
+
+                if (musicFiles.length) {
+                  addLog("Loading " + musicFiles.length + " music files...");
+                  await saveMusic(musicFiles);
+                  addLog("Saved " + musicFiles.length + " music files", "done");
+                }
+                if (imageFiles.length) {
+                  addLog("Loading " + imageFiles.length + " images...");
+                  await saveGallery(imageFiles);
+                  addLog("Saved " + imageFiles.length + " images", "done");
+                }
+                if (castFiles.length) {
+                  addLog("Loading " + castFiles.length + " podcast files...");
+                  await saveCast(castFiles);
+                  addLog("Saved " + castFiles.length + " podcasts", "done");
+                }
+        if (themeCss) {
+            localStorage.setItem("handiCustomTheme", themeCss);
+            addLog("Custom theme saved", "done");
+        }
+        if (configJson) {
+            try {
+                const cfg = JSON.parse(configJson);
+                localStorage.setItem("handiCustomConfig", JSON.stringify(cfg));
+                addLog("Config saved", "done");
+            } catch (e) {
+                addLog("Config parse failed: " + e.message, "skip");
+            }
+        }
+
+        setProgress(100, "Done!");
+                addLog("Total: " + musicFiles.length + " music, " + imageFiles.length + " images, " + castFiles.length + " podcasts", "done");
+
+                if (!musicFiles.length && !imageFiles.length && !castFiles.length) {
+                  addLog("No files matched. Make sure your ZIP has music/, img/, podcasts/ folders.", "skip");
+                }
+
+                setTimeout(() => { window.location.href = "/index.html"; }, 1500);
+
+    } catch (e) {
+        setProgress(0, "Error: " + e.message);
+        addLog("ERROR: " + e.message);
+    }
+}
+</script>
+</body>
+</html>
