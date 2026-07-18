@@ -173,25 +173,23 @@ async function processZip(file) {
         }
 
         // Store files
-        setProgress(90, "Saving to dashboard...");
+                setProgress(90, "Saving...");
 
-        const { saveMusic, saveCast, saveGallery } = await import("/js/core/storage.js");
+                const { saveMusic, saveGallery, saveCastFn } = await import("/js/core/storage.js?v=4");
 
-                if (musicFiles.length) {
-                  addLog("Loading " + musicFiles.length + " music files...");
-                  await saveMusic(musicFiles);
-                  addLog("Saved " + musicFiles.length + " music files", "done");
-                }
-                if (imageFiles.length) {
-                  addLog("Loading " + imageFiles.length + " images...");
-                  await saveGallery(imageFiles);
-                  addLog("Saved " + imageFiles.length + " images", "done");
-                }
-                if (castFiles.length) {
-                  addLog("Loading " + castFiles.length + " podcast files...");
-                  await saveCast(castFiles);
-                  addLog("Saved " + castFiles.length + " podcasts", "done");
-                }
+                        if (musicFiles.length) {
+                          addLog("Saving " + musicFiles.length + " music files...");
+                          await saveMusic(musicFiles);
+                          addLog("Saved " + musicFiles.length + " music files", "done");
+                        }
+                        if (imageFiles.length) {
+                          addLog("Saving " + imageFiles.length + " images...");
+                          await saveGallery(imageFiles);
+                          addLog("Saved " + imageFiles.length + " images", "done");
+                        }
+                        if (castFiles.length) {
+                                  addLog("Skipped " + castFiles.length + " podcasts — use Cast module Load button on dashboard", "skip");
+                                }
         if (themeCss) {
             localStorage.setItem("handiCustomTheme", themeCss);
             addLog("Custom theme saved", "done");

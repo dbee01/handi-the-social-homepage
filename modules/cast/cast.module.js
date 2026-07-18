@@ -6,7 +6,7 @@
 
 // modules/cast/cast.module.js
 // Podcast player — like the Player module but with 250MB load limit
-import { loadCast, saveCast } from "../../js/core/storage.js";
+import { loadCastFn, saveCastFn } from "../../js/core/storage.js";
 
 function removeFileExtension(filename) {
   return filename.replace(/\.[^.]+$/, "");
@@ -68,7 +68,7 @@ export default async function initCast(container) {
 
   var tracks = [];
     try {
-      tracks = await loadCast();
+      tracks = await loadCastFn();
     } catch (err) {
       tracks = [];
     }
@@ -79,7 +79,7 @@ export default async function initCast(container) {
       t("d_noCast", "Load your podcasts here") +
       '</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">' +
       '<button id="castLoadBtn" class="settings-link-btn"><i class="fa-solid fa-cloud-arrow-up"></i> ' +
-      t("d_loadCast", "Load Podcasts") +
+      t("d_loadCastFn", "Load Podcasts") +
       '</button></div></div>';
     var loadBtn = content.querySelector("#castLoadBtn");
     if (loadBtn)
@@ -89,7 +89,7 @@ export default async function initCast(container) {
           multiple: true,
           maxSizeMB: 250,
           onFiles: async (files) => {
-                      await saveCast(files);
+                      await saveCastFn(files);
                       container.innerHTML = "";
                       initCast(container);
                     },
@@ -118,7 +118,7 @@ export default async function initCast(container) {
     '<div class="music-now-playing"><canvas id="castSynth" class="music-synth"></canvas><div id="music-status" class="music-status"><span id="music-track-title">—</span><span class="music-state-text">' +
     t("d_ready", "Ready") +
     '</span></div></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-playpause" class="primary">▶</button><button id="music-next">⏭</button></div><div style="text-align:center;margin-bottom:8px;"><button id="castLoadMoreBtn" class="settings-link-btn" style="padding:6px 14px;"><i class="fa-solid fa-cloud-arrow-up"></i> ' +
-    t("d_loadCast", "Load Podcasts") +
+    t("d_loadCastFn", "Load Podcasts") +
         '</button></div><div class="music-scroll-wrapper"><button id="castScrollUp" class="music-scroll-btn">▲</button><div id="music-playlist" class="music-playlist"></div><button id="castScrollDown" class="music-scroll-btn">▼</button></div>';
 
   var synthCanvas = content.querySelector("#castSynth"),
@@ -447,7 +447,7 @@ export default async function initCast(container) {
         multiple: true,
         maxSizeMB: 250,
         onFiles: async function (files) {
-                  await saveCast(files);
+                  await saveCastFn(files);
                   container.innerHTML = "";
                   initCast(container);
                 },

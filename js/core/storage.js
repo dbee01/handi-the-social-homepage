@@ -4,8 +4,8 @@
  * See the LICENSE file in the repository root for full details.
  */
 // js/core/storage.js
-const DB_NAME = 'pleie_storage';
-const DB_VERSION = 4;
+const DB_NAME = 'pleie_storage_v2';
+const DB_VERSION = 1;
 
 let db = null;
 
@@ -22,17 +22,17 @@ function initDB() {
             resolve(db);
         };
         request.onupgradeneeded = (event) => {
-            const database = event.target.result;
-            if (!database.objectStoreNames.contains('music')) {
-                database.createObjectStore('music', { keyPath: 'id', autoIncrement: true });
-            }
-            if (!database.objectStoreNames.contains('gallery')) {
-                database.createObjectStore('gallery', { keyPath: 'id', autoIncrement: true });
-            }
-            if (!database.objectStoreNames.contains('cast')) {
-                database.createObjectStore('cast', { keyPath: 'id', autoIncrement: true });
-            }
-        };
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains('music')) {
+                        database.createObjectStore('music', { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!database.objectStoreNames.contains('gallery')) {
+                        database.createObjectStore('gallery', { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!database.objectStoreNames.contains('audiopod')) {
+                        database.createObjectStore('audiopod', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
     });
 }
 
@@ -75,7 +75,7 @@ export async function saveGallery(images) {
         const store = tx.objectStore('gallery');
         store.clear();
         images.forEach((img, i) => {
-            store.add({ id: i, name: img.name, file: img.file });
+            store.add({ id: i, name: img.name, file: img.file || img });
         });
         tx.oncomplete = () => resolve();
         tx.onerror = () => reject(tx.error);
@@ -100,11 +100,11 @@ export async function loadGallery() {
             });
         }
 
-        export async function saveCast(files) {
+        export async function saveCastFn(files) {
             const database = await initDB();
             return new Promise((resolve, reject) => {
-                const tx = database.transaction(['cast'], 'readwrite');
-                const store = tx.objectStore('cast');
+                const tx = database.transaction(['audiopod'], 'readwrite');
+                const store = tx.objectStore('audiopod');
                 store.clear();
                 files.forEach((file, i) => {
                     store.add({ id: i, name: file.name, type: file.type, file: file.file || file });
@@ -114,11 +114,11 @@ export async function loadGallery() {
             });
         }
 
-        export async function loadCast() {
+        export async function loadCastFn() {
             const database = await initDB();
             return new Promise((resolve) => {
-                const tx = database.transaction(['cast'], 'readonly');
-                const store = tx.objectStore('cast');
+                const tx = database.transaction(['audiopod'], 'readonly');
+                const store = tx.objectStore('audiopod');
                 const req = store.getAll();
                 req.onsuccess = () => {
                     const files = req.result.map(f => ({
