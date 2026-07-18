@@ -138,7 +138,7 @@ async function processZip(file) {
         setProgress(5, `Found ${total} files in ZIP`);
 
         let musicFiles = [], imageFiles = [], castFiles = [];
-        let themeCss = null, configJson = null;
+                let themeCss = null, configJson = null, contactsJson = null, contactPhotos = {};
         let processed = 0;
 
         for (const [path, entry] of Object.entries(zip.files)) {
@@ -162,9 +162,18 @@ async function processZip(file) {
                             themeCss = await entry.async("text");
                             addLog("🎨 theme.css", "done");
                         } else if (path.endsWith("config.json")) {
-                            configJson = await entry.async("text");
-                            addLog("⚙️ config.json", "done");
-                        } else {
+                                                    configJson = await entry.async("text");
+                                                    addLog("⚙️ config.json", "done");
+                                                } else if (path.includes("/phone/") && path.endsWith("contacts.json")) {
+                                                    contactsJson = await entry.async("text");
+                                                    addLog("📞 contacts.json", "done");
+                                                } else if (path.match(/\/phone\/photos?\/.+\.(jpg|jpeg|png|webp)$/i)) {
+                                                    const idx = parseInt(name.replace(/\..*/, ''));
+                                                    if (!isNaN(idx)) {
+                                                        contactPhotos[idx] = URL.createObjectURL(blob);
+                                                        addLog("📷 phone photo #" + idx, "done");
+                                                    }
+                                                } else {
                             addLog("⏭️ " + path + " (skipped)", "skip");
                         }
 
@@ -195,14 +204,31 @@ async function processZip(file) {
             addLog("Custom theme saved", "done");
         }
         if (configJson) {
-            try {
-                const cfg = JSON.parse(configJson);
-                localStorage.setItem("handiCustomConfig", JSON.stringify(cfg));
-                addLog("Config saved", "done");
-            } catch (e) {
-                addLog("Config parse failed: " + e.message, "skip");
-            }
-        }
+                    try {
+                        const cfg = JSON.parse(configJson);
+                        localStorage.setItem("handiCustomConfig", JSON.stringify(cfg));
+                        addLog("Config saved", "done");
+                    } catch (e) {
+                        addLog("Config parse failed: " + e.message, "skip");
+                    }
+                }
+                if (contactsJson || Object.keys(contactPhotos).length) {
+                    try {
+                        const settings = JSON.parse(localStorage.getItem("handiSettings") || "{}");
+                        settings.phone = settings.phone || {};
+                        if (contactsJson) {
+                            settings.phone.contacts = JSON.parse(contactsJson);
+                            addLog("Loaded " + settings.phone.contacts.length + " contacts", "done");
+                        }
+                        if (Object.keys(contactPhotos).length) {
+                            localStorage.setItem("handiContactPhotos", JSON.stringify(contactPhotos));
+                            addLog("Loaded " + Object.keys(contactPhotos).length + " photos", "done");
+                        }
+                        localStorage.setItem("handiSettings", JSON.stringify(settings));
+                    } catch (e) {
+                        addLog("Contacts failed: " + e.message, "skip");
+                    }
+                }
 
         setProgress(100, "Done!");
                 addLog("Total: " + musicFiles.length + " music, " + imageFiles.length + " images, " + castFiles.length + " podcasts", "done");
