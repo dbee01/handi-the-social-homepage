@@ -125,6 +125,28 @@ fileInput.addEventListener("change", () => {
     if (fileInput.files.length) processZip(fileInput.files[0]);
 });
 
+// Generate a :root {} CSS block from config theme colors/fonts
+function buildThemeCss(cfg) {
+    if (!cfg.theme || !cfg.theme.colors) return null;
+    var c = cfg.theme.colors;
+    var f = cfg.theme.fonts || {};
+    var bgImg = cfg.theme.background || "";
+    var css = ":root {\n";
+    if (c.primary) {
+        css += "  --primary: " + c.primary + ";\n";
+        css += "  --primary-soft: " + c.primary + "15;\n";
+        css += "  --primary-dark: " + c.primary + ";\n";
+    }
+    if (c.secondary) css += "  --secondary: " + c.secondary + ";\n";
+    if (c.tertiary)  css += "  --tertiary: " + c.tertiary + ";\n";
+    if (c.background) css += "  --bg: " + c.background + ";\n  --surface: " + c.background + ";\n";
+    if (bgImg) css += "  --bg-image: url(" + bgImg + ");\n";
+    if (f.text)   css += "  --text-font: " + f.text + ";\n";
+    if (f.header) css += "  --header-font: " + f.header + ";\n";
+    css += "}\n";
+    return css;
+}
+
 async function processZip(file) {
     log.innerHTML = "";
     setProgress(0, "Reading ZIP...");
@@ -138,7 +160,7 @@ async function processZip(file) {
         setProgress(5, `Found ${total} files in ZIP`);
 
         let musicFiles = [], imageFiles = [], castFiles = [];
-                let themeCss = null, configJson = null, contactsJson = null, contactPhotos = {};
+        let themeCss = null, configJson = null, contactsJson = null, contactPhotos = {};
         let processed = 0;
 
         for (const [path, entry] of Object.entries(zip.files)) {
@@ -149,95 +171,231 @@ async function processZip(file) {
             const blob = await entry.async("blob");
             const fileObj = new File([blob], name, { type: blob.type || "application/octet-stream" });
 
-            if (path.includes("/music/") && ["mp3", "wav", "ogg", "m4a", "flac"].includes(ext)) {
-                            musicFiles.push(fileObj);
-                            addLog("🎵 " + path, "done");
-                        } else if (path.includes("/img/") && ["jpg", "jpeg", "png", "webp", "gif"].includes(ext)) {
-                            imageFiles.push(fileObj);
-                            addLog("🖼️ " + path, "done");
-                        } else if (path.includes("/podcasts/") && ["mp3", "wav", "ogg", "m4a", "flac"].includes(ext)) {
-                            castFiles.push(fileObj);
-                            addLog("🎙️ " + path, "done");
-                        } else if (path.endsWith("theme.css")) {
-                            themeCss = await entry.async("text");
-                            addLog("🎨 theme.css", "done");
-                        } else if (path.endsWith("config.json")) {
-                                                    configJson = await entry.async("text");
-                                                    addLog("⚙️ config.json", "done");
-                                                } else if (path.includes("/phone/") && path.endsWith("contacts.json")) {
-                                                    contactsJson = await entry.async("text");
-                                                    addLog("📞 contacts.json", "done");
-                                                } else if (path.match(/\/phone\/photos?\/.+\.(jpg|jpeg|png|webp)$/i)) {
-                                                    const idx = parseInt(name.replace(/\..*/, ''));
-                                                    if (!isNaN(idx)) {
-                                                        contactPhotos[idx] = URL.createObjectURL(blob);
-                                                        addLog("📷 phone photo #" + idx, "done");
-                                                    }
-                                                } else {
-                            addLog("⏭️ " + path + " (skipped)", "skip");
-                        }
+            var isMusic = path.startsWith("music/") || path.includes("/music/");
+            var isImg = path.startsWith("img/") || path.includes("/img/");
+            var isPodcast = path.startsWith("podcasts/") || path.includes("/podcasts/");
+            var isAudio = ["mp3", "wav", "ogg", "m4a", "flac"].includes(ext);
+            var isImage = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext);
+
+            if (isMusic && isAudio) {
+                musicFiles.push(fileObj);
+                addLog("🎵 " + path, "done");
+            } else if (isImg && isImage) {
+                imageFiles.push(fileObj);
+                addLog("🖼️ " + path, "done");
+            } else if (isPodcast && isAudio) {
+                castFiles.push(fileObj);
+                addLog("🎙️ " + path, "done");
+            } else if (path.endsWith("theme.css")) {
+                themeCss = await entry.async("text");
+                addLog("🎨 theme.css", "done");
+            } else if (path.endsWith("config.json")) {
+                configJson = await entry.async("text");
+                addLog("⚙️ config.json", "done");
+            } else if (path.includes("/phone/") && path.endsWith("contacts.json")) {
+                contactsJson = await entry.async("text");
+                addLog("📞 contacts.json", "done");
+            } else if (path.match(/\/phone\/photos?\/.+\.(jpg|jpeg|png|webp)$/i)) {
+                const idx = parseInt(name.replace(/\..*/, ''));
+                if (!isNaN(idx)) {
+                    contactPhotos[idx] = URL.createObjectURL(blob);
+                    addLog("📷 phone photo #" + idx, "done");
+                }
+            } else {
+                addLog("⏭️ " + path + " (skipped)", "skip");
+            }
 
             processed++;
             setProgress(5 + Math.round((processed / total) * 85), `Processing ${processed}/${total}...`);
         }
 
         // Store files
-                setProgress(90, "Saving...");
+        setProgress(90, "Saving...");
 
-                const { saveMusic, saveGallery, saveCastFn } = await import("/js/core/storage.js?v=4");
+        const { saveMusic, saveGallery, saveCastFn } = await import("/js/core/storage.js?v=4");
 
-                        if (musicFiles.length) {
-                          addLog("Saving " + musicFiles.length + " music files...");
-                          await saveMusic(musicFiles);
-                          addLog("Saved " + musicFiles.length + " music files", "done");
-                        }
-                        if (imageFiles.length) {
-                          addLog("Saving " + imageFiles.length + " images...");
-                          await saveGallery(imageFiles);
-                          addLog("Saved " + imageFiles.length + " images", "done");
-                        }
-                        if (castFiles.length) {
-                                  addLog("Skipped " + castFiles.length + " podcasts — use Cast module Load button on dashboard", "skip");
-                                }
+        if (musicFiles.length) {
+            addLog("Saving " + musicFiles.length + " music files...");
+            await saveMusic(musicFiles);
+            addLog("Saved " + musicFiles.length + " music files", "done");
+        }
+        if (imageFiles.length) {
+            addLog("Saving " + imageFiles.length + " images...");
+            await saveGallery(imageFiles);
+            addLog("Saved " + imageFiles.length + " images", "done");
+        }
+        if (castFiles.length) {
+            addLog("Saving " + castFiles.length + " podcasts...");
+            await saveCastFn(castFiles);
+            addLog("Saved " + castFiles.length + " podcasts", "done");
+        }
+
+        // Theme: use file CSS, or generate from config colors
         if (themeCss) {
             localStorage.setItem("handiCustomTheme", themeCss);
             addLog("Custom theme saved", "done");
         }
+
+        // Merge config.json into handiSettings
         if (configJson) {
-                    try {
-                        const cfg = JSON.parse(configJson);
-                        localStorage.setItem("handiCustomConfig", JSON.stringify(cfg));
-                        addLog("Config saved", "done");
-                    } catch (e) {
-                        addLog("Config parse failed: " + e.message, "skip");
+            try {
+                const cfg = JSON.parse(configJson);
+                localStorage.setItem("handiCustomConfig", JSON.stringify(cfg));
+
+                const settings = JSON.parse(localStorage.getItem("handiSettings") || "{}");
+
+                // Generate theme CSS from config colors if no theme.css file
+                if (!themeCss) {
+                    const genCss = buildThemeCss(cfg);
+                    if (genCss) {
+                        localStorage.setItem("handiCustomTheme", genCss);
+                        addLog("Theme generated from config colors", "done");
                     }
                 }
-                if (contactsJson || Object.keys(contactPhotos).length) {
-                    try {
-                        const settings = JSON.parse(localStorage.getItem("handiSettings") || "{}");
-                        settings.phone = settings.phone || {};
-                        if (contactsJson) {
-                            settings.phone.contacts = JSON.parse(contactsJson);
-                            addLog("Loaded " + settings.phone.contacts.length + " contacts", "done");
-                        }
-                        if (Object.keys(contactPhotos).length) {
-                            localStorage.setItem("handiContactPhotos", JSON.stringify(contactPhotos));
-                            addLog("Loaded " + Object.keys(contactPhotos).length + " photos", "done");
-                        }
-                        localStorage.setItem("handiSettings", JSON.stringify(settings));
-                    } catch (e) {
-                        addLog("Contacts failed: " + e.message, "skip");
+
+                // Enable modules from elements list (write to MMR, not settings.enabledModules)
+                if (cfg.elements && Array.isArray(cfg.elements)) {
+                    var mmr = JSON.parse(localStorage.getItem("handiMasterModules") || "{}");
+                    // Map config names to MMR module IDs
+                    var idMap = { bus: "live_bus", emergency: "emergency_alert" };
+                    cfg.elements.forEach(function(el) {
+                        var key = idMap[el] || el;
+                        mmr[key] = 1;
+                    });
+                    localStorage.setItem("handiMasterModules", JSON.stringify(mmr));
+                    addLog("Enabled modules: " + cfg.elements.join(", "), "done");
+                }
+
+                // Weather
+                if (cfg.weather && cfg.weather.location) {
+                    settings.weather = settings.weather || {};
+                    settings.weather.location = cfg.weather.location;
+                    addLog("Weather: " + cfg.weather.location, "done");
+                }
+
+                // News RSS — handle both array and object formats
+                if (cfg.news && cfg.news.feeds) {
+                    var rssUrl = "";
+                    if (Array.isArray(cfg.news.feeds)) {
+                        rssUrl = cfg.news.feeds[0];
+                    } else if (typeof cfg.news.feeds === "object") {
+                        var vals = Object.values(cfg.news.feeds);
+                        rssUrl = vals[0] || "";
+                    }
+                    if (rssUrl && rssUrl.indexOf("//") === 0) rssUrl = "https:" + rssUrl;
+                    if (rssUrl) {
+                        settings.news = settings.news || {};
+                        settings.news.rssUrl = rssUrl;
+                        addLog("News RSS: " + rssUrl, "done");
                     }
                 }
+
+                // Radio feeds
+                if (cfg.radio && cfg.radio.feeds && cfg.radio.feeds.length) {
+                    settings.radio = settings.radio || {};
+                    settings.radio.customFeeds = cfg.radio.feeds;
+                    addLog("Radio feeds: " + cfg.radio.feeds.length, "done");
+                }
+
+                // Social / Mastodon
+                if (cfg.social) {
+                    settings.social = settings.social || {};
+                    if (cfg.social.feeds && cfg.social.feeds.length) {
+                        try {
+                            const u = new URL(cfg.social.feeds[0]);
+                            settings.social.instance = u.origin;
+                            addLog("Mastodon instance: " + u.origin, "done");
+                        } catch(e) {}
+                    }
+                    if (cfg.social.hashtag) {
+                        settings.social.hashtag = cfg.social.hashtag;
+                        settings.social.feedType = "hashtag";
+                        addLog("Hashtag: " + cfg.social.hashtag, "done");
+                    }
+                    if (cfg.social.profile) {
+                        var p = cfg.social.profile;
+                        try {
+                            var pu = new URL(p);
+                            p = "@" + pu.pathname.replace(/^\/+/, "").replace(/^@/, "") + "@" + pu.hostname;
+                        } catch(e) {}
+                        settings.social.profile = p;
+                        if (!cfg.social.hashtag) settings.social.feedType = "profile";
+                        addLog("Profile: " + p, "done");
+                    }
+                }
+
+                // Chat / Matrix
+                if (cfg.chat) {
+                    settings.chat = settings.chat || {};
+                    if (cfg.chat.matrix_server) {
+                        settings.chat.homeserver = cfg.chat.matrix_server;
+                        addLog("Matrix server: " + cfg.chat.matrix_server, "done");
+                    }
+                    if (cfg.chat.rooms && cfg.chat.rooms.length) {
+                        settings.chat.rooms = cfg.chat.rooms;
+                        addLog("Chat rooms: " + cfg.chat.rooms.join(", "), "done");
+                    }
+                }
+
+                // Calendar
+                if (cfg.calendar && cfg.calendar.ics_link) {
+                    settings.calendar = settings.calendar || {};
+                    settings.calendar.url = cfg.calendar.ics_link;
+                    addLog("Calendar ICS saved", "done");
+                }
+
+                // Bus routes
+                if (cfg.bus && cfg.bus.routes && cfg.bus.routes.length) {
+                    settings.live_bus = settings.live_bus || {};
+                    for (let ri = 0; ri < Math.min(cfg.bus.routes.length, 3); ri++) {
+                        const n = ri + 1;
+                        settings.live_bus["route" + n + "_id"] = cfg.bus.routes[ri];
+                        settings.live_bus["route" + n + "_short"] = String(cfg.bus.routes[ri]);
+                    }
+                    addLog("Bus routes: " + cfg.bus.routes.join(", "), "done");
+                }
+
+                // Phone contacts from config (inline)
+                if (cfg.phone && cfg.phone.contacts && cfg.phone.contacts.length) {
+                    settings.phone = settings.phone || {};
+                    settings.phone.contacts = cfg.phone.contacts;
+                    addLog("Phone contacts: " + cfg.phone.contacts.length, "done");
+                }
+
+                localStorage.setItem("handiSettings", JSON.stringify(settings));
+                addLog("Config merged into dashboard settings", "done");
+            } catch (e) {
+                addLog("Config parse failed: " + e.message, "skip");
+            }
+        }
+
+        // Separate phone/contacts.json (overrides config contacts if present)
+        if (contactsJson || Object.keys(contactPhotos).length) {
+            try {
+                const settings = JSON.parse(localStorage.getItem("handiSettings") || "{}");
+                settings.phone = settings.phone || {};
+                if (contactsJson) {
+                    settings.phone.contacts = JSON.parse(contactsJson);
+                    addLog("Loaded " + settings.phone.contacts.length + " contacts from phone/", "done");
+                }
+                if (Object.keys(contactPhotos).length) {
+                    localStorage.setItem("handiContactPhotos", JSON.stringify(contactPhotos));
+                    addLog("Loaded " + Object.keys(contactPhotos).length + " contact photos", "done");
+                }
+                localStorage.setItem("handiSettings", JSON.stringify(settings));
+            } catch (e) {
+                addLog("Contacts failed: " + e.message, "skip");
+            }
+        }
 
         setProgress(100, "Done!");
-                addLog("Total: " + musicFiles.length + " music, " + imageFiles.length + " images, " + castFiles.length + " podcasts", "done");
+        addLog("Total: " + musicFiles.length + " music, " + imageFiles.length + " images, " + castFiles.length + " podcasts", "done");
 
-                if (!musicFiles.length && !imageFiles.length && !castFiles.length) {
-                  addLog("No files matched. Make sure your ZIP has music/, img/, podcasts/ folders.", "skip");
-                }
+        if (!musicFiles.length && !imageFiles.length && !castFiles.length) {
+            addLog("No files matched. Make sure your ZIP has music/, img/, podcasts/ folders.", "skip");
+        }
 
-                setTimeout(() => { window.location.href = "/index.html"; }, 1500);
+        setTimeout(() => { window.location.href = "/index.html"; }, 1500);
 
     } catch (e) {
         setProgress(0, "Error: " + e.message);

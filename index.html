@@ -49,20 +49,37 @@
             (function () {
                 try {
                     var theme = localStorage.getItem("handiTheme") || "senior";
-                    var themes = {
-                        senior: "/css/elderly.css",
-                        techie: "/css/techie.css",
-                        woman: "/css/woman.css",
-                        student: "/css/student.css",
-                    };
-                    var css = themes[theme] || themes.senior;
+                    var customCss = localStorage.getItem("handiCustomTheme");
+
+                    // If a custom dashboard pack theme exists, use site-pack.css which respects CSS variables
+                    var cssUrl;
+                    if (customCss) {
+                        cssUrl = "/css/site-pack.css";
+                    } else {
+                        var themes = {
+                            senior: "/css/elderly.css",
+                            techie: "/css/techie.css",
+                            woman: "/css/woman.css",
+                            student: "/css/student.css",
+                        };
+                        cssUrl = themes[theme] || themes.senior;
+                    }
+
                     var link = document.createElement("link");
                     link.id = "theme-link";
                     link.rel = "stylesheet";
-                    link.href = css;
+                    link.href = cssUrl;
                     document.head.appendChild(link);
+
+                    // Inject custom :root variable overrides
+                    if (customCss) {
+                        var style = document.createElement("style");
+                        style.id = "custom-theme";
+                        style.textContent = customCss;
+                        document.head.appendChild(style);
+                    }
                 } catch (e) {
-                    /* localStorage unavailable — no theme CSS applied */
+                    /* localStorage unavailable */
                 }
             })();
         </script>
