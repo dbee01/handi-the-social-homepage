@@ -170,16 +170,27 @@
                 color: #1e293b;
             }
             .config-field input,
-            .config-field select {
-                border: 1px solid #cbd5e1;
-                border-radius: 8px;
-                font-size: 0.9rem;
-                margin-right: 1.5rem;
-                min-width: 200px;
-                padding: 8px;
-                font-size: medium;
-                border-radius: 10px;
-            }
+                        .config-field select {
+                            border: 1px solid #cbd5e1;
+                            border-radius: 8px;
+                            font-size: 0.9rem;
+                            margin-right: 1.5rem;
+                            min-width: 200px;
+                            padding: 8px;
+                            font-size: medium;
+                            border-radius: 10px;
+                        }
+                        .config-field input[type="radio"] {
+                            display: inline;
+                            width: auto;
+                            min-width: unset;
+                            margin-right: 6px;
+                            padding: 0;
+                        }
+                        .config-field input[type="radio"] + label {
+                            display: inline;
+                            margin-bottom: 0;
+                        }
             .upload-btn {
                 background: #0047cc;
                 color: white;
@@ -624,10 +635,27 @@
                         </select>
                     </div>
                     <div class="config-field">
-                        <label>Trending limit:</label
-                        <input type="number" id="mastodonLimit" value="3" />
-                    </div>
-                </div>
+                                            <label>Trending limit:</label>
+                                            <input type="number" id="mastodonLimit" value="3" />
+                                        </div>
+                                        <div class="config-field">
+                                                                <label>Feed type:</label>
+                                                                <div style="margin-bottom:6px;">
+                                                                    <input type="radio" name="mastodonFeed" value="trending" id="mfTrending" checked>
+                                                                    <label for="mfTrending" style="font-weight:normal;cursor:pointer;">Trending</label>
+                                                                </div>
+                                                                <div style="margin-bottom:6px;">
+                                                                    <input type="radio" name="mastodonFeed" value="profile" id="mfProfile">
+                                                                    <label for="mfProfile" style="font-weight:normal;cursor:pointer;">Follow profile</label>
+                                                                </div>
+                                                                <input type="text" id="mastodonProfile" placeholder="@handi@mastodon.ie" style="margin-left:22px;width:calc(100% - 22px);display:none;">
+                                                                <div style="margin-bottom:6px;">
+                                                                    <input type="radio" name="mastodonFeed" value="hashtag" id="mfHashtag">
+                                                                    <label for="mfHashtag" style="font-weight:normal;cursor:pointer;">Follow hashtag</label>
+                                                                </div>
+                                                                <input type="text" id="mastodonHashtag" placeholder="#handihomepage" style="margin-left:22px;width:calc(100% - 22px);display:none;">
+                                                            </div>
+                                    </div>
             </div>
 
             <!-- Phone Module (unified: SIM + Video + Click-to-Call) -->
@@ -1608,9 +1636,21 @@
                         settings.social.limit
                     ) {
                         document.getElementById("mastodonLimit").value =
-                            settings.social.limit;
-                    }
-                }
+                                                    settings.social.limit;
+                                            }
+                                            if (settings.social.feedType) {
+                                                var fb = document.querySelector('input[name="mastodonFeed"][value="' + settings.social.feedType + '"]');
+                                                if (fb) fb.checked = true;
+                                                document.getElementById("mastodonProfile").style.display = settings.social.feedType === "profile" ? "" : "none";
+                                                document.getElementById("mastodonHashtag").style.display = settings.social.feedType === "hashtag" ? "" : "none";
+                                            }
+                                            if (settings.social.profile) {
+                                                document.getElementById("mastodonProfile").value = settings.social.profile;
+                                            }
+                                            if (settings.social.hashtag) {
+                                                document.getElementById("mastodonHashtag").value = settings.social.hashtag;
+                                            }
+                                        }
 
                 // Load news settings
                 if (settings.news) {
@@ -1716,10 +1756,16 @@
                 settings.social.instance =
                     document.getElementById("mastodonInstance")?.value || "";
                 settings.social.limit =
-                    parseInt(document.getElementById("mastodonLimit")?.value) ||
-                                        3;
+                                    parseInt(document.getElementById("mastodonLimit")?.value) ||
+                                                        3;
+                                settings.social.feedType =
+                                    document.querySelector('input[name="mastodonFeed"]:checked')?.value || "trending";
+                                settings.social.profile =
+                                    document.getElementById("mastodonProfile")?.value.trim() || "";
+                                settings.social.hashtag =
+                                    document.getElementById("mastodonHashtag")?.value.trim() || "";
 
-                if (!settings.calendar) settings.calendar = {};
+                                if (!settings.calendar) settings.calendar = {};
                 const calendarUrl = document
                     .getElementById("calendarUrl")
                     ?.value.trim();
@@ -2234,7 +2280,16 @@
                             });
                         }
 
-                        if (detectLocationBtn)
+                        // Mastodon feed type toggle
+                                    var mastodonFeeds = document.querySelectorAll('input[name="mastodonFeed"]');
+                                    mastodonFeeds.forEach(function(r) {
+                                        r.addEventListener("change", function() {
+                                            document.getElementById("mastodonProfile").style.display = this.value === "profile" ? "" : "none";
+                                            document.getElementById("mastodonHashtag").style.display = this.value === "hashtag" ? "" : "none";
+                                        });
+                                    });
+
+                                    if (detectLocationBtn)
                 detectLocationBtn.addEventListener("click", detectMyLocation);
             if (weatherLocationInput)
                 weatherLocationInput.addEventListener("input", () =>

@@ -1,0 +1,201 @@
+/* site-pack.css — full base theme. Override any :root variable in your theme.css */
+
+:root {
+  /* colors */
+  --primary: #0047cc;
+  --primary-soft: #eaf2ff;
+  --primary-dark: #0037a3;
+  --secondary: #f59e0b;
+  --tertiary: #64748b;
+  --text: #1e1e1e;
+  --text-muted: #475569;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --border: #cbd5e1;
+  --radius: 12px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.05);
+  /* fonts */
+  --text-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --header-font: var(--text-font);
+  --font-size: 18px;
+  --font-size-lg: 20px;
+  --font-size-title: 20px;
+  --synth-hue: 220;
+  /* background */
+  --bg: #f6f8fc;
+  --bg-image: none;
+  --bg-opacity: 0.08;
+  --bg-icon: "\f25b";
+}
+
+/* ── BASE ────────────────────────────────────────────────────────── */
+html, body { font-size: var(--font-size); line-height: 1.6; background: var(--bg); background-image: var(--bg-image); background-size: cover; background-position: center; background-attachment: fixed; color: var(--text); font-family: var(--text-font); --music-synth-hue: var(--synth-hue); }
+h1, h2, h3, h4, h5, h6 { font-family: var(--header-font); }
+
+body::after { content: var(--bg-icon); font-family: "Font Awesome 7 Free"; font-weight: 900; position: fixed; bottom: 40px; right: 60px; font-size: 480px; color: color-mix(in srgb, var(--primary) var(--bg-opacity), transparent); pointer-events: none; z-index: 0; }
+
+a { color: var(--primary); font-weight: 700; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── HEADER ──────────────────────────────────────────────────────── */
+header { background: var(--surface); border-bottom: 3px solid var(--primary); }
+.search-wrapper { background: var(--bg); border: 1px solid var(--border); }
+.search-wrapper:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent); }
+.search-button { background: var(--primary); color: #fff; }
+.search-button:hover { background: var(--primary-dark); }
+#searchInput::placeholder { color: var(--text-muted); }
+#themeSwitcher { background: var(--surface); border: 1px solid var(--border); color: var(--primary); }
+#themeSwitcher:hover { background: var(--primary); color: #fff; }
+
+.header-weather { background: var(--primary-soft); border: 1px solid color-mix(in srgb, var(--primary) 50%, transparent); border-radius: var(--radius); }
+.header-weather i, .panel-title i, .module-empty i, .radio-station i, .calendar-empty i { color: var(--primary); }
+#weather { color: var(--text); }
+
+/* ── HELP MODAL ──────────────────────────────────────────────────── */
+.help-modal-overlay { background: rgba(0,0,0,0.3) !important; }
+.help-modal { background: var(--surface) !important; color: var(--text) !important; }
+.help-modal-ok { background: var(--primary) !important; color: #fff !important; }
+.help-modal-close:hover { background: var(--primary-soft) !important; }
+
+/* ── DASHBOARD ITEMS ─────────────────────────────────────────────── */
+.dashboard-item { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+.panel-title { font-size: var(--font-size-title); font-weight: 700; color: var(--primary); }
+
+/* ── MODULE CONTROLS ─────────────────────────────────────────────── */
+.module-controls button { background: var(--surface); border: 2px solid var(--border); color: var(--text); }
+.module-controls button:hover { background: var(--primary-soft); border-color: var(--primary); }
+.pin-btn.pinned { background: var(--secondary); border-color: var(--primary); color: #fff; }
+
+/* ── EMPTY STATE ─────────────────────────────────────────────────── */
+.module-empty { color: var(--text-muted); }
+.settings-link-btn { background: var(--primary); color: #fff; border-radius: var(--radius); font-weight: 700; }
+.settings-link-btn:hover { background: var(--primary-dark); }
+.settings-link-btn i { color: #fff !important; }
+
+/* ── GALLERY ─────────────────────────────────────────────────────── */
+.gallery-slide-img { border: 3px solid var(--primary); border-radius: var(--radius); }
+.gallery-caption { color: var(--primary); }
+.gallery-btn { background: var(--primary) !important; color: #fff !important; border-radius: var(--radius); }
+.gallery-btn:hover { opacity: 0.9 !important; }
+.gallery-btn.fullscreen { background: #059669 !important; }
+.gallery-thumb { border: 3px solid var(--border); border-radius: 8px; }
+.gallery-thumb.active { border-color: var(--secondary); }
+.gallery-thumb:hover { border-color: var(--secondary); }
+.gallery-lightbox { background: rgba(0,0,0,0.95) !important; }
+.gallery-lightbox-caption { color: #fff !important; }
+.gallery-lightbox-close, .gallery-lightbox-prev, .gallery-lightbox-next { background: rgba(255,255,255,0.95) !important; color: var(--primary) !important; border: 3px solid var(--primary) !important; }
+.gallery-lightbox-close:hover, .gallery-lightbox-prev:hover, .gallery-lightbox-next:hover { background: var(--primary) !important; color: #fff !important; }
+
+/* ── MUSIC ───────────────────────────────────────────────────────── */
+.music-now-playing { background: var(--surface-alt); border: 2px solid var(--primary); border-radius: var(--radius); }
+.music-now-playing .track-title { font-weight: 700; color: var(--text); }
+.music-now-playing .track-artist { color: var(--text-muted); }
+.player-controls button, .music-controls button { background: var(--surface); border: 2px solid var(--primary); color: var(--primary); border-radius: 50%; }
+.player-controls button:hover, .music-controls button:hover { background: var(--primary-soft); }
+.player-controls .play-btn, .player-controls .pause-btn { background: var(--primary); color: #fff; }
+.player-controls .play-btn:hover, .player-controls .pause-btn:hover { background: var(--primary-dark); }
+.music-track-item { background: var(--surface); border: 2px solid var(--border); color: var(--text); border-radius: var(--radius); }
+.music-track-item:hover { background: var(--surface-alt); border-color: var(--primary); }
+.music-track-item.active { background: #1e2a3a !important; color: #fff !important; border-left: 4px solid #00d4ff; }
+.music-track-item .track-name { color: var(--text); }
+.music-track-item.active .track-name { color: #fff; }
+.music-track-item .track-duration { color: var(--text-muted); }
+.music-track-item.active .track-duration { color: #94a3b8; }
+.music-scroll-btn { background-color: unset !important; color: var(--text) !important; border: 1px solid var(--border) !important; }
+
+/* ── RADIO ───────────────────────────────────────────────────────── */
+.radio-station { background: var(--surface); border: 2px solid var(--border); color: var(--text); border-radius: var(--radius); }
+.radio-station:hover { background: var(--surface-alt); border-color: var(--primary); color: var(--primary); }
+.radio-station.active-station { color: #fff !important; border-left: 4px solid #00d4ff; }
+.radio-list { border: 2px solid var(--border); background: var(--surface); border-radius: var(--radius); }
+.radio-play-btn { color: #fff; background: lightgray; }
+.radio-play-btn.playing { background: lightgrey; }
+.radio-station span:last-child { color: var(--text); }
+.radio-scroll-btn { background: var(--surface-alt); border: 2px solid var(--border); }
+.radio-scroll-btn:hover { background: var(--border); border-color: var(--primary); }
+.radio-scroll-btn:disabled { background: var(--surface-alt); border-color: var(--border); color: var(--text); }
+
+/* ── NEWS / MASTODON ─────────────────────────────────────────────── */
+.news-article, .mastodon-item { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); }
+.news-title a { color: var(--text); }
+.news-title a:hover { color: var(--primary); }
+.news-scroll-btn { background: var(--surface-alt); border: 2px solid var(--border); border-radius: var(--radius); font-size: 16px; }
+.news-scroll-btn:hover { background: var(--border); border-color: var(--primary); }
+
+/* ── BUS TRACKER ─────────────────────────────────────────────────── */
+.bus-timestamp { background: var(--primary-soft); border-radius: 8px; }
+.bus-route { background: var(--primary); color: #fff; border-radius: 8px; }
+.bus-refresh-btn { background: var(--surface); border: 2px solid var(--primary); color: var(--primary); border-radius: var(--radius); }
+.bus-refresh-btn:hover { background: var(--primary); color: #fff; }
+.bus-switch-btn { background: var(--primary-soft); border: 2px solid var(--primary); color: var(--primary); border-radius: var(--radius); }
+.bus-switch-btn:hover { background: var(--primary); color: #fff; }
+.bus-item { background: var(--surface-alt); border-radius: 8px; }
+
+/* ── PHONE ───────────────────────────────────────────────────────── */
+.phone-card { background: var(--surface); border: 3px solid var(--primary) !important; border-radius: var(--radius); }
+.phone-avatar { border: 2px solid var(--primary) !important; }
+.phone-avatar.placeholder { background: var(--primary-soft) !important; color: var(--primary) !important; }
+.phone-name { color: var(--text) !important; }
+.sim-call { background: #008000 !important; }
+.video-call { background: var(--primary) !important; }
+.webrtc-call { background: var(--secondary) !important; }
+.phone-call.locked { background: #94a3b8 !important; }
+
+/* ── CHAT ────────────────────────────────────────────────────────── */
+.chat-room-card { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); }
+.chat-room-header { background: var(--surface-alt); }
+.new-badge { background: #dc2626; color: #fff; }
+.chat-sender { color: var(--primary); }
+.chat-message { border-bottom: 1px solid var(--border); }
+
+/* ── CALENDAR ────────────────────────────────────────────────────── */
+.calendar-today-header { background: var(--primary-soft); border-radius: var(--radius); }
+.calendar-notification-badge { background: var(--primary); color: #fff; }
+.calendar-event-card { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); }
+.calendar-refresh-btn { background: var(--surface-alt); border: 1px solid var(--border); }
+.calendar-refresh-btn:hover { background: var(--border); }
+
+/* ── TASK ────────────────────────────────────────────────────────── */
+.task-card { background: var(--surface); border: 2px solid var(--border); }
+.task-input { background: var(--surface); border-color: var(--border); }
+.task-create-btn { background: var(--primary); }
+.task-create-btn:hover { background: var(--primary-dark); }
+
+/* ── LLM ─────────────────────────────────────────────────────────── */
+.llm-msg-assistant { background: var(--surface-alt); color: var(--text); }
+.llm-model-select { background: var(--surface); border-color: var(--border); }
+
+/* ── FOOTER ──────────────────────────────────────────────────────── */
+footer { background: var(--surface); border-top: 2px solid var(--border); }
+.footer-icon { color: var(--primary); }
+.footer-icon:hover { background: var(--primary-soft); }
+
+/* ── CUSTOMIZE LINK ──────────────────────────────────────────────── */
+.customize-link a { background: var(--primary) !important; color: #fff !important; border-radius: var(--radius); }
+.customize-link a:hover { background: var(--primary-dark) !important; }
+
+/* ── ACCESSIBILITY ───────────────────────────────────────────────── */
+button:focus, a:focus, select:focus, input:focus { outline: 4px solid #ffcc00; outline-offset: 2px; }
+
+/* ── WAKE LOCK ───────────────────────────────────────────────────── */
+#footerWakeLockBtn i.fa-sun { color: var(--primary) !important; }
+#footerWakeLockBtn i.fa-sun.active-sun { color: var(--secondary) !important; }
+
+/* ── MISC ────────────────────────────────────────────────────────── */
+.module-placeholder { color: var(--text-muted); }
+.module-placeholder i { color: var(--primary); opacity: 1; }
+.subtitle a, .brand a, .logo-link, .logo-text, .handi-logo { color: var(--text); }
+.logo-link:hover { color: var(--primary); }
+.music-controls button { gap: 0 !important; font-size: medium !important; }
+.gallery-thumb.active { box-shadow: 0 0 0 2px color-mix(in srgb, var(--secondary) 30%, transparent) !important; }
+
+/* ── STANDARDIZED TEXT SIZES ─────────────────────────────────────── */
+.panel-title { font-size: var(--font-size-title); font-weight: 700; }
+h3, .mastodon-title, #music-track-title { font-size: var(--font-size); }
+.music-state-text, .calendar-sync-info span, .mastodon-provider { font-size: 16px; }
+p, .music-track-item, .mastodon-description, .radio-station span, #music-status, #music-state-text { font-size: var(--font-size); }
+.logo-text, .logo-link, .handi-logo { font-size: var(--font-size-lg); }
+#searchInput, #searchEngine, .search-button, #themeSwitcher { font-size: 16px; }
+.header-weather, #weather { font-size: var(--font-size); }
+.customize-link a { font-size: 16px; }
+#musicLoadMoreBtn { font-size: 16px; }

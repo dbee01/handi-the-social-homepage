@@ -61,8 +61,11 @@ export default async function initMastodon(container) {
 
   const STORAGE_KEY = "handiMastodonServer";
   const settings = loadSettings();
-  const limit = settings.social?.limit || 3;
-  let instance = settings.social?.instance || "";
+    const limit = settings.social?.limit || 3;
+    const feedType = settings.social?.feedType || "trending";
+    const profileAccount = settings.social?.profile || "";
+    const hashtag = settings.social?.hashtag || "";
+    let instance = settings.social?.instance || "";
 
   if (!instance) {
     try {
@@ -112,7 +115,21 @@ export default async function initMastodon(container) {
         '<div class="module-loading" style="padding: 20px; text-align: center;"><i class="fa-solid fa-spinner fa-spin"></i> ' +
         t("d_loading", "Loading...") +
         "</div>";
-      const url = `${instance}/api/v1/trends/links?limit=${limit}`;
+      var url;
+            if (feedType === "profile" && profileAccount) {
+              // Search for account ID first
+              var acct = profileAccount.replace(/^@/, "");
+              var lookupUrl = `${instance}/api/v1/accounts/lookup?acct=${encodeURIComponent(acct)}`;
+              var lookupRes = await fetch(lookupUrl);
+              if (!lookupRes.ok) throw new Error("Profile not found");
+              var account = await lookupRes.json();
+              url = `${instance}/api/v1/accounts/${account.id}/statuses?limit=${limit}`;
+            } else if (feedType === "hashtag" && hashtag) {
+              var tag = hashtag.replace(/^#/, "");
+              url = `${instance}/api/v1/timelines/tag/${encodeURIComponent(tag)}?limit=${limit}`;
+            } else {
+              url = `${instance}/api/v1/trends/links?limit=${limit}`;
+            }
       const res = await fetch(url);
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -139,15 +156,20 @@ export default async function initMastodon(container) {
       var headerBar = document.createElement("div");
       headerBar.style.cssText =
         "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;";
-      headerBar.innerHTML =
-        '<small style="opacity:0.7;">' +
-        escapeHtml(serverDisplay) +
-        "</small>" +
-        '<button id="mastodonChangeServer" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;" title="' +
-        t("d_changeServer", "Change server") +
-        '">🔄 ' +
-        t("d_changeServer", "Server") +
-        "</button>";
+      var feedLabel = feedType === "profile" && profileAccount
+              ? "👤 " + escapeHtml(profileAccount)
+              : feedType === "hashtag" && hashtag
+                ? "#️⃣ #" + escapeHtml(hashtag.replace(/^#/, ""))
+                : "📈 " + t("d_trending", "Trending");
+            headerBar.innerHTML =
+              '<small style="opacity:0.7;">' +
+              escapeHtml(serverDisplay) + ' · ' + feedLabel +
+              "</small>" +
+              '<button id="mastodonChangeServer" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;" title="' +
+              t("d_changeServer", "Change server") +
+              '">🔄 ' +
+              t("d_changeServer", "Server") +
+              "</button>";
       content.appendChild(headerBar);
 
       // Posts container
@@ -156,11 +178,24 @@ export default async function initMastodon(container) {
       content.appendChild(postsContainer);
 
       for (const item of data) {
-        const titleText = item.title || t("d_untitled", "Untitled");
-        const urlLink = item.url || "#";
-        const description = item.description || "";
-        const provider = item.provider_name || "";
-        const image = item.image || "";
+              var titleText, urlLink, description, provider, image;
+              if (feedType === "profile" || feedType === "hashtag") {
+                // Status format
+                titleText = item.account?.display_name || item.account?.username || "";
+                urlLink = item.url || "#";
+                var div = document.createElement("div");
+                div.innerHTML = item.content || "";
+                description = div.textContent || div.innerText || "";
+                provider = item.account?.acct || "";
+                image = item.account?.avatar || "";
+              } else {
+                // Trending links format
+                titleText = item.title || t("d_untitled", "Untitled");
+                urlLink = item.url || "#";
+                description = item.description || "";
+                provider = item.provider_name || "";
+                image = item.image || "";
+              }
         const shortDescription =
           description.length > 150
             ? `${description.substring(0, 150)}...`
