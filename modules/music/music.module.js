@@ -314,16 +314,17 @@ export default async function initMusic(container) {
         var pp = audio.play();
         if (pp !== undefined) {
           pp.then(function () {
-            isPlaying = true;
-            playPauseBtn.innerHTML = "⏸";
-            stateSpan.innerText = t("d_playing", "...playing");
-            updateTrackIconsAndActive();
-          }).catch(function (err) {
-            showError(t("d_cannotPlayFile", "Cannot play file"));
-            isPlaying = false;
-            playPauseBtn.innerHTML = "▶";
-            updateTrackIconsAndActive();
-          });
+                      isPlaying = true;
+                      playPauseBtn.innerHTML = "⏸";
+                      stateSpan.innerText = t("d_playing", "...playing");
+                      updateTrackIconsAndActive();
+                      ensureVisualiserRunning();
+                    }).catch(function (err) {
+                      showError(t("d_cannotPlayFile", "Cannot play file"));
+                      isPlaying = false;
+                      playPauseBtn.innerHTML = "▶";
+                      updateTrackIconsAndActive();
+                    });
         }
       } else {
         isPlaying = false;
@@ -371,22 +372,24 @@ export default async function initMusic(container) {
       return;
     }
     if (isPlaying) {
-      currentAudio.pause();
-      isPlaying = false;
-      playPauseBtn.innerHTML = "▶";
-      stateSpan.innerText = " | " + t("d_paused", "...paused");
-      updateTrackIconsAndActive();
-    } else {
+          currentAudio.pause();
+          isPlaying = false;
+          playPauseBtn.innerHTML = "▶";
+          stateSpan.innerText = " | " + t("d_paused", "...paused");
+          updateTrackIconsAndActive();
+          stopVisualiserAndClear();
+              } else {
       var pp = currentAudio.play();
       if (pp !== undefined) {
         pp.then(function () {
-          isPlaying = true;
-          playPauseBtn.innerHTML = "⏸";
-          stateSpan.innerText = " | " + t("d_playing", "...playing");
-          updateTrackIconsAndActive();
-        }).catch(function (err) {
-          showError(t("d_cannotResume", "Cannot resume"));
-        });
+                  isPlaying = true;
+                  playPauseBtn.innerHTML = "⏸";
+                  stateSpan.innerText = " | " + t("d_playing", "...playing");
+                  updateTrackIconsAndActive();
+                  ensureVisualiserRunning();
+                }).catch(function (err) {
+                  showError(t("d_cannotResume", "Cannot resume"));
+                });
       }
     }
   }

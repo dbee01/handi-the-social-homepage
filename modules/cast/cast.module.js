@@ -350,12 +350,13 @@ export default async function initCast(container) {
       return;
     }
     if (isPlaying) {
-      currentAudio.pause();
-      isPlaying = false;
-      playPauseBtn.innerHTML = "▶";
-      stateSpan.innerText = " | " + t("d_paused", "...paused");
-      updateTrackIconsAndActive();
-    } else {
+          currentAudio.pause();
+          isPlaying = false;
+          playPauseBtn.innerHTML = "▶";
+          stateSpan.innerText = " | " + t("d_paused", "...paused");
+          updateTrackIconsAndActive();
+          stopVisualiserAndClear();
+              } else {
       var pp = currentAudio.play();
       if (pp !== undefined) {
         pp.then(function () {

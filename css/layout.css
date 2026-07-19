@@ -702,6 +702,18 @@ header {
     max-height: 80px;
 }
 
+.music-status,
+.radio-now-playing {
+    padding: 8px 14px;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.music-status span,
+.radio-now-playing span {
+    font-size: inherit;
+}
+
 .player-controls,
 .music-controls {
     display: flex;
@@ -733,6 +745,11 @@ header {
     flex-direction: column;
     gap: 8px;
     margin-top: 12px;
+}
+
+#music-track-title,
+.music-state-text {
+    font-size: 18px !important;
 }
 
 .music-track-item {
