@@ -1137,22 +1137,28 @@
                         let state = enabled[mod.id];
                         if (state === 3) return; // hidden — skip entirely
                         let isActive = state === 1;
-                        let isDisabled = state === 2;
-                        let div = document.createElement("div");
-                        div.className =
-                            "module-item premium-module" +
-                            (isDisabled ? " module-disabled" : "");
-                        let btnLabel, btnClass;
-                        if (isActive) {
-                            btnLabel = window.LANG.btnRemove;
-                            btnClass = "btn-remove";
-                        } else if (isDisabled) {
-                            btnLabel = window.LANG.btnDisabled;
-                            btnClass = "btn-add";
-                        } else {
-                            btnLabel = window.LANG.btnAdd;
-                            btnClass = "btn-add";
-                        }
+                                                let isDisabled = state === 2 || window.PREMIUM_ACTIVE !== true;
+                                                let div = document.createElement("div");
+                                                div.className =
+                                                    "module-item premium-module" +
+                                                                                (isDisabled ? " module-disabled" : "");
+                                                    let btnLabel, btnClass;
+                                                                            if (isActive && window.PREMIUM_ACTIVE === true) {
+                                                                                btnLabel = window.LANG.btnRemove;
+                                                                                btnClass = "btn-remove";
+                                                                            } else if (isDisabled) {
+                                                                                btnLabel = window.LANG.btnDisabled;
+                                                                                btnClass = "btn-add";
+                                                                            } else {
+                                                                                if (window.PREMIUM_ACTIVE !== true) {
+                                                                                    isDisabled = true;
+                                                                                    btnLabel = window.LANG.btnDisabled;
+                                                                                    btnClass = "btn-add";
+                                                                                } else {
+                                                                                    btnLabel = window.LANG.btnAdd;
+                                                                                    btnClass = "btn-add";
+                                                                                }
+                                                                            }
                         var modName =
                             window.LANG.modules && window.LANG.modules[mod.id]
                                 ? window.LANG.modules[mod.id].name
