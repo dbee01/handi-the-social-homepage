@@ -952,7 +952,7 @@
                         <button id="applyBtn" class="apply-btn">
                                                     ✓ Submit
                                                 </button>
-                                                <a href="/upload.html" class="premium-trial-btn" style="text-decoration:none;display:inline-block;text-align:center;line-height:normal;background:#64748b;">📦 Upload Dashboard Pack</a>
+                                                <a href="/upload.html" id="uploadPackBtn" class="premium-trial-btn" style="text-decoration:none;display:inline-block;text-align:center;line-height:normal;background:#64748b;">📦 Upload Dashboard Pack</a>
                                             </div>
                 </div>
             </div>
@@ -1240,8 +1240,21 @@
                 .getElementById("resetBtn")
                 ?.addEventListener("click", resetModules);
             document
-                .getElementById("applyBtn")
-                ?.addEventListener("click", applyChanges);
+              .getElementById("applyBtn")
+              ?.addEventListener("click", applyChanges);
+            document
+              .getElementById("uploadPackBtn")
+              ?.addEventListener("click", function (e) {
+                if (!hasConsent()) {
+                  e.preventDefault();
+                  var box = document.getElementById("privacyConsent");
+                  if (box) {
+                    box.style.outline = "3px solid red";
+                    setTimeout(function () { box.style.outline = ""; }, 2000);
+                  }
+                  alert(window.LANG.alertConsentApply);
+                }
+              });
             document
                 .getElementById("privacyConsent")
                 ?.addEventListener("change", () => {
