@@ -138,3 +138,15 @@ coverage/
 # TernJS port file
 .tern-port
 log.txt
+
+# WordPress / third-party plugins (never commit)
+wp-content/plugins/*
+!wp-content/plugins/handi-site-pack/
+wp-content/themes/*
+!wp-content/themes/handi*/
+wp-admin/
+wp-includes/
+complianz*/
+wp-config.php
+*.wp-*
+wp-*.php
