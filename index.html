@@ -77,6 +77,29 @@
                         style.id = "custom-theme";
                         style.textContent = customCss;
                         document.head.appendChild(style);
+
+                        // Resolve background image from IndexedDB if it's a relative path
+                        var bgMatch = customCss.match(/--bg-image:\s*url\(['"]?([^)'"]+)['"]?\)/);
+                        if (bgMatch && bgMatch[1] && !bgMatch[1].startsWith("http") && !bgMatch[1].startsWith("blob:") && !bgMatch[1].startsWith("data:")) {
+                            var fileName = bgMatch[1].split("/").pop();
+                            var openReq = indexedDB.open("handiGallery", 1);
+                            openReq.onsuccess = function () {
+                                var db = openReq.result;
+                                var tx = db.transaction(["gallery"], "readonly");
+                                var store = tx.objectStore("gallery");
+                                var getReq = store.getAll();
+                                getReq.onsuccess = function () {
+                                    var items = getReq.result || [];
+                                    for (var i = 0; i < items.length; i++) {
+                                        if (items[i].name === fileName && items[i].file) {
+                                            var blobUrl = URL.createObjectURL(items[i].file);
+                                            document.documentElement.style.setProperty("--bg-image", "url(" + blobUrl + ")");
+                                            break;
+                                        }
+                                    }
+                                };
+                            };
+                        }
                     }
                 } catch (e) {
                     /* localStorage unavailable */
