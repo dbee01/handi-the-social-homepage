@@ -126,15 +126,11 @@ fileInput.addEventListener("change", () => {
 });
 
 // Generate a :root {} CSS block from config theme colors/fonts
-function buildThemeCss(cfg, imageByPath) {
+function buildThemeCss(cfg) {
     if (!cfg.theme || !cfg.theme.colors) return null;
     var c = cfg.theme.colors;
     var f = cfg.theme.fonts || {};
     var bgImg = cfg.theme.background || "";
-    // Replace zip-relative path with blob URL if image is in the pack
-    if (bgImg && imageByPath && imageByPath[bgImg]) {
-        bgImg = URL.createObjectURL(imageByPath[bgImg]);
-    }
     var css = ":root {\n";
     if (c.primary) {
         css += "  --primary: " + c.primary + ";\n";
@@ -186,7 +182,7 @@ async function processZip(file) {
                 addLog("🎵 " + path, "done");
             } else if (isImg && isImage) {
                 imageFiles.push(fileObj);
-                imageByPath[path] = fileObj;
+                imageByPath[path] = blob;
                 addLog("🖼️ " + path, "done");
             } else if (isPodcast && isAudio) {
                 castFiles.push(fileObj);
@@ -242,6 +238,7 @@ async function processZip(file) {
         }
 
         // Merge config.json into handiSettings
+        console.log("[upload] configJson present:", !!configJson);
         if (configJson) {
             try {
                 const cfg = JSON.parse(configJson);
@@ -251,23 +248,23 @@ async function processZip(file) {
 
                 // Generate theme CSS from config colors if no theme.css file
                 if (!themeCss) {
-                    const genCss = buildThemeCss(cfg, imageByPath);
+                    const genCss = buildThemeCss(cfg);
                     if (genCss) {
                         localStorage.setItem("handiCustomTheme", genCss);
                         addLog("Theme generated from config colors", "done");
                     }
-                } else {
-                    // Replace background image path with blob URL if it matches a zip image
-                    const bgImg = cfg.theme?.background;
-                    if (bgImg && imageByPath[bgImg]) {
-                        const blobUrl = URL.createObjectURL(imageByPath[bgImg]);
-                        themeCss = themeCss.replace(
-                            new RegExp("url\\(['\"]?" + bgImg.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "['\"]?\\)", "g"),
-                            "url(" + blobUrl + ")"
-                        );
-                        localStorage.setItem("handiCustomTheme", themeCss);
-                        addLog("Background image linked from pack", "done");
-                    }
+                }
+
+                // Convert background image to data URL for dashboard
+                var bgPath = cfg.theme?.background;
+                if (bgPath && imageByPath[bgPath]) {
+                    var dataUrl = await new Promise(function(resolve) {
+                        var fr = new FileReader();
+                        fr.onload = function() { resolve(fr.result); };
+                        fr.readAsDataURL(imageByPath[bgPath]);
+                    });
+                    localStorage.setItem("handiBgDataUrl", dataUrl);
+                    addLog("Background image saved for dashboard", "done");
                 }
 
                 // Enable modules from elements list (write to MMR, not settings.enabledModules)
@@ -291,6 +288,7 @@ async function processZip(file) {
                 }
 
                 // News RSS — handle both array and object formats
+                console.log("[upload] cfg.news:", JSON.stringify(cfg.news));
                 if (cfg.news && cfg.news.feeds) {
                     var rssUrl = "";
                     if (Array.isArray(cfg.news.feeds)) {
@@ -300,9 +298,11 @@ async function processZip(file) {
                         rssUrl = vals[0] || "";
                     }
                     if (rssUrl && rssUrl.indexOf("//") === 0) rssUrl = "https:" + rssUrl;
+                    console.log("[upload] News RSS extracted:", rssUrl);
                     if (rssUrl) {
                         settings.news = settings.news || {};
                         settings.news.rssUrl = rssUrl;
+                        localStorage.setItem("handiNewsFeed", rssUrl);
                         addLog("News RSS: " + rssUrl, "done");
                     }
                 }

@@ -1,4 +1,4 @@
-const CACHE = "ple-v10";
+const CACHE = "ple-v12";
 
 // Check for updates every 24 hours
 const UPDATE_INTERVAL = 24 * 60 * 60 * 1000;
@@ -16,6 +16,7 @@ const PRECACHE = [
   "/css/elderly.css",
   "/css/main.css",
   "/css/settings.css",
+  "/css/site-pack.css",
   "/css/webrtc-widget.css",
   "/css/vendor/fa-7.2.0/css/all.min.css",
   "/js/core/module-registry.js",

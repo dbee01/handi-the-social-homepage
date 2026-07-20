@@ -54,7 +54,7 @@
                     // If a custom dashboard pack theme exists, use site-pack.css which respects CSS variables
                     var cssUrl;
                     if (customCss) {
-                        cssUrl = "/css/site-pack.css";
+                        cssUrl = "/css/site-pack.css?v=2";
                     } else {
                         var themes = {
                             senior: "/css/elderly.css",
@@ -77,29 +77,14 @@
                         style.id = "custom-theme";
                         style.textContent = customCss;
                         document.head.appendChild(style);
+                    }
 
-                        // Resolve background image from IndexedDB if it's a relative path
-                        var bgMatch = customCss.match(/--bg-image:\s*url\(['"]?([^)'"]+)['"]?\)/);
-                        if (bgMatch && bgMatch[1] && !bgMatch[1].startsWith("http") && !bgMatch[1].startsWith("blob:") && !bgMatch[1].startsWith("data:")) {
-                            var fileName = bgMatch[1].split("/").pop();
-                            var openReq = indexedDB.open("handiGallery", 1);
-                            openReq.onsuccess = function () {
-                                var db = openReq.result;
-                                var tx = db.transaction(["gallery"], "readonly");
-                                var store = tx.objectStore("gallery");
-                                var getReq = store.getAll();
-                                getReq.onsuccess = function () {
-                                    var items = getReq.result || [];
-                                    for (var i = 0; i < items.length; i++) {
-                                        if (items[i].name === fileName && items[i].file) {
-                                            var blobUrl = URL.createObjectURL(items[i].file);
-                                            document.documentElement.style.setProperty("--bg-image", "url(" + blobUrl + ")");
-                                            break;
-                                        }
-                                    }
-                                };
-                            };
-                        }
+                    // Apply background image data URL from pack upload
+                    var bgUrl = localStorage.getItem("handiBgDataUrl");
+                    if (bgUrl) {
+                        var bgStyle = document.createElement("style");
+                        bgStyle.textContent = ":root { --bg-image: url(" + bgUrl + "); }";
+                        document.head.appendChild(bgStyle);
                     }
                 } catch (e) {
                     /* localStorage unavailable */

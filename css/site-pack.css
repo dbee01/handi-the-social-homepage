@@ -29,13 +29,14 @@
 }
 
 /* ── BASE ────────────────────────────────────────────────────────── */
-html, body { font-size: var(--font-size); line-height: 1.6; background: var(--bg); background-image: var(--bg-image); background-size: cover; background-position: center; background-attachment: fixed; color: var(--text); font-family: var(--text-font); --music-synth-hue: var(--synth-hue); }
+html, body { font-size: var(--font-size); line-height: 1.6; background: var(--bg); color: var(--text); font-family: var(--text-font); --music-synth-hue: var(--synth-hue); }
+
+body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: var(--bg-image); background-repeat: no-repeat; background-position: bottom 40px right 60px; background-size: 480px 480px; opacity: 0.08; pointer-events: none; z-index: 0; }
+
 h1, h2, h3, h4, h5, h6 { font-family: var(--header-font); }
 
-body::after { content: var(--bg-icon); font-family: "Font Awesome 7 Free"; font-weight: 900; position: fixed; bottom: 40px; right: 60px; font-size: 480px; color: color-mix(in srgb, var(--primary) var(--bg-opacity), transparent); pointer-events: none; z-index: 0; }
-
-a { color: var(--primary); font-weight: 700; text-decoration: none; }
-a:hover { text-decoration: underline; }
+a { color: var(--primary) !important; font-weight: 700 !important; text-decoration: none !important; }
+a:hover { text-decoration: underline !important; }
 
 /* ── HEADER ──────────────────────────────────────────────────────── */
 header { background: var(--surface); border-bottom: 3px solid var(--primary); }
@@ -58,7 +59,7 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 .help-modal-close:hover { background: var(--primary-soft) !important; }
 
 /* ── DASHBOARD ITEMS ─────────────────────────────────────────────── */
-.dashboard-item { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+.dashboard-item { background: transparent; position: relative; z-index: 1; border: 2px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
 .panel-title { font-size: var(--font-size-title); font-weight: 700; color: var(--primary); }
 
 /* ── MODULE CONTROLS ─────────────────────────────────────────────── */
@@ -68,8 +69,8 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 
 /* ── EMPTY STATE ─────────────────────────────────────────────────── */
 .module-empty { color: var(--text-muted); }
-.settings-link-btn { background: var(--primary); color: #fff; border-radius: var(--radius); font-weight: 700; }
-.settings-link-btn:hover { background: var(--primary-dark); }
+.settings-link-btn { background: var(--secondary); color: #fff; border-radius: var(--radius); font-weight: 700; }
+.settings-link-btn:hover { background: var(--primary); }
 .settings-link-btn i { color: #fff !important; }
 
 /* ── GALLERY ─────────────────────────────────────────────────────── */
@@ -77,7 +78,7 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 .gallery-caption { color: var(--primary); }
 .gallery-btn { background: var(--primary) !important; color: #fff !important; border-radius: var(--radius); }
 .gallery-btn:hover { opacity: 0.9 !important; }
-.gallery-btn.fullscreen { background: #059669 !important; }
+.gallery-btn.fullscreen { background: var(--secondary) !important; color: #fff !important; }
 .gallery-thumb { border: 3px solid var(--border); border-radius: 8px; }
 .gallery-thumb.active { border-color: var(--secondary); }
 .gallery-thumb:hover { border-color: var(--secondary); }
@@ -87,15 +88,15 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 .gallery-lightbox-close:hover, .gallery-lightbox-prev:hover, .gallery-lightbox-next:hover { background: var(--primary) !important; color: #fff !important; }
 
 /* ── MUSIC ───────────────────────────────────────────────────────── */
-.music-now-playing { background: var(--surface-alt); border: 2px solid var(--primary); border-radius: var(--radius); }
+.music-now-playing { background: transparent; border: 2px solid var(--primary); border-radius: var(--radius); }
 .music-now-playing .track-title { font-weight: 700; color: var(--text); }
 .music-now-playing .track-artist { color: var(--text-muted); }
-.player-controls button, .music-controls button { background: var(--surface); border: 2px solid var(--primary); color: var(--primary); border-radius: 50%; }
-.player-controls button:hover, .music-controls button:hover { background: var(--primary-soft); }
+.player-controls button, .music-controls button { background: var(--primary-soft); border: 2px solid var(--primary); color: var(--primary); border-radius: 50%; }
+.player-controls button:hover, .music-controls button:hover { background: var(--primary); color: #fff; }
 .player-controls .play-btn, .player-controls .pause-btn { background: var(--primary); color: #fff; }
 .player-controls .play-btn:hover, .player-controls .pause-btn:hover { background: var(--primary-dark); }
-.music-track-item { background: var(--surface); border: 2px solid var(--border); color: var(--text); border-radius: var(--radius); }
-.music-track-item:hover { background: var(--surface-alt); border-color: var(--primary); }
+.music-track-item { background: transparent; border: 2px solid var(--border); color: var(--text); border-radius: var(--radius); }
+.music-track-item:hover { background: var(--primary-soft); border-color: var(--primary); }
 .music-track-item.active { background: #1e2a3a !important; color: #fff !important; border-left: 4px solid #00d4ff; }
 .music-track-item .track-name { color: var(--text); }
 .music-track-item.active .track-name { color: #fff; }
@@ -110,14 +111,15 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 .radio-list { border: 2px solid var(--border); background: var(--surface); border-radius: var(--radius); }
 .radio-play-btn { color: #fff; background: lightgray; }
 .radio-play-btn.playing { background: lightgrey; }
+.radio-player-area { background: transparent; }
 .radio-station span:last-child { color: var(--text); }
 .radio-scroll-btn { background: var(--surface-alt); border: 2px solid var(--border); }
 .radio-scroll-btn:hover { background: var(--border); border-color: var(--primary); }
 .radio-scroll-btn:disabled { background: var(--surface-alt); border-color: var(--border); color: var(--text); }
 
 /* ── NEWS / MASTODON ─────────────────────────────────────────────── */
-.news-article, .mastodon-item { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); }
-.news-title a { color: var(--text); }
+.news-article, .mastodon-item { background: transparent; border: 2px solid var(--border); border-radius: var(--radius); }
+.news-title a { color: var(--text); font-family: var(--header-font); font-weight: 700; }
 .news-title a:hover { color: var(--primary); }
 .news-scroll-btn { background: var(--surface-alt); border: 2px solid var(--border); border-radius: var(--radius); font-size: 16px; }
 .news-scroll-btn:hover { background: var(--border); border-color: var(--primary); }
