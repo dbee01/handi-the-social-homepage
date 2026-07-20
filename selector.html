@@ -1243,19 +1243,6 @@
               .getElementById("applyBtn")
               ?.addEventListener("click", applyChanges);
             document
-              .getElementById("uploadPackBtn")
-              ?.addEventListener("click", function (e) {
-                if (!hasConsent()) {
-                  e.preventDefault();
-                  var box = document.getElementById("privacyConsent");
-                  if (box) {
-                    box.style.outline = "3px solid red";
-                    setTimeout(function () { box.style.outline = ""; }, 2000);
-                  }
-                  alert(window.LANG.alertConsentApply);
-                }
-              });
-            document
                 .getElementById("privacyConsent")
                 ?.addEventListener("change", () => {
                     renderSelector();
