@@ -1,0 +1,5 @@
+node_modules/
+.env
+.gtfs-cache/
+package-lock.json
+*.log
