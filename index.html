@@ -16,32 +16,45 @@
         <title>HandiHomepage – Senior Dashboard</title>
         <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
         <script src="/lang/loader.js"></script>
-            <script src="/js/core/log.js"></script>
-                <script src="/js/core/load.js"></script>
-            <style id="theme-flash-fix">
-                /* Prevent FOUC — set background before theme CSS loads */
-                html { background: #f6f8fc; }
-                html[data-theme="techie"] { background: #0a1a0c; }
-                html[data-theme="student"] { background: #0d0d0d; }
-                html[data-theme="woman"] { background: #fef9fb; }
-            </style>
-            <script>
-                try {
-                    var _t = localStorage.getItem("handiTheme") || "senior";
-                    document.documentElement.setAttribute("data-theme", _t);
-                } catch(e) {}
-            </script>
-                <script>
-                // Listen for service worker update messages
-                if (navigator.serviceWorker) {
-                    navigator.serviceWorker.addEventListener("message", function (e) {
+        <script src="/js/core/log.js"></script>
+        <script src="/js/core/load.js"></script>
+        <style id="theme-flash-fix">
+            /* Prevent FOUC — set background before theme CSS loads */
+            html {
+                background: #f6f8fc;
+            }
+            html[data-theme="techie"] {
+                background: #0a1a0c;
+            }
+            html[data-theme="student"] {
+                background: #0d0d0d;
+            }
+            html[data-theme="woman"] {
+                background: #fef9fb;
+            }
+        </style>
+        <script>
+            try {
+                var _t = localStorage.getItem("handiTheme") || "senior";
+                document.documentElement.setAttribute("data-theme", _t);
+            } catch (e) {}
+        </script>
+        <script>
+            // Listen for service worker update messages
+            if (navigator.serviceWorker) {
+                navigator.serviceWorker.addEventListener(
+                    "message",
+                    function (e) {
                         if (e.data && e.data.type === "update") {
-                            console.log("[SW] Update detected – reloading page");
+                            console.log(
+                                "[SW] Update detected – reloading page",
+                            );
                             location.reload();
                         }
-                    });
-                }
-            </script>
+                    },
+                );
+            }
+        </script>
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
         <link rel="stylesheet" href="/css/main.css" />
         <script>
@@ -83,7 +96,8 @@
                     var bgUrl = localStorage.getItem("handiBgDataUrl");
                     if (bgUrl) {
                         var bgStyle = document.createElement("style");
-                        bgStyle.textContent = ":root { --bg-image: url(" + bgUrl + "); }";
+                        bgStyle.textContent =
+                            ":root { --bg-image: url(" + bgUrl + "); }";
                         document.head.appendChild(bgStyle);
                     }
                 } catch (e) {
@@ -95,7 +109,7 @@
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0047cc" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-            <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta
             name="apple-mobile-web-app-status-bar-style"
             content="black-translucent"
@@ -182,13 +196,19 @@
         <div class="dashboard-wrapper">
             <main id="dashboard-grid">
                 <!-- FREE modules - weather module removed -->
-                <div id="gallery" class="dashboard-item module">
+                <div id="support" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
-                <div id="music" class="dashboard-item module">
-                                    <div class="module-content"></div>
-                                </div>
-                                <div id="news" class="dashboard-item module">
+                <div id="social" class="dashboard-item module">
+                    <div class="module-content"></div>
+                </div>
+                <div id="task" class="dashboard-item module">
+                    <div class="module-content"></div>
+                </div>
+                <div id="phone" class="dashboard-item module">
+                    <div class="module-content"></div>
+                </div>
+                <div id="cast" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
                 <div id="calendar" class="dashboard-item module">
@@ -197,33 +217,27 @@
                 <div id="chat" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
-                <div id="social" class="dashboard-item module">
+                <div id="gallery" class="dashboard-item module">
+                    <div class="module-content"></div>
+                </div>
+                <div id="music" class="dashboard-item module">
+                    <div class="module-content"></div>
+                </div>
+                <div id="news" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
                 <div id="radio" class="dashboard-item module">
-                                    <div class="module-content"></div>
-                                </div>
-                                <div id="task" class="dashboard-item module">
-                                                    <div class="module-content"></div>
-                                                </div>
+                    <div class="module-content"></div>
+                </div>
 
-                                                <!-- PREMIUM MODULES -->
-                                                <div id="llm" class="dashboard-item module">
-                                                    <div class="module-content"></div>
-                                                </div>
-                                                <div id="phone" class="dashboard-item module">
-                                                                    <div class="module-content"></div>
-                                                                </div>
-                                                                <div id="cast" class="dashboard-item module">
-                                                                    <div class="module-content"></div>
-                                                                </div>
-                                                                <div id="live_bus" class="dashboard-item module">
+                <!-- PREMIUM MODULES -->
+                <div id="llm" class="dashboard-item module">
+                    <div class="module-content"></div>
+                </div>
+                <div id="live_bus" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
                 <div id="emergency_alert" class="dashboard-item module">
-                    <div class="module-content"></div>
-                </div>
-                <div id="support" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
             </main>
@@ -240,7 +254,10 @@
                 <button id="footerScrollUpBtn" class="footer-icon elderlyShow">
                     <i class="fa-solid fa-chevron-up"></i>
                 </button>
-                <button id="footerScrollDownBtn" class="footer-icon elderlyShow">
+                <button
+                    id="footerScrollDownBtn"
+                    class="footer-icon elderlyShow"
+                >
                     <i class="fa-solid fa-chevron-down"></i>
                 </button>
                 <button id="footerDocsBtn" class="footer-icon elderlyShow">
@@ -261,9 +278,11 @@
 
         <div class="brand">
             <span
-                ><a href="https://buy.stripe.com/14AbJ05WbgWM73pbIfdUY00"
+                ><a
+                    href="https://buy.stripe.com/14AbJ05WbgWM73pbIfdUY00"
                     onclick="window.logEvent(1, 'premium_click', {})"
-                    > Try Premium</a
+                >
+                    Try Premium</a
                 ></span
             >
         </div>
@@ -295,16 +314,16 @@
             import { startWeatherUpdates } from "./js/core/weather.js";
             import initGallery from "./modules/gallery/gallery.module.js";
             import initMusic from "./modules/music/music.module.js";
-                        import initCast from "./modules/cast/cast.module.js";
-                        import initChat from "./modules/chat/chat.module.js";
+            import initCast from "./modules/cast/cast.module.js";
+            import initChat from "./modules/chat/chat.module.js";
             import initNews from "./modules/news/news.module.js";
             import initSocial from "./modules/mastodon/mastodon.module.js";
             import initCalendar from "./modules/calendar/calendar.module.js";
-                        import initTask from "./modules/task/task.module.js";
-                                    import initLlm from "./modules/llm/llm.module.js";
-                                    import initBus from "./modules/bus/bus.module.js";
+            import initTask from "./modules/task/task.module.js";
+            import initLlm from "./modules/llm/llm.module.js";
+            import initBus from "./modules/bus/bus.module.js";
             import initRadio from "./modules/radio/radio.module.js";
-                        import initSupport from "./modules/support/support.module.js";
+            import initSupport from "./modules/support/support.module.js";
             import initPhone from "./modules/friendly-phone/friendly-phone.module.js";
 
             import initEmergency from "./modules/emergency/emergency.module.js";
@@ -314,17 +333,17 @@
             const modules = {
                 gallery: initGallery,
                 music: initMusic,
-                                cast: initCast,
-                                news: initNews,
+                cast: initCast,
+                news: initNews,
                 calendar: initCalendar,
-                                task: initTask,
-                                                llm: initLlm,
-                                                phone: initPhone,
+                task: initTask,
+                llm: initLlm,
+                phone: initPhone,
                 live_bus: initBus,
                 chat: initChat,
                 social: initSocial,
                 radio: initRadio,
-                                support: initSupport,
+                support: initSupport,
                 emergency_alert: initEmergency,
             };
 
@@ -379,7 +398,10 @@
                 };
                 searchBtn.onclick = doSearch;
                 searchInput.addEventListener("keydown", (e) => {
-                    if (e.key === "Enter") { e.preventDefault(); doSearch(); }
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        doSearch();
+                    }
                 });
             }
 
@@ -639,7 +661,10 @@
                     link.href = urls[next];
                     localStorage.setItem("handiTheme", next);
 
-                    window.logEvent(2, "theme_change", { from: current, to: next });
+                    window.logEvent(2, "theme_change", {
+                        from: current,
+                        to: next,
+                    });
 
                     // Pop animation for visual feedback
                     btn.classList.add("theme-switched");
@@ -678,13 +703,20 @@
         <script>
             // Page load timing + session info
             (function () {
-                var start = performance.timing ? performance.timing.navigationStart : Date.now();
+                var start = performance.timing
+                    ? performance.timing.navigationStart
+                    : Date.now();
                 window.addEventListener("load", function () {
                     setTimeout(function () {
                         var loadTime = ((Date.now() - start) / 1000).toFixed(2);
-                        var theme = localStorage.getItem("handiTheme") || "senior";
+                        var theme =
+                            localStorage.getItem("handiTheme") || "senior";
                         var lang = localStorage.getItem("handiLang") || "en";
-                        window.logEvent(1, "page_load", { loadTimeSec: loadTime, theme: theme, lang: lang });
+                        window.logEvent(1, "page_load", {
+                            loadTimeSec: loadTime,
+                            theme: theme,
+                            lang: lang,
+                        });
                     }, 500);
                 });
             })();

@@ -58,7 +58,7 @@ export default async function initSupport(container) {
     var linkOpen = linkUrl ? '<a href="' + escapeAttr(linkUrl) + '" target="_blank" rel="noopener">' : "";
     var linkClose = linkUrl ? "</a>" : "";
     html += linkOpen;
-    html += '<img src="' + escapeAttr(imageUrl) + '" alt="' + escapeAttr(imageTitle || "Support") + '" class="support-img" style="max-width:120%;width:120%;height:auto;display:block;margin:0 auto 8px;border-radius:var(--radius);" />';
+    html += '<img src="' + escapeAttr(imageUrl) + '" alt="' + escapeAttr(imageTitle || "Support") + '" class="support-img" style="max-width:80%;width:100%;height:auto;display:block;margin:0 auto 8px;border-radius:var(--radius);" />';
     html += linkClose;
   }
 
@@ -71,7 +71,7 @@ export default async function initSupport(container) {
   }
 
   if (description) {
-    html += '<p class="support-desc" style="margin-top:8px;line-height:1.5;color:var(--text);text-align:left;">' + escapeHtml(description) + "</p>";
+    html += '<p class="support-desc" style="margin-top:8px;line-height:1.5;color:var(--text);text-align:center;">' + escapeHtml(description) + "</p>";
   }
 
   html += "</div>";

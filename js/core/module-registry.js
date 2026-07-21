@@ -115,7 +115,7 @@ window.HANDI_MODULES = [
         desc: "Podcast player",
         tier: "premium",
         defaultEnabled: 0,
-    settingsConfig: { volume: 100, soundLock: false },
+        settingsConfig: { volume: 100, soundLock: false },
   },
 
   {

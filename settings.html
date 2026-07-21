@@ -1644,7 +1644,8 @@
                                     var el = document.getElementById("supportImageTitle");
                                     if (el) {
                                         el.value = settings.support.imageTitle || "";
-                                        if (settings.support.imageUrl) el.dataset.url = settings.support.imageUrl;
+                                        var url = settings.support.imageUrl || "";
+                                        if (url && !url.startsWith("blob:")) el.dataset.url = url;
                                     }
                                     el = document.getElementById("supportLinkUrl");
                                     if (el) el.value = settings.support.linkUrl || "";
@@ -1848,9 +1849,12 @@
                                 settings.emergency_alert.contacts = emergencyContacts;
 
                                 if (!settings.support) settings.support = {};
-                                settings.support.imageUrl =
-                                    document.getElementById("supportImageTitle")?.dataset?.url ||
-                                    settings.support?.imageUrl || "";
+                                var supUrl = document.getElementById("supportImageTitle")?.dataset?.url || "";
+                                // Discard blob: URLs (ephemeral)
+                                if (supUrl && supUrl.startsWith("blob:")) supUrl = "";
+                                if (!supUrl) supUrl = settings.support?.imageUrl || "";
+                                if (supUrl && supUrl.startsWith("blob:")) supUrl = "";
+                                settings.support.imageUrl = supUrl;
                                 settings.support.imageTitle =
                                     document.getElementById("supportImageTitle")?.value || "";
                                 settings.support.linkUrl =
@@ -2357,19 +2361,20 @@
                                                             maxSizeMB: 5,
                                                             onFiles: async function (files) {
                                                                 if (files.length === 0) return;
-                                                                var fr = new FileReader();
-                                                                fr.onload = function () {
+                                                                var f = files[0];
+                                                                var reader = new FileReader();
+                                                                reader.onload = function () {
                                                                     var titleEl = document.getElementById("supportImageTitle");
                                                                     if (titleEl) {
-                                                                        titleEl.dataset.url = fr.result;
+                                                                        titleEl.dataset.url = reader.result;
                                                                     }
                                                                     var statusEl = document.getElementById("supportImageStatus");
                                                                     if (statusEl) {
-                                                                        statusEl.textContent = "✅ " + files[0].name;
+                                                                        statusEl.textContent = "✅ " + f.name;
                                                                         statusEl.style.color = "#16a34a";
                                                                     }
                                                                 };
-                                                                fr.readAsDataURL(files[0]);
+                                                                reader.readAsDataURL(f.file);
                                                             },
                                                             onError: function (msg) {
                                                                 var el = document.getElementById("supportImageStatus");
