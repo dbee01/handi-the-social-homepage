@@ -9,6 +9,10 @@
 ========================================================= */
 .elderlyShow { display: none !important; }
 
+div, p {
+    word-break: break-word;
+}
+
 .phoneCaregiver {
     flex-direction: column;
     gap: 6px;
