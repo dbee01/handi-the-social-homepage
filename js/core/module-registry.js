@@ -145,6 +145,15 @@ window.HANDI_MODULES = [
     defaultEnabled: 2,
     settingsConfig: { contacts: [] },
   },
+  {
+    id: "support",
+    name: "Support",
+    icon: "🤝",
+    desc: "Support link with image and description",
+    tier: "premium",
+    defaultEnabled: 2,
+    settingsConfig: { imageUrl: "", imageTitle: "", linkUrl: "", description: "" },
+  },
 ];
 
 // Helper: get only free modules

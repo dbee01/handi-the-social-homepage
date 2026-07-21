@@ -422,23 +422,23 @@
                     <div class="config-field">
                         <label>Default Country Filter:</label>
                         <select id="radioCountry">
-                            <option value="">— Select country —</option>
-                            <option value="🇮🇪">🇮🇪 Ireland</option>
-                            <option value="🇬🇧">🇬🇧 UK</option>
-                            <option value="🇫🇷">🇫🇷 France</option>
-                            <option value="🇩🇪">🇩🇪 Germany</option>
-                            <option value="🇪🇸">🇪🇸 Spain</option>
-                            <option value="🇮🇹">🇮🇹 Italy</option>
-                            <option value="🇳🇱">🇳🇱 Netherlands</option>
-                            <option value="🇵🇱">🇵🇱 Poland</option>
-                            <option value="🇵🇹">🇵🇹 Portugal</option>
-                            <option value="🇸🇪">🇸🇪 Sweden</option>
-                            <option value="🇳🇴">🇳🇴 Norway</option>
-                            <option value="🇺🇸">🇺🇸 USA</option>
-                            <option value="🇨🇦">🇨🇦 Canada</option>
-                            <option value="🇦🇺">🇦🇺 Australia</option>
-                            <option value="🇳🇿">🇳🇿 New Zealand</option>
-                        </select>
+                                                    <option value="">— Select country —</option>
+                                                    <option value="ie">Ireland</option>
+                                                    <option value="gb">United Kingdom</option>
+                                                    <option value="fr">France</option>
+                                                    <option value="de">Germany</option>
+                                                    <option value="es">Spain</option>
+                                                    <option value="it">Italy</option>
+                                                    <option value="nl">Netherlands</option>
+                                                    <option value="pl">Poland</option>
+                                                    <option value="pt">Portugal</option>
+                                                    <option value="se">Sweden</option>
+                                                    <option value="no">Norway</option>
+                                                    <option value="us">United States</option>
+                                                    <option value="ca">Canada</option>
+                                                    <option value="au">Australia</option>
+                                                    <option value="nz">New Zealand</option>
+                                                </select>
                     </div>
                     <div class="config-field">
                         <label>Default Volume:</label>
@@ -1075,9 +1075,43 @@
                                         module above.</small
                                     >
                                 </div>
-                            </div>
+                                                            </div>
 
-                            <!-- Premium 4: AI -->
+                                                            <!-- Support Module -->
+
+                                                            <div class="module-card" data-module="support">
+                                                                <div class="module-header">
+                                                                    <div class="module-title">
+                                                                        <i class="fa-solid fa-hand-holding-heart"></i>
+                                                                        <h3>Support</h3>
+                                                                        <span style="font-size:0.7rem;background:#f59e0b;padding:2px 8px;border-radius:12px;margin-left:8px;">Premium</span>
+                                                                    </div>
+                                                                    <div class="toggle-switch">
+                                                                        <div class="toggle-slider"></div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="module-config">
+                                                                    <div class="config-field">
+                                                                        <label>Image:</label
+                                                                        ><button id="supportUploadBtn" class="upload-btn"><i class="fa-solid fa-upload"></i> Upload Image</button>
+                                                                        <span id="supportImageStatus" style="font-size:0.8rem;"></span>
+                                                                    </div>
+                                                                    <div class="config-field">
+                                                                        <label>Image Title:</label>
+                                                                        <input type="text" id="supportImageTitle" placeholder="e.g., Our Supporters" />
+                                                                    </div>
+                                                                    <div class="config-field">
+                                                                        <label>Link URL:</label>
+                                                                        <input type="url" id="supportLinkUrl" placeholder="https://example.com" />
+                                                                    </div>
+                                                                    <div class="config-field">
+                                                                        <label>Description (max 300 words):</label>
+                                                                        <textarea id="supportDescription" rows="6" placeholder="Describe the support resource..." style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);font-family:inherit;"></textarea>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Premium 4: AI -->
 
                             <div class="module-card" data-module="llm">
                                 <div class="module-header">
@@ -1600,10 +1634,25 @@
                 }
 
                 // Load click-to-call contacts
-                if (settings.click_to_call?.contacts) {
-                    clickToCallContacts = settings.click_to_call.contacts;
-                    renderClickToCallContacts();
-                }
+                                if (settings.click_to_call?.contacts) {
+                                    clickToCallContacts = settings.click_to_call.contacts;
+                                    renderClickToCallContacts();
+                                }
+
+                                // Load support settings
+                                if (settings.support) {
+                                    var el = document.getElementById("supportImageTitle");
+                                    if (el) {
+                                        el.value = settings.support.imageTitle || "";
+                                        if (settings.support.imageUrl) el.dataset.url = settings.support.imageUrl;
+                                    }
+                                    el = document.getElementById("supportLinkUrl");
+                                    if (el) el.value = settings.support.linkUrl || "";
+                                    el = document.getElementById("supportDescription");
+                                    if (el) el.value = settings.support.description || "";
+                                    el = document.getElementById("supportImageStatus");
+                                    if (el && settings.support.imageUrl) el.textContent = "✅ Image loaded";
+                                }
 
                 // Load radio settings
                 if (settings.radio) {
@@ -1735,8 +1784,8 @@
                                     document.getElementById("castSoundLock")?.value === "true";
 
                                 if (!settings.radio) settings.radio = {};
-                settings.radio.defaultCountry =
-                    document.getElementById("radioCountry")?.value || "";
+                                                settings.radio.defaultCountry =
+                                                    document.getElementById("radioCountry")?.value || "";
                 settings.radio.volume =
                     parseInt(document.getElementById("radioVolume")?.value) ||
                     100;
@@ -1796,9 +1845,20 @@
                     10;
 
                 if (!settings.emergency_alert) settings.emergency_alert = {};
-                settings.emergency_alert.contacts = emergencyContacts;
+                                settings.emergency_alert.contacts = emergencyContacts;
 
-                if (!settings.click_to_call) settings.click_to_call = {};
+                                if (!settings.support) settings.support = {};
+                                settings.support.imageUrl =
+                                    document.getElementById("supportImageTitle")?.dataset?.url ||
+                                    settings.support?.imageUrl || "";
+                                settings.support.imageTitle =
+                                    document.getElementById("supportImageTitle")?.value || "";
+                                settings.support.linkUrl =
+                                    document.getElementById("supportLinkUrl")?.value || "";
+                                settings.support.description =
+                                    document.getElementById("supportDescription")?.value || "";
+
+                                if (!settings.click_to_call) settings.click_to_call = {};
                 settings.click_to_call.contacts = clickToCallContacts;
 
                 // ============================================================
@@ -1921,11 +1981,17 @@
             }
 
             function saveAllSettings() {
-                try {
-                    const settings = collectSettings();
-                    const json = JSON.stringify(settings);
-                    localStorage.setItem("handiSettings", json);
-                } catch (e) {
+                            try {
+                                const settings = collectSettings();
+                                const json = JSON.stringify(settings);
+                                localStorage.setItem("handiSettings", json);
+                                if (settings.news?.rssUrl) {
+                                    localStorage.setItem("handiNewsFeed", settings.news.rssUrl);
+                                }
+                                if (settings.radio?.defaultCountry) {
+                                    localStorage.setItem("handiRadioCountry", settings.radio.defaultCountry);
+                                }
+                            } catch (e) {
                     document.body.insertAdjacentHTML(
                         "beforeend",
                         `<div style="position:fixed;top:0;left:0;right:0;background:red;color:white;padding:20px;z-index:99999;font-size:18px">SAVE ERROR: ${e.name} — ${e.message}</div>`,
@@ -2204,7 +2270,8 @@
                         multiple: true,
                         maxSizeMB: 10,
                         onFiles: async (files) => {
-                            await saveGallery(files);
+                                                    const { saveGallery } = await import("/js/core/storage.js");
+                                                    await saveGallery(files);
                             var el = document.getElementById("galleryStatus");
                             if (el) {
                                 el.textContent = "✅ " + window.t("d_imagesLoaded", files.length + " images loaded");
@@ -2227,7 +2294,8 @@
                         multiple: true,
                         maxSizeMB: 50,
                         onFiles: async (files) => {
-                            await saveMusic(files);
+                                                    const { saveMusic } = await import("/js/core/storage.js");
+                                                    await saveMusic(files);
                             var el = document.getElementById("musicStatus");
                             if (el) {
                                 el.textContent = "✅ " + window.t("d_musicLoaded", files.length + " music files loaded");
@@ -2271,16 +2339,47 @@
                                     multiple: true,
                                     maxSizeMB: 250,
                                     onFiles: async (files) => {
-                                                                            const { saveCast } = await import("/js/core/storage.js");
-                                                                            await saveCast(files);
-                                                                            location.reload();
-                                                                        },
+                                                                                                                                                    const { saveCastFn } = await import("/js/core/storage.js");
+                                                                                                                                                    await saveCastFn(files);
+                                                                                                                                            },
                                     onError: (msg) => alert(msg),
                                 });
                             });
                         }
 
-                        // Mastodon feed type toggle
+                                                // Support image upload
+                                                var supportUploadBtn = document.getElementById("supportUploadBtn");
+                                                if (supportUploadBtn) {
+                                                    supportUploadBtn.addEventListener("click", function () {
+                                                        window.triggerLoad({
+                                                            accept: "image/*",
+                                                            multiple: false,
+                                                            maxSizeMB: 5,
+                                                            onFiles: async function (files) {
+                                                                if (files.length === 0) return;
+                                                                var fr = new FileReader();
+                                                                fr.onload = function () {
+                                                                    var titleEl = document.getElementById("supportImageTitle");
+                                                                    if (titleEl) {
+                                                                        titleEl.dataset.url = fr.result;
+                                                                    }
+                                                                    var statusEl = document.getElementById("supportImageStatus");
+                                                                    if (statusEl) {
+                                                                        statusEl.textContent = "✅ " + files[0].name;
+                                                                        statusEl.style.color = "#16a34a";
+                                                                    }
+                                                                };
+                                                                fr.readAsDataURL(files[0]);
+                                                            },
+                                                            onError: function (msg) {
+                                                                var el = document.getElementById("supportImageStatus");
+                                                                if (el) { el.textContent = "❌ " + msg; el.style.color = "#dc2626"; }
+                                                            },
+                                                        });
+                                                    });
+                                                }
+
+                                                // Mastodon feed type toggle
                                     var mastodonFeeds = document.querySelectorAll('input[name="mastodonFeed"]');
                                     mastodonFeeds.forEach(function(r) {
                                         r.addEventListener("change", function() {

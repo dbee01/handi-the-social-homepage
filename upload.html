@@ -41,7 +41,7 @@
             border-color: #0047cc;
             background: #eaf2ff;
         }
-        .drop-zone i { font-size: 3rem; color: #94a3b8; margin-bottom: 12px; display: block; }
+        .drop-zone i { font-size: 3rem; color: #94a3b8; margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto; }
         .drop-zone p { color: #64748b; }
         .drop-zone .browse { color: #0047cc; font-weight: 700; text-decoration: underline; }
         input[type="file"] { display: none; }
@@ -308,10 +308,17 @@ async function processZip(file) {
                 }
 
                 // Radio feeds
-                if (cfg.radio && cfg.radio.feeds && cfg.radio.feeds.length) {
+                if (cfg.radio) {
                     settings.radio = settings.radio || {};
-                    settings.radio.customFeeds = cfg.radio.feeds;
-                    addLog("Radio feeds: " + cfg.radio.feeds.length, "done");
+                    if (cfg.radio.feeds && cfg.radio.feeds.length) {
+                        settings.radio.customFeeds = cfg.radio.feeds;
+                        addLog("Radio feeds: " + cfg.radio.feeds.length, "done");
+                    }
+                    if (cfg.radio.defaultCountry) {
+                        settings.radio.defaultCountry = cfg.radio.defaultCountry;
+                        localStorage.setItem("handiRadioCountry", cfg.radio.defaultCountry);
+                        addLog("Radio country: " + cfg.radio.defaultCountry, "done");
+                    }
                 }
 
                 // Social / Mastodon
@@ -359,6 +366,30 @@ async function processZip(file) {
                     settings.calendar = settings.calendar || {};
                     settings.calendar.url = cfg.calendar.ics_link;
                     addLog("Calendar ICS saved", "done");
+                }
+
+                // Support
+                if (cfg.support) {
+                    settings.support = settings.support || {};
+                    if (cfg.support.title) {
+                        settings.support.imageTitle = cfg.support.title;
+                    }
+                    if (cfg.support.link) {
+                        settings.support.linkUrl = cfg.support.link;
+                    }
+                    if (cfg.support.description) {
+                        settings.support.description = cfg.support.description;
+                    }
+                    if (cfg.support.image && imageByPath[cfg.support.image]) {
+                        var dataUrl = await new Promise(function(resolve) {
+                            var fr = new FileReader();
+                            fr.onload = function() { resolve(fr.result); };
+                            fr.readAsDataURL(imageByPath[cfg.support.image]);
+                        });
+                        settings.support.imageUrl = dataUrl;
+                        addLog("Support image saved", "done");
+                    }
+                    addLog("Support module configured", "done");
                 }
 
                 // Bus routes

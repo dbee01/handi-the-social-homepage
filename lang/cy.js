@@ -53,6 +53,8 @@ var LANG = {
     live_bus: { name: "Bws Byw", desc: "Amserau bws" },
     emergency_alert: { name: "Lleoliad", desc: "Rhannu" },
     weather: { name: "Tywydd", desc: "Rhagolwg" },
+    task: { name: "Tasks", desc: "To-do list" },
+    support: { name: "Support", desc: "Support links" },
   },
   d_loading: "Wrthi'n llwytho...",
   d_noData: "Dim data.",
@@ -189,6 +191,10 @@ var LANG = {
   d_scheduled: "Amserlen",
   d_due: "Yn cyrraedd",
 
+        // Support
+        d_configureSupport: "Configure in Settings.",
+        d_noSupport: "No support links configured.",
+
   d_customizeDashboard: "Addasu'r Dangosfwrdd",
   d_freeTrial: "✨ Rhowch gynnig ar Premiwm",
   s_settings: "Gosodiadau",
@@ -243,6 +249,12 @@ var LANG = {
   s_locationShare: "Rhannu lleoliad",
   s_locationShareNote:
     "Mae rhannu lleoliad wedi'i ffurfweddu fesul cyswllt yn y modiwl Ffôn",
+  s_support: "Support",
+  s_supportImage: "Image",
+  s_supportLoadImage: "Upload Image",
+  s_supportTitle: "Image Title",
+  s_supportLink: "Link URL",
+  s_supportDesc: "Description (max 300 words)",
   s_calendar: "Calendr",
   s_calendarIcsLink: "Dolen ICS",
   s_notificationTime: "Amser hysbysu",
@@ -262,6 +274,9 @@ var LANG = {
   h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
   h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",
   h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
+
+      h_support:
+        "<strong>🤝 Support</strong><br><br>• Shows an image, title, link, and description for a support resource.",
 
   h_modalTitle: "Cymorth Modiwl",
   h_gotIt: "Iawn",

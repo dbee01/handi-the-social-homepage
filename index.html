@@ -223,6 +223,9 @@
                 <div id="emergency_alert" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
+                <div id="support" class="dashboard-item module">
+                    <div class="module-content"></div>
+                </div>
             </main>
         </div>
 
@@ -301,6 +304,7 @@
                                     import initLlm from "./modules/llm/llm.module.js";
                                     import initBus from "./modules/bus/bus.module.js";
             import initRadio from "./modules/radio/radio.module.js";
+                        import initSupport from "./modules/support/support.module.js";
             import initPhone from "./modules/friendly-phone/friendly-phone.module.js";
 
             import initEmergency from "./modules/emergency/emergency.module.js";
@@ -320,6 +324,7 @@
                 chat: initChat,
                 social: initSocial,
                 radio: initRadio,
+                                support: initSupport,
                 emergency_alert: initEmergency,
             };
 

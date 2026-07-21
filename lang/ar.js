@@ -52,6 +52,8 @@ var LANG = {
     live_bus: { name: "الحافلة", desc: "مواعيد" },
     emergency_alert: { name: "الموقع", desc: "مشاركة" },
     weather: { name: "الطقس", desc: "توقعات" },
+    task: { name: "Tasks", desc: "To-do list" },
+    support: { name: "Support", desc: "Support links" },
   },
   d_loading: "جار التحميل...",
   d_noData: "لا توجد بيانات.",
@@ -188,6 +190,10 @@ var LANG = {
   d_scheduled: "مجدول",
   d_due: "واصل",
 
+        // Support
+        d_configureSupport: "Configure in Settings.",
+        d_noSupport: "No support links configured.",
+
   d_customizeDashboard: "تخصيص لوحة القيادة",
   d_freeTrial: "✨ جرّب بريميوم",
   s_settings: "الإعدادات",
@@ -241,6 +247,12 @@ var LANG = {
   s_add: "إضافة",
   s_locationShare: "مشاركة الموقع",
   s_locationShareNote: "مشاركة الموقع مُعدة لكل جهة اتصال في وحدة الهاتف أعلاه",
+  s_support: "Support",
+  s_supportImage: "Image",
+  s_supportLoadImage: "Upload Image",
+  s_supportTitle: "Image Title",
+  s_supportLink: "Link URL",
+  s_supportDesc: "Description (max 300 words)",
   s_calendar: "التقويم",
   s_calendarIcsLink: "رابط ICS",
   s_notificationTime: "وقت الإشعار",
@@ -260,6 +272,9 @@ var LANG = {
   h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
   h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",
   h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
+
+      h_support:
+        "<strong>🤝 Support</strong><br><br>• Shows an image, title, link, and description for a support resource.",
 
   h_modalTitle: "مساعدة الوحدة",
   h_gotIt: "فهمت",

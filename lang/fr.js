@@ -53,6 +53,8 @@ var LANG = {
     live_bus: { name: "Bus en direct", desc: "Horaires" },
     emergency_alert: { name: "Position", desc: "Partager" },
     weather: { name: "Météo", desc: "Prévisions" },
+    task: { name: "Tasks", desc: "To-do list" },
+    support: { name: "Support", desc: "Support links" },
   },
   d_loading: "Chargement...",
   d_noData: "Aucune donnée.",
@@ -189,6 +191,10 @@ var LANG = {
   d_scheduled: "Prévu",
   d_due: "Imminent",
 
+        // Support
+        d_configureSupport: "Configure in Settings.",
+        d_noSupport: "No support links configured.",
+
   d_customizeDashboard: "Personnaliser le tableau de bord",
   d_freeTrial: "✨ Essayer Premium",
   s_settings: "Paramètres",
@@ -243,6 +249,12 @@ var LANG = {
   s_locationShare: "Partager position",
   s_locationShareNote:
     "Le partage de position est configuré par contact dans le module Téléphone",
+  s_support: "Support",
+  s_supportImage: "Image",
+  s_supportLoadImage: "Upload Image",
+  s_supportTitle: "Image Title",
+  s_supportLink: "Link URL",
+  s_supportDesc: "Description (max 300 words)",
   s_calendar: "Calendrier",
   s_calendarIcsLink: "Lien ICS",
   s_notificationTime: "Heure de notification",
@@ -262,6 +274,9 @@ var LANG = {
   h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
   h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",
   h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
+
+      h_support:
+        "<strong>🤝 Support</strong><br><br>• Shows an image, title, link, and description for a support resource.",
 
   h_modalTitle: "Aide du module",
   h_gotIt: "J'ai compris",

@@ -52,6 +52,8 @@ var LANG = {
     live_bus: { name: "Autocarro", desc: "Horários" },
     emergency_alert: { name: "Localização", desc: "Partilhar" },
     weather: { name: "Tempo", desc: "Previsão" },
+    task: { name: "Tasks", desc: "To-do list" },
+    support: { name: "Support", desc: "Support links" },
   },
   d_loading: "A carregar...",
   d_noData: "Sem dados.",
@@ -188,6 +190,10 @@ var LANG = {
   d_scheduled: "Programado",
   d_due: "Iminente",
 
+        // Support
+        d_configureSupport: "Configure in Settings.",
+        d_noSupport: "No support links configured.",
+
   d_customizeDashboard: "Personalizar painel",
   d_freeTrial: "✨ Experimentar Premium",
   s_settings: "Configurações",
@@ -242,6 +248,12 @@ var LANG = {
   s_locationShare: "Partilhar localização",
   s_locationShareNote:
     "Partilha de localização configurada por contacto no módulo Telefone",
+  s_support: "Support",
+  s_supportImage: "Image",
+  s_supportLoadImage: "Upload Image",
+  s_supportTitle: "Image Title",
+  s_supportLink: "Link URL",
+  s_supportDesc: "Description (max 300 words)",
   s_calendar: "Calendário",
   s_calendarIcsLink: "Link ICS",
   s_notificationTime: "Hora de notificação",
@@ -261,6 +273,9 @@ var LANG = {
   h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
   h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",
   h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
+
+      h_support:
+        "<strong>🤝 Support</strong><br><br>• Shows an image, title, link, and description for a support resource.",
 
   h_modalTitle: "Ajuda do módulo",
   h_gotIt: "Percebi",

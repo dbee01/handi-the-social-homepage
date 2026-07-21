@@ -364,6 +364,16 @@ export default async function initRadio(container) {
       "";
   } catch (e) {}
   var selectedFlag = storedFlag;
+  // If stored as country code, convert to SVG flag
+  if (storedFlag && storedFlag.length === 2 && storedFlag.indexOf("<") === -1) {
+    var codeToName = { ie: "Ireland", gb: "United Kingdom", fr: "France", de: "Germany", es: "Spain", it: "Italy", nl: "Netherlands", pl: "Poland", pt: "Portugal", se: "Sweden", no: "Norway", us: "United States", ca: "Canada", au: "Australia", nz: "New Zealand" };
+    var name = codeToName[storedFlag];
+    if (name) {
+      for (var f in flagToCountry) {
+        if (flagToCountry[f] === name) { selectedFlag = f; break; }
+      }
+    }
+  }
 
   // Build country dropdown (pre-select saved value)
   var countryOptions = '<option value="">' +
@@ -406,7 +416,10 @@ export default async function initRadio(container) {
     countryBtns.forEach(function (btn) {
       btn.addEventListener("click", function () {
         selectedFlag = this.getAttribute("data-flag");
-        try { localStorage.setItem("handiRadioCountry", selectedFlag); } catch (e) {}
+                // Store country code instead of SVG
+                var cName = flagToCountry[selectedFlag] || "";
+                var nameToCode = { Ireland: "ie", "United Kingdom": "gb", France: "fr", Germany: "de", Spain: "es", Italy: "it", Netherlands: "nl", Poland: "pl", Portugal: "pt", Sweden: "se", Norway: "no", "United States": "us", Canada: "ca", Australia: "au", "New Zealand": "nz" };
+                try { localStorage.setItem("handiRadioCountry", nameToCode[cName] || ""); } catch (e) {}
         stopPlayback(true);
         renderStations();
         countryBtns.forEach(function (b) { b.classList.remove("active"); b.style.background = ""; });

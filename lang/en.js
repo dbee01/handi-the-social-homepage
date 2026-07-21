@@ -70,6 +70,8 @@ var LANG = {
     live_bus: { name: "Live Bus", desc: "Bus times" },
     emergency_alert: { name: "Location", desc: "Share location" },
     weather: { name: "Weather", desc: "Forecast" },
+    task: { name: "Tasks", desc: "To-do list" },
+    support: { name: "Support", desc: "Support links" },
   },
 
   // Dashboard component strings
@@ -267,7 +269,11 @@ var LANG = {
       d_noCast: "Load your podcasts here",
         d_loadCast: "Load Podcasts",
         d_castLoadFailed: "Failed to load podcast library.",
-        d_castStorageBlocked: 'Your browser blocks storage. Check Firefox settings → Privacy → make sure "Never remember history" is OFF.',
+                d_castStorageBlocked: 'Your browser blocks storage. Check Firefox settings → Privacy → make sure "Never remember history" is OFF.',
+
+                // Support
+                d_configureSupport: "Configure in Settings.",
+                d_noSupport: "No support links configured.",
 
         // Weather
   d_weatherDisabled: "Weather module disabled.",
@@ -350,7 +356,13 @@ var LANG = {
   s_add: "Add",
   s_locationShare: "Location Share",
   s_locationShareNote:
-    "Location sharing is configured per contact in the Phone module above",
+      "Location sharing is configured per contact in the Phone module above",
+    s_support: "Support",
+    s_supportImage: "Image",
+    s_supportLoadImage: "Upload Image",
+    s_supportTitle: "Image Title",
+    s_supportLink: "Link URL",
+    s_supportDesc: "Description (max 300 words)",
   s_calendar: "Calendar",
   s_calendarIcsLink: "Calendar ICS Link",
   s_notificationTime: "Notification time",
@@ -387,7 +399,10 @@ var LANG = {
         "<strong>📋 Tasks</strong><br><br>• Create tasks with titles, descriptions, and colour labels.<br>• Add subtasks within each task.<br>• Check off completed tasks to remove them.<br>• Use the ✎ icon to edit a task, ✖ to delete.<br>• Deleted tasks can be undone for 5 seconds.<br>• All data is saved locally in your browser.",
 
       h_cast:
-        "<strong>🎙️ Cast (Podcasts)</strong><br><br>• Upload podcast audio files (250MB limit per file).<br>• Use the lock icon to unlock, then click a track to play.<br>• Use ⏮ ⏭ buttons to navigate between tracks.<br>• The visualiser animates while playing.<br>• Podcasts are stored locally in your browser.",
+              "<strong>🎙️ Cast (Podcasts)</strong><br><br>• Upload podcast audio files (250MB limit per file).<br>• Use the lock icon to unlock, then click a track to play.<br>• Use ⏮ ⏭ buttons to navigate between tracks.<br>• The visualiser animates while playing.<br>• Podcasts are stored locally in your browser.",
+
+            h_support:
+              "<strong>🤝 Support</strong><br><br>• Shows an image, title, link, and description for a support resource.<br>• Configure in <strong>Settings → Support</strong>.<br>• Upload an image (stored as data URL).<br>• Add a title, external URL link, and up to 300-word description.<br>• All data is saved locally in your browser.",
 
     h_modalTitle: "Module Help",
   h_gotIt: "Got it",

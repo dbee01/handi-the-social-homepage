@@ -15,6 +15,7 @@ import initEmergency from "./modules/emergency/emergency.module.js";
 import initBus from "./modules/bus/bus.module.js";
 import initGallery from "./modules/gallery/gallery.module.js";
 import initRadio from "./modules/radio/radio.module.js";
+import initSupport from "./modules/support/support.module.js";
 import initLocalPlayer from "./modules/local-player/local-player.module.js";
 import initFriendlyPhone from "./modules/friendly-phone/friendly-phone.module.js";
 import initLayoutSystem from "./modules/ui/layout-system.js";
@@ -29,7 +30,8 @@ const moduleInits = {
   'bus': initBus,
   'friendly-phone': initFriendlyPhone,
   'radio': initRadio,
-  'news': initNews,
+    'support': initSupport,
+    'news': initNews,
   'mastodon': initMastodon
 };
 
