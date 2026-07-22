@@ -84,16 +84,23 @@
                     link.href = cssUrl;
                     document.head.appendChild(link);
 
+                    // Apply background image data URL from pack upload
+                    var bgUrl = localStorage.getItem("handiBgDataUrl");
+
                     // Inject custom :root variable overrides
                     if (customCss) {
+                        // If a data-URL background is available, strip --bg-image from the
+                        // custom CSS to avoid 404s from relative URLs (they resolve against
+                        // site-pack.css's location, e.g. img/foo.png → /css/img/foo.png).
+                        var cleanedCss = bgUrl
+                            ? customCss.replace(/--bg-image\s*:\s*[^;]+;?\s*/g, "")
+                            : customCss;
                         var style = document.createElement("style");
                         style.id = "custom-theme";
-                        style.textContent = customCss;
+                        style.textContent = cleanedCss;
                         document.head.appendChild(style);
                     }
 
-                    // Apply background image data URL from pack upload
-                    var bgUrl = localStorage.getItem("handiBgDataUrl");
                     if (bgUrl) {
                         var bgStyle = document.createElement("style");
                         bgStyle.textContent =

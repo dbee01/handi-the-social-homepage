@@ -130,7 +130,6 @@ function buildThemeCss(cfg) {
     if (!cfg.theme || !cfg.theme.colors) return null;
     var c = cfg.theme.colors;
     var f = cfg.theme.fonts || {};
-    var bgImg = cfg.theme.background || "";
     var css = ":root {\n";
     if (c.primary) {
         css += "  --primary: " + c.primary + ";\n";
@@ -140,11 +139,26 @@ function buildThemeCss(cfg) {
     if (c.secondary) css += "  --secondary: " + c.secondary + ";\n";
     if (c.tertiary)  css += "  --tertiary: " + c.tertiary + ";\n";
     if (c.background) css += "  --bg: " + c.background + ";\n  --surface: " + c.background + ";\n";
-    if (bgImg) css += "  --bg-image: url(" + bgImg + ");\n";
+    // --bg-image is handled separately via handiBgDataUrl (data URL), so omit it here
+    // to avoid 404s from relative URLs resolving against site-pack.css location.
     if (f.text)   css += "  --text-font: " + f.text + ";\n";
     if (f.header) css += "  --header-font: " + f.header + ";\n";
     css += "}\n";
     return css;
+}
+
+/** Detect whether a file path points to a video based on extension. */
+function detectMediaTypeFromPath(path) {
+    if (!path) return "image";
+    if (/\.(mp4|webm|ogg|ogv|mov|avi|mkv)$/i.test(path)) return "video";
+    return "image";
+}
+
+/** Detect media type from a data URI. */
+function detectMediaTypeFromDataUri(uri) {
+    if (!uri) return "image";
+    if (uri.startsWith("data:video/")) return "video";
+    return "image";
 }
 
 async function processZip(file) {
@@ -256,15 +270,36 @@ async function processZip(file) {
                 }
 
                 // Convert background image to data URL for dashboard
+                var bgDataUrl = null;
                 var bgPath = cfg.theme?.background;
                 if (bgPath && imageByPath[bgPath]) {
-                    var dataUrl = await new Promise(function(resolve) {
+                    bgDataUrl = await new Promise(function(resolve) {
                         var fr = new FileReader();
                         fr.onload = function() { resolve(fr.result); };
                         fr.readAsDataURL(imageByPath[bgPath]);
                     });
-                    localStorage.setItem("handiBgDataUrl", dataUrl);
+                    localStorage.setItem("handiBgDataUrl", bgDataUrl);
                     addLog("Background image saved for dashboard", "done");
+                }
+
+                // Strip background-image references from stored theme CSS now that
+                // we have a data URL. Relative URLs in custom properties resolve
+                // against the stylesheet where var() is *used* (site-pack.css at /css/),
+                // causing 404s (e.g. img/foo.png → /css/img/foo.png).
+                if (bgDataUrl) {
+                    var storedCss = localStorage.getItem("handiCustomTheme");
+                    if (storedCss) {
+                        // Remove any --bg-image declaration
+                        storedCss = storedCss.replace(/--bg-image\s*:\s*[^;]+;?\s*/g, "");
+                        // Remove direct background-image / background that reference
+                        // the same relative image path (only if it matches bgPath)
+                        if (bgPath) {
+                            var escapedPath = bgPath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                            var bgRe = new RegExp("(background(?:-image)?)\\s*:\\s*url\\([\"']?" + escapedPath + "[\"']?\\)\\s*(!important)?\\s*;?", "gi");
+                            storedCss = storedCss.replace(bgRe, "");
+                        }
+                        localStorage.setItem("handiCustomTheme", storedCss);
+                    }
                 }
 
                 // Enable modules from elements list (write to MMR, not settings.enabledModules)
@@ -371,23 +406,34 @@ async function processZip(file) {
                 // Support
                 if (cfg.support) {
                     settings.support = settings.support || {};
-                    if (cfg.support.title) {
-                        settings.support.imageTitle = cfg.support.title;
+                    // Accept both short keys (title/link) and full keys (imageTitle/linkUrl)
+                    if (cfg.support.title || cfg.support.imageTitle) {
+                        settings.support.imageTitle = cfg.support.title || cfg.support.imageTitle;
                     }
-                    if (cfg.support.link) {
-                        settings.support.linkUrl = cfg.support.link;
+                    if (cfg.support.link || cfg.support.linkUrl) {
+                        settings.support.linkUrl = cfg.support.link || cfg.support.linkUrl;
                     }
                     if (cfg.support.description) {
                         settings.support.description = cfg.support.description;
                     }
-                    if (cfg.support.image && imageByPath[cfg.support.image]) {
-                        var dataUrl = await new Promise(function(resolve) {
+                    // Look up media by path (image, video, or generic "media" key);
+                    // also accept if value is already a data URL
+                    var supMediaPath = cfg.support.image || cfg.support.imageUrl || cfg.support.media || "";
+                    if (supMediaPath && imageByPath[supMediaPath]) {
+                        var supDataUrl = await new Promise(function(resolve) {
                             var fr = new FileReader();
                             fr.onload = function() { resolve(fr.result); };
-                            fr.readAsDataURL(imageByPath[cfg.support.image]);
+                            fr.readAsDataURL(imageByPath[supMediaPath]);
                         });
-                        settings.support.imageUrl = dataUrl;
-                        addLog("Support image saved", "done");
+                        settings.support.imageUrl = supDataUrl;
+                        settings.support.mediaType = detectMediaTypeFromPath(supMediaPath);
+                        var label = settings.support.mediaType === "video" ? "video" : "image";
+                        addLog("Support " + label + " saved", "done");
+                    } else if (cfg.support.imageUrl && cfg.support.imageUrl.startsWith("data:")) {
+                        // Already a data URL – use directly
+                        settings.support.imageUrl = cfg.support.imageUrl;
+                        settings.support.mediaType = cfg.support.mediaType || detectMediaTypeFromDataUri(cfg.support.imageUrl);
+                        addLog("Support media (inline) saved", "done");
                     }
                     addLog("Support module configured", "done");
                 }

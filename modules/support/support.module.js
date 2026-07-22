@@ -5,7 +5,7 @@
  */
 
 // modules/support/support.module.js
-// Support module — single image card with external link and description.
+// Support module — image or video card with external link and description.
 import { loadSettings } from "../../js/core/settings.js";
 
 export default async function initSupport(container) {
@@ -37,12 +37,13 @@ export default async function initSupport(container) {
   const settings = loadSettings();
   const cfg = settings.support || {};
 
-  const imageUrl = cfg.imageUrl || "";
-  const imageTitle = cfg.imageTitle || "";
+  const mediaUrl = cfg.imageUrl || "";
+  const mediaTitle = cfg.imageTitle || "";
   const linkUrl = cfg.linkUrl || "";
   const description = cfg.description || "";
+  const mediaType = cfg.mediaType || detectMediaType(mediaUrl);
 
-  if (!imageUrl && !linkUrl && !description) {
+  if (!mediaUrl && !linkUrl && !description) {
     content.innerHTML = `
       <div class="module-empty">
         <i class="fa-solid fa-hand-holding-heart"></i>
@@ -54,16 +55,24 @@ export default async function initSupport(container) {
 
   var html = '<div class="support-card" style="text-align:center;">';
 
-  if (imageUrl) {
+  if (mediaUrl) {
     var linkOpen = linkUrl ? '<a href="' + escapeAttr(linkUrl) + '" target="_blank" rel="noopener">' : "";
     var linkClose = linkUrl ? "</a>" : "";
     html += linkOpen;
-    html += '<img src="' + escapeAttr(imageUrl) + '" alt="' + escapeAttr(imageTitle || "Support") + '" class="support-img" style="max-width:80%;width:100%;height:auto;display:block;margin:0 auto 8px;border-radius:var(--radius);" />';
+
+    if (mediaType === "video") {
+      html += '<video src="' + escapeAttr(mediaUrl) + '" controls playsinline ' +
+        'style="max-width:80%;width:100%;height:auto;display:block;margin:0 auto 8px;border-radius:var(--radius);" ' +
+        'poster="' + escapeAttr(mediaUrl) + '#t=0.1"></video>';
+    } else {
+      html += '<img src="' + escapeAttr(mediaUrl) + '" alt="' + escapeAttr(mediaTitle || "Support") + '" class="support-img" style="max-width:80%;width:100%;height:auto;display:block;margin:0 auto 8px;border-radius:var(--radius);" />';
+    }
+
     html += linkClose;
   }
 
-  if (imageTitle) {
-    html += '<h3 class="support-title" style="margin:4px 0;font-family:var(--header-font);font-size:1.2rem;">' + escapeHtml(imageTitle) + "</h3>";
+  if (mediaTitle) {
+    html += '<h3 class="support-title" style="margin:4px 0;font-family:var(--header-font);font-size:1.2rem;">' + escapeHtml(mediaTitle) + "</h3>";
   }
 
   if (linkUrl) {
@@ -77,6 +86,17 @@ export default async function initSupport(container) {
   html += "</div>";
 
   content.innerHTML = html;
+}
+
+/** Auto-detect whether a URL points to a video or image. */
+function detectMediaType(url) {
+  if (!url) return "image";
+  // data URI
+  if (url.startsWith("data:video/")) return "video";
+  if (url.startsWith("data:image/")) return "image";
+  // common video extensions
+  if (/\.(mp4|webm|ogg|ogv|mov|avi|mkv)(\?.*)?$/i.test(url)) return "video";
+  return "image";
 }
 
 function escapeHtml(str) {

@@ -1092,12 +1092,12 @@
                                                                 </div>
                                                                 <div class="module-config">
                                                                     <div class="config-field">
-                                                                        <label>Image:</label
-                                                                        ><button id="supportUploadBtn" class="upload-btn"><i class="fa-solid fa-upload"></i> Upload Image</button>
+                                                                        <label>Image / Video:</label
+                                                                        ><button id="supportUploadBtn" class="upload-btn"><i class="fa-solid fa-upload"></i> Load Media</button>
                                                                         <span id="supportImageStatus" style="font-size:0.8rem;"></span>
                                                                     </div>
                                                                     <div class="config-field">
-                                                                        <label>Image Title:</label>
+                                                                        <label>Title:</label>
                                                                         <input type="text" id="supportImageTitle" placeholder="e.g., Our Supporters" />
                                                                     </div>
                                                                     <div class="config-field">
@@ -1646,13 +1646,17 @@
                                         el.value = settings.support.imageTitle || "";
                                         var url = settings.support.imageUrl || "";
                                         if (url && !url.startsWith("blob:")) el.dataset.url = url;
+                                        el.dataset.mediaType = settings.support.mediaType || "";
                                     }
                                     el = document.getElementById("supportLinkUrl");
                                     if (el) el.value = settings.support.linkUrl || "";
                                     el = document.getElementById("supportDescription");
                                     if (el) el.value = settings.support.description || "";
                                     el = document.getElementById("supportImageStatus");
-                                    if (el && settings.support.imageUrl) el.textContent = "✅ Image loaded";
+                                    if (el && settings.support.imageUrl) {
+                                        var mt = settings.support.mediaType === "video" ? "🎬 Video" : "🖼️ Image";
+                                        el.textContent = "✅ " + mt + " loaded";
+                                    }
                                 }
 
                 // Load radio settings
@@ -1850,11 +1854,13 @@
 
                                 if (!settings.support) settings.support = {};
                                 var supUrl = document.getElementById("supportImageTitle")?.dataset?.url || "";
+                                var supMediaType = document.getElementById("supportImageTitle")?.dataset?.mediaType || "";
                                 // Discard blob: URLs (ephemeral)
                                 if (supUrl && supUrl.startsWith("blob:")) supUrl = "";
                                 if (!supUrl) supUrl = settings.support?.imageUrl || "";
                                 if (supUrl && supUrl.startsWith("blob:")) supUrl = "";
                                 settings.support.imageUrl = supUrl;
+                                settings.support.mediaType = supMediaType || detectSupportMediaType(supUrl);
                                 settings.support.imageTitle =
                                     document.getElementById("supportImageTitle")?.value || "";
                                 settings.support.linkUrl =
@@ -2252,6 +2258,15 @@
                 );
             }
 
+            /** Auto-detect whether a data URL or URL points to a video or image. */
+            function detectSupportMediaType(url) {
+                if (!url) return "image";
+                if (url.startsWith("data:video/")) return "video";
+                if (url.startsWith("data:image/")) return "image";
+                if (/\.(mp4|webm|ogg|ogv|mov|avi|mkv)(\?.*)?$/i.test(url)) return "video";
+                return "image";
+            }
+
             // ============================================================
             // RADIO VOLUME SLIDER
             // ============================================================
@@ -2351,26 +2366,28 @@
                             });
                         }
 
-                                                // Support image upload
+                                                // Support media upload (image or video)
                                                 var supportUploadBtn = document.getElementById("supportUploadBtn");
                                                 if (supportUploadBtn) {
                                                     supportUploadBtn.addEventListener("click", function () {
                                                         window.triggerLoad({
-                                                            accept: "image/*",
+                                                            accept: "image/*,video/*",
                                                             multiple: false,
-                                                            maxSizeMB: 5,
+                                                            maxSizeMB: 20,
                                                             onFiles: async function (files) {
                                                                 if (files.length === 0) return;
                                                                 var f = files[0];
+                                                                var isVideo = f.file.type.startsWith("video/");
                                                                 var reader = new FileReader();
                                                                 reader.onload = function () {
                                                                     var titleEl = document.getElementById("supportImageTitle");
                                                                     if (titleEl) {
                                                                         titleEl.dataset.url = reader.result;
+                                                                        titleEl.dataset.mediaType = isVideo ? "video" : "image";
                                                                     }
                                                                     var statusEl = document.getElementById("supportImageStatus");
                                                                     if (statusEl) {
-                                                                        statusEl.textContent = "✅ " + f.name;
+                                                                        statusEl.textContent = "✅ " + (isVideo ? "🎬 " : "🖼️ ") + f.name;
                                                                         statusEl.style.color = "#16a34a";
                                                                     }
                                                                 };
