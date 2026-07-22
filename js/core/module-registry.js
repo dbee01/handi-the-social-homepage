@@ -142,7 +142,7 @@ window.HANDI_MODULES = [
     icon: "📍",
     desc: "Share location",
     tier: "premium",
-    defaultEnabled: 2,
+    defaultEnabled: 3,
     settingsConfig: { contacts: [] },
   },
   {
