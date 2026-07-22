@@ -1,4 +1,4 @@
-const CACHE = "ple-v12";
+const CACHE = "ple-v13";
 
 // Check for updates every 24 hours
 const UPDATE_INTERVAL = 24 * 60 * 60 * 1000;
