@@ -50,18 +50,28 @@ export async function saveMusic(files) {
     });
 }
 
+let _musicBlobUrls = [];
+
 export async function loadMusic() {
+    // Revoke previously created blob URLs to avoid memory leaks on constrained devices
+    _musicBlobUrls.forEach(function (u) { try { URL.revokeObjectURL(u); } catch (e) {} });
+    _musicBlobUrls = [];
+
     const database = await initDB();
     return new Promise((resolve) => {
         const tx = database.transaction(['music'], 'readonly');
         const store = tx.objectStore('music');
         const req = store.getAll();
         req.onsuccess = () => {
-            const files = req.result.map(f => ({
-                name: f.name,
-                file: f.file,
-                url: URL.createObjectURL(f.file)
-            }));
+            const files = req.result.map(f => {
+                var u = URL.createObjectURL(f.file);
+                _musicBlobUrls.push(u);
+                return {
+                    name: f.name,
+                    file: f.file,
+                    url: u
+                };
+            });
             resolve(files);
         };
         req.onerror = () => resolve([]);
@@ -82,18 +92,27 @@ export async function saveGallery(images) {
     });
 }
 
+let _galleryBlobUrls = [];
+
 export async function loadGallery() {
+    _galleryBlobUrls.forEach(function (u) { try { URL.revokeObjectURL(u); } catch (e) {} });
+    _galleryBlobUrls = [];
+
     const database = await initDB();
     return new Promise((resolve) => {
         const tx = database.transaction(['gallery'], 'readonly');
         const store = tx.objectStore('gallery');
         const req = store.getAll();
         req.onsuccess = () => {
-            const images = req.result.map(img => ({
-                name: img.name,
-                file: img.file,
-                url: URL.createObjectURL(img.file)
-            }));
+            const images = req.result.map(img => {
+                var u = URL.createObjectURL(img.file);
+                _galleryBlobUrls.push(u);
+                return {
+                    name: img.name,
+                    file: img.file,
+                    url: u
+                };
+            });
             resolve(images);
         };
         req.onerror = () => resolve([]);
@@ -114,18 +133,27 @@ export async function loadGallery() {
             });
         }
 
+let _castBlobUrls = [];
+
         export async function loadCastFn() {
+            _castBlobUrls.forEach(function (u) { try { URL.revokeObjectURL(u); } catch (e) {} });
+            _castBlobUrls = [];
+
             const database = await initDB();
             return new Promise((resolve) => {
                 const tx = database.transaction(['audiopod'], 'readonly');
                 const store = tx.objectStore('audiopod');
                 const req = store.getAll();
                 req.onsuccess = () => {
-                    const files = req.result.map(f => ({
-                        name: f.name,
-                        file: f.file,
-                        url: URL.createObjectURL(f.file)
-                    }));
+                    const files = req.result.map(f => {
+                        var u = URL.createObjectURL(f.file);
+                        _castBlobUrls.push(u);
+                        return {
+                            name: f.name,
+                            file: f.file,
+                            url: u
+                        };
+                    });
                     resolve(files);
                 };
                 req.onerror = () => resolve([]);

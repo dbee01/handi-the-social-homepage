@@ -123,18 +123,75 @@ export default async function initMusic(container) {
     return;
   }
 
-  var currentAudio = null,
-    currentIndex = -1,
-    isPlaying = false,
-    stopVisualiser = null;
+  	var currentAudio = null,
+    		currentIndex = -1,
+    		isPlaying = false,
+    		stopVisualiser = null,
+    		pendingAutoPlayIndex = -1;
 
-  function applyGlobalMute(muted) {
-    if (currentAudio) currentAudio.muted = muted;
-  }
-  window.addEventListener("globalMuteToggle", function (e) {
-    applyGlobalMute(e.detail.muted);
-  });
-  applyGlobalMute(localStorage.getItem("globalMute") === "true");
+    	// Reuse a single Audio element for the lifetime of this module instance.
+    	// Keeping one element alive helps mobile browsers maintain the autoplay grant
+    	// so that onended -> playNext() is more likely to succeed.
+    	var sharedAudio = document.createElement("audio");
+    	sharedAudio.preload = "auto";
+    	sharedAudio.setAttribute("playsinline", "");
+    	sharedAudio.setAttribute("webkit-playsinline", "");
+    	sharedAudio.volume = 1.0;
+
+    	sharedAudio.addEventListener("waiting", function () {
+    		if (currentAudio === sharedAudio && isPlaying) {
+    			stateSpan.innerText = " | " + t("d_buffering", "Buffering…");
+    		}
+    	});
+    	sharedAudio.addEventListener("canplay", function () {
+    		if (currentAudio === sharedAudio && isPlaying) {
+    			stateSpan.innerText = " | " + t("d_playing", "...playing");
+    		}
+    	});
+    	sharedAudio.addEventListener("stalled", function () {
+    		if (currentAudio === sharedAudio && isPlaying) {
+    			stateSpan.innerText = " | " + t("d_buffering", "Buffering…");
+    		}
+    	});
+    	sharedAudio.addEventListener("error", function (e) {
+    		var err = sharedAudio.error,
+    			em = t("d_cannotPlayFile", "Cannot play file");
+    		if (err) {
+    			switch (err.code) {
+    				case MediaError.MEDIA_ERR_ABORTED:
+    					em = t("d_playbackAborted", "Playback aborted");
+    					break;
+    				case MediaError.MEDIA_ERR_NETWORK:
+    					em = t("d_networkError", "Network error");
+    					break;
+    				case MediaError.MEDIA_ERR_DECODE:
+    					em = t("d_fileCorrupted", "File corrupted or unsupported format");
+    					break;
+    				case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+    					em = t("d_formatNotSupported", "Format not supported");
+    					break;
+    				default:
+    					em = t("d_unknownError", "Unknown error");
+    			}
+    		}
+    		showError(em);
+    		isPlaying = false;
+    		playPauseBtn.innerHTML = "▶";
+    		updateTrackIconsAndActive();
+    	});
+    	sharedAudio.addEventListener("ended", function () {
+    		// onended: try to auto-advance.  If the browser blocks it
+    		// (autoplay policy), the catch path will set up a prompt.
+    		playNext();
+    	});
+
+  	function applyGlobalMute(muted) {
+  		sharedAudio.muted = muted;
+  	}
+  	window.addEventListener("globalMuteToggle", function (e) {
+  		applyGlobalMute(e.detail.muted);
+  	});
+  	applyGlobalMute(localStorage.getItem("globalMute") === "true");
 
   content.innerHTML =
     '<div class="music-now-playing"><canvas id="music-synth" class="music-synth"></canvas><div id="music-status" class="music-status"><span id="music-track-title">—</span><span class="music-state-text">' +
@@ -233,15 +290,10 @@ export default async function initMusic(container) {
   }
 
   function stopCurrentAudio(keepIndex) {
-    if (currentAudio) {
-      try {
-        currentAudio.pause();
-      } catch (e) {}
-      try {
-        currentAudio.src = "";
-      } catch (e) {}
-      currentAudio = null;
-    }
+    try { sharedAudio.pause(); } catch (e) {}
+    try { sharedAudio.removeAttribute("src"); sharedAudio.load(); } catch (e) {}
+    currentAudio = null;
+    pendingAutoPlayIndex = -1;
     stopVisualiserAndClear();
     if (!keepIndex) {
       currentIndex = -1;
@@ -274,57 +326,45 @@ export default async function initMusic(container) {
     }
     if (index < 0 || index >= tracks.length) return;
     if (currentAudio && currentIndex === index && isPlaying) return;
-    if (currentAudio) stopCurrentAudio(true);
+
+    // Stop any previous playback on the shared element
+    try { sharedAudio.pause(); } catch (e) {}
     currentIndex = index;
+    pendingAutoPlayIndex = -1;
     var track = tracks[currentIndex];
     trackTitleSpan.innerText = removeFileExtension(track.name);
+
     try {
-      var audio = document.createElement("audio");
-      audio.src = track.url;
-      audio.volume = 1.0;
-      audio.muted = localStorage.getItem("globalMute") === "true";
-      currentAudio = audio;
-      audio.addEventListener("error", function (e) {
-        var err = currentAudio.error,
-          em = t("d_cannotPlayFile", "Cannot play file");
-        if (err) {
-          switch (err.code) {
-            case MediaError.MEDIA_ERR_ABORTED:
-              em = t("d_playbackAborted", "Playback aborted");
-              break;
-            case MediaError.MEDIA_ERR_NETWORK:
-              em = t("d_networkError", "Network error");
-              break;
-            case MediaError.MEDIA_ERR_DECODE:
-              em = t("d_fileCorrupted", "File corrupted or unsupported format");
-              break;
-            case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-              em = t("d_formatNotSupported", "Format not supported");
-              break;
-            default:
-              em = t("d_unknownError", "Unknown error");
-          }
-        }
-        showError(em);
-        isPlaying = false;
-        playPauseBtn.innerHTML = "▶";
-        updateTrackIconsAndActive();
-      });
+      sharedAudio.src = track.url;
+      sharedAudio.muted = localStorage.getItem("globalMute") === "true";
+      sharedAudio.load();
+      currentAudio = sharedAudio;
+
       if (autoPlay) {
-        var pp = audio.play();
+        var pp = sharedAudio.play();
         if (pp !== undefined) {
           pp.then(function () {
-                      isPlaying = true;
-                      playPauseBtn.innerHTML = "⏸";
-                      stateSpan.innerText = t("d_playing", "...playing");
-                      updateTrackIconsAndActive();
-                      ensureVisualiserRunning();
-                    }).catch(function (err) {
-                      showError(t("d_cannotPlayFile", "Cannot play file"));
-                      isPlaying = false;
-                      playPauseBtn.innerHTML = "▶";
-                      updateTrackIconsAndActive();
-                    });
+            isPlaying = true;
+            playPauseBtn.innerHTML = "⏸";
+            stateSpan.innerText = " | " + t("d_playing", "...playing");
+            updateTrackIconsAndActive();
+            ensureVisualiserRunning();
+          }).catch(function (err) {
+            // If autoplay was blocked (common on mobile when not in a user gesture),
+            // set up a pending state that the user can resume with a tap.
+            if (err && err.name === "NotAllowedError") {
+              pendingAutoPlayIndex = index;
+              isPlaying = false;
+              playPauseBtn.innerHTML = "▶";
+              stateSpan.innerText = " | " + t("d_tapToPlay", "Tap ▶ to play");
+              updateTrackIconsAndActive();
+            } else {
+              showError(t("d_cannotPlayFile", "Cannot play file"));
+              isPlaying = false;
+              playPauseBtn.innerHTML = "▶";
+              updateTrackIconsAndActive();
+            }
+          });
         }
       } else {
         isPlaying = false;
@@ -332,9 +372,6 @@ export default async function initMusic(container) {
         stateSpan.innerText = " | " + t("d_paused", "Paused");
         updateTrackIconsAndActive();
       }
-      audio.onended = function () {
-        playNext();
-      };
     } catch (err) {
       showError(t("d_invalidFile", "Invalid file"));
       isPlaying = false;
@@ -351,6 +388,7 @@ export default async function initMusic(container) {
       return;
     }
     var ni = (currentIndex + 1) % tracks.length;
+    pendingAutoPlayIndex = -1;
     playTrack(ni, true);
   }
   function playPrev() {
@@ -359,6 +397,7 @@ export default async function initMusic(container) {
       return;
     }
     var pi = (currentIndex - 1 + tracks.length) % tracks.length;
+    pendingAutoPlayIndex = -1;
     playTrack(pi, true);
   }
 
@@ -367,29 +406,35 @@ export default async function initMusic(container) {
       showError(t("d_playerLocked", "Player locked – unlock to play"));
       return;
     }
+    // If we have a pending auto-play track that was blocked, play it now
+    // (this call is from a user gesture, so it will succeed)
+    if (pendingAutoPlayIndex !== -1) {
+      playTrack(pendingAutoPlayIndex, true);
+      return;
+    }
     if (currentIndex === -1 || !currentAudio) {
       playTrack(0, true);
       return;
     }
     if (isPlaying) {
-          currentAudio.pause();
-          isPlaying = false;
-          playPauseBtn.innerHTML = "▶";
-          stateSpan.innerText = " | " + t("d_paused", "...paused");
-          updateTrackIconsAndActive();
-          stopVisualiserAndClear();
-              } else {
-      var pp = currentAudio.play();
+      sharedAudio.pause();
+      isPlaying = false;
+      playPauseBtn.innerHTML = "▶";
+      stateSpan.innerText = " | " + t("d_paused", "...paused");
+      updateTrackIconsAndActive();
+      stopVisualiserAndClear();
+    } else {
+      var pp = sharedAudio.play();
       if (pp !== undefined) {
         pp.then(function () {
-                  isPlaying = true;
-                  playPauseBtn.innerHTML = "⏸";
-                  stateSpan.innerText = " | " + t("d_playing", "...playing");
-                  updateTrackIconsAndActive();
-                  ensureVisualiserRunning();
-                }).catch(function (err) {
-                  showError(t("d_cannotResume", "Cannot resume"));
-                });
+          isPlaying = true;
+          playPauseBtn.innerHTML = "⏸";
+          stateSpan.innerText = " | " + t("d_playing", "...playing");
+          updateTrackIconsAndActive();
+          ensureVisualiserRunning();
+        }).catch(function (err) {
+          showError(t("d_cannotResume", "Cannot resume"));
+        });
       }
     }
   }
@@ -399,6 +444,7 @@ export default async function initMusic(container) {
       showError(t("d_playerLocked", "Player locked – unlock to play"));
       return;
     }
+    pendingAutoPlayIndex = -1;
     if (index === currentIndex && currentAudio) togglePlayPause();
     else playTrack(index, true);
   }
@@ -487,15 +533,11 @@ export default async function initMusic(container) {
   applyLockState();
 
   return function () {
-    if (currentAudio) {
-      try {
-        currentAudio.pause();
-      } catch (e) {}
-      try {
-        currentAudio.src = "";
-      } catch (e) {}
-      currentAudio = null;
-    }
+    try { sharedAudio.pause(); } catch (e) {}
+    try { sharedAudio.removeAttribute("src"); sharedAudio.load(); } catch (e) {}
+    currentAudio = null;
+    // Revoke the shared audio element so it can be GC'd
+    sharedAudio = null;
     stopVisualiserAndClear();
   };
 }
