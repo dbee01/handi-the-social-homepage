@@ -435,3 +435,9 @@
 {"ts":"2026-07-21T13:56:42.222Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smrrnrhwhglkdq2"}
 {"ts":"2026-07-31T04:09:17.971Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"sms8ei99ck99r2b"}
 {"ts":"2026-07-31T04:09:18.835Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"sms8ei99ck99r2b"}
+{"ts":"2026-08-06T08:24:43.850Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsh92ofpu5tm5t"}
+{"ts":"2026-08-06T08:24:45.347Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.89","theme":"woman","lang":"en"},"sid":"smsh92ofpu5tm5t"}
+{"ts":"2026-08-06T08:24:48.878Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsh92ofpu5tm5t"}
+{"ts":"2026-08-06T08:39:43.211Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsh92ofpu5tm5t"}
+{"ts":"2026-08-06T08:39:43.561Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsh92ofpu5tm5t"}
+{"ts":"2026-08-06T08:45:43.717Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.83","theme":"senior","lang":"en"},"sid":"smsh9ayn9gfz5h7"}
