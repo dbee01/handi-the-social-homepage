@@ -1134,7 +1134,11 @@ textarea {
     transition:
         border-color 0.3s ease,
         box-shadow 0.3s ease;
-    min-height: 48px !important;
+    min-height: 48px !important
+}
+
+.task-subtask-item input[type="checkbox"] {
+    min-height: unset;
 }
 
 input:focus,
