@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Dashboard Pack — Handi Homepage</title>
+    <title>Load Site Pack — Handi Homepage</title>
     <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -69,8 +69,8 @@
 </head>
 <body>
 <div class="container">
-    <h1><i class="fa-solid fa-file-zipper"></i> Load Dashboard Pack</h1>
-    <p class="desc">Drop a <strong>.zip</strong> file containing your dashboard assets (music, images, podcasts, theme, config)</p>
+    <h1><i class="fa-solid fa-file-zipper"></i> Load Site Pack</h1>
+    <p class="desc">Drop a <strong>.zip</strong> file containing your site pack assets (music, images, podcasts, theme, config)</p>
 
     <div class="drop-zone" id="dropZone">
         <i class="fa-solid fa-cloud-arrow-up"></i>
@@ -279,7 +279,7 @@ async function processZip(file) {
                         fr.readAsDataURL(imageByPath[bgPath]);
                     });
                     localStorage.setItem("handiBgDataUrl", bgDataUrl);
-                    addLog("Background image saved for dashboard", "done");
+                    addLog("Background image saved for homepage", "done");
                 }
 
                 // Strip background-image references from stored theme CSS now that
@@ -457,7 +457,7 @@ async function processZip(file) {
                 }
 
                 localStorage.setItem("handiSettings", JSON.stringify(settings));
-                addLog("Config merged into dashboard settings", "done");
+                addLog("Config merged into site-pack settings", "done");
             } catch (e) {
                 addLog("Config parse failed: " + e.message, "skip");
             }

@@ -441,3 +441,209 @@
 {"ts":"2026-08-06T08:39:43.211Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsh92ofpu5tm5t"}
 {"ts":"2026-08-06T08:39:43.561Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsh92ofpu5tm5t"}
 {"ts":"2026-08-06T08:45:43.717Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.83","theme":"senior","lang":"en"},"sid":"smsh9ayn9gfz5h7"}
+{"ts":"2026-08-06T08:49:13.992Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.93","theme":"senior","lang":"en"},"sid":"smsh9ayn9gfz5h7"}
+{"ts":"2026-08-06T08:54:46.895Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsh92ofpu5tm5t"}
+{"ts":"2026-08-06T08:54:48.365Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsh92ofpu5tm5t"}
+{"ts":"2026-08-06T09:00:22.894Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsh92ofpu5tm5t"}
+{"ts":"2026-08-06T09:00:22.976Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsh92ofpu5tm5t"}
+{"ts":"2026-08-06T09:00:25.311Z","level":1,"event":"page_load","details":{"loadTimeSec":"6.13","theme":"woman","lang":"en"},"sid":"smsh92ofpu5tm5t"}
+{"ts":"2026-08-06T09:14:53.387Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsh92ofpu5tm5t"}
+{"ts":"2026-08-06T12:46:44.848Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T12:46:47.977Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T12:46:52.034Z","level":1,"event":"page_load","details":{"loadTimeSec":"8.87","theme":"woman","lang":"en"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T13:01:44.273Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T13:01:59.321Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T13:16:44.242Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T13:16:44.244Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T13:31:44.248Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T13:31:59.268Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T13:46:44.257Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T13:46:59.249Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T14:01:44.249Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T14:01:44.252Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T14:16:44.248Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T14:16:59.269Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T14:31:44.255Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T14:31:44.261Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T14:46:44.236Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T14:46:59.245Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T15:01:44.219Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T15:01:44.245Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T15:16:44.241Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T15:16:44.260Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T15:31:44.242Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T15:31:59.260Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T15:46:44.242Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T15:46:44.265Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T16:01:44.239Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T16:01:44.260Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T16:16:44.289Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T16:16:44.294Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T16:31:44.227Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T16:31:44.245Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T16:46:44.227Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T16:46:59.282Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T17:01:44.263Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T17:01:44.271Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T17:16:44.236Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T17:16:59.256Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T17:31:44.245Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T17:31:44.285Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T17:46:44.241Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T17:46:59.265Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T18:01:44.251Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T18:01:59.279Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T18:16:44.237Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T18:16:59.265Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T18:31:44.239Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T18:31:59.276Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T18:46:44.253Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T18:46:44.277Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T19:01:44.242Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T19:01:59.278Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T19:16:44.254Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T19:16:44.276Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T19:31:44.241Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T19:31:59.279Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T19:46:44.240Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T19:46:59.267Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T20:01:44.269Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T20:01:44.272Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T20:16:44.286Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T20:16:44.291Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T20:31:44.285Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T20:31:44.286Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T20:46:44.236Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T20:46:59.275Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T21:01:44.288Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T21:01:44.296Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T21:16:44.255Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T21:16:44.275Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T21:31:44.258Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T21:31:44.261Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T21:46:44.261Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T21:46:44.280Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T22:01:44.285Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T22:01:44.291Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T22:16:44.229Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T22:16:59.244Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T22:31:44.289Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T22:31:44.297Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T22:46:44.234Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T22:46:59.274Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T23:01:44.298Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T23:01:44.306Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T23:16:44.251Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T23:16:44.267Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T23:31:44.288Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T23:31:44.297Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T23:46:44.299Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-06T23:46:44.308Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T00:01:44.289Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T00:01:44.319Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T00:16:44.253Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T00:16:44.269Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T00:31:44.293Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T00:31:44.301Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T00:46:44.251Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T00:46:44.266Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T01:01:44.293Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T01:01:44.296Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T01:16:44.313Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T01:16:44.338Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T01:31:44.292Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T01:31:44.298Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T01:46:44.232Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T01:46:59.276Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T02:01:44.285Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T02:01:44.334Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T02:16:44.261Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T02:16:44.276Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T02:31:44.287Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T02:31:44.291Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T02:46:44.237Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T02:46:59.331Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T03:01:44.273Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T03:01:44.286Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T03:16:44.230Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T03:16:59.314Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T03:31:44.327Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T03:31:44.330Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T03:46:44.297Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T03:46:44.305Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T04:01:44.292Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T04:01:44.313Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T04:16:44.285Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T04:16:44.299Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T04:31:44.233Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T04:31:59.281Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T04:46:44.338Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T04:46:44.343Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T05:01:44.322Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T05:01:44.326Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T05:16:44.257Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T05:16:44.269Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T05:31:44.252Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T05:31:44.264Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T05:46:44.254Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":1},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T05:46:44.267Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smshifnf5i3hhia"}
+{"ts":"2026-08-07T06:43:11.029Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T06:43:11.166Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T06:43:11.248Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.20","theme":"woman","lang":"en"},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T06:43:25.471Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T06:43:25.976Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T06:43:26.769Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.19","theme":"woman","lang":"en"},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T06:44:40.240Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.41","theme":"senior","lang":"en"},"sid":"smsikx8l2zzz57m"}
+{"ts":"2026-08-07T06:55:43.188Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.61","theme":"senior","lang":"en"},"sid":"smsikx8l2zzz57m"}
+{"ts":"2026-08-07T06:55:43.773Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikx8l2zzz57m"}
+{"ts":"2026-08-07T06:58:26.992Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T06:58:28.759Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T07:08:40.974Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.60","theme":"senior","lang":"en"},"sid":"smsikx8l2zzz57m"}
+{"ts":"2026-08-07T07:08:41.919Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikx8l2zzz57m"}
+{"ts":"2026-08-07T07:12:19.272Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.42","theme":"senior","lang":"en"},"sid":"smsilxfaar4z9k1"}
+{"ts":"2026-08-07T07:12:22.945Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsilxfaar4z9k1"}
+{"ts":"2026-08-07T07:13:25.775Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T07:13:26.841Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T07:20:33.908Z","level":2,"event":"theme_change","details":{"from":"senior","to":"techie"},"sid":"smsilxfaar4z9k1"}
+{"ts":"2026-08-07T07:24:20.519Z","level":2,"event":"theme_change","details":{"from":"techie","to":"woman"},"sid":"smsilxfaar4z9k1"}
+{"ts":"2026-08-07T07:24:29.456Z","level":2,"event":"theme_change","details":{"from":"woman","to":"student"},"sid":"smsilxfaar4z9k1"}
+{"ts":"2026-08-07T07:24:31.339Z","level":2,"event":"theme_change","details":{"from":"student","to":"senior"},"sid":"smsilxfaar4z9k1"}
+{"ts":"2026-08-07T07:27:20.666Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsilxfaar4z9k1"}
+{"ts":"2026-08-07T07:28:26.360Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T07:28:27.359Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T07:30:37.328Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.68","theme":"senior","lang":"en"},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T07:30:37.908Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T07:43:26.557Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T07:43:27.664Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T07:45:38.413Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T07:50:24.699Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T07:50:24.922Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.40","theme":"senior","lang":"en"},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T07:54:39.887Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.20","theme":"senior","lang":"en"},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T07:54:40.217Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T07:58:26.985Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T07:58:28.155Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T08:00:34.117Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.19","theme":"senior","lang":"en"},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T08:00:34.294Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T08:13:07.224Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T08:13:07.266Z","level":1,"event":"page_load","details":{"loadTimeSec":"4.67","theme":"senior","lang":"en"},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T08:13:26.860Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T08:13:27.636Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T08:17:14.630Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.38","theme":"senior","lang":"en"},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T08:17:15.360Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T08:22:25.662Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.47","theme":"senior","lang":"en"},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T08:22:26.183Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T08:29:15.132Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T08:29:19.394Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-07T08:30:52.373Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T08:30:52.534Z","level":1,"event":"page_load","details":{"loadTimeSec":"5.12","theme":"senior","lang":"en"},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T08:35:09.360Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-07T08:35:21.742Z","level":1,"event":"page_load","details":{"loadTimeSec":"28.90","theme":"senior","lang":"en"},"sid":"smsimkycxr81s1b"}
+{"ts":"2026-08-08T07:05:31.751Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-08T07:05:32.674Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-08T07:05:36.681Z","level":1,"event":"page_load","details":{"loadTimeSec":"7.76","theme":"woman","lang":"en"},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-08T07:15:51.507Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-08T07:15:52.331Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-08T07:15:58.556Z","level":1,"event":"page_load","details":{"loadTimeSec":"9.13","theme":"woman","lang":"en"},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-08T07:24:23.070Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-08T07:24:23.811Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsikvy2po0tc9p"}
+{"ts":"2026-08-08T07:24:30.538Z","level":1,"event":"page_load","details":{"loadTimeSec":"9.85","theme":"woman","lang":"en"},"sid":"smsikvy2po0tc9p"}

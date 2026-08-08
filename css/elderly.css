@@ -371,11 +371,19 @@ header {
 
 /* ---------- CHAT ---------- */
 .chat-room-card {
-    background: #ffffff;
     border: 2px solid #e2e8f0;
 }
 .chat-room-header {
-    background: #f8fafc;
+    background: #f1f5f9;
+}
+.chat-room-header button {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    color: #1e293b;
+}
+.chat-room-header button:hover {
+    background: #f1f5f9;
+    border-color: #0047cc;
 }
 .new-badge {
     background: #dc2626;
@@ -387,6 +395,13 @@ header {
 .chat-message {
     border-bottom: 1px solid #eee;
 }
+.chat-time,
+.chat-body {
+    font-size: inherit !important;
+}
+.chat-time {
+    color: #64748b;
+}
 
 /* ---------- CALENDAR ---------- */
 .calendar-today-header {
@@ -397,8 +412,14 @@ header {
     color: white;
 }
 .calendar-event-card {
-    background: #ffffff;
     border: 2px solid #e2e8f0;
+    display: flex;
+    gap: 16px;
+    border-radius: 16px;
+    padding: 16px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 .calendar-refresh-btn {
     background: #f8fafc;
@@ -408,28 +429,25 @@ header {
     background: #e2e8f0;
 }
 .calendar-event-time {
-    font-size: 1.2rem;
-    white-space: nowrap;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
+    gap: 2px;
+    font-weight: 700;
+}
+.calendar-time-start {
+    font-size: 1.4rem;
+}
+.calendar-time-end {
+    font-size: 1.1rem;
+    opacity: 0.85;
+}
+.calendar-time-separator {
+    display: none;
 }
 .calendar-event-location {
-    font-size: 1rem;
-    white-space: nowrap;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
-.calendar-event-card {
-    display: flex;
-    gap: 16px;
-    background: #ffffff;
-    border: 2px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 16px;
     align-items: center;
     justify-content: center;
     flex-direction: column;

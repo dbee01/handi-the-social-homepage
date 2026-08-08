@@ -266,13 +266,13 @@ export default async function initChat(container) {
       const isOpen = roomOpenState[room.index] !== false;
       html += `
         <div class="chat-room-card ${room.hasNew ? "has-new" : ""}">
-          <div class="chat-room-header" data-room="${room.index}" style="cursor:pointer;min-height:60px;">
+          <div class="chat-room-header" data-room="${room.index}">
             <div class="chat-room-name">
               <i class="fa-regular fa-comment"></i> ${escapeHtml(room.roomName)}
               ${room.hasNew ? '<span class="new-badge">' + t("d_new", "New!") + "</span>" : ""}
               ${room.error ? '<span class="error-badge">' + t("d_errorLabel", "Error") + "</span>" : ""}
             </div>
-            <button class="chat-toggle-msgs" data-room="${room.index}" style="min-width:48px;min-height:48px;font-size:1.2rem;cursor:pointer;border-radius:12px;background:#f1f5f9;border:1px solid #cbd5e1;">${isOpen ? "▲" : "▼"}</button>
+            <button class="chat-toggle-msgs" data-room="${room.index}">${isOpen ? "▲" : "▼"}</button>
           </div>
           <div class="chat-room-messages" id="chat-msgs-${room.index}" style="display:${isOpen ? "block" : "none"};">`;
 
@@ -286,12 +286,12 @@ export default async function initChat(container) {
       } else {
         for (const msg of room.messages.slice(0, 20)) {
           html += `
-            <div class="chat-message" style="padding:8px 0;border-bottom:1px solid #e2e8f0;">
-              <div class="chat-message-header" style="margin-bottom:4px;">
+            <div class="chat-message">
+              <div class="chat-message-header">
                 <span class="chat-sender"><strong>${escapeHtml(getSenderName(msg))}</strong></span>
-                <span class="chat-time" style="margin-left:12px;font-size:0.75rem;color:#94a3b8;">${escapeHtml(formatTime(msg.origin_server_ts))}</span>
+                <span class="chat-time">${escapeHtml(formatTime(msg.origin_server_ts))}</span>
               </div>
-              <div class="chat-body" style="font-size:0.85rem;">${escapeHtml(msg.body.substring(0, 500))}</div>
+              <div class="chat-body">${escapeHtml(msg.body.substring(0, 500))}</div>
             </div>`;
         }
       }

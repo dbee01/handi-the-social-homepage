@@ -1001,6 +1001,14 @@ header {
     align-items: center;
     padding: 12px 16px;
     cursor: pointer;
+    min-height: 60px;
+}
+
+.chat-room-header button {
+    min-width: 48px;
+    min-height: 48px;
+    cursor: pointer;
+    border-radius: 12px;
 }
 
 .chat-room-messages {
@@ -1011,6 +1019,19 @@ header {
 
 .chat-message {
     padding: 8px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.chat-message-header {
+    margin-bottom: 4px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.chat-time {
+    font-size: inherit;
+    color: #64748b;
 }
 
 .chat-refresh-btn {

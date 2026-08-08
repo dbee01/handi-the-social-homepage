@@ -313,20 +313,6 @@ export default async function initCalendar(container) {
     return diffMinutes > 0 && diffMinutes <= minutesThreshold;
   }
 
-  function formatEventTime(event) {
-    if (!event.start) return "Time TBD";
-
-    const start = new Date(event.start);
-    const options = { hour: "2-digit", minute: "2-digit" };
-
-    if (event.end) {
-      const end = new Date(event.end);
-      if (end > start) {
-        return `${start.toLocaleTimeString([], options)} - ${end.toLocaleTimeString([], options)}`;
-      }
-    }
-    return start.toLocaleTimeString([], options);
-  }
 
   function formatSyncTime() {
     if (!lastSyncTime) return "Never";
@@ -659,10 +645,18 @@ export default async function initCalendar(container) {
       html += '<div class="calendar-events-list">';
       for (var i = 0; i < events.length; i++) {
         var event = events[i];
-        var timeStr = formatEventTime(event);
+        var startDate = event.start ? new Date(event.start) : null;
+        var endDate = event.end ? new Date(event.end) : null;
+        var timeOpts = { hour: "2-digit", minute: "2-digit" };
         html += '<div class="calendar-event-card">';
         html += '<div class="calendar-event-time">';
-        html += '<i class="fa-regular fa-clock"></i> ' + escapeHtml(timeStr);
+        html += '<i class="fa-regular fa-clock"></i>';
+        if (startDate) {
+          html += '<span class="calendar-time-start">' + escapeHtml(startDate.toLocaleTimeString([], timeOpts)) + '</span>';
+        }
+        if (endDate && endDate > startDate) {
+          html += '<span class="calendar-time-end">' + escapeHtml(endDate.toLocaleTimeString([], timeOpts)) + '</span>';
+        }
         html += "</div>";
         html += '<div class="calendar-event-details">';
         html +=

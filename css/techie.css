@@ -457,7 +457,12 @@ button:active,
     margin-bottom: 6px;
     border-radius: var(--border-radius-sm);
     color: var(--color-text-bright) !important;
-    font-size: var(--font-size-medium) !important;
+    font-size: var(--font-size-base) !important;
+}
+.chat-time,
+.chat-body {
+    font-size: var(--font-size-base) !important;
+    color: var(--color-text-dim) !important;
 }
 
 .chat-message:hover {
@@ -680,7 +685,7 @@ button:active,
     transform: translateX(4px);
 }
 
-/* Event time - BIG and bright */
+/* Event time - BIG and bright, vertically stacked */
 .calendar-event-time {
     color: var(--color-secondary-bright) !important;
     font-size: var(--font-size-large) !important;
@@ -688,8 +693,19 @@ button:active,
     min-width: 120px !important;
     padding-right: 16px !important;
     display: flex !important;
+    flex-direction: column !important;
     align-items: center !important;
-    gap: 8px !important;
+    gap: 4px !important;
+}
+.calendar-time-start {
+    font-size: var(--font-size-xl) !important;
+}
+.calendar-time-end {
+    font-size: var(--font-size-large) !important;
+    opacity: 0.85;
+}
+.calendar-time-separator {
+    display: none;
 }
 
 .calendar-event-time i {
