@@ -9,6 +9,8 @@ var LANG = {
   // Header
   brandName: "Handi Homepage",
   instructions: "Instructions",
+  instructionsText: 'Configure your private personal homepage here. Click the <i class="fa-solid fa-circle-info" style="color: #000"></i> help button on each homepage element (next screen) to learn more.',
+  sitePackHint: "Do you have a Site Pack? Scroll to bottom of page. Remember to click the checkbox at the bottom of the page to proceed.",
 
   // Help tips
   tipUnlock: "Unlock sound: press the red lock icon to unlock module controls",
@@ -21,6 +23,7 @@ var LANG = {
 
   // Theme selector
   selectTheme: "\uD83C\uDFA8 Select your theme",
+  selectLanguage: "🌐 Select your language",
   themeEssential: "Essential",
   themeEssentialDesc: "High contrast &amp; large type",
   themeTechie: "Techie",
@@ -43,6 +46,7 @@ var LANG = {
   btnReset: "\u27F3 Reset",
   btnPremium: "\u2B50 Add Premium (30 day trial)",
   btnSubmit: "\u2713 Submit",
+  btnSitePack: "\uD83D\uDCE6 Load Site Pack",
   btnAdd: "\u2717",
   btnRemove: "\u2713",
   btnDisabled: "\u2014",
@@ -72,6 +76,7 @@ var LANG = {
     weather: { name: "Weather", desc: "Forecast" },
     task: { name: "Tasks", desc: "To-do list" },
     support: { name: "Support", desc: "Support links" },
+    llm: { name: "LLM", desc: "Private AI chat" },
   },
 
   // Dashboard component strings

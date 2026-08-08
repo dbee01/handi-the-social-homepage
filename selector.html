@@ -722,13 +722,8 @@
                         Instructions
                     </h2>
 
-                    <p style="color: #6c757d;font-size: 1.5rem;text-align: center;margin: 1rem;">
-                        Configure your private personal homepage here. Remember to click the checkbox at the bottom of the page to proceed...
-                    </p>
-                    <p style="color: #6c757d;font-size: 1.5rem;text-align: center;margin: 1rem;">
-                        NB: Click the <i class="fa-solid fa-circle-info"
-                            style="color: #000"></i> help button on each homepage element (next screen) to learn more.
-                    </p>
+                    <p id="instructionsText" style="color: #6c757d;font-size: 1.5rem;text-align: center;margin: 1rem;"></p>
+                    <p id="sitePackHint" style="color: #6c757d;font-size: 1.5rem;text-align: center;margin: 1rem;"></p>
 
 <!--                <div class="selector-sub">
                             <div
@@ -795,7 +790,7 @@
                         </div>
                     </div>
 -->
-                    <h3 style="text-align: center; padding: 1.5rem">
+                    <h3 id="langHeading" style="text-align: center; padding: 1.5rem">
                         🌐 Language
                     </h3>
 
@@ -810,7 +805,7 @@
                         "
                     >
                         <button class="lang-flag" data-lang="en" title="English">
-                            <svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#012169"/><path d="M0 0l30 20M30 0L0 20" stroke="#fff" stroke-width="4"/><path d="M0 0l30 20M30 0L0 20" stroke="#c8102e" stroke-width="2"/><line x1="15" y1="0" x2="15" y2="20" stroke="#fff" stroke-width="6"/><line x1="0" y1="10" x2="30" y2="10" stroke="#fff" stroke-width="6"/><line x1="15" y1="0" x2="15" y2="20" stroke="#c8102e" stroke-width="3"/><line x1="0" y1="10" x2="30" y2="10" stroke="#c8102e" stroke-width="3"/></svg>
+                            <svg viewBox="0 0 30 20"><rect width="15" height="20" fill="#012169"/><path d="M0 0l15 20M15 0L0 20" stroke="#fff" stroke-width="3"/><path d="M0 0l15 20M15 0L0 20" stroke="#c8102e" stroke-width="1.5"/><line x1="7.5" y1="0" x2="7.5" y2="20" stroke="#fff" stroke-width="4"/><line x1="0" y1="10" x2="15" y2="10" stroke="#fff" stroke-width="4"/><line x1="7.5" y1="0" x2="7.5" y2="20" stroke="#c8102e" stroke-width="2"/><line x1="0" y1="10" x2="15" y2="10" stroke="#c8102e" stroke-width="2"/><rect x="15" width="15" height="20" fill="#fff"/><rect x="15" width="15" height="1.54" y="0" fill="#b22234"/><rect x="15" width="15" height="1.54" y="3.08" fill="#b22234"/><rect x="15" width="15" height="1.54" y="6.15" fill="#b22234"/><rect x="15" width="15" height="1.54" y="9.23" fill="#b22234"/><rect x="15" width="15" height="1.54" y="12.31" fill="#b22234"/><rect x="15" width="15" height="1.54" y="15.38" fill="#b22234"/><rect x="15" width="15" height="1.54" y="18.46" fill="#b22234"/><rect x="21" width="6" height="9.23" fill="#3c3b6e"/><line x1="15" y1="0" x2="30" y2="20" stroke="#888" stroke-width=".5"/></svg>
                             <span class="lang-name">English</span>
                         </button>
                         <button class="lang-flag" data-lang="ar" title="العربية">
@@ -963,7 +958,7 @@
                         <button id="applyBtn" class="apply-btn">
                                                     ✓ Submit
                                                 </button>
-                                                <a href="/upload.html" id="uploadPackBtn" class="premium-trial-btn" onclick="if(!hasConsent()){event.preventDefault();var b=document.getElementById('privacyConsent');b.style.outline='3px solid red';setTimeout(function(){b.style.outline='';},2000);alert(window.LANG?.alertConsentApply||'Please accept the Privacy Policy first.');}" style="text-decoration:none;display:inline-block;text-align:center;line-height:normal;background:#64748b;">📦 Load Site Pack</a>
+                                                <a href="/upload.html" id="uploadPackBtn" class="premium-trial-btn" onclick="if(!hasConsent()){event.preventDefault();var b=document.getElementById('privacyConsent');b.style.outline='3px solid red';setTimeout(function(){b.style.outline='';},2000);alert(window.LANG?.alertConsentApply||'Please accept the Privacy Policy first.');}" style="text-decoration:none;display:inline-block;text-align:center;line-height:normal;background:#64748b;color:#fff;">📦 Load Site Pack</a>
                                             </div>
                 </>
             </div>
@@ -1245,6 +1240,14 @@
                                 if (changed) window.saveMMR(mmr);
                             }
                             renderSelector();
+                            var it = document.getElementById("instructionsText");
+                            if (it && LANG.instructionsText) it.innerHTML = LANG.instructionsText;
+                            var lh = document.getElementById("langHeading");
+                            if (lh && LANG.selectLanguage) lh.textContent = LANG.selectLanguage;
+                            var sp = document.getElementById("sitePackHint");
+                            if (sp && LANG.sitePackHint) sp.innerHTML = LANG.sitePackHint;
+                            var up = document.getElementById("uploadPackBtn");
+                            if (up && LANG.btnSitePack) up.textContent = LANG.btnSitePack;
             })();
 
             document

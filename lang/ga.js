@@ -8,6 +8,8 @@
 var LANG = {
   brandName: "Handi Homepage",
   instructions: "Treoracha",
+  instructionsText: 'Cumraigh do leathanach baile pearsanta anseo. Cliceáil an cnaipe cabhrach <i class="fa-solid fa-circle-info" style="color: #000"></i> ar gach gné chun tuilleadh a fhoghlaim.',
+  sitePackHint: "An bhfuil Pacáiste Suímh agat? Scrollaigh go bun an leathanaigh. Ná déan dearmad an ticbhosca ag bun an leathanaigh a chliceáil chun dul ar aghaidh.",
 
   tipUnlock:
     "Díghlasáil fuaim: brúigh an glas dearg chun rialuithe a dhíghlasáil",
@@ -19,6 +21,7 @@ var LANG = {
   tipHelp: "Cabhair: brúigh an cnaipe 'i' chun eolas a fháil",
 
   selectTheme: "\uD83C\uDFA8 Roghnaigh do théama",
+  selectLanguage: "🌐 Roghnaigh do theanga",
   themeEssential: "Riachtanach",
   themeEssentialDesc: "Ardchodarsnacht &amp; cló mór",
   themeTechie: "Teicniúil",
@@ -38,6 +41,7 @@ var LANG = {
   btnReset: "\u27F3 Athshocraigh",
   btnPremium: "\u2B50 Cuir Préimh leis (triail 30 lá)",
   btnSubmit: "\u2713 Cuir isteach",
+  btnSitePack: "📦 Lódáil Pacáiste Suímh",
   btnAdd: "\u2717",
   btnRemove: "\u2713",
   btnDisabled: "\u2014",
@@ -64,8 +68,10 @@ var LANG = {
     live_bus: { name: "Bus Beo", desc: "Amanna bus" },
     emergency_alert: { name: "Suíomh", desc: "Roinn suíomh" },
     weather: { name: "Aimsir", desc: "Réamhaisnéis" },
-    task: { name: "Tasks", desc: "To-do list" },
-    support: { name: "Support", desc: "Support links" },
+    task: { name: "Tascanna", desc: "Liosta le déanamh" },
+    support: { name: "Tacaíocht", desc: "Naisc tacaíochta" },
+    cast: { name: "Podchraoladh", desc: "Seinnteoir podchraoltaí" },
+    llm: { name: "LLM", desc: "Comhrá príobháideach AI" },
   },
 
   d_loading: "Á lódáil...",
@@ -154,7 +160,7 @@ var LANG = {
   d_locationShared: null,
   d_location: null,
   d_time: null,
-  d_noTrustedContacts: null,
+  d_noTrustedContacts: "Níl aon teagmhálaí iontaofa sábháilte.",
   d_locate: null,
   d_mobileOnly: null,
   d_shareLocked: null,
@@ -202,6 +208,20 @@ var LANG = {
   d_live: "Beo",
   d_scheduled: "Sceidealaithe",
   d_due: "Dlite",
+  d_tasks: "Tascanna",
+  d_taskTitle: "Teideal an taisc",
+  d_taskDesc: "Cur síos (roghnach)",
+  d_noLabel: "Gan lipéad",
+  d_labelName: "Ainm an lipéid",
+  d_addSubtask: "Cuir fo-thasc leis",
+  d_addTask: "Cuir tasc leis",
+  d_noTasks: "Gan tascanna fós",
+  d_subtask: "Fo-thasc",
+  d_delete: "Scrios",
+  d_edit: "Cuir in eagar",
+  d_updateTask: "Nuashonraigh an tasc",
+  d_taskDeleted: "Tasc scriosta",
+  d_undo: "Cealaigh",
 
         // Support
         d_configureSupport: "Configure in Settings.",
