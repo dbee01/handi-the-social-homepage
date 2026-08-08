@@ -182,7 +182,16 @@ async function processZip(file) {
 
             const name = path.split("/").pop();
             const ext = name.split(".").pop().toLowerCase();
-            const blob = await entry.async("blob");
+
+            let blob;
+            try {
+                blob = await entry.async("blob");
+            } catch (e) {
+                addLog("⚠️ Failed to read: " + path, "skip");
+                processed++;
+                setProgress(5 + Math.round((processed / total) * 75), `Processing ${processed}/${total}...`);
+                continue;
+            }
             const fileObj = new File([blob], name, { type: blob.type || "application/octet-stream" });
 
             var isMusic = path.startsWith("music/") || path.includes("/music/");
@@ -216,34 +225,72 @@ async function processZip(file) {
                     contactPhotos[idx] = URL.createObjectURL(blob);
                     addLog("📷 phone photo #" + idx, "done");
                 }
+            } else if (isImage) {
+                // Image not in img/ folder — still capture for background / support media
+                imageByPath[path] = blob;
+                addLog("🖼️ " + path, "done");
             } else {
                 addLog("⏭️ " + path + " (skipped)", "skip");
             }
 
             processed++;
-            setProgress(5 + Math.round((processed / total) * 85), `Processing ${processed}/${total}...`);
+            setProgress(5 + Math.round((processed / total) * 75), `Processing ${processed}/${total}...`);
         }
 
         // Store files
-        setProgress(90, "Saving...");
+        setProgress(80, "Saving...");
 
-        const { saveMusic, saveGallery, saveCastFn } = await import("/js/core/storage.js?v=4");
+        let storageMod;
+        try {
+            storageMod = await import("/js/core/storage.js?v=5");
+        } catch (e) {
+            addLog("Storage module load failed: " + e.message, "skip");
+            setProgress(100, "Done — stored " + musicFiles.length + " music, " + imageFiles.length + " images, " + castFiles.length + " podcasts (save skipped)");
+            addLog("Note: files were processed but could not be saved to browser storage.", "skip");
+            setTimeout(() => { window.location.href = "/index.html"; }, 3000);
+            return;
+        }
+        const { saveMusic, saveGallery, saveCastFn } = storageMod;
+
+        function saveWithTimeout(fn, files, label, timeoutMs) {
+            return Promise.race([
+                fn(files),
+                new Promise((_, reject) => setTimeout(() => reject(new Error(label + " timed out")), timeoutMs))
+            ]);
+        }
+
+        setProgress(82, "Saving music...");
 
         if (musicFiles.length) {
             addLog("Saving " + musicFiles.length + " music files...");
-            await saveMusic(musicFiles);
-            addLog("Saved " + musicFiles.length + " music files", "done");
+            try {
+                await saveWithTimeout(saveMusic, musicFiles, "Music", 30000);
+                addLog("Saved " + musicFiles.length + " music files", "done");
+            } catch (e) {
+                addLog("Music save failed: " + e.message, "skip");
+            }
         }
+        setProgress(85, "Saving images...");
         if (imageFiles.length) {
             addLog("Saving " + imageFiles.length + " images...");
-            await saveGallery(imageFiles);
-            addLog("Saved " + imageFiles.length + " images", "done");
+            try {
+                await saveWithTimeout(saveGallery, imageFiles, "Images", 30000);
+                addLog("Saved " + imageFiles.length + " images", "done");
+            } catch (e) {
+                addLog("Image save failed: " + e.message, "skip");
+            }
         }
+        setProgress(90, "Saving podcasts...");
         if (castFiles.length) {
             addLog("Saving " + castFiles.length + " podcasts...");
-            await saveCastFn(castFiles);
-            addLog("Saved " + castFiles.length + " podcasts", "done");
+            try {
+                await saveWithTimeout(saveCastFn, castFiles, "Podcasts", 60000);
+                addLog("Saved " + castFiles.length + " podcasts", "done");
+            } catch (e) {
+                addLog("Podcast save failed: " + e.message, "skip");
+            }
         }
+        setProgress(92, "Applying config...");
 
         // Theme: use file CSS, or generate from config colors
         if (themeCss) {

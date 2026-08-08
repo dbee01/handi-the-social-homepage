@@ -5,7 +5,7 @@
  */
 // js/core/storage.js
 const DB_NAME = 'pleie_storage_v2';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let db = null;
 
@@ -38,12 +38,19 @@ function initDB() {
 
 export async function saveMusic(files) {
     const database = await initDB();
-    return new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
         const tx = database.transaction(['music'], 'readwrite');
         const store = tx.objectStore('music');
         store.clear();
-        files.forEach((file, i) => {
-            store.add({ id: i, name: file.name, type: file.type, file: file.file || file });
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+    return new Promise((resolve, reject) => {
+        const tx = database.transaction(['music'], 'readwrite');
+        const store = tx.objectStore('music');
+        files.forEach((file) => {
+            const req = store.add({ name: file.name, type: file.type, file: file.file || file });
+            req.onerror = () => reject(req.error);
         });
         tx.oncomplete = () => resolve();
         tx.onerror = () => reject(tx.error);
@@ -121,12 +128,22 @@ export async function loadGallery() {
 
         export async function saveCastFn(files) {
             const database = await initDB();
-            return new Promise((resolve, reject) => {
+            // Clear first in a separate transaction
+            await new Promise((resolve, reject) => {
                 const tx = database.transaction(['audiopod'], 'readwrite');
                 const store = tx.objectStore('audiopod');
                 store.clear();
-                files.forEach((file, i) => {
-                    store.add({ id: i, name: file.name, type: file.type, file: file.file || file });
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+            // Then add in a fresh transaction
+            return new Promise((resolve, reject) => {
+                const tx = database.transaction(['audiopod'], 'readwrite');
+                const store = tx.objectStore('audiopod');
+                let added = 0;
+                files.forEach((file) => {
+                    const req = store.add({ name: file.name, type: file.type, file: file.file || file });
+                    req.onerror = () => reject(req.error);
                 });
                 tx.oncomplete = () => resolve();
                 tx.onerror = () => reject(tx.error);
