@@ -63,8 +63,8 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 .panel-title { font-size: var(--font-size-title); font-weight: 700; color: var(--primary); }
 
 /* ── MODULE CONTROLS ─────────────────────────────────────────────── */
-.module-controls button { background: var(--surface); border: 2px solid var(--border); color: var(--text); }
-.module-controls button:hover { background: var(--primary-soft); border-color: var(--primary); }
+.module-controls button { background: var(--primary); border: 2px solid var(--primary); color: #fff; }
+.module-controls button:hover { background: var(--primary-dark); border-color: var(--primary); }
 .pin-btn.pinned { background: var(--secondary); border-color: var(--primary); color: #fff; }
 
 /* ── EMPTY STATE ─────────────────────────────────────────────────── */
@@ -84,15 +84,15 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 .gallery-thumb:hover { border-color: var(--secondary); }
 .gallery-lightbox { background: rgba(0,0,0,0.95) !important; }
 .gallery-lightbox-caption { color: #fff !important; }
-.gallery-lightbox-close, .gallery-lightbox-prev, .gallery-lightbox-next { background: rgba(255,255,255,0.95) !important; color: var(--primary) !important; border: 3px solid var(--primary) !important; }
-.gallery-lightbox-close:hover, .gallery-lightbox-prev:hover, .gallery-lightbox-next:hover { background: var(--primary) !important; color: #fff !important; }
+.gallery-lightbox-close, .gallery-lightbox-prev, .gallery-lightbox-next { background: var(--primary) !important; color: #fff !important; border: 3px solid var(--primary) !important; }
+.gallery-lightbox-close:hover, .gallery-lightbox-prev:hover, .gallery-lightbox-next:hover { background: var(--primary-dark) !important; color: #fff !important; }
 
 /* ── MUSIC ───────────────────────────────────────────────────────── */
 .music-now-playing { background: transparent; border: 2px solid var(--primary); border-radius: var(--radius); }
 .music-now-playing .track-title { font-weight: 700; color: var(--text); }
 .music-now-playing .track-artist { color: var(--text-muted); }
-.player-controls button, .music-controls button { background: var(--primary-soft); border: 2px solid var(--primary); color: var(--primary); border-radius: 50%; }
-.player-controls button:hover, .music-controls button:hover { background: var(--primary); color: #fff; }
+.player-controls button, .music-controls button { background: var(--primary); border: 2px solid var(--primary); color: #fff; border-radius: 50%; }
+.player-controls button:hover, .music-controls button:hover { background: var(--primary-dark); color: #fff; }
 .player-controls .play-btn, .player-controls .pause-btn { background: var(--primary); color: #fff; }
 .player-controls .play-btn:hover, .player-controls .pause-btn:hover { background: var(--primary-dark); }
 .music-track-item { background: transparent; border: 2px solid var(--border); color: var(--text); border-radius: var(--radius); }
@@ -102,35 +102,35 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 .music-track-item.active .track-name { color: #fff; }
 .music-track-item .track-duration { color: var(--text-muted); }
 .music-track-item.active .track-duration { color: #94a3b8; }
-.music-scroll-btn { background-color: unset !important; color: var(--text) !important; border: 1px solid var(--border) !important; }
+.music-scroll-btn { background-color: var(--primary) !important; color: #fff !important; border: 1px solid var(--primary) !important; }
 
 /* ── RADIO ───────────────────────────────────────────────────────── */
 .radio-station { background: var(--surface); border: 2px solid var(--border); color: var(--text); border-radius: var(--radius); }
 .radio-station:hover { background: var(--surface-alt); border-color: var(--primary); color: var(--primary); }
 .radio-station.active-station { color: #fff !important; border-left: 4px solid #00d4ff; }
 .radio-list { border: 2px solid var(--border); background: var(--surface); border-radius: var(--radius); }
-.radio-play-btn { color: #fff; background: lightgray; }
+.radio-play-btn { color: #fff; background: var(--primary); }
 .radio-play-btn.playing { background: lightgrey; }
 .radio-player-area { background: transparent; }
 .radio-station span:last-child { color: var(--text); }
-.radio-scroll-btn { background: var(--surface-alt); border: 2px solid var(--border); }
-.radio-scroll-btn:hover { background: var(--border); border-color: var(--primary); }
-.radio-scroll-btn:disabled { background: var(--surface-alt); border-color: var(--border); color: var(--text); }
+.radio-scroll-btn { background: var(--primary); border: 2px solid var(--primary); color: #fff; }
+.radio-scroll-btn:hover { background: var(--primary-dark); border-color: var(--primary); }
+.radio-scroll-btn:disabled { background: #94a3b8; border-color: #94a3b8; color: #fff; }
 
 /* ── NEWS / MASTODON ─────────────────────────────────────────────── */
 .news-article, .mastodon-item { background: transparent; border: 2px solid var(--border); border-radius: var(--radius); }
 .news-title a { color: var(--text); font-family: var(--header-font); font-weight: 700; }
 .news-title a:hover { color: var(--primary); }
-.news-scroll-btn { background: var(--surface-alt); border: 2px solid var(--border); border-radius: var(--radius); font-size: 16px; }
-.news-scroll-btn:hover { background: var(--border); border-color: var(--primary); }
+.news-scroll-btn { background: var(--primary); border: 2px solid var(--primary); color: #fff; border-radius: var(--radius); font-size: 16px; }
+.news-scroll-btn:hover { background: var(--primary-dark); border-color: var(--primary); }
 
 /* ── BUS TRACKER ─────────────────────────────────────────────────── */
 .bus-timestamp { background: var(--primary-soft); border-radius: 8px; }
 .bus-route { background: var(--primary); color: #fff; border-radius: 8px; }
-.bus-refresh-btn { background: var(--surface); border: 2px solid var(--primary); color: var(--primary); border-radius: var(--radius); }
-.bus-refresh-btn:hover { background: var(--primary); color: #fff; }
-.bus-switch-btn { background: var(--primary-soft); border: 2px solid var(--primary); color: var(--primary); border-radius: var(--radius); }
-.bus-switch-btn:hover { background: var(--primary); color: #fff; }
+.bus-refresh-btn { background: var(--primary); border: 2px solid var(--primary); color: #fff; border-radius: var(--radius); }
+.bus-refresh-btn:hover { background: var(--primary-dark); color: #fff; }
+.bus-switch-btn { background: var(--primary); border: 2px solid var(--primary); color: #fff; border-radius: var(--radius); }
+.bus-switch-btn:hover { background: var(--primary-dark); color: #fff; }
 .bus-item { background: var(--surface-alt); border-radius: 8px; }
 
 /* ── PHONE ───────────────────────────────────────────────────────── */
@@ -139,9 +139,11 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 .phone-avatar.placeholder { background: var(--primary-soft) !important; color: var(--primary) !important; }
 .phone-name { color: var(--text) !important; }
 .sim-call { background: #008000 !important; }
-.video-call { background: var(--primary) !important; }
+.video-call { background: var(--primary) !important; color: #fff !important; }
 .webrtc-call { background: var(--secondary) !important; }
 .phone-call.locked { background: #94a3b8 !important; }
+
+.phone-actions button i { color: #fff; }
 
 /* ── CHAT ────────────────────────────────────────────────────────── */
 .chat-room-card { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); }
@@ -154,13 +156,16 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 .calendar-today-header { background: var(--primary-soft); border-radius: var(--radius); }
 .calendar-notification-badge { background: var(--primary); color: #fff; }
 .calendar-event-card { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); }
-.calendar-refresh-btn { background: var(--surface-alt); border: 1px solid var(--border); }
-.calendar-refresh-btn:hover { background: var(--border); }
+.calendar-refresh-btn { background: var(--primary); border: 1px solid var(--primary); color: #fff; }
+.calendar-refresh-btn:hover { background: var(--primary-dark); }
+
+#calendarChangeUrlBtn,
+#calendarRefreshBtn { color: #fff; }
 
 /* ── TASK ────────────────────────────────────────────────────────── */
 .task-card { background: var(--surface); border: 2px solid var(--border); }
 .task-input { background: var(--surface); border-color: var(--border); }
-.task-create-btn { background: var(--primary); }
+.task-create-btn { background: var(--primary); color: #fff; }
 .task-create-btn:hover { background: var(--primary-dark); }
 
 /* ── LLM ─────────────────────────────────────────────────────────── */

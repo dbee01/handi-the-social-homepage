@@ -8,7 +8,11 @@
 import { loadMusic, saveMusic } from "../../js/core/storage.js";
 
 function removeFileExtension(filename) {
-  return filename.replace(/\.[^.]+$/, "");
+  return filename
+    .replace(/\.[^.]+$/, "")
+    .replace(/[+_\-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export default async function initMusic(container) {

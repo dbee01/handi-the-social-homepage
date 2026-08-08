@@ -167,7 +167,7 @@ body::after {
 }
 .help-modal-ok {
     background: var(--color-primary) !important;
-    color: var(--color-bg) !important;
+    color: var(--color-text-white) !important;
 }
 .help-modal-close:hover {
     background: var(--color-bg-hover) !important;
@@ -329,7 +329,7 @@ button,
 .radio-scroll-btn,
 .bus-switch-btn {
     background: var(--color-bg-panel);
-    color: var(--color-text);
+    color: var(--color-text-white);
     border: 2px solid var(--color-border);
     border-radius: var(--border-radius-sm) !important;
     font-family: var(--font-family);
@@ -345,7 +345,7 @@ button,
 /* NEWS SCROLL BUTTON - Special styling for readability */
 .news-scroll-btn {
     background: var(--color-bg-active) !important;
-    color: var(--color-text-bright) !important;
+    color: var(--color-text-white) !important;
     border: 2px solid var(--color-border) !important;
     border-radius: var(--border-radius-sm) !important;
     font-family: var(--font-family);
@@ -362,7 +362,7 @@ button,
 
 .news-scroll-btn:hover {
     background: var(--color-border) !important;
-    color: var(--color-bg) !important;
+    color: var(--color-text-white) !important;
     border-color: var(--color-border-light) !important;
     box-shadow: var(--shadow-glow-strong);
     transform: translateY(-1px);
@@ -379,7 +379,7 @@ button:hover,
 .radio-scroll-btn:hover,
 .bus-switch-btn:hover {
     background: var(--color-border);
-    color: var(--color-bg);
+    color: var(--color-text-white);
     border-color: var(--color-border-light);
     box-shadow: var(--shadow-glow-strong);
     transform: translateY(-1px);
@@ -397,7 +397,7 @@ button:active,
 .settings-link-btn,
 .gallery-btn.fullscreen {
     background: var(--color-border) !important;
-    color: var(--color-bg) !important;
+    color: var(--color-text-white) !important;
     border-color: var(--color-border-light) !important;
     font-weight: bold;
     text-shadow: none !important;
@@ -418,13 +418,13 @@ button:active,
 .radio-scroll-btn {
     background: transparent !important;
     border-color: var(--color-border-dark) !important;
-    color: var(--color-text-dim) !important;
+    color: var(--color-text-white) !important;
 }
 
 .bus-switch-btn:hover,
 .radio-scroll-btn:hover {
     background: var(--color-border-dark) !important;
-    color: var(--color-bg) !important;
+    color: var(--color-text-white) !important;
     border-color: var(--color-border) !important;
 }
 
@@ -446,7 +446,7 @@ button:active,
 
 .chat-room-header button:hover {
     background: var(--color-border) !important;
-    color: var(--color-bg) !important;
+    color: var(--color-text-white) !important;
 }
 
 .chat-message {
@@ -569,7 +569,7 @@ button:active,
 .gallery-lightbox-prev:hover,
 .gallery-lightbox-next:hover {
     background: var(--color-border) !important;
-    color: var(--color-bg) !important;
+    color: var(--color-text-white) !important;
     border-color: var(--color-border-light) !important;
     box-shadow: var(--shadow-glow-strong);
 }
@@ -596,7 +596,7 @@ button:active,
 
 .radio-play-btn {
     background-color: var(--color-bg-panel) !important;
-    color: var(--color-text) !important;
+    color: var(--color-text-white) !important;
     border: 2px solid var(--color-border) !important;
     border-radius: 50% !important;
     transition: all 0.2s ease;
@@ -607,7 +607,7 @@ button:active,
 
 .radio-play-btn.playing {
     background: var(--color-border) !important;
-    color: var(--color-bg) !important;
+    color: var(--color-text-white) !important;
     animation: pulse-glow 1.5s ease-in-out infinite;
 }
 
@@ -785,7 +785,7 @@ button:active,
     font-size: var(--font-size-large) !important;
     font-weight: bold !important;
     background: var(--color-bg-active) !important;
-    color: var(--color-text-bright) !important;
+    color: var(--color-text-white) !important;
     border: 2px solid var(--color-border) !important;
     transition: all 0.2s ease !important;
     font-family: var(--font-family) !important;
@@ -794,9 +794,14 @@ button:active,
 
 .calendar-refresh-btn:hover {
     background: var(--color-border) !important;
-    color: var(--color-bg) !important;
+    color: var(--color-text-white) !important;
     border-color: var(--color-border-light) !important;
     box-shadow: var(--shadow-glow-strong) !important;
+}
+
+#calendarChangeUrlBtn,
+#calendarRefreshBtn {
+    color: var(--color-text-white) !important;
 }
 
 /* Calendar empty state */
@@ -1034,7 +1039,7 @@ button:active,
 .webrtc-call {
     background: var(--color-bg-panel);
     border: 2px solid var(--color-border);
-    color: var(--color-text);
+    color: var(--color-text-white);
     border-radius: var(--border-radius-sm) !important;
     transition: all 0.2s ease;
     font-family: var(--font-family);
@@ -1048,7 +1053,7 @@ button:active,
 .video-call:hover,
 .webrtc-call:hover {
     background: var(--color-border);
-    color: var(--color-bg);
+    color: var(--color-text-white);
     transform: scale(1.05);
     box-shadow: var(--shadow-glow-strong);
 }
@@ -1061,6 +1066,10 @@ button:active,
 }
 .webrtc-call {
     border-color: var(--color-warning) !important;
+}
+
+.phone-actions button i {
+    color: var(--color-text-white);
 }
 
 /* ---------- SEARCH ---------- */
@@ -1120,7 +1129,7 @@ button:active,
 
 .search-button:hover {
     background: var(--color-border) !important;
-    color: var(--color-bg) !important;
+    color: var(--color-text-white) !important;
 }
 
 #themeSwitcher {
@@ -1133,7 +1142,7 @@ button:active,
 
 #themeSwitcher:hover {
     background: var(--color-border) !important;
-    color: var(--color-bg) !important;
+    color: var(--color-text-white) !important;
 }
 
 /* ---------- INPUTS ---------- */
@@ -1247,7 +1256,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 .task-create-btn {
     background: var(--color-primary);
-    color: var(--color-bg);
+    color: var(--color-text-white);
 }
 .task-create-btn:hover {
     background: #44ff44;
@@ -1289,7 +1298,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .llm-load-btn,
 .llm-send-btn {
     background: var(--color-primary);
-    color: var(--color-bg);
+    color: var(--color-text-white);
 }
 .llm-load-btn:hover,
 .llm-send-btn:hover {
@@ -1338,7 +1347,7 @@ footer {
 
 .footer-icon:hover {
     background: var(--color-border) !important;
-    color: var(--color-bg) !important;
+    color: var(--color-text-white) !important;
     transform: translateY(-2px);
     box-shadow: var(--shadow-glow);
 }
@@ -1361,7 +1370,7 @@ footer {
 
 .customize-link a:hover {
     background: var(--color-border) !important;
-    color: var(--color-bg) !important;
+    color: var(--color-text-white) !important;
     border-color: var(--color-border-light) !important;
     transform: translateY(-2px);
     box-shadow: var(--shadow-glow-strong);
@@ -1468,7 +1477,7 @@ textarea:focus {
 
 .module-controls button:hover {
     background: var(--color-border) !important;
-    color: var(--color-bg) !important;
+    color: var(--color-text-white) !important;
     border-color: var(--color-border-light) !important;
 }
 

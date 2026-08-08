@@ -94,12 +94,12 @@ header {
 
 /* ---------- MODULE CONTROLS ---------- */
 .module-controls button {
-    background: #ffffff;
-    border: 2px solid #cbd5e1;
-    color: #1e293b;
+    background: #0047cc;
+    border: 2px solid #0047cc;
+    color: #ffffff;
 }
 .module-controls button:hover {
-    background: #f1f5f9;
+    background: #0037a3;
     border-color: #0047cc;
 }
 .pin-btn.pinned {
@@ -161,14 +161,14 @@ header {
 .gallery-lightbox-close,
 .gallery-lightbox-prev,
 .gallery-lightbox-next {
-    background: rgba(255, 255, 255, 0.95) !important;
-    color: #0047cc !important;
+    background: #0047cc !important;
+    color: #ffffff !important;
     border: 3px solid #0047cc !important;
 }
 .gallery-lightbox-close:hover,
 .gallery-lightbox-prev:hover,
 .gallery-lightbox-next:hover {
-    background: #0047cc !important;
+    background: #0037a3 !important;
     color: #ffffff !important;
 }
 
@@ -187,13 +187,13 @@ header {
 
 .player-controls button,
 .music-controls button {
-    background: #ffffff;
+    background: #0047cc;
     border: 2px solid #0047cc;
-    color: #0047cc;
+    color: #ffffff;
 }
 .player-controls button:hover,
 .music-controls button:hover {
-    background: #eaf2ff;
+    background: #0037a3;
 }
 .player-controls .play-btn,
 .player-controls .pause-btn {
@@ -230,9 +230,9 @@ header {
 }
 
 .music-scroll-btn {
-    background-color: unset !important;
-    color: var(--text) !important;
-    border: 1px solid var(--border) !important;
+    background-color: #0047cc !important;
+    color: #ffffff !important;
+    border: 1px solid #0047cc !important;
 }
 
 /* ---------- RADIO ---------- */
@@ -255,8 +255,8 @@ header {
     background: #ffffff;
 }
 .radio-play-btn {
-    color: white;
-    background: lightgray;
+    color: #ffffff;
+    background: #0047cc;
 }
 .radio-play-btn.playing {
     background: lightgrey;
@@ -266,17 +266,18 @@ header {
 }
 
 .radio-scroll-btn {
-    background: #f8fafc;
-    border: 2px solid #cbd5e1;
+    background: #0047cc;
+    border: 2px solid #0047cc;
+    color: #ffffff;
 }
 .radio-scroll-btn:hover {
-    background: #e2e8f0;
+    background: #0037a3;
     border-color: #0047cc;
 }
 .radio-scroll-btn:disabled {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-    color: #1e293b;
+    background: #94a3b8;
+    border-color: #94a3b8;
+    color: #ffffff;
 }
 
 /* ---------- NEWS / MASTODON ---------- */
@@ -292,12 +293,13 @@ header {
     color: #0047cc;
 }
 .news-scroll-btn {
-    background: #f8fafc;
-    border: 2px solid #e2e8f0;
+    background: #0047cc;
+    border: 2px solid #0047cc;
+    color: #ffffff;
     font-size: 16px;
 }
 .news-scroll-btn:hover {
-    background: #e2e8f0;
+    background: #0037a3;
     border-color: #0047cc;
 }
 
@@ -310,22 +312,22 @@ header {
     color: white;
 }
 .bus-refresh-btn {
-    background: #ffffff;
+    background: #0047cc;
     border: 2px solid #0047cc;
-    color: #0047cc;
+    color: #ffffff;
 }
 .bus-refresh-btn:hover {
-    background: #0047cc;
+    background: #0037a3;
     color: #ffffff;
 }
 .bus-switch-btn {
-    background: #eaf2ff;
+    background: #0047cc;
     border: 2px solid #0047cc;
-    color: #0047cc;
+    color: #ffffff;
 }
 .bus-switch-btn:hover {
-    background: #0047cc;
-    color: white;
+    background: #0037a3;
+    color: #ffffff;
 }
 .bus-item {
     background: #f8fafc;
@@ -355,9 +357,14 @@ header {
 }
 .video-call {
     background: #0047cc !important;
+    color: #ffffff !important;
 }
 .video-call:hover {
     background: #0037a3 !important;
+}
+
+.phone-actions button i {
+    color: #ffffff;
 }
 .webrtc-call {
     background: #f59e0b !important;
@@ -377,12 +384,12 @@ header {
     background: #f1f5f9;
 }
 .chat-room-header button {
-    background: #ffffff;
-    border: 2px solid #cbd5e1;
-    color: #1e293b;
+    background: #0047cc;
+    border: 2px solid #0047cc;
+    color: #ffffff;
 }
 .chat-room-header button:hover {
-    background: #f1f5f9;
+    background: #0037a3;
     border-color: #0047cc;
 }
 .new-badge {
@@ -422,11 +429,16 @@ header {
     flex-direction: column;
 }
 .calendar-refresh-btn {
-    background: #f8fafc;
-    border: 1px solid #cbd5e1;
+    background: #0047cc;
+    border: 2px solid #0047cc;
+    color: #ffffff;
 }
 .calendar-refresh-btn:hover {
-    background: #e2e8f0;
+    background: #0037a3;
+}
+#calendarChangeUrlBtn,
+#calendarRefreshBtn {
+    color: #ffffff;
 }
 .calendar-event-time {
     display: flex;
@@ -463,6 +475,7 @@ header {
 }
 .task-create-btn {
     background: #0047cc;
+    color: #ffffff;
 }
 .task-create-btn:hover {
     background: #0037a3;

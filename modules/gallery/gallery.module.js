@@ -171,7 +171,7 @@ export default async function initGallery(container) {
     const img = images[slideIndex];
     if (!img) return;
     slideImg.src = img.url;
-    captionDiv.textContent = (img.name || "").replace(/\+|\..*/g, " ").trim();
+    captionDiv.textContent = (img.name || "").replace(/\.[^.]+$/, "").replace(/[+_\-]/g, " ").replace(/\s+/g, " ").trim();
     [...thumbsDiv.children].forEach((t, i) =>
       t.classList.toggle("active", i === slideIndex),
     );
@@ -204,7 +204,7 @@ export default async function initGallery(container) {
     const img = images[lightboxIndex];
     if (!img) return;
     lbImg.src = img.url;
-    lbCaption.textContent = (img.name || "").replace(/\+|\..*/g, " ").trim();
+    lbCaption.textContent = (img.name || "").replace(/\.[^.]+$/, "").replace(/[+_\-]/g, " ").replace(/\s+/g, " ").trim();
   }
 
   function openLightbox(i) {

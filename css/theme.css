@@ -653,7 +653,16 @@ header {
 
 .video-call {
     background: var(--cyan);
-    color: #000;
+    color: #fff;
+}
+
+.phone-actions button i {
+    color: #fff;
+}
+
+#calendarChangeUrlBtn,
+#calendarRefreshBtn {
+    color: #fff;
 }
 
 .webrtc-call {

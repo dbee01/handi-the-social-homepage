@@ -1043,6 +1043,28 @@ header {
 }
 
 /* =========================================================
+   STANDARDIZED BUTTON HEIGHT
+========================================================= */
+button,
+.module-controls button,
+.settings-link-btn,
+.gallery-btn,
+.player-controls button,
+.music-controls button,
+.cast-controls button,
+.bus-refresh-btn,
+.bus-switch-btn,
+.calendar-refresh-btn,
+.radio-scroll-btn,
+.radio-play-btn,
+.news-scroll-btn,
+.chat-refresh-btn,
+.chat-room-header button,
+.music-scroll-btn {
+    min-height: 48px;
+}
+
+/* =========================================================
    TASK LAYOUT
 ========================================================= */
 
