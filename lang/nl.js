@@ -297,7 +297,7 @@ var LANG = {
   h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
 
       h_support:
-        "<strong>🤝 Support</strong><br><br>• Shows an image, title, link, and description for a support resource.",
+        "<strong>🤝 Ondersteuning</strong><br><br>• Het Ondersteuning-element bevat een afbeelding- of video-upload.<br>• De link kan naar uw website, winkel, donatiepagina, ticketleverancier enz. zijn.<br>• Configureren in <strong>Instellingen → Ondersteuning</strong>.<br>• Upload een afbeelding of video (opgeslagen als data-URL).<br>• Voeg een titel, externe URL-link en beschrijving toe.<br>• Alle gegevens worden lokaal in uw browser opgeslagen.",
 
   h_modalTitle: "Module-hulp",
   h_gotIt: "Begrepen",

@@ -302,7 +302,7 @@ var LANG = {
   h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
 
       h_support:
-        "<strong>🤝 Support</strong><br><br>• Shows an image, title, link, and description for a support resource.",
+        "<strong>🤝 Support</strong><br><br>• Das Support-Element enthält einen Bild- oder Video-Upload.<br>• Der Link kann zu Ihrer Website, Ihrem Shop, Ihrer Spendenseite, Ihrem Ticketanbieter usw. führen.<br>• Konfiguration in <strong>Einstellungen → Support</strong>.<br>• Laden Sie ein Bild oder Video hoch (als Data-URL gespeichert).<br>• Fügen Sie einen Titel, einen externen URL-Link und eine Beschreibung hinzu.<br>• Alle Daten werden lokal in Ihrem Browser gespeichert.",
 
   h_modalTitle: "Modul-Hilfe",
   h_gotIt: "Verstanden",

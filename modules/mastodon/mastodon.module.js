@@ -186,7 +186,8 @@ export default async function initMastodon(container) {
                 var div = document.createElement("div");
                 div.innerHTML = item.content || "";
                 description = div.textContent || div.innerText || "";
-                provider = item.account?.acct || "";
+                var rawAcct = item.account?.acct || "";
+                provider = rawAcct ? "@" + rawAcct.replace(/^@/, "") : "";
                 image = item.account?.avatar || "";
               } else {
                 // Trending links format

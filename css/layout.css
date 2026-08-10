@@ -1612,6 +1612,8 @@ button,
 
 .calendar-event-card {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 16px;
     padding: 16px;
     border-radius: 16px;
@@ -1699,10 +1701,15 @@ button,
 
 .bus-item {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
     padding: 12px 0;
+}
+
+.bus-eta {
+    font-size: 1.2rem;
+    font-weight: 700;
 }
 
 .bus-route {

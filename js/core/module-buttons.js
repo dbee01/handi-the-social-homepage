@@ -24,6 +24,7 @@
         llm: "h_llm",
             task: "h_task",
             cast: "h_cast",
+            support: "h_support",
           };
 
   // Shortcut for translations (also used below in addModuleControls)

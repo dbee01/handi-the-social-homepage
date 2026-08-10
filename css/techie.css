@@ -673,10 +673,10 @@ button:active,
     border-radius: var(--border-radius-md) !important;
     padding: 16px 20px !important;
     display: flex !important;
-    gap: 16px !important;
-    align-items: flex-start !important;
-    transition: all 0.2s ease !important;
     flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+    transition: all 0.2s ease !important;
 }
 
 .calendar-event-card:hover {
@@ -827,7 +827,7 @@ button:active,
 @media (max-width: 640px) {
     .calendar-event-card {
         flex-direction: column !important;
-        align-items: stretch !important;
+        align-items: center !important;
         gap: 12px !important;
         padding: 16px !important;
     }

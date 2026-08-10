@@ -296,7 +296,7 @@ var LANG = {
   h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
 
       h_support:
-        "<strong>🤝 Support</strong><br><br>• Shows an image, title, link, and description for a support resource.",
+        "<strong>🤝 Cymorth</strong><br><br>• Mae'r elfen Gymorth yn cynnwys llwytho delwedd neu fideo.<br>• Gall y ddolen fod i'ch gwefan, siop, tudalen rhoi, cyflenwr tocynnau ac ati.<br>• Ffurfweddu yn <strong>Gosodiadau → Cymorth</strong>.<br>• Llwythwch ddelwedd neu fideo (wedi'i storio fel URL data).<br>• Ychwanegwch deitl, dolen URL allanol, a disgrifiad.<br>• Mae'r holl ddata'n cael ei gadw'n lleol yn eich porwr.",
 
   h_modalTitle: "Cymorth Modiwl",
   h_gotIt: "Iawn",

@@ -309,7 +309,7 @@ var LANG = {
   h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",
 
       h_support:
-        "<strong>🤝 Support</strong><br><br>• Shows an image, title, link, and description for a support resource.",
+        "<strong>🤝 Tacaíocht</strong><br><br>• Tá uaslódáil íomhá nó físeáin san eilimint Tacaíochta.<br>• Is féidir an nasc a bheith chuig do shuíomh gréasáin, siopa, leathanach síntiús, soláthraí ticéad srl.<br>• Cumraigh in <strong>Socruithe → Tacaíocht</strong>.<br>• Uaslódáil íomhá nó físeán (stóráilte mar URL sonraí).<br>• Cuir teideal, nasc URL seachtrach, agus cur síos leis.<br>• Sábháiltear na sonraí go léir go háitiúil i do bhrabhsálaí.",
 
   h_modalTitle: "Cabhair an Mhodúil",
   h_gotIt: "Tuigim",

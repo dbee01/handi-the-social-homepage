@@ -407,7 +407,7 @@ var LANG = {
               "<strong>🎙️ Cast (Podcasts)</strong><br><br>• Upload podcast audio files (250MB limit per file).<br>• Use the lock icon to unlock, then click a track to play.<br>• Use ⏮ ⏭ buttons to navigate between tracks.<br>• The visualiser animates while playing.<br>• Podcasts are stored locally in your browser.",
 
             h_support:
-              "<strong>🤝 Support</strong><br><br>• Shows an image, title, link, and description for a support resource.<br>• Configure in <strong>Settings → Support</strong>.<br>• Upload an image (stored as data URL).<br>• Add a title, external URL link, and up to 300-word description.<br>• All data is saved locally in your browser.",
+              "<strong>🤝 Support</strong><br><br>• The Support element contains an image or video upload.<br>• The link can be to your website, shop, donation page, ticket supplier etc.<br>• Configure in <strong>Settings → Support</strong>.<br>• Upload an image or video (stored as data URL).<br>• Add a title, external URL link, and description.<br>• All data is saved locally in your browser.",
 
     h_modalTitle: "Module Help",
   h_gotIt: "Got it",

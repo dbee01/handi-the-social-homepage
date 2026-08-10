@@ -691,3 +691,39 @@
 {"ts":"2026-08-08T12:14:42.459Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smskc63hxlr36o6"}
 {"ts":"2026-08-08T13:13:24.586Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smske3pzxomxct2"}
 {"ts":"2026-08-08T13:13:25.431Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.16","theme":"senior","lang":"en"},"sid":"smske3pzxomxct2"}
+{"ts":"2026-08-10T07:19:45.159Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:19:45.523Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:19:47.523Z","level":1,"event":"page_load","details":{"loadTimeSec":"5.19","theme":"woman","lang":"ga"},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:21:37.323Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:21:37.588Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:21:39.392Z","level":1,"event":"page_load","details":{"loadTimeSec":"4.42","theme":"woman","lang":"ga"},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:21:55.065Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:21:55.069Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:21:56.727Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.50","theme":"woman","lang":"ga"},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:22:28.679Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:22:28.767Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:22:30.140Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.70","theme":"woman","lang":"ga"},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:23:10.160Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:23:10.647Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:23:10.852Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.54","theme":"woman","lang":"ga"},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:23:25.562Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:23:26.373Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.50","theme":"senior","lang":"ga"},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:23:26.470Z","level":2,"event":"news_load","details":{"source":"FEEDS NEWS","articles":8},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:23:50.838Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:23:51.412Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:23:51.574Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.68","theme":"senior","lang":"ga"},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:33:56.695Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:33:57.027Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:33:57.326Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.90","theme":"senior","lang":"ga"},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:43:39.099Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:43:39.178Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:43:41.316Z","level":1,"event":"page_load","details":{"loadTimeSec":"4.94","theme":"senior","lang":"ga"},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:45:47.506Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:45:47.552Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:45:49.290Z","level":1,"event":"page_load","details":{"loadTimeSec":"4.74","theme":"senior","lang":"ga"},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:50:25.495Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:50:25.995Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:50:27.102Z","level":1,"event":"page_load","details":{"loadTimeSec":"4.03","theme":"senior","lang":"ga"},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:57:12.002Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:57:12.299Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsmwiiqkwnc27a"}
+{"ts":"2026-08-10T07:57:13.580Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.54","theme":"senior","lang":"ga"},"sid":"smsmwiiqkwnc27a"}
