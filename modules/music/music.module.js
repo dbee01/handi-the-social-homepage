@@ -50,7 +50,6 @@ export default async function initMusic(container) {
     lockToggle.innerHTML = isLocked
       ? '<i class="fa-solid fa-lock"></i>'
       : '<i class="fa-solid fa-lock-open"></i>';
-    lockToggle.style.color = isLocked ? "#cc0000" : "#008000";
   }
   updateLockIcon();
   headerActions.appendChild(lockToggle);
