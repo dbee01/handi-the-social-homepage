@@ -322,6 +322,9 @@ header {
 .radio-play-btn.playing {
     background: #ffd700;
 }
+.radio-country-item {
+    background-color: unset;
+}
 .radio-station span:last-child {
     color: #f5f5f0;
 }

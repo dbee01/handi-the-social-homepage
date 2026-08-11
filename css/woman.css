@@ -15,9 +15,6 @@
    WOMAN THEME – Soft pinks & light blues, floral aesthetic
 ========================================================= */
 
-.music-synth {
-}
-
 /* ---------- BASE ---------- */
 html,
 body {
@@ -337,12 +334,20 @@ header {
     background: #ffffff;
     border-radius: 10px;
 }
+
+button .radio-country-item {
+    color: #3D2C3A;
+}
+
 .radio-play-btn {
     color: white;
     background: #c9a0b0;
 }
 .radio-play-btn.playing {
-    background: #d63384;
+    /* background: #d63384; */
+}
+.radio-country-item span {
+    color: #3D2C3A;
 }
 .radio-station span:last-child {
     color: #3d2c3a;
@@ -377,7 +382,7 @@ header {
     color: #d63384;
 }
 .news-scroll-btn {
-    background: #fff5f8;
+    background-color: #d63384;
     border: 2px solid #f0d6e0;
     border-radius: 10px;
     font-size: 16px;
@@ -504,6 +509,13 @@ header {
 .calendar-refresh-btn:hover {
     background: #f8c8d8;
 }
+#calendarAlertToggle {
+    background-color: #d63384 !important;
+}
+#calendarRefreshBtn,
+#calendarChangeUrlBtn {
+    background-color: #ff69b4 !important;
+}
 .calendar-event-time {
     font-size: 1.2rem;
     white-space: nowrap;
@@ -553,6 +565,9 @@ header {
 }
 .task-create-btn:hover {
     background: #b82d6e;
+}
+.task-add-subtask {
+    color: #3D2C3A;
 }
 
 /* ---------- LLM ---------- */

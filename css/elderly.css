@@ -74,7 +74,7 @@ header {
 .module-empty i,
 .radio-station i,
 .calendar-empty i {
-    color: #0047cc;
+    color: #fff;
 }
 
 #weather {
@@ -206,9 +206,8 @@ header {
 }
 
 .music-track-item {
-    background: #0047cc;
     border: 2px solid #0047cc;
-    color: #ffffff;
+    color: #1e1e1e;
 }
 .music-track-item:hover {
     background: #0037a3;
@@ -263,6 +262,9 @@ header {
 }
 .radio-play-btn.playing {
     background: lightgrey;
+}
+button.radio-country-item span {
+    color: #1E1E1E;
 }
 .radio-station span:last-child {
     color: #1e293b;
@@ -445,10 +447,9 @@ header {
 }
 .calendar-event-time {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 6px;
     font-weight: 700;
 }
 .calendar-time-start {
@@ -457,6 +458,9 @@ header {
 .calendar-time-end {
     font-size: 1.1rem;
     opacity: 0.85;
+}
+.calendar-time-sep {
+    margin: 0 2px;
 }
 .calendar-time-separator {
     display: none;

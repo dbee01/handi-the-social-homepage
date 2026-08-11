@@ -695,6 +695,10 @@ header {
    MUSIC LAYOUT
 ========================================================= */
 
+.music-header-actions {
+    display: none;
+}
+
 .music-content {
     display: flex;
     flex-direction: column;
@@ -875,6 +879,7 @@ header {
     font-size: 1rem;
     transition: background 0.2s;
     flex-shrink: 0;
+    color: #ffffff;
 }
 
 .radio-station span:last-child {
@@ -1062,6 +1067,7 @@ button,
 .chat-room-header button,
 .music-scroll-btn {
     min-height: 48px;
+    color: white;
 }
 
 /* =========================================================
@@ -1701,15 +1707,15 @@ button,
 
 .bus-item {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
     padding: 12px 0;
 }
 
 .bus-eta {
     font-size: 1.2rem;
-    font-weight: 700;
+    font-weight: 400;
 }
 
 .bus-route {

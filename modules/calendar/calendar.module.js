@@ -615,7 +615,7 @@ export default async function initCalendar(container) {
     html += '</div><div style="display:flex;align-items:center;gap:8px;">';
     html +=
       '<button id="calendarAlertToggle" class="calendar-refresh-btn" style="font-size:0.85rem;' +
-      (alertsEnabled ? 'background:#0047cc;color:#fff;' : '') +
+      (alertsEnabled ? 'color:#fff;' : '') +
       '">' +
       (alertsEnabled ? '🔔 ' + t("d_on", "Alerts On") : '🔕 ' + t("d_off", "Alerts Off")) +
       '</button>';
@@ -648,15 +648,16 @@ export default async function initCalendar(container) {
         var startDate = event.start ? new Date(event.start) : null;
         var endDate = event.end ? new Date(event.end) : null;
         var timeOpts = { hour: "2-digit", minute: "2-digit" };
+        var timeStr = "";
+        if (startDate) {
+          timeStr = startDate.toLocaleTimeString([], timeOpts);
+          if (endDate && endDate > startDate) {
+            timeStr += " - " + endDate.toLocaleTimeString([], timeOpts);
+          }
+        }
         html += '<div class="calendar-event-card">';
         html += '<div class="calendar-event-time">';
-        html += '<i class="fa-regular fa-clock"></i>';
-        if (startDate) {
-          html += '<span class="calendar-time-start">' + escapeHtml(startDate.toLocaleTimeString([], timeOpts)) + '</span>';
-        }
-        if (endDate && endDate > startDate) {
-          html += '<span class="calendar-time-end">' + escapeHtml(endDate.toLocaleTimeString([], timeOpts)) + '</span>';
-        }
+        html += '<i class="fa-regular fa-clock"></i> ' + escapeHtml(timeStr || "Time TBD");
         html += "</div>";
         html += '<div class="calendar-event-details">';
         html +=

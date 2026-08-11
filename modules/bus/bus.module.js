@@ -258,8 +258,7 @@ export default async function initBus(container) {
         return `
           <div class="bus-item">
             ${label}
-            <span>${arrivalText}</span>
-            <span class="bus-eta">${etaStr}</span>
+            ${arrivalText} <span class="bus-eta">${etaStr}</span>
           </div>`;
       })
       .join("");
