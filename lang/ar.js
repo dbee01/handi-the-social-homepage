@@ -32,7 +32,7 @@ var LANG = {
   consentText:
     'أوافق على <a href="https://handihomepage.com/privacy">سياسة الخصوصية</a> و<a href="https://handihomepage.com/terms">الشروط</a>',
   btnReset: "\u27F3 إعادة تعيين",
-  btnPremium: "\u2B50 النسخة المميزة (30 يوماً)",
+  btnPremium: "<i class='fa-solid fa-star'></i> النسخة المميزة (7 أيام)",
   btnSubmit: "\u2713 إرسال",
   btnSitePack: "📦 تحميل حزمة الموقع",
   btnAdd: "\u2717",

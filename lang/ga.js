@@ -39,7 +39,7 @@ var LANG = {
     'Glacaim leis an <a href="https://handihomepage.com/privacy">bPolasaí Príobháideachais</a> agus na <a href="https://handihomepage.com/terms">Téarmaí &amp; Coinníollacha</a>',
 
   btnReset: "\u27F3 Athshocraigh",
-  btnPremium: "\u2B50 Cuir Préimh leis (triail 30 lá)",
+  btnPremium: "<i class='fa-solid fa-star'></i> Cuir Préimh leis (triail 7 lá)",
   btnSubmit: "\u2713 Cuir isteach",
   btnSitePack: "📦 Lódáil Pacáiste Suímh",
   btnAdd: "\u2717",

@@ -32,7 +32,7 @@ var LANG = {
   consentText:
     'Ik ga akkoord met het <a href="https://handihomepage.com/privacy">Privacybeleid</a> en de <a href="https://handihomepage.com/terms">Voorwaarden</a>',
   btnReset: "\u27F3 Herstellen",
-  btnPremium: "\u2B50 Premium (30 dagen)",
+  btnPremium: "<i class='fa-solid fa-star'></i> Premium (7 dagen)",
   btnSubmit: "\u2713 Bevestigen",
   btnSitePack: "📦 Sitepakket laden",
   btnAdd: "\u2717",

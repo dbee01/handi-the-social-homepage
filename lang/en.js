@@ -44,7 +44,7 @@ var LANG = {
 
   // Buttons
   btnReset: "\u27F3 Reset",
-  btnPremium: "\u2B50 Add Premium (30 day trial)",
+  btnPremium: "<i class='fa-solid fa-star'></i> Add Premium (7 day trial)",
   btnSubmit: "\u2713 Submit",
   btnSitePack: "\uD83D\uDCE6 Load Site Pack",
   btnAdd: "\u2717",

@@ -32,7 +32,7 @@ var LANG = {
   consentText:
     'Derbyniaf y <a href="https://handihomepage.com/privacy">Polisi Preifatrwydd</a> a\'r <a href="https://handihomepage.com/terms">Telerau</a>',
   btnReset: "\u27F3 Ailosod",
-  btnPremium: "\u2B50 Premiwm (30 diwrnod)",
+  btnPremium: "<i class='fa-solid fa-star'></i> Premiwm (7 diwrnod)",
   btnSubmit: "\u2713 Cyflwyno",
   btnSitePack: "📦 Llwytho Pecyn Safle",
   btnAdd: "\u2717",
