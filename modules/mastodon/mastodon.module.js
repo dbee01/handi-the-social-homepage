@@ -89,24 +89,22 @@ export default async function initMastodon(container) {
       <div class="module-empty">
         <i class="fa-brands fa-mastodon"></i>
         <p>${t("d_configureSocial", "Configure " + name + " element")}</p>
-        <div style="margin-top:12px;">
-          <select id="mastodonServerSelect" style="padding:8px 12px;border-radius:8px;border:2px solid #cbd5e1;font-size:1rem;max-width:100%;">
-            <option value="">${t("d_selectServer", "Select a Mastodon server")}</option>
-            ${MASTODON_SERVERS.map((s, i) => `<option value="${i}">${s.flag} ${s.name}</option>`).join("")}
-          </select>
-        </div>
+      </div>
+      <div class="mastodon-server-list" style="display:flex;flex-direction:column;gap:4px;margin-top:8px;max-height:300px;overflow-y:auto;">
+        ${MASTODON_SERVERS.map(function (s, i) {
+          return `<div class="mastodon-server-item" data-idx="${i}" style="display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;border-radius:8px;border:1px solid #e5e7eb;">${s.flag}<span>${escapeHtml(s.name)}</span></div>`;
+        }).join("")}
       </div>
     `;
-    var sel = content.querySelector("#mastodonServerSelect");
-    if (sel) {
-      sel.addEventListener("change", function () {
-        var idx = parseInt(this.value);
+    content.querySelectorAll(".mastodon-server-item").forEach(function (el) {
+      el.addEventListener("click", function () {
+        var idx = parseInt(el.getAttribute("data-idx"));
         if (idx >= 0 && MASTODON_SERVERS[idx]) {
           saveServer(MASTODON_SERVERS[idx].url);
           fetchMastodon();
         }
       });
-    }
+    });
   }
 
   async function fetchMastodon() {
