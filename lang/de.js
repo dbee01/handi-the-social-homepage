@@ -21,7 +21,7 @@ var LANG = {
     "Wach bleiben: Sonnen-Taste drücken, damit der Bildschirm an bleibt",
   tipHelp: "Hilfe: 'i'-Taste drücken für Infos zu Elementen",
   selectTheme: "\uD83C\uDFA8 Wähle dein Thema",
-  selectLanguage: "🌐 Wählen Sie Ihre Sprache",
+  selectLanguage: "<i class='fa-solid fa-language'></i> Wählen Sie Ihre Sprache",
   themeEssential: "Essentiell",
   themeEssentialDesc: "Hoher Kontrast &amp; große Schrift",
   themeTechie: "Technik",

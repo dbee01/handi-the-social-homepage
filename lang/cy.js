@@ -17,7 +17,7 @@ var LANG = {
   tipStayAwake: "Aros yn effro: pwyswch yr haul",
   tipHelp: "Cymorth: pwyswch 'i'",
   selectTheme: "\uD83C\uDFA8 Dewiswch eich thema",
-  selectLanguage: "🌐 Dewiswch eich iaith",
+  selectLanguage: "<i class='fa-solid fa-language'></i> Dewiswch eich iaith",
   themeEssential: "Hanfodol",
   themeEssentialDesc: "Cyferbyniad uchel &amp; teip mawr",
   themeTechie: "Technegol",

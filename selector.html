@@ -813,7 +813,7 @@
                     </div>
 -->
                     <h3 id="langHeading" style="text-align: center; padding: 1.5rem">
-                        🌐 Language
+                        <i class="fa-solid fa-language"></i> Language
                     </h3>
 
                     <div
@@ -873,7 +873,7 @@
                     </div>
 
                     <h3 style="text-align: center; padding: 1.5rem">
-                        🎨 Select your theme
+                        <i class="fa-solid fa-palette"></i> Select your theme
                     </h3>
 
                     <div class="theme-selector">
@@ -882,7 +882,7 @@
                                 class="theme-option theme-senior"
                                 data-theme="senior"
                             >
-                                <span class="theme-icon">🧑‍🦳</span>
+                                <span class="theme-icon"><i class="fa-solid fa-user"></i></span>
                                 <span class="theme-label">Essential</span>
                                 <span class="theme-desc"
                                     >High contrast &amp; large type</span
@@ -892,7 +892,7 @@
                                 class="theme-option theme-techie"
                                 data-theme="techie"
                             >
-                                <span class="theme-icon">🖥️</span>
+                                <span class="theme-icon"><i class="fa-solid fa-terminal"></i></span>
                                 <span class="theme-label">Techie</span>
                                 <span class="theme-desc"
                                     >Green phosphor terminal</span
@@ -902,7 +902,7 @@
                                 class="theme-option theme-woman"
                                 data-theme="woman"
                             >
-                                <span class="theme-icon">🌸</span>
+                                <span class="theme-icon"><i class="fa-solid fa-flower"></i></span>
                                 <span class="theme-label">Blossom</span>
                                 <span class="theme-desc"
                                     >Soft pinks &amp; light blues</span
@@ -912,7 +912,7 @@
                                 class="theme-option theme-student"
                                 data-theme="student"
                             >
-                                <span class="theme-icon">⚡</span>
+                                <span class="theme-icon"><i class="fa-solid fa-bolt"></i></span>
                                 <span class="theme-label">Campus</span>
                                 <span class="theme-desc"
                                     >Bold yellow &amp; black</span
@@ -922,13 +922,13 @@
                     </div>
 
                     <h3 style="text-align: center; padding: 1.5rem">
-                        🔧 Select your modules
+                        <i class="fa-solid fa-wrench"></i> Select your modules
                     </h3>
 
                     <div class="module-groups-row">
                         <div class="module-group">
                             <div class="group-title free-title">
-                                🆓 FREE MODULES
+                                <i class="fa-solid fa-gift"></i> FREE MODULES
                             </div>
                             <div
                                 id="freeModulesList"
@@ -938,7 +938,7 @@
 
                         <div class="module-group">
                             <div class="group-title premium-title">
-                                💎 PREMIUM MODULES
+                                <i class="fa-solid fa-gem"></i> PREMIUM MODULES
                             </div>
                             <div
                                 id="premiumModulesList"
@@ -965,7 +965,7 @@
                     </div>
 
                     <div class="action-buttons" style="margin-bottom: 16px">
-                        <button id="resetBtn" class="reset-btn">⟳ Reset</button>
+                        <button id="resetBtn" class="reset-btn"><i class="fa-solid fa-rotate-right"></i> Reset</button>
                         <a
                             href="https://buy.stripe.com/14AbJ05WbgWM73pbIfdUY00"
                             class="premium-trial-btn"
@@ -975,12 +975,12 @@
                                 text-align: center;
                                 line-height: normal;
                             "
-                            >⭐ Add Premium (7 day trial)</a
+                            ><i class="fa-solid fa-star"></i> Add Premium (7 day trial)</a
                         >
                         <button id="applyBtn" class="apply-btn">
-                                                    ✓ Submit
-                                                </button>
-                                                <a href="/upload.html" id="uploadPackBtn" class="premium-trial-btn" onclick="if(!hasConsent()){event.preventDefault();var b=document.getElementById('privacyConsent');b.style.outline='3px solid red';setTimeout(function(){b.style.outline='';},2000);alert(window.LANG?.alertConsentApply||'Please accept the Privacy Policy first.');}" style="text-decoration:none;display:inline-block;text-align:center;line-height:normal;background:#64748b;color:#fff;">📦 Load Site Pack</a>
+                            <i class="fa-solid fa-check"></i> Submit
+                        </button>
+                        <a href="/upload.html" id="uploadPackBtn" class="premium-trial-btn" onclick="if(!hasConsent()){event.preventDefault();var b=document.getElementById('privacyConsent');b.style.outline='3px solid red';setTimeout(function(){b.style.outline='';},2000);alert(window.LANG?.alertConsentApply||'Please accept the Privacy Policy first.');}" style="text-decoration:none;display:inline-block;text-align:center;line-height:normal;background:#64748b;color:#fff;"><i class="fa-solid fa-box"></i> Load Site Pack</a>
                                             </div>
                 </>
             </div>
@@ -1265,7 +1265,7 @@
                             var it = document.getElementById("instructionsText");
                             if (it && LANG.instructionsText) it.innerHTML = LANG.instructionsText;
                             var lh = document.getElementById("langHeading");
-                            if (lh && LANG.selectLanguage) lh.textContent = LANG.selectLanguage;
+                            if (lh && LANG.selectLanguage) lh.innerHTML = LANG.selectLanguage;
                             var sp = document.getElementById("sitePackHint");
                             if (sp && LANG.sitePackHint) sp.innerHTML = LANG.sitePackHint;
                             var up = document.getElementById("uploadPackBtn");

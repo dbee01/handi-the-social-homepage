@@ -150,24 +150,25 @@ export default async function initMastodon(container) {
       const serverInfo = MASTODON_SERVERS.find(function (s) {
         return s.url === instance;
       });
-      const serverDisplay = serverInfo
-        ? serverInfo.flag + " " + serverInfo.name
+      const serverName = serverInfo
+        ? serverInfo.name
         : instance;
+      const serverFlag = serverInfo ? serverInfo.flag : "";
       var headerBar = document.createElement("div");
       headerBar.style.cssText =
         "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;";
       var feedLabel = feedType === "profile" && profileAccount
-              ? "👤 " + escapeHtml(profileAccount)
+              ? '<i class="fa-solid fa-user"></i> ' + escapeHtml(profileAccount)
               : feedType === "hashtag" && hashtag
-                ? "#️⃣ #" + escapeHtml(hashtag.replace(/^#/, ""))
-                : "📈 " + t("d_trending", "Trending");
+                ? '<i class="fa-solid fa-hashtag"></i> ' + escapeHtml(hashtag.replace(/^#/, ""))
+                : '<i class="fa-solid fa-arrow-trend-up"></i> ' + t("d_trending", "Trending");
             headerBar.innerHTML =
               '<small style="opacity:0.7;">' +
-              escapeHtml(serverDisplay) + ' · ' + feedLabel +
+              serverFlag + " " + escapeHtml(serverName) + " · " + feedLabel +
               "</small>" +
               '<button id="mastodonChangeServer" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;" title="' +
               t("d_changeServer", "Change server") +
-              '">🔄 ' +
+              '"><i class="fa-solid fa-rotate-right"></i> ' +
               t("d_changeServer", "Server") +
               "</button>";
       content.appendChild(headerBar);

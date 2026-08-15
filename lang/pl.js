@@ -17,7 +17,7 @@ var LANG = {
   tipStayAwake: "Nie wygaszaj: naciśnij słońce",
   tipHelp: "Pomoc: naciśnij 'i'",
   selectTheme: "\uD83C\uDFA8 Wybierz motyw",
-  selectLanguage: "🌐 Wybierz swój język",
+  selectLanguage: "<i class='fa-solid fa-language'></i> Wybierz swój język",
   themeEssential: "Niezbędny",
   themeEssentialDesc: "Wysoki kontrast &amp; duża czcionka",
   themeTechie: "Techniczny",

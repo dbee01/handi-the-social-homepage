@@ -17,7 +17,7 @@ var LANG = {
   tipStayAwake: "Wakker blijven: druk op de zon",
   tipHelp: "Help: druk op 'i' voor info",
   selectTheme: "\uD83C\uDFA8 Kies je thema",
-  selectLanguage: "🌐 Kies uw taal",
+  selectLanguage: "<i class='fa-solid fa-language'></i> Kies uw taal",
   themeEssential: "Essentieel",
   themeEssentialDesc: "Hoog contrast &amp; groot lettertype",
   themeTechie: "Technisch",

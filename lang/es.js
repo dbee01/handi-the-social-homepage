@@ -20,7 +20,7 @@ var LANG = {
     "Mantener despierto: pulse el sol para mantener la pantalla encendida",
   tipHelp: "Ayuda: pulse el botón 'i' para obtener información",
   selectTheme: "\uD83C\uDFA8 Selecciona tu tema",
-  selectLanguage: "🌐 Selecciona tu idioma",
+  selectLanguage: "<i class='fa-solid fa-language'></i> Selecciona tu idioma",
   themeEssential: "Esencial",
   themeEssentialDesc: "Alto contraste &amp; letra grande",
   themeTechie: "Tecnológico",

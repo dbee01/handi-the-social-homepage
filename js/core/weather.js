@@ -15,30 +15,30 @@ function escapeHtml(str) {
 }
 
 function getWeatherIcon(code) {
-    const svg = {
-      0: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
-      1: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
-      2: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><circle cx="7" cy="8" r="2"/><path d="M7 3v2M7 11v2M2 8h2M10 8h2"/></svg>',
-      3: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>',
-      45: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h16M6 18h12M9 10h6"/></svg>',
-      48: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h16M6 18h12M9 10h6"/></svg>',
-      51: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M8 20v2M12 20v3M16 20v2"/></svg>',
-      53: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M8 20v2M12 20v3M16 20v2"/></svg>',
-      55: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M8 20v2M12 20v3M16 20v2"/></svg>',
-      61: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M8 19l-1 2M12 19l-1 3M16 19l-1 2"/></svg>',
-      63: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M8 19l-1 2M12 19l-1 3M16 19l-1 2"/></svg>',
-      65: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M7 19l-2 2M11 19l-2 4M15 19l-2 2"/></svg>',
-      71: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M8 20h.01M12 21h.01M16 20h.01"/></svg>',
-      73: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M8 20h.01M12 21h.01M16 20h.01"/></svg>',
-      75: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M8 20h.01M12 21h.01M16 20h.01"/></svg>',
-      80: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M8 19l-1 2M12 19l-1 3M16 19l-1 2"/></svg>',
-      81: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M8 19l-1 2M12 19l-1 3M16 19l-1 2"/></svg>',
-      82: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M7 19l-2 2M11 19l-2 4M15 19l-2 2"/></svg>',
-      85: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M8 20h.01M12 21h.01M16 20h.01"/></svg>',
-      86: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M8 20h.01M12 21h.01M16 20h.01"/></svg>',
-      95: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M13 15l-2 4h3l-1 3"/></svg>',
+    const icon = {
+      0: 'fa-sun',
+      1: 'fa-sun',
+      2: 'fa-cloud-sun',
+      3: 'fa-cloud',
+      45: 'fa-smog',
+      48: 'fa-smog',
+      51: 'fa-cloud-rain',
+      53: 'fa-cloud-rain',
+      55: 'fa-cloud-rain',
+      61: 'fa-cloud-rain',
+      63: 'fa-cloud-showers-heavy',
+      65: 'fa-cloud-showers-heavy',
+      71: 'fa-snowflake',
+      73: 'fa-snowflake',
+      75: 'fa-snowflake',
+      80: 'fa-cloud-showers-heavy',
+      81: 'fa-cloud-showers-heavy',
+      82: 'fa-cloud-showers-heavy',
+      85: 'fa-snowflake',
+      86: 'fa-snowflake',
+      95: 'fa-cloud-bolt',
     };
-    return svg[code] || svg[0];
+    return '<i class="fa-solid ' + (icon[code] || icon[0]) + '"></i>';
 }
 
 function getWeatherDescription(code) {
@@ -176,8 +176,8 @@ export async function updateWeather() {
         if (temp !== null && outlook !== null) {
             const weatherIcon = getWeatherIcon(weatherCode);
             weatherEl.innerHTML = `
-                <div class="weather-location"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg> ${escapeHtml(displayLocation)}</div>
-                <div class="weather-temp"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4a2 2 0 0 0-4 0v10.76a4 4 0 1 0 4 0z"/></svg> ${temp}°C</div>
+                <div class="weather-location"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayLocation)}</div>
+                <div class="weather-temp"><i class="fa-solid fa-temperature-half"></i> ${temp}°C</div>
                 <div class="weather-outlook">${weatherIcon} ${escapeHtml(outlook)}</div>
             `;
         } else {

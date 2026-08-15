@@ -23,7 +23,7 @@ var LANG = {
 
   // Theme selector
   selectTheme: "\uD83C\uDFA8 Select your theme",
-  selectLanguage: "🌐 Select your language",
+  selectLanguage: "<i class='fa-solid fa-language'></i> Select your language",
   themeEssential: "Essential",
   themeEssentialDesc: "High contrast &amp; large type",
   themeTechie: "Techie",

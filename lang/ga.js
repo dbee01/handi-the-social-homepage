@@ -21,7 +21,7 @@ var LANG = {
   tipHelp: "Cabhair: brúigh an cnaipe 'i' chun eolas a fháil",
 
   selectTheme: "\uD83C\uDFA8 Roghnaigh do théama",
-  selectLanguage: "🌐 Roghnaigh do theanga",
+  selectLanguage: "<i class='fa-solid fa-language'></i> Roghnaigh do theanga",
   themeEssential: "Riachtanach",
   themeEssentialDesc: "Ardchodarsnacht &amp; cló mór",
   themeTechie: "Teicniúil",

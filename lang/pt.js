@@ -17,7 +17,7 @@ var LANG = {
   tipStayAwake: "Manter ativo: pressione o sol",
   tipHelp: "Ajuda: pressione 'i'",
   selectTheme: "\uD83C\uDFA8 Escolha o seu tema",
-  selectLanguage: "🌐 Selecione seu idioma",
+  selectLanguage: "<i class='fa-solid fa-language'></i> Selecione seu idioma",
   themeEssential: "Essencial",
   themeEssentialDesc: "Alto contraste &amp; letras grandes",
   themeTechie: "Tecnológico",
