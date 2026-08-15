@@ -910,3 +910,4 @@
 {"ts":"2026-08-13T08:18:23.298Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsr8xfa0v5gx3d"}
 {"ts":"2026-08-13T08:18:25.196Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsr8xfa0v5gx3d"}
 {"ts":"2026-08-13T08:18:25.270Z","level":1,"event":"page_load","details":{"loadTimeSec":"8.31","theme":"techie","lang":"en"},"sid":"smsr8xfa0v5gx3d"}
+{"ts":"2026-08-14T08:56:57.619Z","level":2,"event":"language_change","details":{"lang":"ga"},"sid":"smsr8xfa0v5gx3d"}

@@ -106,7 +106,7 @@ function initWeatherWidget() {
   if (!weatherEl) return;
   
   // Show loading state
-  weatherEl.innerHTML = '🌤️ --°C';
+  weatherEl.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg> --°C';
   
   async function fetchWeather() {
     try {
@@ -117,18 +117,18 @@ function initWeatherWidget() {
         const data = await response.json();
         if (data.current_weather) {
           const temp = Math.round(data.current_weather.temperature);
-          weatherEl.innerHTML = `🌤️ ${temp}°C`;
+          weatherEl.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg> ' + temp + '°C';
           return;
         }
       }
       
       // Fallback to mock data
-      weatherEl.innerHTML = '🌤️ 14°C';
+      weatherEl.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg> 14°C';
       
     } catch (error) {
       console.error('Weather fetch error:', error);
       // Set a reasonable default
-      weatherEl.innerHTML = '🌤️ 14°C';
+      weatherEl.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg> 14°C';
     }
   }
   
