@@ -6,6 +6,7 @@
 
 // modules/music/music.module.js
 import { loadMusic, saveMusic } from "../../js/core/storage.js";
+import { loadSettings } from "../../js/core/settings.js";
 
 function removeFileExtension(filename) {
   return filename
@@ -13,6 +14,35 @@ function removeFileExtension(filename) {
     .replace(/[+_\-]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+// Returns true only when the URL answers with a 2xx status (HEAD first, GET fallback).
+async function musicStreamOk(url) {
+  function withTimeout(opts) {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () {
+      ctrl.abort();
+    }, 8000);
+    return fetch(url, Object.assign({ cache: "no-store", signal: ctrl.signal }, opts)).finally(
+      function () {
+        clearTimeout(timer);
+      },
+    );
+  }
+  try {
+    var r = await withTimeout({ method: "HEAD" });
+    if (r.ok) return true;
+  } catch (e) {}
+  try {
+    var r = await withTimeout({ method: "GET" });
+    if (r.ok) {
+      try {
+        if (r.body && r.body.cancel) r.body.cancel();
+      } catch (e) {}
+      return true;
+    }
+  } catch (e) {}
+  return false;
 }
 
 export default async function initMusic(container) {
@@ -96,6 +126,22 @@ export default async function initMusic(container) {
     return;
   }
 
+  // LIST & PLAY: when a stream URL is configured and reachable, play it first.
+  var streamUrl = "";
+  try {
+    streamUrl = (
+      (loadSettings().music && loadSettings().music.streamUrl) ||
+      ""
+    ).trim();
+  } catch (e) {
+    streamUrl = "";
+  }
+  if (streamUrl && (await musicStreamOk(streamUrl))) {
+    tracks = [
+      { name: t("d_musicStream", "Live Stream"), url: streamUrl, isStream: true },
+    ].concat(tracks);
+  }
+
   if (!tracks.length) {
     content.innerHTML =
       '<div class="module-empty"><i class="fa-solid fa-music"></i><p>' +
@@ -110,7 +156,7 @@ export default async function initMusic(container) {
         window.triggerLoad({
           accept: "audio/*",
           multiple: true,
-          maxSizeMB: 50,
+          maxSizeMB: 1024,
           onFiles: async (files) => {
             var existing = [];
             try { existing = await loadMusic(); } catch (e) {}
@@ -282,11 +328,15 @@ export default async function initMusic(container) {
       var iconSpan = el.querySelector("span");
       var isCur = i === currentIndex && isPlaying;
       if (iconSpan) {
+        var baseIcon =
+          tracks[i] && tracks[i].isStream
+            ? "fa-tower-broadcast"
+            : "fa-music";
         iconSpan.innerHTML = isCur
           ? '<i class="fa-solid fa-pause"></i>'
           : i === currentIndex
             ? '<i class="fa-solid fa-play"></i>'
-            : '<i class="fa-solid fa-music"></i>';
+            : '<i class="fa-solid ' + baseIcon + '"></i>';
       }
       el.classList.toggle("active", i === currentIndex);
     });
@@ -483,7 +533,9 @@ export default async function initMusic(container) {
     var el = document.createElement("div");
     el.className = "music-track-item";
     var iconSpan = document.createElement("span");
-    iconSpan.innerHTML = '<i class="fa-solid fa-music"></i>';
+    iconSpan.innerHTML = tr.isStream
+      ? '<i class="fa-solid fa-tower-broadcast"></i>'
+      : '<i class="fa-solid fa-music"></i>';
     var nameSpan = document.createElement("span");
     nameSpan.textContent = removeFileExtension(tr.name);
     el.appendChild(iconSpan);
@@ -517,7 +569,7 @@ export default async function initMusic(container) {
       window.triggerLoad({
         accept: "audio/*",
         multiple: true,
-        maxSizeMB: 50,
+        maxSizeMB: 1024,
         onFiles: async function (files) {
           var existing = [];
           try { existing = await loadMusic(); } catch (e) {}

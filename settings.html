@@ -379,6 +379,14 @@
                             <option value="false">No</option>
                         </select>
                     </div>
+                    <div class="config-field">
+                        <label>Pixelfed user URL:</label
+                        ><input
+                            type="url"
+                            id="galleryPixelfedUrl"
+                            placeholder="https://pixelfed.social/users/username.atom"
+                        />
+                    </div>
                     <button class="upload-btn" id="uploadGalleryBtn">
                             📸 Load Images
                         </button>
@@ -418,6 +426,14 @@
                             <option value="false">Off</option>
                             <option value="true">On</option>
                         </select>
+                    </div>
+                    <div class="config-field">
+                        <label>Audio stream URL:</label
+                        ><input
+                            type="url"
+                            id="musicStreamUrl"
+                            placeholder="https://example.com/stream.mp3"
+                        />
                     </div>
                     <button class="upload-btn" id="uploadMusicBtn">
                             🎵 Load Music
@@ -653,10 +669,6 @@
                             </option>
                         </select>
                     </div>
-                    <div class="config-field">
-                                            <label>Trending limit:</label>
-                                            <input type="number" id="mastodonLimit" value="3" />
-                                        </div>
                                         <div class="config-field">
                                                                 <label>Feed type:</label>
                                                                 <div style="margin-bottom:6px;">
@@ -786,6 +798,37 @@
                             </div>
                             <div class="module-config">
                                 <small style="color:#64748b">Create and manage tasks with labels and subtasks.</small>
+                            </div>
+                        </div>
+
+                        <!-- Flip Module -->
+                        <div class="module-card" data-module="flip">
+                            <div class="module-header">
+                                <div class="module-title">
+                                    <i class="fa-solid fa-right-left"></i>
+                                    <h3>Flip</h3>
+                                </div>
+                                <div class="toggle-switch">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                            <div class="module-config">
+                                <div class="config-field">
+                                    <label>Flipboard User (URL, @user or 'user'):</label
+                                    ><input
+                                        type="text"
+                                        id="flipProfileUrl"
+                                        placeholder="https://flipboard.com/@CoinDesk.rss or @CoinDesk"
+                                    />
+                                </div>
+                                <div class="config-field">
+                                    <label>Flipboard Topic (URL, #topic or 'topic'):</label
+                                    ><input
+                                        type="text"
+                                        id="flipTopicUrl"
+                                        placeholder="https://flipboard.com/topic/corkcity.rss or #corkcity"
+                                    />
+                                </div>
                             </div>
                         </div>
 
@@ -1173,6 +1216,14 @@
                                                             <option value="false">Off</option>
                                                             <option value="true">On</option>
                                                         </select>
+                                                    </div>
+                                                    <div class="config-field">
+                                                        <label>Audio stream URL:</label>
+                                                        <input
+                                                            type="url"
+                                                            id="castStreamUrl"
+                                                            placeholder="https://example.com/stream.mp3"
+                                                        />
                                                     </div>
                                                     <button class="upload-btn" id="loadCastBtn">
                                                         🎙️ Load Podcasts
@@ -1695,6 +1746,30 @@
                     }
                 }
 
+                // Load gallery pixelfed URL
+                if (settings.gallery) {
+                    if (document.getElementById("galleryPixelfedUrl")) {
+                        document.getElementById("galleryPixelfedUrl").value =
+                            settings.gallery.pixelfedUrl || "";
+                    }
+                }
+
+                // Load cast settings
+                if (settings.cast) {
+                    if (document.getElementById("castStreamUrl")) {
+                        document.getElementById("castStreamUrl").value =
+                            settings.cast.streamUrl || "";
+                    }
+                }
+
+                // Load music stream URL
+                if (settings.music) {
+                    if (document.getElementById("musicStreamUrl")) {
+                        document.getElementById("musicStreamUrl").value =
+                            settings.music.streamUrl || "";
+                    }
+                }
+
                 // Load mastodon settings
                 if (settings.social) {
                     if (
@@ -1704,13 +1779,6 @@
                         document.getElementById("mastodonInstance").value =
                             settings.social.instance;
                     }
-                    if (
-                        document.getElementById("mastodonLimit") &&
-                        settings.social.limit
-                    ) {
-                        document.getElementById("mastodonLimit").value =
-                                                    settings.social.limit;
-                                            }
                                             if (settings.social.feedType) {
                                                 var fb = document.querySelector('input[name="mastodonFeed"][value="' + settings.social.feedType + '"]');
                                                 if (fb) fb.checked = true;
@@ -1747,6 +1815,18 @@
                     ) {
                         document.getElementById("newsMaxArticles").value =
                             settings.news.maxArticles;
+                    }
+                }
+
+                // Load flip settings
+                if (settings.flip) {
+                    if (document.getElementById("flipProfileUrl")) {
+                        document.getElementById("flipProfileUrl").value =
+                            settings.flip.profileUrl || "";
+                    }
+                    if (document.getElementById("flipTopicUrl")) {
+                        document.getElementById("flipTopicUrl").value =
+                            settings.flip.topicUrl || "";
                     }
                 }
             }
@@ -1792,6 +1872,9 @@
                 settings.gallery.autoStart =
                     document.getElementById("galleryAutoStart")?.value ===
                     "true";
+                                settings.gallery.pixelfedUrl =
+                                    document.getElementById("galleryPixelfedUrl")?.value.trim() ||
+                                    "";
 
                 if (!settings.music) settings.music = {};
                 settings.music.volume =
@@ -1799,6 +1882,9 @@
                     100;
                 settings.music.shuffle =
                                     document.getElementById("musicShuffle")?.value === "true";
+                                settings.music.streamUrl =
+                                    document.getElementById("musicStreamUrl")?.value.trim() ||
+                                    "";
 
                                 if (!settings.cast) settings.cast = {};
                                 settings.cast.volume =
@@ -1806,6 +1892,9 @@
                                     100;
                                 settings.cast.soundLock =
                                     document.getElementById("castSoundLock")?.value === "true";
+                                settings.cast.streamUrl =
+                                    document.getElementById("castStreamUrl")?.value.trim() ||
+                                    "";
 
                                 if (!settings.radio) settings.radio = {};
                                                 settings.radio.defaultCountry =
@@ -1825,12 +1914,15 @@
                         document.getElementById("newsMaxArticles")?.value,
                     ) || 4;
 
+                if (!settings.flip) settings.flip = {};
+                settings.flip.profileUrl =
+                    document.getElementById("flipProfileUrl")?.value.trim() || "";
+                settings.flip.topicUrl =
+                    document.getElementById("flipTopicUrl")?.value.trim() || "";
+
                 if (!settings.social) settings.social = {};
                 settings.social.instance =
                     document.getElementById("mastodonInstance")?.value || "";
-                settings.social.limit =
-                                    parseInt(document.getElementById("mastodonLimit")?.value) ||
-                                                        3;
                                 settings.social.feedType =
                                     document.querySelector('input[name="mastodonFeed"]:checked')?.value || "trending";
                                 settings.social.profile =
@@ -2330,7 +2422,7 @@
                     window.triggerLoad({
                         accept: "audio/*",
                         multiple: true,
-                        maxSizeMB: 50,
+                        maxSizeMB: 1024,
                         onFiles: async (files) => {
                                                     const { saveMusic } = await import("/js/core/storage.js");
                                                     await saveMusic(files);

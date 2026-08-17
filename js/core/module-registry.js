@@ -24,7 +24,7 @@ window.HANDI_MODULES = [
     desc: "Photos",
     tier: "free",
     defaultEnabled: 1,
-    settingsConfig: { speed: 8000, autoStart: true },
+    settingsConfig: { speed: 8000, autoStart: true, pixelfedUrl: "" },
   },
   {
     id: "music",
@@ -33,7 +33,7 @@ window.HANDI_MODULES = [
     desc: "Your playlists",
     tier: "free",
     defaultEnabled: 0,
-    settingsConfig: { volume: 100, shuffle: false, soundLock: false },
+    settingsConfig: { volume: 100, shuffle: false, soundLock: false, streamUrl: "" },
   },
   {
     id: "radio",
@@ -52,6 +52,15 @@ window.HANDI_MODULES = [
     tier: "free",
     defaultEnabled: 1,
     settingsConfig: { rssUrl: "", refresh: 15, maxArticles: 10 },
+  },
+  {
+    id: "flip",
+    name: "Flip",
+    icon: '<i class="fa-solid fa-right-left"></i>',
+    desc: "Flipboard feeds",
+    tier: "free",
+    defaultEnabled: 0,
+    settingsConfig: { profileUrl: "", topicUrl: "" },
   },
   {
     id: "social",
@@ -115,7 +124,7 @@ window.HANDI_MODULES = [
         desc: "Podcast player",
         tier: "premium",
         defaultEnabled: 0,
-        settingsConfig: { volume: 100, soundLock: false },
+        settingsConfig: { volume: 100, soundLock: false, streamUrl: "" },
   },
 
   {

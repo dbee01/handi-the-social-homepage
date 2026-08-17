@@ -19,13 +19,14 @@ const DEFAULT_SETTINGS = {
     chat: false,
     calendar: false,
   },
-  gallery: { slideSpeed: 3000, autoStart: true },
-  music: { volume: 100, shuffle: false },
+  gallery: { slideSpeed: 3000, autoStart: true, pixelfedUrl: "" },
+  music: { volume: 100, shuffle: false, streamUrl: "" },
   news: {
     rssUrl: "https://www.thejournal.ie/feed/",
     refreshInterval: 15,
     maxArticles: 10,
   },
+  flip: { profileUrl: "", topicUrl: "" },
   mastodon: { instanceUrl: "https://mastodon.ie", limit: 4 },
   live_bus: { routeIds: "", stopIds: "" },
   phone: { contacts: [], autoDialDelay: 10 },
@@ -39,6 +40,7 @@ const DEFAULT_SETTINGS = {
   },
   weather: { location: "Cork", country: "IE" },
   calendar: { url: "", notificationMinutes: 15 },
+  cast: { volume: 100, soundLock: false, streamUrl: "" },
 };
 
 export function loadSettings() {

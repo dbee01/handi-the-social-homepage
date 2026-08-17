@@ -61,7 +61,7 @@ export default async function initMastodon(container) {
 
   const STORAGE_KEY = "handiMastodonServer";
   const settings = loadSettings();
-    const limit = settings.social?.limit || 3;
+    const limit = 20;
     const feedType = settings.social?.feedType || "trending";
     const profileAccount = settings.social?.profile || "";
     const hashtag = settings.social?.hashtag || "";
@@ -171,59 +171,101 @@ export default async function initMastodon(container) {
               "</button>";
       content.appendChild(headerBar);
 
-      // Posts container
-      var postsContainer = document.createElement("div");
-      postsContainer.id = "mastodon-posts";
-      content.appendChild(postsContainer);
-
+      // Build post objects from the fetched data
+      var posts = [];
       for (const item of data) {
-              var titleText, urlLink, description, provider, image;
-              if (feedType === "profile" || feedType === "hashtag") {
-                // Status format
-                titleText = item.account?.display_name || item.account?.username || "";
-                urlLink = item.url || "#";
-                var div = document.createElement("div");
-                div.innerHTML = item.content || "";
-                description = div.textContent || div.innerText || "";
-                var rawAcct = item.account?.acct || "";
-                provider = rawAcct ? "@" + rawAcct.replace(/^@/, "") : "";
-                image = item.account?.avatar || "";
-              } else {
-                // Trending links format
-                titleText = item.title || t("d_untitled", "Untitled");
-                urlLink = item.url || "#";
-                description = item.description || "";
-                provider = item.provider_name || "";
-                image = item.image || "";
-              }
-        const shortDescription =
-          description.length > 150
-            ? `${description.substring(0, 150)}...`
-            : description;
+        var titleText, urlLink, description, provider, image;
+        if (feedType === "profile" || feedType === "hashtag") {
+          // Status format
+          titleText = item.account?.display_name || item.account?.username || "";
+          urlLink = item.url || "#";
+          var div = document.createElement("div");
+          div.innerHTML = item.content || "";
+          description = div.textContent || div.innerText || "";
+          var rawAcct = item.account?.acct || "";
+          provider = rawAcct ? "@" + rawAcct.replace(/^@/, "") : "";
+          var media = item.media_attachments && item.media_attachments[0];
+          image = media ? media.preview_url || media.url || "" : "";
+        } else {
+          // Trending links format
+          titleText = item.title || t("d_untitled", "Untitled");
+          urlLink = item.url || "#";
+          description = item.description || "";
+          provider = item.provider_name || "";
+          image = item.image || "";
+        }
+        posts.push({
+          title: titleText,
+          link: urlLink,
+          description:
+            description.length > 150
+              ? description.substring(0, 150) + "..."
+              : description,
+          provider: provider,
+          image: image,
+        });
+      }
 
-        const postDiv = document.createElement("div");
-        postDiv.className = "mastodon-item";
-        postDiv.style.marginBottom = "16px";
-        postDiv.style.padding = "16px";
-        postDiv.style.borderRadius = "12px";
-        postDiv.style.display = "flex";
-        postDiv.style.flexDirection = "column";
-        postDiv.style.flexWrap = "nowrap";
-        postDiv.style.alignContent = "center";
-        postDiv.style.alignItems = "center";
-        postDiv.style.textAlign = "center";
-        postDiv.style.gap = "12px";
+      var currentIndex = 0;
 
-        postDiv.innerHTML = `
-          ${image ? `<img class="mastodon-image" src="${image}" alt="" style="width:200px;height:auto;object-fit:cover;border-radius:8px;" onerror="this.style.display='none'">` : '<div><i class="fa-solid fa-link"></i></div>'}
-          <div class="mastodon-body" style="flex:1;">
-            <a class="mastodon-title" href="${urlLink}" target="_blank" rel="noopener noreferrer">${escapeHtml(titleText)}</a>
-            ${provider ? `<div class="mastodon-provider">${escapeHtml(provider)}</div>` : ""}
-            ${shortDescription ? `<div class="mastodon-desc">${escapeHtml(shortDescription)}</div>` : ""}
+      var carousel = document.createElement("div");
+      carousel.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;";
+
+      var leftBtn = document.createElement("button");
+      leftBtn.className = "mastodon-scroll-btn";
+      leftBtn.textContent = "‹";
+      leftBtn.style.cssText =
+        "flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1px solid #cbd5e1;" +
+        "background:#fff;cursor:pointer;font-size:1.4rem;line-height:1;color:#334155;";
+      leftBtn.setAttribute("aria-label", t("d_scrollLeft", "Previous post"));
+
+      var postView = document.createElement("div");
+      postView.className = "mastodon-post-view";
+      postView.style.cssText = "flex:1;min-width:0;";
+
+      var rightBtn = document.createElement("button");
+      rightBtn.className = "mastodon-scroll-btn";
+      rightBtn.textContent = "›";
+      rightBtn.style.cssText = leftBtn.style.cssText;
+      rightBtn.setAttribute("aria-label", t("d_scrollRight", "Next post"));
+
+      carousel.appendChild(leftBtn);
+      carousel.appendChild(postView);
+      carousel.appendChild(rightBtn);
+      content.appendChild(carousel);
+
+      function renderPost() {
+        var p = posts[currentIndex];
+        if (!p) {
+          postView.innerHTML = "";
+          return;
+        }
+        postView.innerHTML = `
+          <div class="mastodon-item" style="margin-bottom:0;padding:16px;border-radius:12px;display:flex;flex-direction:column;flex-wrap:nowrap;align-content:center;align-items:center;text-align:center;gap:12px;">
+            ${p.image ? `<img class="mastodon-image" src="${p.image}" alt="" style="width:200px;height:auto;object-fit:cover;border-radius:8px;" onerror="this.style.display='none'">` : '<div><i class="fa-solid fa-link"></i></div>'}
+            <div class="mastodon-body" style="flex:1;">
+              <a class="mastodon-title" href="${p.link}" target="_blank" rel="noopener noreferrer">${escapeHtml(p.title)}</a>
+              ${p.provider ? `<div class="mastodon-provider">${escapeHtml(p.provider)}</div>` : ""}
+              ${p.description ? `<div class="mastodon-desc">${escapeHtml(p.description)}</div>` : ""}
+            </div>
           </div>
         `;
-        postsContainer.appendChild(postDiv);
       }
+
+      function go(dir) {
+        if (!posts.length) return;
+        currentIndex = (currentIndex + dir + posts.length) % posts.length;
+        renderPost();
+      }
+
+      leftBtn.addEventListener("click", function () {
+        go(-1);
+      });
+      rightBtn.addEventListener("click", function () {
+        go(1);
+      });
+
+      renderPost();
 
       // Hook up the change server button in the header
       var changeBtn = content.querySelector("#mastodonChangeServer");

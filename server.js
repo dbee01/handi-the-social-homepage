@@ -856,6 +856,37 @@ app.get("/api/news", async (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
+// FEED PROXY – fetches an external Atom/RSS feed and returns its raw body with
+// the upstream status so clients can fall back when it isn't a 200.
+// -----------------------------------------------------------------------------
+app.get("/api/feed", async (req, res) => {
+  let feedUrl = req.query.url;
+  if (!feedUrl) return res.status(400).send("Missing feed URL");
+  try {
+    feedUrl = decodeURIComponent(feedUrl);
+  } catch (e) {}
+
+  console.log(`🖼️ Fetching feed from: ${feedUrl.substring(0, 100)}...`);
+  try {
+    const response = await axios.get(feedUrl, {
+      responseType: "text",
+      timeout: 15000,
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Accept: "application/atom+xml, application/rss+xml, application/xml, text/xml, */*",
+      },
+    });
+    res.status(200).type("application/xml").send(response.data);
+    console.log("✅ Feed fetched successfully");
+  } catch (error) {
+    const status = error.response ? error.response.status : 502;
+    console.error("❌ Feed proxy error:", error.message, "status:", status);
+    res.status(status).send("Failed to fetch feed: " + error.message);
+  }
+});
+
+// -----------------------------------------------------------------------------
 // HEALTH CHECK
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------

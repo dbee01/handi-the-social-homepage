@@ -7,6 +7,7 @@
 // modules/cast/cast.module.js
 // Podcast player — like the Player module but with 250MB load limit
 import { loadCastFn, saveCastFn } from "../../js/core/storage.js";
+import { loadSettings } from "../../js/core/settings.js";
 
 function removeFileExtension(filename) {
   return filename
@@ -14,6 +15,35 @@ function removeFileExtension(filename) {
     .replace(/[+_\-]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+// Returns true only when the URL answers with a 2xx status (HEAD first, GET fallback).
+async function castStreamOk(url) {
+  function withTimeout(opts) {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () {
+      ctrl.abort();
+    }, 8000);
+    return fetch(url, Object.assign({ cache: "no-store", signal: ctrl.signal }, opts)).finally(
+      function () {
+        clearTimeout(timer);
+      },
+    );
+  }
+  try {
+    var r = await withTimeout({ method: "HEAD" });
+    if (r.ok) return true;
+  } catch (e) {}
+  try {
+    var r = await withTimeout({ method: "GET" });
+    if (r.ok) {
+      try {
+        if (r.body && r.body.cancel) r.body.cancel();
+      } catch (e) {}
+      return true;
+    }
+  } catch (e) {}
+  return false;
 }
 
 export default async function initCast(container) {
@@ -75,6 +105,22 @@ export default async function initCast(container) {
     } catch (err) {
       tracks = [];
     }
+
+  // LIST & PLAY: when a stream URL is configured and reachable, play it first.
+  var streamUrl = "";
+  try {
+    streamUrl = (
+      (loadSettings().cast && loadSettings().cast.streamUrl) ||
+      ""
+    ).trim();
+  } catch (e) {
+    streamUrl = "";
+  }
+  if (streamUrl && (await castStreamOk(streamUrl))) {
+    tracks = [
+      { name: t("d_castStream", "Live Stream"), url: streamUrl, isStream: true },
+    ].concat(tracks);
+  }
 
   if (!tracks.length) {
     content.innerHTML =
@@ -203,11 +249,15 @@ export default async function initCast(container) {
       var iconSpan = el.querySelector("span");
       var isCur = i === currentIndex && isPlaying;
       if (iconSpan) {
+        var baseIcon =
+          tracks[i] && tracks[i].isStream
+            ? "fa-tower-broadcast"
+            : "fa-podcast";
         iconSpan.innerHTML = isCur
           ? '<i class="fa-solid fa-pause"></i>'
           : i === currentIndex
             ? '<i class="fa-solid fa-play"></i>'
-            : '<i class="fa-solid fa-podcast"></i>';
+            : '<i class="fa-solid ' + baseIcon + '"></i>';
       }
       el.classList.toggle("active", i === currentIndex);
     });
@@ -415,7 +465,9 @@ export default async function initCast(container) {
     var el = document.createElement("div");
     el.className = "music-track-item";
     var iconSpan = document.createElement("span");
-    iconSpan.innerHTML = '<i class="fa-solid fa-podcast"></i>';
+    iconSpan.innerHTML = tr.isStream
+      ? '<i class="fa-solid fa-tower-broadcast"></i>'
+      : '<i class="fa-solid fa-podcast"></i>';
     var nameSpan = document.createElement("span");
     nameSpan.textContent = removeFileExtension(tr.name);
     el.appendChild(iconSpan);

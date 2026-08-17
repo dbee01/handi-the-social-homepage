@@ -911,3 +911,30 @@
 {"ts":"2026-08-13T08:18:25.196Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsr8xfa0v5gx3d"}
 {"ts":"2026-08-13T08:18:25.270Z","level":1,"event":"page_load","details":{"loadTimeSec":"8.31","theme":"techie","lang":"en"},"sid":"smsr8xfa0v5gx3d"}
 {"ts":"2026-08-14T08:56:57.619Z","level":2,"event":"language_change","details":{"lang":"ga"},"sid":"smsr8xfa0v5gx3d"}
+{"ts":"2026-08-17T09:37:24.892Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:37:26.123Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:37:28.834Z","level":1,"event":"page_load","details":{"loadTimeSec":"5.67","theme":"techie","lang":"ga"},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:47:07.275Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:47:08.045Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.08","theme":"techie","lang":"ga"},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:47:08.448Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:47:44.741Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:47:45.098Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:47:45.668Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.87","theme":"techie","lang":"ga"},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:52:24.263Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:52:25.267Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.92","theme":"techie","lang":"ga"},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:52:25.806Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:55:12.092Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:55:13.884Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:55:14.145Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.22","theme":"techie","lang":"ga"},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:58:44.947Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:58:46.861Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":3},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T09:58:46.985Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.29","theme":"techie","lang":"ga"},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T10:03:28.273Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T10:03:29.847Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":11},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T10:03:37.641Z","level":1,"event":"page_load","details":{"loadTimeSec":"10.46","theme":"techie","lang":"ga"},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T10:04:30.176Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T10:04:30.343Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":11},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T10:04:31.239Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.79","theme":"techie","lang":"ga"},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T10:04:32.973Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T10:04:33.208Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":11},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T10:04:34.400Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.81","theme":"techie","lang":"ga"},"sid":"smsx1ij4pn506t3"}
