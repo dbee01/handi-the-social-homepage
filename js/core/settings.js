@@ -21,6 +21,7 @@ const DEFAULT_SETTINGS = {
   },
   gallery: { slideSpeed: 3000, autoStart: true, pixelfedUrl: "" },
   music: { volume: 100, shuffle: false, streamUrl: "" },
+  radio: { defaultCountry: "", volume: 100, soundLock: false, streamUrl: "" },
   news: {
     rssUrl: "https://www.thejournal.ie/feed/",
     refreshInterval: 15,

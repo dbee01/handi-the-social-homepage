@@ -362,6 +362,15 @@ export default async function initRadio(container) {
       localStorage.getItem("handiRadioCountry") ||
       "";
   } catch (e) {}
+
+  var streamUrl = "";
+  try {
+    streamUrl = (
+      (loadSettings().radio && loadSettings().radio.streamUrl) ||
+      ""
+    ).trim();
+  } catch (e) {}
+
   var selectedFlag = storedFlag;
   // If stored as country code, convert to SVG flag
   if (storedFlag && storedFlag.length === 2 && storedFlag.indexOf("<") === -1) {
@@ -431,45 +440,53 @@ export default async function initRadio(container) {
     activeStationItem = null,
     activeStationName = null;
 
+  function addStationRow(url, name, flagHtml) {
+    var d = document.createElement("div");
+    d.className = "radio-station";
+    d.style.cssText = "display:flex;align-items:center;gap:8px;";
+    var fs = document.createElement("span");
+    fs.style.fontSize = "1.2rem";
+    fs.innerHTML = flagHtml || '<i class="fa-solid fa-tower-broadcast"></i>';
+    var pi = document.createElement("span");
+    pi.className = "radio-play-btn";
+    pi.innerHTML = '<i class="fa-solid fa-play"></i>';
+    var ns = document.createElement("span");
+    ns.textContent = name;
+    ns.style.flex = "1";
+    d.appendChild(fs);
+    d.appendChild(pi);
+    d.appendChild(ns);
+    d.addEventListener("click", function (e) {
+      if (e.target.closest(".radio-lock-toggle, .pin-btn")) return;
+      playStation(url, name, d, pi);
+    });
+    d.stationData = { url: url, name: name, element: d, playBtn: pi };
+    list.appendChild(d);
+  }
+
   function renderStations() {
     list.innerHTML = "";
+    if (streamUrl) {
+      addStationRow(
+        streamUrl,
+        t("d_liveStream", "Live Stream"),
+        '<i class="fa-solid fa-tower-broadcast"></i>',
+      );
+    }
     if (!selectedFlag) {
-      list.innerHTML =
-        '<div class="module-empty" style="padding:20px;text-align:center;"><i class="fa-solid fa-radio"></i><p>' +
-        t("d_browseStations", "Select a country above to browse stations") +
-        "</p></div>";
-      nowPlaying.innerText = t("d_noStation", "No station playing");
+      if (!streamUrl) {
+        list.innerHTML =
+          '<div class="module-empty" style="padding:20px;text-align:center;"><i class="fa-solid fa-radio"></i><p>' +
+          t("d_browseStations", "Select a country above to browse stations") +
+          "</p></div>";
+        nowPlaying.innerText = t("d_noStation", "No station playing");
+      }
       return;
     }
     STATIONS.filter(function (s) {
       return s.flag === selectedFlag;
     }).forEach(function (station) {
-      var d = document.createElement("div");
-      d.className = "radio-station";
-      d.style.cssText = "display:flex;align-items:center;gap:8px;";
-      var fs = document.createElement("span");
-      fs.style.fontSize = "1.2rem";
-      fs.innerHTML = station.flag;
-      var pi = document.createElement("span");
-      pi.className = "radio-play-btn";
-      pi.innerHTML = '<i class="fa-solid fa-play"></i>';
-      var ns = document.createElement("span");
-      ns.textContent = station.name;
-      ns.style.flex = "1";
-      d.appendChild(fs);
-      d.appendChild(pi);
-      d.appendChild(ns);
-      d.addEventListener("click", function (e) {
-        if (e.target.closest(".radio-lock-toggle, .pin-btn")) return;
-        playStation(station.url, station.name, d, pi);
-      });
-      d.stationData = {
-        url: station.url,
-        name: station.name,
-        element: d,
-        playBtn: pi,
-      };
-      list.appendChild(d);
+      addStationRow(station.url, station.name, station.flag);
     });
   }
   renderStations();

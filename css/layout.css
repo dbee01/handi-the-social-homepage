@@ -1070,6 +1070,12 @@ button,
     color: white;
 }
 
+/* Chat controls should use the default text color (not white) */
+.chat-refresh-btn,
+.chat-room-header .chat-toggle-msgs {
+    color: inherit;
+}
+
 /* =========================================================
    TASK LAYOUT
 ========================================================= */

@@ -24,6 +24,7 @@ const PRECACHE = [
   "/js/core/load.js",
   "/js/core/module-buttons.js",
   "/js/core/settings.js",
+  "/js/core/handi-pack.js",
   "/js/core/storage.js",
   "/js/core/layout.js",
   "/js/core/footer-controls.js",

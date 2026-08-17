@@ -42,7 +42,7 @@ window.HANDI_MODULES = [
     desc: "Radio stations",
     tier: "free",
     defaultEnabled: 0,
-    settingsConfig: { defaultStation: "0", volume: 100, soundLock: false },
+    settingsConfig: { defaultStation: "0", volume: 100, soundLock: false, streamUrl: "" },
   },
   {
     id: "news",

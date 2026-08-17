@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
     <head>
+        <script src="/js/core/handi-pack.js"></script>
         <meta charset="UTF-8" />
         <meta
             name="viewport"
@@ -218,6 +219,31 @@
                 <span id="weather"><i class="fa-solid fa-sun"></i> --°C</span>
             </div>
         </header>
+        <script>
+            // Apply Handi Pack branding (logo, homepage link, title) if present.
+            (function () {
+                try {
+                    var logoLink = document.querySelector(".handi-logo .logo-link");
+                    if (!logoLink) return;
+                    var name = localStorage.getItem("handiPackName");
+                    var logo = localStorage.getItem("handiPackLogo");
+                    var home = localStorage.getItem("handiPackHomepage");
+                    if (home) logoLink.href = home;
+                    if (logo) {
+                        logoLink.innerHTML =
+                            '<img src="' +
+                            logo +
+                            '" alt="" style="height:40px;width:auto;" />';
+                    } else if (name) {
+                        var txt = logoLink.querySelector(".logo-text");
+                        if (txt) txt.textContent = name;
+                    }
+                    if (name) {
+                        document.title = name + " – Handi Homepage";
+                    }
+                } catch (e) {}
+            })();
+        </script>
 
         <div class="dashboard-wrapper">
             <main id="dashboard-grid">
@@ -300,6 +326,30 @@
                 </button>
             </div>
         </footer>
+
+        <div id="handi-pack-meta" class="brand" style="display:none;text-align:center;max-width:720px;margin:0 auto 8px;"></div>
+        <script>
+            // Surface Handi Pack metadata (name + description) when present.
+            (function () {
+                try {
+                    var name = localStorage.getItem("handiPackName");
+                    var desc = localStorage.getItem("handiPackDescription");
+                    if (!name && !desc) return;
+                    var el = document.getElementById("handi-pack-meta");
+                    if (!el) return;
+                    function esc(s) {
+                        return String(s).replace(/[&<>"]/g, function (m) {
+                            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m];
+                        });
+                    }
+                    var html = "";
+                    if (name) html += "<strong>" + esc(name) + "</strong>";
+                    if (desc) html += (html ? " &mdash; " : "") + esc(desc);
+                    el.innerHTML = html;
+                    el.style.display = "block";
+                } catch (e) {}
+            })();
+        </script>
 
         <div class="customize-link">
             <a href="/selector.html">⚙️ Customize Dashboard</a>

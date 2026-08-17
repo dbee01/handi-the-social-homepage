@@ -87,6 +87,7 @@ export default async function initTask(container) {
   function renderTasks() {
     const scrollTop = content.scrollTop;
     content.innerHTML = `
+      <div class="task-list" id="taskList"></div>
       <div class="task-create">
         <input type="text" id="taskTitle" class="task-input" placeholder="${t("d_taskTitle", "Task title")}">
         <input type="text" id="taskDesc" class="task-input task-input-sm" placeholder="${t("d_taskDesc", "Description (optional)")}">
@@ -101,7 +102,6 @@ export default async function initTask(container) {
         <button id="taskAddSubtask" class="task-add-subtask">+ ${t("d_addSubtask", "Add subtask")}</button>
         <button id="taskCreateBtn" class="task-create-btn">${editingIndex !== null ? t("d_updateTask", "Update Task") : t("d_addTask", "Add Task")}</button>
                 ${editingIndex !== null ? `<button id="taskCancelEdit" class="task-cancel-btn">${t("d_cancel", "Cancel")}</button>` : ""}</div>
-      <div class="task-list" id="taskList"></div>
     `;
     content.scrollTop = scrollTop;
 

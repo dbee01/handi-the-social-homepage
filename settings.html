@@ -1829,6 +1829,39 @@
                             settings.flip.topicUrl || "";
                     }
                 }
+
+                // Load chat settings (incl. Handi Pack rooms)
+                if (settings.chat) {
+                    if (
+                        document.getElementById("chatHomeserver") &&
+                        settings.chat.homeserver
+                    ) {
+                        document.getElementById("chatHomeserver").value =
+                            settings.chat.homeserver;
+                    }
+                    if (
+                        document.getElementById("chatUsername") &&
+                        settings.chat.username
+                    ) {
+                        document.getElementById("chatUsername").value =
+                            settings.chat.username;
+                    }
+                    var rooms = settings.chat.rooms || [];
+                    [
+                        document.getElementById("chatRoom1"),
+                        document.getElementById("chatRoom2"),
+                        document.getElementById("chatRoom3"),
+                    ].forEach(function (el, i) {
+                        if (el) el.value = rooms[i] || "";
+                    });
+                    if (
+                        document.getElementById("chatRefreshInterval") &&
+                        settings.chat.refreshInterval
+                    ) {
+                        document.getElementById("chatRefreshInterval").value =
+                            settings.chat.refreshInterval;
+                    }
+                }
             }
 
             function collectSettings() {

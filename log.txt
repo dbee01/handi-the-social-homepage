@@ -938,3 +938,37 @@
 {"ts":"2026-08-17T10:04:32.973Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsx1ij4pn506t3"}
 {"ts":"2026-08-17T10:04:33.208Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":11},"sid":"smsx1ij4pn506t3"}
 {"ts":"2026-08-17T10:04:34.400Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.81","theme":"techie","lang":"ga"},"sid":"smsx1ij4pn506t3"}
+{"ts":"2026-08-17T10:48:52.145Z","level":2,"event":"news_load","details":{"source":"CORKCITYFC NEWS","articles":8},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T10:48:53.033Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":11},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T10:48:56.628Z","level":1,"event":"page_load","details":{"loadTimeSec":"8.40","theme":"techie","lang":"ga"},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T10:50:15.100Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T10:50:15.382Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.05","theme":"techie","lang":"ga"},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T10:51:40.894Z","level":2,"event":"language_change","details":{"lang":"en"},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T10:51:59.245Z","level":2,"event":"news_load","details":{"source":"RTE NEWS","articles":8},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T10:52:00.268Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T10:52:01.368Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.11","theme":"techie","lang":"en"},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T10:56:28.040Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T10:56:28.782Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.34","theme":"techie","lang":"en"},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T10:59:35.059Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T10:59:35.434Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.25","theme":"techie","lang":"en"},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T11:02:49.652Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T11:02:51.795Z","level":1,"event":"page_load","details":{"loadTimeSec":"4.03","theme":"techie","lang":"en"},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T11:04:35.953Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T11:04:36.068Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.96","theme":"techie","lang":"en"},"sid":"smsx42e3694jcc4"}
+{"ts":"2026-08-17T11:19:58.143Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx5699q7suicw"}
+{"ts":"2026-08-17T11:19:59.716Z","level":1,"event":"page_load","details":{"loadTimeSec":"15.76","theme":"techie","lang":"en"},"sid":"smsx5699q7suicw"}
+{"ts":"2026-08-17T11:20:42.283Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx5699q7suicw"}
+{"ts":"2026-08-17T11:20:43.381Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.67","theme":"techie","lang":"en"},"sid":"smsx5699q7suicw"}
+{"ts":"2026-08-17T11:20:44.009Z","level":1,"event":"matrix_login_failed","details":{"username":"@bigboyfoolish:matrix.org","homeserver":"https://matrix.org","error":"MatrixError: [403] You have reached your hard device limit. Please visit your account page to sign some out. (https://matrix.org/_matrix/client/v3/login)"},"sid":"smsx5699q7suicw"}
+{"ts":"2026-08-17T11:25:54.126Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx5699q7suicw"}
+{"ts":"2026-08-17T11:25:54.236Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.98","theme":"techie","lang":"en"},"sid":"smsx5699q7suicw"}
+{"ts":"2026-08-17T11:26:42.692Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx5699q7suicw"}
+{"ts":"2026-08-17T11:26:43.104Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.54","theme":"techie","lang":"en"},"sid":"smsx5699q7suicw"}
+{"ts":"2026-08-17T11:30:02.116Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx5699q7suicw"}
+{"ts":"2026-08-17T11:30:05.225Z","level":1,"event":"page_load","details":{"loadTimeSec":"5.59","theme":"techie","lang":"en"},"sid":"smsx5699q7suicw"}
+{"ts":"2026-08-17T11:33:11.674Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx5n7nof5h3k4"}
+{"ts":"2026-08-17T11:33:13.294Z","level":1,"event":"page_load","details":{"loadTimeSec":"16.64","theme":"techie","lang":"en"},"sid":"smsx5n7nof5h3k4"}
+{"ts":"2026-08-17T11:37:28.866Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx5svshoqh2iw"}
+{"ts":"2026-08-17T11:37:31.760Z","level":1,"event":"page_load","details":{"loadTimeSec":"10.03","theme":"techie","lang":"en"},"sid":"smsx5svshoqh2iw"}
+{"ts":"2026-08-17T11:42:39.723Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsx5svshoqh2iw"}
+{"ts":"2026-08-17T11:42:42.214Z","level":1,"event":"page_load","details":{"loadTimeSec":"6.50","theme":"techie","lang":"en"},"sid":"smsx5svshoqh2iw"}
