@@ -223,7 +223,7 @@ export default async function initFlip(container) {
     if (item.title) {
       const h = document.createElement("div");
       h.style.cssText =
-        "font-size:0.95rem;font-weight:700;line-height:1.25;";
+        "font-size:var(--font-size);font-weight:700;line-height:1.25;";
       h.textContent = item.title;
       body.appendChild(h);
     }
@@ -231,7 +231,7 @@ export default async function initFlip(container) {
     if (item.description) {
       const d = document.createElement("div");
       d.style.cssText =
-        "font-size:0.82rem;color:#475569;line-height:1.35;" +
+        "font-size:var(--font-size);color:#475569;line-height:1.35;" +
         "display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;";
       d.textContent = item.description;
       body.appendChild(d);
@@ -244,7 +244,7 @@ export default async function initFlip(container) {
     if (metaParts.length) {
       const m = document.createElement("div");
       m.style.cssText =
-        "font-size:0.72rem;color:#94a3b8;margin-top:auto;padding-top:4px;";
+        "font-size:var(--font-size);color:#94a3b8;margin-top:auto;padding-top:4px;";
       m.textContent = metaParts.join(" · ");
       body.appendChild(m);
     }
