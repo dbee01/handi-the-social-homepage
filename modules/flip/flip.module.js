@@ -86,6 +86,16 @@ async function fetchFlipFeed(url) {
   return parseFlipFeed(text);
 }
 
+// Strip nested "topic from URL" wraps and any duplicated trailing feed suffix,
+// e.g. /topic/https://flipboard.com/topic/europeanfootball.rss.rss
+//      -> https://flipboard.com/topic/europeanfootball.rss
+function tidyFlipboardUrl(url) {
+  while (/^https?:\/\/flipboard\.com\/topic\/https?:\/\//i.test(url)) {
+    url = url.replace(/^https?:\/\/flipboard\.com\/topic\//i, "");
+  }
+  return url.replace(/(\.rss)+$/i, ".rss");
+}
+
 // Accepts a full URL, "#topic"/"'topic'" (topic), or "@user"/"'user'" (user)
 // and normalises it to a Flipboard RSS URL.
 function normalizeFlip(value, type) {
@@ -95,7 +105,7 @@ function normalizeFlip(value, type) {
   // Full Flipboard URL, with or without a scheme.
   if (/^(https?:\/\/)?flipboard\.com\//i.test(value)) {
     if (!/^https?:\/\//i.test(value)) value = "https://" + value;
-    return value;
+    return tidyFlipboardUrl(value);
   }
   // Any other full URL.
   if (/^https?:\/\//i.test(value)) return value;
@@ -112,7 +122,7 @@ function normalizeFlip(value, type) {
     type === "topic"
       ? "https://flipboard.com/topic/"
       : "https://flipboard.com/@";
-  return base + encodeURIComponent(value) + ".rss";
+  return tidyFlipboardUrl(base + encodeURIComponent(value) + ".rss");
 }
 
 export default async function initFlip(container) {

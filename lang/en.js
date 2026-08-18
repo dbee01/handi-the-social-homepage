@@ -150,6 +150,7 @@ var LANG = {
   d_formatNotSupported: "Format not supported",
   d_unknownError: "Unknown error",
   d_cannotPlayFile: "Cannot play file",
+  d_cannotPlayStream: "Cannot play live stream",
   d_cannotResume: "Cannot resume",
   d_invalidFile: "Invalid file",
 

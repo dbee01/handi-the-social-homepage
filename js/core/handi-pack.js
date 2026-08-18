@@ -133,10 +133,32 @@
     writeJson("handiSettings", settings);
 
     // ---------------------------------------------------------------------
-    // MMR (which modules are shown) from the `elements` list
+    // MMR (which modules are shown) from the `elements` list, plus any
+    // module that is configured by a dedicated pack parameter (e.g. `podcasts`
+    // enables the cast module even if `elements` forgot to list it).
     // ---------------------------------------------------------------------
     var elementsRaw = qs.get("elements");
-    if (elementsRaw) {
+    var autoModules = [];
+    if (qs.get("radio")) autoModules.push("radio");
+    if (qs.get("news")) autoModules.push("news");
+    if (qs.get("flipboard-topic") || qs.get("flipboard-profile"))
+      autoModules.push("flip");
+    if (qs.get("social-server") || qs.get("social-hashtag") || qs.get("social-profile"))
+      autoModules.push("social");
+    if (qs.get("matrix-server") || qs.get("chat-rooms"))
+      autoModules.push("chat");
+    if (
+      qs.get("support-image") ||
+      qs.get("support-image-title") ||
+      qs.get("support-description") ||
+      qs.get("support-link-url")
+    )
+      autoModules.push("support");
+    if (qs.get("gallery")) autoModules.push("gallery");
+    if (qs.get("music")) autoModules.push("music");
+    if (qs.get("podcasts")) autoModules.push("cast");
+
+    if (elementsRaw || autoModules.length) {
       // Keep this list in sync with js/core/module-registry.js.
       var knownIds = [
         "gallery",
@@ -163,16 +185,21 @@
         if (knownIds.indexOf(id) === -1) knownIds.push(id);
       });
 
-      // Build the MMR from scratch: everything off, then the pack's elements on.
+      // Build the MMR from scratch: everything off, then the pack's modules on.
       var next = {};
       knownIds.forEach(function (id) {
         next[id] = 0;
       });
-      elementsRaw.split(",").forEach(function (el) {
-        el = el.trim();
-        if (!el) return;
-        var key = idMap[el] || el;
-        next[key] = 1;
+      if (elementsRaw) {
+        elementsRaw.split(",").forEach(function (el) {
+          el = el.trim();
+          if (!el) return;
+          var key = idMap[el] || el;
+          next[key] = 1;
+        });
+      }
+      autoModules.forEach(function (id) {
+        next[id] = 1;
       });
       writeJson("handiMasterModules", next);
     }

@@ -17,6 +17,38 @@ function removeFileExtension(filename) {
     .trim();
 }
 
+// If `url` is an RSS/Atom podcast feed, parse its episodes (title + audio
+// enclosure) into tracks. Returns [] when it isn't a feed, so plain audio
+// stream URLs keep working through the live-stream path below.
+async function fetchCastFeed(url) {
+  try {
+    const resp = await fetch("/api/feed?url=" + encodeURIComponent(url));
+    if (!resp.ok) return [];
+    const doc = new DOMParser().parseFromString(await resp.text(), "text/xml");
+    if (doc.querySelector("parsererror")) return [];
+    const items = doc.getElementsByTagName("item");
+    const out = [];
+    for (let i = 0; i < items.length; i++) {
+      const enclosures = items[i].getElementsByTagName("enclosure");
+      if (!enclosures.length) continue;
+      const audioUrl = (enclosures[0].getAttribute("url") || "").trim();
+      if (!audioUrl) continue;
+      const titles = items[i].getElementsByTagName("title");
+      out.push({
+        name: titles.length
+          ? (titles[0].textContent || "").trim()
+          : "Episode " + (i + 1),
+        url: audioUrl,
+        isStream: false,
+        isEpisode: true,
+      });
+    }
+    return out;
+  } catch (e) {
+    return [];
+  }
+}
+
 // Returns true only when the URL answers with a 2xx status (HEAD first, GET fallback).
 async function castStreamOk(url) {
   function withTimeout(opts) {
@@ -106,7 +138,7 @@ export default async function initCast(container) {
       tracks = [];
     }
 
-  // LIST & PLAY: when a stream URL is configured and reachable, play it first.
+  // LIST & PLAY: when a stream/feed URL is configured and reachable, use it.
   var streamUrl = "";
   try {
     streamUrl = (
@@ -116,10 +148,17 @@ export default async function initCast(container) {
   } catch (e) {
     streamUrl = "";
   }
-  if (streamUrl && (await castStreamOk(streamUrl))) {
-    tracks = [
-      { name: t("d_castStream", "Live Stream"), url: streamUrl, isStream: true },
-    ].concat(tracks);
+  if (streamUrl) {
+    // Podcast RSS/Atom feed? Then list its episodes; otherwise treat it as a
+    // direct audio stream and offer it as a single live track.
+    var feedTracks = await fetchCastFeed(streamUrl);
+    if (feedTracks.length) {
+      tracks = feedTracks.concat(tracks);
+    } else if (await castStreamOk(streamUrl)) {
+      tracks = [
+        { name: t("d_castStream", "Live Stream"), url: streamUrl, isStream: true },
+      ].concat(tracks);
+    }
   }
 
   if (!tracks.length) {
@@ -168,7 +207,7 @@ export default async function initCast(container) {
     t("d_ready", "Ready") +
     '</span></div></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-playpause" class="primary">▶</button><button id="music-next">⏭</button></div><div style="text-align:center;margin-bottom:8px;"><button id="castLoadMoreBtn" class="settings-link-btn" style="padding:6px 14px;"><i class="fa-solid fa-cloud-arrow-up"></i> ' +
     t("d_loadCastFn", "Load Podcasts") +
-        '</button></div><div class="music-scroll-wrapper"><button id="castScrollUp" class="music-scroll-btn">▲</button><div id="music-playlist" class="music-playlist"></div><button id="castScrollDown" class="music-scroll-btn">▼</button></div>';
+        '</button></div><div class="music-scroll-wrapper" style="display:flex;flex-direction:column;gap:8px;"><button id="castScrollUp" class="music-scroll-btn" style="display:block;width:100%;">▲</button><div id="music-playlist" class="music-playlist" style="max-height:none;overflow:visible;"></div><button id="castScrollDown" class="music-scroll-btn" style="display:block;width:100%;">▼</button></div>';
 
   var synthCanvas = content.querySelector("#castSynth"),
     playlist = content.querySelector("#music-playlist");
@@ -308,7 +347,9 @@ export default async function initCast(container) {
     if (currentAudio) stopCurrentAudio(true);
     currentIndex = index;
     var track = tracks[currentIndex];
-    trackTitleSpan.innerText = removeFileExtension(track.name);
+    trackTitleSpan.innerText = track.isEpisode
+      ? track.name
+      : removeFileExtension(track.name);
     try {
       var audio = document.createElement("audio");
       audio.src = track.url;
@@ -317,23 +358,28 @@ export default async function initCast(container) {
       currentAudio = audio;
       audio.addEventListener("error", function (e) {
         var err = currentAudio.error,
+          em;
+        if (track.isStream) {
+          em = t("d_cannotPlayStream", "Cannot play live stream");
+        } else {
           em = t("d_cannotPlayFile", "Cannot play file");
-        if (err) {
-          switch (err.code) {
-            case MediaError.MEDIA_ERR_ABORTED:
-              em = t("d_playbackAborted", "Playback aborted");
-              break;
-            case MediaError.MEDIA_ERR_NETWORK:
-              em = t("d_networkError", "Network error");
-              break;
-            case MediaError.MEDIA_ERR_DECODE:
-              em = t("d_fileCorrupted", "File corrupted or unsupported format");
-              break;
-            case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-              em = t("d_formatNotSupported", "Format not supported");
-              break;
-            default:
-              em = t("d_unknownError", "Unknown error");
+          if (err) {
+            switch (err.code) {
+              case MediaError.MEDIA_ERR_ABORTED:
+                em = t("d_playbackAborted", "Playback aborted");
+                break;
+              case MediaError.MEDIA_ERR_NETWORK:
+                em = t("d_networkError", "Network error");
+                break;
+              case MediaError.MEDIA_ERR_DECODE:
+                em = t("d_fileCorrupted", "File corrupted or unsupported format");
+                break;
+              case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                em = t("d_formatNotSupported", "Format not supported");
+                break;
+              default:
+                em = t("d_unknownError", "Unknown error");
+            }
           }
         }
         showError(em);
@@ -351,7 +397,11 @@ export default async function initCast(container) {
                       updateTrackIconsAndActive();
                       ensureVisualiserRunning();
                     }).catch(function (err) {
-            showError(t("d_cannotPlayFile", "Cannot play file"));
+            showError(
+              track.isStream
+                ? t("d_cannotPlayStream", "Cannot play live stream")
+                : t("d_cannotPlayFile", "Cannot play file"),
+            );
             isPlaying = false;
             playPauseBtn.innerHTML = "▶";
             updateTrackIconsAndActive();
@@ -443,10 +493,15 @@ export default async function initCast(container) {
     [prevBtn, playPauseBtn, nextBtn, up, down].forEach(function (btn) {
       if (btn) {
         btn.disabled = isLocked;
-        btn.style.opacity = isLocked ? "0.5" : "";
         btn.style.cursor = isLocked ? "not-allowed" : "";
+        if (isLocked) {
+          btn.style.opacity = "0.5";
+        } else if (btn !== up && btn !== down) {
+          btn.style.opacity = "";
+        }
       }
     });
+    if (!isLocked) updateCastVisibility();
     if (isLocked) {
       stopVisualiserAndClear();
       if (currentIndex === -1) trackTitleSpan.innerText = "—";
@@ -461,6 +516,13 @@ export default async function initCast(container) {
     }
   }
 
+  // Homepage list: show 10 episodes at a time; the up/down buttons page
+  // through them and dim when there's nothing more in that direction.
+  const CAST_VISIBLE = 10;
+  const CAST_STEP = 5;
+  var castStart = 0;
+  var trackEls = [];
+
   tracks.forEach(function (tr, i) {
     var el = document.createElement("div");
     el.className = "music-track-item";
@@ -469,14 +531,28 @@ export default async function initCast(container) {
       ? '<i class="fa-solid fa-tower-broadcast"></i>'
       : '<i class="fa-solid fa-podcast"></i>';
     var nameSpan = document.createElement("span");
-    nameSpan.textContent = removeFileExtension(tr.name);
+    nameSpan.textContent = tr.isEpisode
+      ? tr.name
+      : removeFileExtension(tr.name);
     el.appendChild(iconSpan);
     el.appendChild(nameSpan);
     el.addEventListener("click", function () {
       onTrackClick(i);
     });
     playlist.appendChild(el);
+    trackEls.push(el);
   });
+
+  function updateCastVisibility() {
+    trackEls.forEach(function (el, i) {
+      el.style.display =
+        i >= castStart && i < castStart + CAST_VISIBLE ? "" : "none";
+    });
+    up.style.opacity = castStart === 0 ? "0.7" : "1";
+    down.style.opacity =
+      castStart + CAST_VISIBLE >= tracks.length ? "0.7" : "1";
+  }
+  updateCastVisibility();
 
   lockToggle.addEventListener("click", function (e) {
     e.stopPropagation();
@@ -489,10 +565,19 @@ export default async function initCast(container) {
   nextBtn.addEventListener("click", playNext);
   playPauseBtn.addEventListener("click", togglePlayPause);
   up.addEventListener("click", function () {
-    playlist.scrollBy({ top: -300, behavior: "smooth" });
+    if (castStart > 0) {
+      castStart = Math.max(0, castStart - CAST_STEP);
+      updateCastVisibility();
+    }
   });
   down.addEventListener("click", function () {
-    playlist.scrollBy({ top: 300, behavior: "smooth" });
+    if (castStart + CAST_VISIBLE < tracks.length) {
+      castStart = Math.min(
+        tracks.length - CAST_VISIBLE,
+        castStart + CAST_STEP,
+      );
+      updateCastVisibility();
+    }
   });
 
   var loadMoreBtn = content.querySelector("#castLoadMoreBtn");
