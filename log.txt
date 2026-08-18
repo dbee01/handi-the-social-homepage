@@ -1002,3 +1002,15 @@
 {"ts":"2026-08-18T09:12:45.758Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsyfp5g1ukiqwn"}
 {"ts":"2026-08-18T09:12:45.985Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.11","theme":"senior","lang":"en"},"sid":"smsyg1sksvn7j3s"}
 {"ts":"2026-08-18T09:12:47.394Z","level":1,"event":"page_load","details":{"loadTimeSec":"4.53","theme":"senior","lang":"en"},"sid":"smsyfp5g1ukiqwn"}
+{"ts":"2026-08-18T09:20:26.397Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smsygck7ge7vrzd"}
+{"ts":"2026-08-18T09:20:27.092Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.97","theme":"senior","lang":"en"},"sid":"smsygck7ge7vrzd"}
+{"ts":"2026-08-18T09:22:26.561Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.28","theme":"senior","lang":"en"},"sid":"smsygf4wyb052kh"}
+{"ts":"2026-08-18T09:23:07.789Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smsygf4wyb052kh"}
+{"ts":"2026-08-18T09:23:08.549Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.71","theme":"senior","lang":"en"},"sid":"smsygf4wyb052kh"}
+{"ts":"2026-08-18T09:29:24.026Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smsygo2thro3leo"}
+{"ts":"2026-08-18T09:29:26.064Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.72","theme":"techie","lang":"en"},"sid":"smsygo2thro3leo"}
+{"ts":"2026-08-18T09:29:54.809Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smsygoquifopp6k"}
+{"ts":"2026-08-18T09:29:55.557Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.01","theme":"senior","lang":"en"},"sid":"smsygoquifopp6k"}
+{"ts":"2026-08-18T09:44:24.648Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smsygo2thro3leo"}
+{"ts":"2026-08-18T09:59:24.427Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smsygo2thro3leo"}
+{"ts":"2026-08-18T10:14:24.413Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smsygo2thro3leo"}
