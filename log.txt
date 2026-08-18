@@ -988,3 +988,17 @@
 {"ts":"2026-08-18T08:44:43.530Z","level":1,"event":"page_load","details":{"loadTimeSec":"7.58","theme":"senior","lang":"en"},"sid":"smsyeos0wdl3jt4"}
 {"ts":"2026-08-18T08:52:03.817Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smsyeos0wdl3jt4"}
 {"ts":"2026-08-18T08:52:05.108Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.96","theme":"senior","lang":"en"},"sid":"smsyeos0wdl3jt4"}
+{"ts":"2026-08-18T08:59:24.105Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smsyflbs7hbs1to"}
+{"ts":"2026-08-18T08:59:29.258Z","level":1,"event":"page_load","details":{"loadTimeSec":"14.63","theme":"senior","lang":"en"},"sid":"smsyflbs7hbs1to"}
+{"ts":"2026-08-18T09:02:14.014Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smsyfp5g1ukiqwn"}
+{"ts":"2026-08-18T09:02:14.740Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.81","theme":"senior","lang":"en"},"sid":"smsyfp5g1ukiqwn"}
+{"ts":"2026-08-18T09:08:15.704Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smsyfp5g1ukiqwn"}
+{"ts":"2026-08-18T09:08:16.448Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.08","theme":"senior","lang":"en"},"sid":"smsyfp5g1ukiqwn"}
+{"ts":"2026-08-18T09:12:03.600Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smsyg1sksvn7j3s"}
+{"ts":"2026-08-18T09:12:04.368Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.53","theme":"senior","lang":"en"},"sid":"smsyg1sksvn7j3s"}
+{"ts":"2026-08-18T09:12:44.233Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsyg1sksvn7j3s"}
+{"ts":"2026-08-18T09:12:44.426Z","level":2,"event":"news_load","details":{"source":"RTE NEWS","articles":10},"sid":"smsyg1sksvn7j3s"}
+{"ts":"2026-08-18T09:12:45.639Z","level":2,"event":"news_load","details":{"source":"RTE NEWS","articles":10},"sid":"smsyfp5g1ukiqwn"}
+{"ts":"2026-08-18T09:12:45.758Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":1},"sid":"smsyfp5g1ukiqwn"}
+{"ts":"2026-08-18T09:12:45.985Z","level":1,"event":"page_load","details":{"loadTimeSec":"3.11","theme":"senior","lang":"en"},"sid":"smsyg1sksvn7j3s"}
+{"ts":"2026-08-18T09:12:47.394Z","level":1,"event":"page_load","details":{"loadTimeSec":"4.53","theme":"senior","lang":"en"},"sid":"smsyfp5g1ukiqwn"}

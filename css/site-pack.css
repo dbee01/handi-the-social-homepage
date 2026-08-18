@@ -172,6 +172,9 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 .llm-msg-assistant { background: var(--surface-alt); color: var(--text); }
 .llm-model-select { background: var(--surface); border-color: var(--border); }
 
+/* ── SUPPORT ─────────────────────────────────────────────────────── */
+.support-link { display: none !important; }
+
 /* ── FOOTER ──────────────────────────────────────────────────────── */
 footer { background: var(--surface); border-top: 2px solid var(--border); }
 .footer-icon { color: var(--primary); }
