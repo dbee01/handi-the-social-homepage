@@ -8,6 +8,37 @@
         <script src="/lang/loader.js"></script>
             <script src="/js/core/log.js"></script>
             <script src="/js/core/load.js"></script>
+        <script>
+            // Premium status — used to lock the Support toggle for free users
+            window.PREMIUM_ACTIVE = false;
+            (async function () {
+                var host = window.location.hostname;
+                if (
+                    host === "localhost" ||
+                    host === "127.0.0.1" ||
+                    host.startsWith("192.168.") ||
+                    host.startsWith("10.")
+                ) {
+                    window.PREMIUM_ACTIVE = true;
+                } else {
+                    var subId = localStorage.getItem("stripe_subscription_id");
+                    if (subId) {
+                        try {
+                            var resp = await fetch(
+                                "/api/subscription/status?subscription_id=" +
+                                    encodeURIComponent(subId),
+                            );
+                            var data = await resp.json();
+                            window.PREMIUM_ACTIVE = data.premium === true;
+                        } catch (e) {
+                            window.PREMIUM_ACTIVE = false;
+                        }
+                    }
+                }
+                if (window.applySettingsToToggles)
+                    window.applySettingsToToggles();
+            })();
+        </script>
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
             <link rel="stylesheet" href="/css/settings.css" />
 
@@ -356,12 +387,12 @@
                 </div>
             </div>
 
-            <!-- Gallery Module -->
-            <div class="module-card" data-module="gallery">
+            <!-- Cast Module -->
+            <div class="module-card" data-module="cast">
                 <div class="module-header">
                     <div class="module-title">
-                        <i class="fa-solid fa-images"></i>
-                        <h3>Gallery</h3>
+                        <i class="fa-solid fa-podcast"></i>
+                        <h3>Cast</h3>
                     </div>
                     <div class="toggle-switch">
                         <div class="toggle-slider"></div>
@@ -369,32 +400,226 @@
                 </div>
                 <div class="module-config">
                     <div class="config-field">
-                        <label>Slideshow speed (ms):</label
-                        ><input type="number" id="gallerySpeed" value="8000" />
+                        <label>Default volume:</label>
+                        <input
+                            type="range"
+                            id="castVolume"
+                            min="0"
+                            max="100"
+                            value="100"
+                        />
+                        <span id="castVolumeValue">100%</span>
                     </div>
                     <div class="config-field">
-                        <label>Auto-start:</label
-                        ><select id="galleryAutoStart">
-                            <option value="true">Yes</option>
-                            <option value="false">No</option>
+                        <label>Sound lock (disabled by default):</label>
+                        <select id="castSoundLock">
+                            <option value="false">Off</option>
+                            <option value="true">On</option>
                         </select>
                     </div>
                     <div class="config-field">
-                        <label>Pixelfed user URL:</label
-                        ><input
+                        <label>Audio stream or podcast feed URL:</label>
+                        <input
                             type="url"
-                            id="galleryPixelfedUrl"
-                            placeholder="https://pixelfed.social/users/username.atom"
+                            id="castStreamUrl"
+                            placeholder="https://example.com/stream.mp3 or https://feed.podbean.com/.../feed.xml"
                         />
                     </div>
-                    <button class="upload-btn" id="uploadGalleryBtn">
-                            📸 Load Images
-                        </button>
-                        <span class="upload-status" id="galleryStatus"></span>
-                    <small
-                        >Rename image filenames in caption format:
-                        My+Lovely+Horse.jpg -> My Lovely Horse</small
-                    >
+                    <button class="upload-btn" id="loadCastBtn">
+                        🎙️ Load Podcasts
+                    </button>
+                </div>
+            </div>
+
+            <!-- Flip Module -->
+            <div class="module-card" data-module="flip">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-right-left"></i>
+                        <h3>Flip</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Flipboard User (URL, @user or 'user'):</label
+                        ><input
+                            type="text"
+                            id="flipProfileUrl"
+                            placeholder="https://flipboard.com/@CoinDesk.rss or @CoinDesk"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Flipboard Topic (URL, #topic or 'topic'):</label
+                        ><input
+                            type="text"
+                            id="flipTopicUrl"
+                            placeholder="https://flipboard.com/topic/corkcity.rss or #corkcity"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mastodon Module -->
+            <div class="module-card" data-module="social">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-brands fa-mastodon"></i>
+                        <h3>Social Media</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Mastodon Server:</label
+                        ><select id="mastodonInstance">
+                            <option value="">
+                                — Default (page selector) —
+                            </option>
+                            <option value="https://mastodon.ie">
+                                🇮🇪 mastodon.ie
+                            </option>
+                            <option value="https://mastodon.social">
+                                🇪🇺 mastodon.social
+                            </option>
+                            <option value="https://mastodon.de">
+                                🇩🇪 mastodon.de
+                            </option>
+                            <option value="https://mamot.fr">
+                                🇫🇷 mamot.fr
+                            </option>
+                            <option value="https://piaille.fr">
+                                🇫🇷 piaille.fr
+                            </option>
+                            <option value="https://mstdn.es">
+                                🇪🇸 mstdn.es
+                            </option>
+                            <option value="https://mastodon.uno">
+                                🇮🇹 mastodon.uno
+                            </option>
+                            <option value="https://mastodon.nl">
+                                🇳🇱 mastodon.nl
+                            </option>
+                            <option value="https://pol.social">
+                                🇵🇱 pol.social
+                            </option>
+                            <option value="https://masto.pt">
+                                🇵🇹 masto.pt
+                            </option>
+                            <option value="https://mastodon.belgium.be">
+                                🇧🇪 mastodon.be
+                            </option>
+                            <option value="https://swiss.social">
+                                🇨🇭 swiss.social
+                            </option>
+                            <option value="https://mastodon.se">
+                                🇸🇪 mastodon.se
+                            </option>
+                            <option value="https://snabelen.no">
+                                🇳🇴 snabelen.no
+                            </option>
+                            <option value="https://mastodon.org.uk">
+                                🇬🇧 mastodon.org.uk
+                            </option>
+                            <option value="https://mstdn.ca">
+                                🇨🇦 mstdn.ca
+                            </option>
+                            <option value="https://aus.social">
+                                🇦🇺 aus.social
+                            </option>
+                            <option value="https://mastodon.nz">
+                                🇳🇿 mastodon.nz
+                            </option>
+                        </select>
+                    </div>
+                                        <div class="config-field">
+                                                                <label>Feed type:</label>
+                                                                <div style="margin-bottom:6px;">
+                                                                    <input type="radio" name="mastodonFeed" value="trending" id="mfTrending" checked>
+                                                                    <label for="mfTrending" style="font-weight:normal;cursor:pointer;">Trending</label>
+                                                                </div>
+                                                                <div style="margin-bottom:6px;">
+                                                                    <input type="radio" name="mastodonFeed" value="profile" id="mfProfile">
+                                                                    <label for="mfProfile" style="font-weight:normal;cursor:pointer;">Follow profile</label>
+                                                                </div>
+                                                                <input type="text" id="mastodonProfile" placeholder="@handi@mastodon.ie" style="margin-left:22px;width:calc(100% - 22px);display:none;">
+                                                                <div style="margin-bottom:6px;">
+                                                                    <input type="radio" name="mastodonFeed" value="hashtag" id="mfHashtag">
+                                                                    <label for="mfHashtag" style="font-weight:normal;cursor:pointer;">Follow hashtag</label>
+                                                                </div>
+                                                                <input type="text" id="mastodonHashtag" placeholder="#handihomepage" style="margin-left:22px;width:calc(100% - 22px);display:none;">
+                                                            </div>
+                                    </div>
+            </div>
+
+            <!-- Chat Module -->
+            <div class="module-card" data-module="chat">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-regular fa-message"></i>
+                        <h3>Chat (Matrix)</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Homeserver:</label
+                        ><input
+                            type="text"
+                            id="chatHomeserver"
+                            value="https://matrix.org"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Username:</label
+                        ><input
+                            type="text"
+                            id="chatUsername"
+                            placeholder="@username:matrix.org"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Password:</label
+                        ><input
+                            type="password"
+                            id="chatPassword"
+                            placeholder="Your Matrix password"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Room 1:</label
+                        ><input
+                            type="text"
+                            id="chatRoom1"
+                            placeholder="#room:matrix.org"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Room 2:</label
+                        ><input
+                            type="text"
+                            id="chatRoom2"
+                            placeholder="#room:matrix.org"
+                        />
+                    </div>
+                    <div class="config-field">
+                        <label>Room 3:</label
+                        ><input type="text" id="chatRoom3" />
+                    </div>
+                    <div class="config-field">
+                        <label>Refresh interval (sec):</label
+                        ><input
+                            type="number"
+                            id="chatRefreshInterval"
+                            value="30"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -439,6 +664,48 @@
                             🎵 Load Music
                         </button>
                         <span class="upload-status" id="musicStatus"></span>
+                </div>
+            </div>
+
+            <!-- Gallery Module -->
+            <div class="module-card" data-module="gallery">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-images"></i>
+                        <h3>Gallery</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Slideshow speed (ms):</label
+                        ><input type="number" id="gallerySpeed" value="8000" />
+                    </div>
+                    <div class="config-field">
+                        <label>Auto-start:</label
+                        ><select id="galleryAutoStart">
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                    <div class="config-field">
+                        <label>Pixelfed user URL:</label
+                        ><input
+                            type="url"
+                            id="galleryPixelfedUrl"
+                            placeholder="https://pixelfed.social/users/username.atom"
+                        />
+                    </div>
+                    <button class="upload-btn" id="uploadGalleryBtn">
+                            📸 Load Images
+                        </button>
+                        <span class="upload-status" id="galleryStatus"></span>
+                    <small
+                        >Rename image filenames in caption format:
+                        My+Lovely+Horse.jpg -> My Lovely Horse</small
+                    >
                 </div>
             </div>
 
@@ -595,242 +862,6 @@
                 </div>
             </div>
 
-            <!-- Mastodon Module -->
-            <div class="module-card" data-module="social">
-                <div class="module-header">
-                    <div class="module-title">
-                        <i class="fa-brands fa-mastodon"></i>
-                        <h3>Social Media</h3>
-                    </div>
-                    <div class="toggle-switch">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-                <div class="module-config">
-                    <div class="config-field">
-                        <label>Mastodon Server:</label
-                        ><select id="mastodonInstance">
-                            <option value="">
-                                — Default (page selector) —
-                            </option>
-                            <option value="https://mastodon.ie">
-                                🇮🇪 mastodon.ie
-                            </option>
-                            <option value="https://mastodon.social">
-                                🇪🇺 mastodon.social
-                            </option>
-                            <option value="https://mastodon.de">
-                                🇩🇪 mastodon.de
-                            </option>
-                            <option value="https://mamot.fr">
-                                🇫🇷 mamot.fr
-                            </option>
-                            <option value="https://piaille.fr">
-                                🇫🇷 piaille.fr
-                            </option>
-                            <option value="https://mstdn.es">
-                                🇪🇸 mstdn.es
-                            </option>
-                            <option value="https://mastodon.uno">
-                                🇮🇹 mastodon.uno
-                            </option>
-                            <option value="https://mastodon.nl">
-                                🇳🇱 mastodon.nl
-                            </option>
-                            <option value="https://pol.social">
-                                🇵🇱 pol.social
-                            </option>
-                            <option value="https://masto.pt">
-                                🇵🇹 masto.pt
-                            </option>
-                            <option value="https://mastodon.belgium.be">
-                                🇧🇪 mastodon.be
-                            </option>
-                            <option value="https://swiss.social">
-                                🇨🇭 swiss.social
-                            </option>
-                            <option value="https://mastodon.se">
-                                🇸🇪 mastodon.se
-                            </option>
-                            <option value="https://snabelen.no">
-                                🇳🇴 snabelen.no
-                            </option>
-                            <option value="https://mastodon.org.uk">
-                                🇬🇧 mastodon.org.uk
-                            </option>
-                            <option value="https://mstdn.ca">
-                                🇨🇦 mstdn.ca
-                            </option>
-                            <option value="https://aus.social">
-                                🇦🇺 aus.social
-                            </option>
-                            <option value="https://mastodon.nz">
-                                🇳🇿 mastodon.nz
-                            </option>
-                        </select>
-                    </div>
-                                        <div class="config-field">
-                                                                <label>Feed type:</label>
-                                                                <div style="margin-bottom:6px;">
-                                                                    <input type="radio" name="mastodonFeed" value="trending" id="mfTrending" checked>
-                                                                    <label for="mfTrending" style="font-weight:normal;cursor:pointer;">Trending</label>
-                                                                </div>
-                                                                <div style="margin-bottom:6px;">
-                                                                    <input type="radio" name="mastodonFeed" value="profile" id="mfProfile">
-                                                                    <label for="mfProfile" style="font-weight:normal;cursor:pointer;">Follow profile</label>
-                                                                </div>
-                                                                <input type="text" id="mastodonProfile" placeholder="@handi@mastodon.ie" style="margin-left:22px;width:calc(100% - 22px);display:none;">
-                                                                <div style="margin-bottom:6px;">
-                                                                    <input type="radio" name="mastodonFeed" value="hashtag" id="mfHashtag">
-                                                                    <label for="mfHashtag" style="font-weight:normal;cursor:pointer;">Follow hashtag</label>
-                                                                </div>
-                                                                <input type="text" id="mastodonHashtag" placeholder="#handihomepage" style="margin-left:22px;width:calc(100% - 22px);display:none;">
-                                                            </div>
-                                    </div>
-            </div>
-
-            <!-- Phone Module (unified: SIM + Video + Click-to-Call) -->
-
-            <!-- Chat Module -->
-            <div class="module-card" data-module="chat">
-                <div class="module-header">
-                    <div class="module-title">
-                        <i class="fa-regular fa-message"></i>
-                        <h3>Chat (Matrix)</h3>
-                    </div>
-                    <div class="toggle-switch">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-                <div class="module-config">
-                    <div class="config-field">
-                        <label>Homeserver:</label
-                        ><input
-                            type="text"
-                            id="chatHomeserver"
-                            value="https://matrix.org"
-                        />
-                    </div>
-                    <div class="config-field">
-                        <label>Username:</label
-                        ><input
-                            type="text"
-                            id="chatUsername"
-                            placeholder="@username:matrix.org"
-                        />
-                    </div>
-                    <div class="config-field">
-                        <label>Password:</label
-                        ><input
-                            type="password"
-                            id="chatPassword"
-                            placeholder="Your Matrix password"
-                        />
-                    </div>
-                    <div class="config-field">
-                        <label>Room 1:</label
-                        ><input
-                            type="text"
-                            id="chatRoom1"
-                            placeholder="#room:matrix.org"
-                        />
-                    </div>
-                    <div class="config-field">
-                        <label>Room 2:</label
-                        ><input
-                            type="text"
-                            id="chatRoom2"
-                            placeholder="#room:matrix.org"
-                        />
-                    </div>
-                    <div class="config-field">
-                        <label>Room 3:</label
-                        ><input type="text" id="chatRoom3" />
-                    </div>
-                    <div class="config-field">
-                        <label>Refresh interval (sec):</label
-                        ><input
-                            type="number"
-                            id="chatRefreshInterval"
-                            value="30"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Calendar Module -->
-            <div class="module-card" data-module="calendar">
-                <div class="module-header">
-                    <div class="module-title">
-                        <i class="fa-regular fa-calendar"></i>
-                        <h3>Calendar (Proton ICS)</h3>
-                    </div>
-                    <div class="toggle-switch">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-                <div class="module-config">
-                    <div class="config-field">
-                        <label>Proton Calendar ICS Link:</label
-                        ><input
-                            type="text"
-                            id="calendarUrl"
-                            placeholder="Paste your ICS link here"
-                        />
-                    </div>
-                    <small
-                        >Get ICS link from Proton Calendar → Settings →
-                        Calendars → "Link for viewing"</small
-                    >
-                </div>
-            </div>
-
-                        <!-- Tasks Module -->
-                        <div class="module-card" data-module="task">
-                            <div class="module-header">
-                                <div class="module-title">
-                                    <i class="fa-solid fa-list-check"></i>
-                                    <h3>Tasks</h3>
-                                </div>
-                                <div class="toggle-switch">
-                                    <div class="toggle-slider"></div>
-                                </div>
-                            </div>
-                            <div class="module-config">
-                                <small style="color:#64748b">Create and manage tasks with labels and subtasks.</small>
-                            </div>
-                        </div>
-
-                        <!-- Flip Module -->
-                        <div class="module-card" data-module="flip">
-                            <div class="module-header">
-                                <div class="module-title">
-                                    <i class="fa-solid fa-right-left"></i>
-                                    <h3>Flip</h3>
-                                </div>
-                                <div class="toggle-switch">
-                                    <div class="toggle-slider"></div>
-                                </div>
-                            </div>
-                            <div class="module-config">
-                                <div class="config-field">
-                                    <label>Flipboard User (URL, @user or 'user'):</label
-                                    ><input
-                                        type="text"
-                                        id="flipProfileUrl"
-                                        placeholder="https://flipboard.com/@CoinDesk.rss or @CoinDesk"
-                                    />
-                                </div>
-                                <div class="config-field">
-                                    <label>Flipboard Topic (URL, #topic or 'topic'):</label
-                                    ><input
-                                        type="text"
-                                        id="flipTopicUrl"
-                                        placeholder="https://flipboard.com/topic/corkcity.rss or #corkcity"
-                                    />
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- ============================================================ -->
                     <!-- PREMIUM MODULES SECTION -->
@@ -839,7 +870,113 @@
             <h2>Premium Elements</h2>
         </div>
 
-        <!-- Premium 1: Live Bus Tracker -->
+        <!-- Premium 1: Phone -->
+        <div class="module-card" data-module="phone">
+            <div class="module-header">
+                <div class="module-title">
+                    <i class="fa-solid fa-phone"></i>
+                    <h3>Phone</h3>
+                    <span
+                        style="
+                            font-size: 0.7rem;
+                            background: #f59e0b;
+                            padding: 2px 8px;
+                            border-radius: 12px;
+                            margin-left: 8px;
+                        "
+                        >Premium</span
+                    >
+                </div>
+                <div class="toggle-switch">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            <div class="module-config">
+                <div class="config-field">
+                    <label>Contacts</label>
+                    <div id="phoneContactsList" class="contact-list"></div>
+                </div>
+                <div
+                    style="
+                        display: flex;
+                        gap: 12px;
+                        margin-top: 16px;
+                        margin-bottom: 16px;
+                        flex-wrap: wrap;
+                    "
+                >
+                    <div
+                        id="phonePhotoPreview"
+                        style="
+                            width: 72px;
+                            height: 72px;
+                            border-radius: 50%;
+                            background: #eaf2ff;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            cursor: pointer;
+                            border: 2px dashed #cbd5e1;
+                        "
+                        title="Tap to add photo"
+                    >
+                        <i class="fa-solid fa-hand-peace" style="font-size: 1.8rem; color: #0047cc;"></i>
+                    </div>
+                    <input
+                        type="text"
+                        id="phoneName"
+                        placeholder="Daz Murphy"
+                        style="
+                            flex: 1;
+                            min-width: 140px;
+                            font-size: 1.2rem;
+                            padding: 14px 16px;
+                        "
+                    />
+                    <input
+                        type="tel"
+                        id="phoneNumber"
+                        placeholder="+353987654321"
+                        style="
+                            flex: 1;
+                            min-width: 140px;
+                            font-size: 1.2rem;
+                            padding: 14px 16px;
+                        "
+                    />
+                    <input
+                        type="file"
+                        id="phonePhoto"
+                        accept="image/png,image/jpeg,image/webp"
+                        style="display: none"
+                    />
+                    <button
+                        id="phonePhotoBtn"
+                        class="upload-btn"
+                        style="
+                            background: #64748b;
+                            margin: 0;
+                            font-size: 1.1rem;
+                            padding: 14px 20px;
+                        "
+                        type="button"
+                    >
+                        📷
+                    </button>
+                    <button
+                        id="addPhoneInline"
+                        class="upload-btn"
+                        style="margin: 0; font-size: 1.1rem; padding: 14px 28px"
+                        type="button"
+                    >
+                        + Add
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium 2: Live Bus Tracker -->
 
         <div class="module-card" data-module="live_bus">
             <div class="module-header">
@@ -1002,13 +1139,12 @@
             </div>
         </div>
 
-        <!-- Premium 2: Phone -->
-
-        <div class="module-card" data-module="phone">
+        <!-- Premium 3: Calendar -->
+        <div class="module-card" data-module="calendar">
             <div class="module-header">
                 <div class="module-title">
-                    <i class="fa-solid fa-phone"></i>
-                    <h3>Phone</h3>
+                    <i class="fa-regular fa-calendar"></i>
+                    <h3>Calendar (Proton ICS)</h3>
                     <span
                         style="
                             font-size: 0.7rem;
@@ -1026,96 +1162,26 @@
             </div>
             <div class="module-config">
                 <div class="config-field">
-                    <label>Contacts</label>
-                    <div id="phoneContactsList" class="contact-list"></div>
-                </div>
-                <div
-                    style="
-                        display: flex;
-                        gap: 12px;
-                        margin-top: 16px;
-                        margin-bottom: 16px;
-                        flex-wrap: wrap;
-                    "
-                >
-                    <div
-                        id="phonePhotoPreview"
-                        style="
-                            width: 72px;
-                            height: 72px;
-                            border-radius: 50%;
-                            background: #eaf2ff;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            flex-shrink: 0;
-                            cursor: pointer;
-                            border: 2px dashed #cbd5e1;
-                        "
-                        title="Tap to add photo"
-                    >
-                        <i class="fa-solid fa-hand-peace" style="font-size: 1.8rem; color: #0047cc;"></i>
-                    </div>
-                    <input
+                    <label>Proton Calendar ICS Link:</label
+                    ><input
                         type="text"
-                        id="phoneName"
-                        placeholder="Daz Murphy"
-                        style="
-                            flex: 1;
-                            min-width: 140px;
-                            font-size: 1.2rem;
-                            padding: 14px 16px;
-                        "
+                        id="calendarUrl"
+                        placeholder="Paste your ICS link here"
                     />
-                    <input
-                        type="tel"
-                        id="phoneNumber"
-                        placeholder="+353987654321"
-                        style="
-                            flex: 1;
-                            min-width: 140px;
-                            font-size: 1.2rem;
-                            padding: 14px 16px;
-                        "
-                    />
-                    <input
-                        type="file"
-                        id="phonePhoto"
-                        accept="image/png,image/jpeg,image/webp"
-                        style="display: none"
-                    />
-                    <button
-                        id="phonePhotoBtn"
-                        class="upload-btn"
-                        style="
-                            background: #64748b;
-                            margin: 0;
-                            font-size: 1.1rem;
-                            padding: 14px 20px;
-                        "
-                        type="button"
-                    >
-                        📷
-                    </button>
-                    <button
-                        id="addPhoneInline"
-                        class="upload-btn"
-                        style="margin: 0; font-size: 1.1rem; padding: 14px 28px"
-                        type="button"
-                    >
-                        + Add
-                    </button>
                 </div>
+                <small
+                    >Get ICS link from Proton Calendar → Settings →
+                    Calendars → "Link for viewing"</small
+                >
             </div>
         </div>
 
-        <!-- Premium 3: Location Share (contacts come from Phone module above) -->
-
-        <div class="module-card" data-module="emergency_alert">
+        <!-- Premium 4: Tasks -->
+        <div class="module-card" data-module="task">
             <div class="module-header">
                 <div class="module-title">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <h3>Location Share</h3>
+                    <i class="fa-solid fa-list-check"></i>
+                    <h3>Tasks</h3>
                     <span
                         style="
                             font-size: 0.7rem;
@@ -1132,14 +1198,29 @@
                 </div>
             </div>
             <div class="module-config">
-                <small style="color: #64748b"
-                    Location sharing is configured per contact in the Phone
-                                        module above.</small
-                                    >
-                                </div>
-                                                            </div>
+                <small style="color:#64748b">Create and manage tasks with labels and subtasks.</small>
+            </div>
+        </div>
 
-                                                            <!-- Support Module -->
+                                                            <!-- Premium 5: AI -->
+
+                            <div class="module-card" data-module="llm">
+                                <div class="module-header">
+                                    <div class="module-title">
+                                        <i class="fa-solid fa-brain"></i>
+                                        <h3>AI</h3>
+                                        <span style="font-size:0.7rem;background:#f59e0b;padding:2px 8px;border-radius:12px;margin-left:8px;">Premium</span>
+                                    </div>
+                                    <div class="toggle-switch">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                                <div class="module-config">
+                                    <small style="color:#64748b">Private AI chat runs entirely in your browser. No data leaves your device.</small>
+                                </div>
+                            </div>
+
+                                                            <!-- Premium 6: Support -->
 
                                                             <div class="module-card" data-module="support">
                                                                 <div class="module-header">
@@ -1172,64 +1253,6 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-
-                                                            <!-- Premium 4: AI -->
-
-                            <div class="module-card" data-module="llm">
-                                <div class="module-header">
-                                    <div class="module-title">
-                                        <i class="fa-solid fa-brain"></i>
-                                        <h3>AI</h3>
-                                        <span style="font-size:0.7rem;background:#f59e0b;padding:2px 8px;border-radius:12px;margin-left:8px;">Premium</span>
-                                    </div>
-                                    <div class="toggle-switch">
-                                        <div class="toggle-slider"></div>
-                                    </div>
-                                </div>
-                                <div class="module-config">
-                                    <small style="color:#64748b">Private AI chat runs entirely in your browser. No data leaves your device.</small>
-                                </div>
-                            </div>
-
-                            <!-- Premium 5: Cast (Podcasts) -->
-
-                            <div class="module-card" data-module="cast">
-                                <div class="module-header">
-                                    <div class="module-title">
-                                        <i class="fa-solid fa-podcast"></i>
-                                        <h3>Cast</h3>
-                                        <span style="font-size:0.7rem;background:#f59e0b;padding:2px 8px;border-radius:12px;margin-left:8px;">Premium</span>
-                                    </div>
-                                    <div class="toggle-switch">
-                                        <div class="toggle-slider"></div>
-                                    </div>
-                                </div>
-                                <div class="module-config">
-                                                    <div class="config-field">
-                                                        <label>Default volume:</label>
-                                                        <input type="range" id="castVolume" min="0" max="100" value="100">
-                                                        <span id="castVolumeValue">100%</span>
-                                                    </div>
-                                                    <div class="config-field">
-                                                        <label>Sound lock (disabled by default):</label>
-                                                        <select id="castSoundLock">
-                                                            <option value="false">Off</option>
-                                                            <option value="true">On</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="config-field">
-                                                        <label>Audio stream or podcast feed URL:</label>
-                                                        <input
-                                                            type="url"
-                                                            id="castStreamUrl"
-                                                            placeholder="https://example.com/stream.mp3 or https://feed.podbean.com/.../feed.xml"
-                                                        />
-                                                    </div>
-                                                    <button class="upload-btn" id="loadCastBtn">
-                                                        🎙️ Load Podcasts
-                                                    </button>
-                                                </div>
-                            </div>
 
                             <div class="brand">
             <span
@@ -1671,6 +1694,16 @@
                             card.style.display = "none";
                         } else {
                             card.style.display = "";
+                        }
+                        // Support is pinned ON for free users — immutable,
+                        // only premium users can toggle it off.
+                        if (
+                            moduleId === "support" &&
+                            window.PREMIUM_ACTIVE !== true
+                        ) {
+                            toggle.classList.add("active");
+                            toggle.classList.add("mmr-disabled");
+                            card.classList.add("module-card-disabled");
                         }
                     }
                 });
