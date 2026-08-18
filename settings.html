@@ -1705,6 +1705,17 @@
                             toggle.classList.add("mmr-disabled");
                             card.classList.add("module-card-disabled");
                         }
+                        // Premium modules are locked for free users — greyed
+                        // out and not toggleable regardless of MMR state.
+                        const regMod = window.HANDI_MODULE_BY_ID(moduleId);
+                        if (
+                            regMod &&
+                            regMod.tier === "premium" &&
+                            window.PREMIUM_ACTIVE !== true
+                        ) {
+                            toggle.classList.add("mmr-disabled");
+                            card.classList.add("module-card-disabled");
+                        }
                     }
                 });
 
