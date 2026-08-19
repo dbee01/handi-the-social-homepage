@@ -1092,8 +1092,13 @@
             // ========== MODULE DATABASE - DRIVEN BY MASTER MODULE RECORD ==========
             // MMR states: 0=off (selectable), 1=on (active), 2=disabled (blocked)
             const ALL_MODULES = window.HANDI_MODULES;
-            const FREE_MODULES = window.HANDI_FREE_MODULES();
-            const PREMIUM_MODULES = window.HANDI_PREMIUM_MODULES();
+            // Listed alphabetically by module name in each tier
+            const FREE_MODULES = window.HANDI_FREE_MODULES().sort((a, b) =>
+                a.name.localeCompare(b.name),
+            );
+            const PREMIUM_MODULES = window.HANDI_PREMIUM_MODULES().sort(
+                (a, b) => a.name.localeCompare(b.name),
+            );
 
             function getEnabled() {
                             return window.getMMR();
