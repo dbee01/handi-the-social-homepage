@@ -1014,3 +1014,7 @@
 {"ts":"2026-08-18T09:44:24.648Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smsygo2thro3leo"}
 {"ts":"2026-08-18T09:59:24.427Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smsygo2thro3leo"}
 {"ts":"2026-08-18T10:14:24.413Z","level":1,"event":"mastodon_error","details":{"server":"https://mastodon.ie","error":"Failed to fetch"},"sid":"smsygo2thro3leo"}
+{"ts":"2026-08-19T10:25:32.271Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smszy44k0qcm9zp"}
+{"ts":"2026-08-19T10:25:33.010Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.22","theme":"techie","lang":"en"},"sid":"smszy44k0qcm9zp"}
+{"ts":"2026-08-19T10:28:30.558Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smszy44k0qcm9zp"}
+{"ts":"2026-08-19T10:28:31.306Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.74","theme":"techie","lang":"en"},"sid":"smszy44k0qcm9zp"}

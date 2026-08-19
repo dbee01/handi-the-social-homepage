@@ -97,7 +97,7 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 
 /* ── DASHBOARD ITEMS ─────────────────────────────────────────────── */
 .dashboard-item { background: transparent; position: relative; z-index: 1; border: 2px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
-.panel-title { font-size: var(--font-size-title); font-weight: 700; color: var(--primary); }
+.panel-title { font-size: var(--font-size-title); font-weight: 700; color: var(--primary); font-family: var(--header-font); }
 
 /* ── MODULE CONTROLS ─────────────────────────────────────────────── */
 .module-controls button { background: var(--primary); border: 2px solid var(--primary); color: #fff; }

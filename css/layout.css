@@ -320,6 +320,15 @@ header {
 ========================================================= */
 
 /* Gallery module container - height reflects content, no image jumps */
+/* ── SHARED MEDIA HEIGHT (gallery, flip, mastodon, news) ────────── */
+:root { --media-height: 280px; }
+.flip-card img,
+.mastodon-image,
+.news-image {
+    height: var(--media-height);
+    object-fit: cover;
+}
+
 .dashboard-item[data-module="gallery"] {
     min-height: 200px !important;
     height: auto !important;
@@ -355,7 +364,7 @@ header {
 .gallery-slide-img {
     width: auto !important;
     max-width: 100% !important;
-    height: 280px !important;
+    height: var(--media-height) !important;
     object-fit: contain !important;
     border-radius: 12px !important;
     display: block !important;
@@ -363,8 +372,11 @@ header {
 }
 
 @media (max-width: 600px) {
-    .gallery-slide-img {
-        height: 180px !important;
+    .gallery-slide-img,
+    .mastodon-image,
+    .flip-card img,
+    .news-image {
+        height: calc(var(--media-height) * 0.64) !important;
     }
 }
 
@@ -949,8 +961,8 @@ header {
 }
 
 .news-image {
-    width: 80px;
-    height: 80px;
+    width: 100%;
+    height: var(--media-height);
     object-fit: cover;
     border-radius: 12px;
     flex-shrink: 0;

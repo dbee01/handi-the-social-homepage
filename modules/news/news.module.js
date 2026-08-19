@@ -312,12 +312,12 @@ export default async function initNews(container) {
       var div = document.createElement("div");
       div.className = "news-article";
       div.innerHTML = `
-        <div style="display:flex;gap:12px;margin-bottom:12px;">
-          ${article.imageUrl ? '<img src="' + article.imageUrl + '" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" onerror="this.style.display=\'none\'">' : '<div style="width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:8px;"><i class="fa-solid fa-newspaper" style="font-size:1.5rem;color:#94a3b8;"></i></div>'}
-          <div style="flex:1;">
-            <div>${escapeHtml(sourceDisplay)}</div>
-            <div>${escapeHtml(article.pubDate)}</div>
-          </div>
+        ${article.imageUrl
+          ? '<img class="news-image" src="' + article.imageUrl + '" alt="" style="width:100%;height:var(--media-height);object-fit:cover;border-radius:8px;margin-bottom:12px;display:block;" onerror="this.style.display=\'none\'">'
+          : '<div style="width:100%;height:var(--media-height);display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:8px;margin-bottom:12px;"><i class="fa-solid fa-newspaper" style="font-size:2rem;color:#94a3b8;"></i></div>'}
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+          <div>${escapeHtml(sourceDisplay)}</div>
+          <div>${escapeHtml(article.pubDate)}</div>
         </div>
         <h3><a href="${article.link}" target="_blank">${escapeHtml(article.title)}</a></h3>
         <p>${escapeHtml(article.excerpt)}</p>

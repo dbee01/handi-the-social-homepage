@@ -242,7 +242,7 @@ export default async function initMastodon(container) {
         }
         postView.innerHTML = `
           <div class="mastodon-item" style="margin-bottom:0;padding:16px;border-radius:12px;display:flex;flex-direction:column;flex-wrap:nowrap;align-content:center;align-items:center;text-align:center;gap:12px;">
-            ${p.image ? `<img class="mastodon-image" src="${p.image}" alt="" style="width:200px;height:auto;object-fit:cover;border-radius:8px;" onerror="this.style.display='none'">` : '<div><i class="fa-solid fa-link"></i></div>'}
+            ${p.image ? `<img class="mastodon-image" src="${p.image}" alt="" style="width:200px;height:var(--media-height);object-fit:cover;border-radius:8px;" onerror="this.style.display='none'">` : '<div><i class="fa-solid fa-link"></i></div>'}
             <div class="mastodon-body" style="flex:1;">
               <a class="mastodon-title" href="${p.link}" target="_blank" rel="noopener noreferrer">${escapeHtml(p.title)}</a>
               ${p.provider ? `<div class="mastodon-provider">${escapeHtml(p.provider)}</div>` : ""}

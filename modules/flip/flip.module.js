@@ -141,7 +141,7 @@ export default async function initFlip(container) {
   const name =
     window.LANG && window.LANG.modules && window.LANG.modules.flip
       ? window.LANG.modules.flip.name
-      : "FLIP";
+      : "Flip";
   title.innerHTML = '<i class="fa-solid fa-right-left"></i> ' + name;
   container.appendChild(title);
 
@@ -212,7 +212,7 @@ export default async function initFlip(container) {
       img.src = item.image;
       img.loading = "lazy";
       img.style.cssText =
-        "width:100%;height:150px;object-fit:cover;display:block;background:#f1f5f9;";
+        "width:100%;height:var(--media-height);object-fit:cover;display:block;background:#f1f5f9;";
       card.appendChild(img);
     }
 
@@ -231,8 +231,7 @@ export default async function initFlip(container) {
     if (item.description) {
       const d = document.createElement("div");
       d.style.cssText =
-        "font-size:var(--font-size);color:#475569;line-height:1.35;" +
-        "display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;";
+        "font-size: var(--font-size); color: rgb(71, 85, 100); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-weight: normal;";
       d.textContent = item.description;
       body.appendChild(d);
     }
