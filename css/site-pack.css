@@ -29,6 +29,13 @@
   font-style: normal;
   font-display: swap;
 }
+@font-face {
+  font-family: "MeathFLF";
+  src: url("/css/fonts/meath-flf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   /* colors */
@@ -46,7 +53,7 @@
   --shadow: 0 2px 8px rgba(0,0,0,0.05);
   /* fonts */
   --text-font: Foca, Poppins, "IBM Plex Sans", "Playfair Display", BlinkMacSystemFont, "Segoe UI", Monospace, sans-serif;
-  --header-font: "Playfair Display", Poppins, "IBM Plex Sans", Foca, BlinkMacSystemFont, "Segoe UI", serif;
+  --header-font: MeathFLF, "Playfair Display", Poppins, "IBM Plex Sans", Foca, BlinkMacSystemFont, "Segoe UI", serif;
   --font-size: 18px;
   --font-size-lg: 20px;
   --font-size-title: 20px;
