@@ -53,6 +53,20 @@
     // ---------------------------------------------------------------------
     var v;
 
+    // Language pre-selection for the dashboard (e.g. lang=ga). Saved before
+    // /lang/loader.js runs so the redirected page loads the right language.
+    if ((v = qs.get("lang"))) {
+      v = v.trim().toLowerCase();
+      var langCodes = [
+        "ar", "cy", "de", "en", "es", "fr", "ga", "it", "nl", "pl", "pt",
+      ];
+      if (langCodes.indexOf(v) !== -1) {
+        try {
+          localStorage.setItem("handiLang", v);
+        } catch (e) {}
+      }
+    }
+
     if ((v = qs.get("weather-location"))) {
       ensure("weather").location = v;
     }
