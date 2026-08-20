@@ -851,19 +851,37 @@ async function fetchFeedWithRelay(feedUrl, headers) {
     console.warn(`⚠️ Direct fetch failed (${direct.message}); trying relays...`);
   }
   // Relay list: ip : port : username : password
-  // 91.193.255.216:12323:14a05b445d300:f7573b9339
+  // Credentials come from the host's .env file:
+  //   PROXY_USERNAME_1 / PROXY_PASSWORD_1  – IPRoyal residential proxy
+  //   PROXY_USERNAME_2 / PROXY_PASSWORD_2  – backup proxy
   const FEED_PROXY = {
-    host: "91.193.255.216",
-    port: 12323,
-    auth: { username: "14a05b445d300", password: "f7573b9339" },
+    host: "geo.iproyal.com",
+    port: 12321,
+    auth: {
+      username: process.env.PROXY_USERNAME_1,
+      password: process.env.PROXY_PASSWORD_1,
+    },
   };
   const relays = [
-    // Fetch the feed directly through the authenticated proxy (uses its IP,
-    // bypassing rte.ie's block on this server's IP).
-    { name: "proxy 91.193.255.216:12323", url: feedUrl, proxy: FEED_PROXY },
+    // Preferred: previous proxy server (fastest in testing).
     {
-      name: "codetabs",
-      url: "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(feedUrl),
+      name: "proxy 91.193.255.216:12323",
+      url: feedUrl,
+      proxy: {
+        host: "91.193.255.216",
+        port: 12323,
+        auth: {
+          username: process.env.PROXY_USERNAME_2,
+          password: process.env.PROXY_PASSWORD_2,
+        },
+      },
+    },
+    // Backup: IPRoyal residential proxy (uses its IP, bypassing rte.ie's
+    // block on this server's IP).
+    {
+      name: "IPRoyal residential proxy (geo.iproyal.com:12321)",
+      url: feedUrl,
+      proxy: FEED_PROXY,
     },
   ];
   for (const relay of relays) {
