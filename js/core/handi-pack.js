@@ -77,15 +77,24 @@
     }
 
     // Flipboard: accept both the original flipboard-* names and the shorter
-    // flip / flip-profile names. A `flip` value that looks like a profile
-    // (@user or flipboard.com/@user) is routed to the profile feed.
+    // flip / flip-profile names. A full URL is used verbatim — never add a
+    // flipboard.com prefix — and for redundancy it is stored in both the
+    // profile and topic slots (the flip module reads profileUrl first, and
+    // full URLs pass through normalizeFlip unchanged either way).
     if ((v = qs.get("flipboard-topic"))) ensure("flip").topicUrl = v;
     if ((v = qs.get("flipboard-profile"))) ensure("flip").profileUrl = v;
     if ((v = qs.get("flip"))) {
-      if (/^@|flipboard\.com\/@/i.test(v.trim())) {
-        ensure("flip").profileUrl = v;
+      var fv = v.trim();
+      if (
+        /^(https?:\/\/)?flipboard\.com\//i.test(fv) ||
+        /^https?:\/\//i.test(fv)
+      ) {
+        ensure("flip").profileUrl = fv;
+        ensure("flip").topicUrl = fv;
+      } else if (/^@/i.test(fv)) {
+        ensure("flip").profileUrl = fv;
       } else {
-        ensure("flip").topicUrl = v;
+        ensure("flip").topicUrl = fv;
       }
     }
     if ((v = qs.get("flip-profile"))) ensure("flip").profileUrl = v;
