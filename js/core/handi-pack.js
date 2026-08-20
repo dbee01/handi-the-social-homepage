@@ -77,26 +77,13 @@
     }
 
     // Flipboard: accept both the original flipboard-* names and the shorter
-    // flip / flip-profile names. A full URL is used verbatim — never add a
-    // flipboard.com prefix — and for redundancy it is stored in both the
-    // profile and topic slots (the flip module reads profileUrl first, and
-    // full URLs pass through normalizeFlip unchanged either way).
+    // flip / flip-profile names. The `flip` param is always a topic — it is
+    // written to the topic slot only; the flip module passes a full URL
+    // through verbatim (no flipboard.com prefix added) and only prefixes
+    // bare topic words.
     if ((v = qs.get("flipboard-topic"))) ensure("flip").topicUrl = v;
     if ((v = qs.get("flipboard-profile"))) ensure("flip").profileUrl = v;
-    if ((v = qs.get("flip"))) {
-      var fv = v.trim();
-      if (
-        /^(https?:\/\/)?flipboard\.com\//i.test(fv) ||
-        /^https?:\/\//i.test(fv)
-      ) {
-        ensure("flip").profileUrl = fv;
-        ensure("flip").topicUrl = fv;
-      } else if (/^@/i.test(fv)) {
-        ensure("flip").profileUrl = fv;
-      } else {
-        ensure("flip").topicUrl = fv;
-      }
-    }
+    if ((v = qs.get("flip"))) ensure("flip").topicUrl = v;
     if ((v = qs.get("flip-profile"))) ensure("flip").profileUrl = v;
 
     // Mastodon / social
