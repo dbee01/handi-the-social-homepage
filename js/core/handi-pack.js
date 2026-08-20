@@ -76,8 +76,19 @@
       try { localStorage.setItem("handiNewsFeed", v); } catch (e) {}
     }
 
+    // Flipboard: accept both the original flipboard-* names and the shorter
+    // flip / flip-profile names. A `flip` value that looks like a profile
+    // (@user or flipboard.com/@user) is routed to the profile feed.
     if ((v = qs.get("flipboard-topic"))) ensure("flip").topicUrl = v;
     if ((v = qs.get("flipboard-profile"))) ensure("flip").profileUrl = v;
+    if ((v = qs.get("flip"))) {
+      if (/^@|flipboard\.com\/@/i.test(v.trim())) {
+        ensure("flip").profileUrl = v;
+      } else {
+        ensure("flip").topicUrl = v;
+      }
+    }
+    if ((v = qs.get("flip-profile"))) ensure("flip").profileUrl = v;
 
     // Mastodon / social
     var socialServer = qs.get("social-server");
@@ -144,7 +155,7 @@
     // Gallery (Pixelfed), music / podcasts / radio streams
     if ((v = qs.get("gallery"))) ensure("gallery").pixelfedUrl = v;
     if ((v = qs.get("music"))) ensure("music").streamUrl = v;
-    if ((v = qs.get("podcasts"))) ensure("cast").streamUrl = v;
+    if ((v = qs.get("podcasts") || qs.get("cast"))) ensure("cast").streamUrl = v;
     if ((v = qs.get("radio"))) ensure("radio").streamUrl = v;
 
     writeJson("handiSettings", settings);
@@ -158,7 +169,12 @@
     var autoModules = [];
     if (qs.get("radio")) autoModules.push("radio");
     if (qs.get("news")) autoModules.push("news");
-    if (qs.get("flipboard-topic") || qs.get("flipboard-profile"))
+    if (
+      qs.get("flipboard-topic") ||
+      qs.get("flipboard-profile") ||
+      qs.get("flip") ||
+      qs.get("flip-profile")
+    )
       autoModules.push("flip");
     if (qs.get("social-server") || qs.get("social-hashtag") || qs.get("social-profile"))
       autoModules.push("social");
@@ -174,7 +190,7 @@
       autoModules.push("support");
     if (qs.get("gallery")) autoModules.push("gallery");
     if (qs.get("music")) autoModules.push("music");
-    if (qs.get("podcasts")) autoModules.push("cast");
+    if (qs.get("podcasts") || qs.get("cast")) autoModules.push("cast");
 
     if (elementsRaw || autoModules.length) {
       // Keep this list in sync with js/core/module-registry.js.
@@ -195,7 +211,12 @@
         "emergency_alert",
         "support",
       ];
-      var idMap = { bus: "live_bus", emergency: "emergency_alert" };
+      var idMap = {
+        bus: "live_bus",
+        emergency: "emergency_alert",
+        podcasts: "cast",
+        flipboard: "flip",
+      };
 
       var mmr = readJson("handiMasterModules");
       // Include any module IDs we already know about so they get reset too.
