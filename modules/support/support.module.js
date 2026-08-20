@@ -13,7 +13,7 @@ const DEFAULT_HTML = [
   "<h4>Welcome to your custom build handi-pack homepage.</h4>",
   "<ul>",
   "  <li>Click the settings cog button in the footer to see a full list of free and premium features.</li>",
-  "  <li>Click on the image above for a free 7 day trial.</li>",
+  "  <li>Click on the 'Try Premium' button below for a free 7 day trial.</li>",
   "  <li>Share this homepage with your friends (bottom of the page).</li>",
   "  <li>Finally, you can install this homepage for easy access by following the instructions (above).</li>",
   "</ul>",
