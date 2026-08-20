@@ -44,6 +44,14 @@ try {
   console.warn("   ⚠️ Could not load .env:", e.message);
 }
 
+// -----------------------------------------------------------------------------
+// FEED RELAY FLAG – when ON (default), feeds that fail directly or are
+// IP-blocked (e.g. rte.ie 403s) are retried through the proxy/relay list in
+// fetchFeedWithRelay() below. Set to false, or FEED_RELAY_ENABLED=false in
+// .env, to always fetch feeds directly from this server's IP.
+// -----------------------------------------------------------------------------
+const FEED_RELAY_ENABLED = process.env.FEED_RELAY_ENABLED !== "false";
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -827,6 +835,11 @@ async function attemptFeedFetch(url, headers, timeout, proxy) {
 }
 
 async function fetchFeedWithRelay(feedUrl, headers) {
+  // Relays switched off: try the upstream directly only.
+  if (!FEED_RELAY_ENABLED) {
+    return attemptFeedFetch(feedUrl, headers);
+  }
+
   // Hosts known to block this server's IP are never fetched directly — go
   // straight to a relay so we don't reach e.g. rte.ie from this IP at all.
   const blocked = blockedHost(feedUrl);
