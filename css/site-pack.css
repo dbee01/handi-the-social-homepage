@@ -246,3 +246,18 @@ p, .music-track-item, .mastodon-description, .radio-station span, #music-status,
 .header-weather, #weather { font-size: var(--font-size); }
 .customize-link a { font-size: 16px; }
 #musicLoadMoreBtn { font-size: 16px; }
+
+/* ── NOTICE BOX (rotating message + install banner) ─────────────── */
+:root {
+  --notice-bg: color-mix(in srgb, var(--secondary) 18%, var(--surface));
+  --notice-accent: var(--secondary);
+  --notice-close: var(--secondary);
+  --notice-text: var(--text);
+  --notice-muted: var(--text-muted);
+  --notice-btn-bg: var(--primary);
+  --notice-btn-text: #ffffff;
+  --notice-done-bg: #52c41a;
+  --notice-info-bg: var(--primary-soft);
+  --notice-info-accent: var(--primary);
+  --notice-info-close: var(--primary);
+}

@@ -15,6 +15,7 @@
     live_bus: "h_live_bus",
     music: "h_music",
     news: "h_news",
+    flipboard: "h_flipboard",
     social: "h_social",
     radio: "h_radio",
     emergency_alert: "h_emergency_alert",
@@ -102,6 +103,96 @@
       "<strong>ℹ️ " + moduleId + "</strong><br><br>" + tr("h_noHelp", "No specific help available.");
     modalOverlay.style.display = "flex";
   }
+
+  // =========================================================
+  // ROTATING MESSAGE BOX (translated dashboard tips)
+  // Content comes from the d_msg_* language keys; the English
+  // fallbacks below match lang/en.js and keep the box working
+  // even if a translation key is missing.
+  // =========================================================
+  const messageTexts = [
+    tr(
+      "d_msg_1",
+      '💰 Do you have money issues? Contact the government agency <a href="https://mabs.ie/">MABS</a> for assistance.',
+    ),
+    tr(
+      "d_msg_2",
+      '👬 We all could do with a friend sometime; talk to <a href="https://www.alone.ie/">ALONE</a> if you feel like reaching out.',
+    ),
+    tr(
+      "d_msg_3",
+      "🔒 Surf the Web securely with the reputable <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a> service. <sup>(affiliate)</sup>",
+    ),
+    tr(
+      "d_msg_4",
+      '🆘 Add your medical information to your mobile phone now: Click Settings -> search: "Emergency" -> update with your details',
+    ),
+    tr(
+      "d_msg_5",
+      "🚑 Need help quick? Configure your <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android phone</a> or <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple phone and watch</a> to send an alert to the emergency services with your location when you press the power button on your device 5 or more times!",
+    ),
+    tr(
+      "d_msg_6",
+      "📻 Turn off all audio channels on this dashboard by pressing the speaker icon (left of page footer at bottom of your screen).",
+    ),
+  ];
+
+  let msgIndex = 0;
+  let msgRotationInterval = null;
+
+  function createMessageBox() {
+    // Styling comes from the .notice-box classes (css/layout.css +
+    // each theme's --notice-* variables) so it matches the active theme.
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "notice-box";
+
+    const textSpan = document.createElement("span");
+    textSpan.className = "notice-box__text";
+    textSpan.innerHTML = messageTexts[msgIndex];
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "notice-box__close";
+    closeBtn.textContent = "✕";
+    closeBtn.setAttribute("aria-label", tr("d_msg_close", "Dismiss message"));
+
+    closeBtn.onclick = function () {
+      msgDiv.remove();
+      if (msgRotationInterval) {
+        clearInterval(msgRotationInterval);
+      }
+    };
+
+    msgDiv.appendChild(textSpan);
+    msgDiv.appendChild(closeBtn);
+
+    function rotateMessage() {
+      msgIndex = (msgIndex + 1) % messageTexts.length;
+      textSpan.innerHTML = messageTexts[msgIndex];
+    }
+
+    msgRotationInterval = setInterval(rotateMessage, 12000);
+
+    // Stack directly below the install banner when it is shown,
+    // otherwise fall back to below the header.
+    const header = document.querySelector("header");
+    const installBanner = document.querySelector(".notice-box--info");
+    if (installBanner && installBanner.parentNode) {
+      installBanner.parentNode.insertBefore(msgDiv, installBanner.nextSibling);
+    } else if (header && header.parentNode) {
+      header.parentNode.insertBefore(msgDiv, header.nextSibling);
+    } else {
+      document.body.insertBefore(msgDiv, document.body.firstChild);
+    }
+  }
+
+  function initMessageBox() {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", createMessageBox);
+    } else {
+      createMessageBox();
+    }
+  }
+  initMessageBox();
 
   // ----- Pin logic (replaces pins.js) -----
   function moveItemToTop(panel, grid) {

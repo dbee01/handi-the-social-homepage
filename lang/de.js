@@ -311,4 +311,13 @@ var LANG = {
   h_helpAria: "Hilfe für dieses Modul",
   h_pinToTop: "Oben anheften",
   h_unpin: "Loslösen",
+
+  // Rotierende Dashboard-Nachrichten
+  d_msg_1: '💰 Haben Sie Geldprobleme? Wenden Sie sich an die Regierungsbehörde <a href="https://mabs.ie/">MABS</a> für Unterstützung.',
+  d_msg_2: '👬 Wir könnten alle ab und zu einen Freund gebrauchen; sprechen Sie mit <a href="https://www.alone.ie/">ALONE</a>, wenn Sie sich melden möchten.',
+  d_msg_3: "🔒 Surfen Sie sicher im Internet mit dem seriösen <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a>-Dienst. <sup>(Affiliate)</sup>",
+  d_msg_4: '🆘 Fügen Sie jetzt Ihre medizinischen Informationen zu Ihrem Mobiltelefon hinzu: Klicken Sie auf Einstellungen -> suchen: "Notfall" -> aktualisieren Sie mit Ihren Daten',
+  d_msg_5: "🚑 Schnell Hilfe nötig? Richten Sie Ihr <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android-Telefon</a> oder <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple-Telefon und -Uhr</a> so ein, dass es bei 5-maligem oder öfterem Drücken der Einschalttaste einen Notruf mit Ihrem Standort sendet!",
+  d_msg_6: "📻 Schalten Sie alle Audiokanäle auf diesem Dashboard aus, indem Sie auf das Lautsprechersymbol drücken (links in der Fußzeile am unteren Bildschirmrand).",
+  d_msg_close: "Nachricht schließen",
 };

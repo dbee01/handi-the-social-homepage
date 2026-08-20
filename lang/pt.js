@@ -305,4 +305,13 @@ var LANG = {
   h_helpAria: "Ajuda para este módulo",
   h_pinToTop: "Fixar no topo",
   h_unpin: "Desafixar",
+
+  // Mensagens rotativas do painel
+  d_msg_1: '💰 Tem problemas de dinheiro? Contacte a agência governamental <a href="https://mabs.ie/">MABS</a> para obter assistência.',
+  d_msg_2: '👬 Todos nós precisamos de um amigo de vez em quando; fale com a <a href="https://www.alone.ie/">ALONE</a> se sentir vontade de falar com alguém.',
+  d_msg_3: "🔒 Navegue na Web com segurança através do reputado serviço <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a>. <sup>(afiliado)</sup>",
+  d_msg_4: '🆘 Adicione agora as suas informações médicas ao seu telemóvel: clique em Definições -> procure: "Emergência" -> atualize com os seus dados',
+  d_msg_5: "🚑 Precisa de ajuda rápida? Configure o seu <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>telemóvel Android</a> ou <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>iPhone e Apple Watch</a> para enviar um alerta aos serviços de emergência com a sua localização quando premir o botão de energia do seu dispositivo 5 ou mais vezes!",
+  d_msg_6: "📻 Desligue todos os canais de áudio deste painel premindo o ícone do altifalante (à esquerda do rodapé da página, na parte inferior do ecrã).",
+  d_msg_close: "Fechar mensagem",
 };

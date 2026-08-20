@@ -306,4 +306,13 @@ var LANG = {
   h_helpAria: "Hulp voor deze module",
   h_pinToTop: "Bovenaan vastzetten",
   h_unpin: "Losmaken",
+
+  // Roterende dashboardberichten
+  d_msg_1: '💰 Heeft u geldzorgen? Neem contact op met de overheidsinstantie <a href="https://mabs.ie/">MABS</a> voor hulp.',
+  d_msg_2: '👬 We kunnen allemaal wel eens een vriend gebruiken; praat met <a href="https://www.alone.ie/">ALONE</a> als je behoefte voelt om contact op te nemen.',
+  d_msg_3: "🔒 Surf veilig op het web met de gerenommeerde <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a>-dienst. <sup>(affiliate)</sup>",
+  d_msg_4: '🆘 Voeg nu uw medische gegevens toe aan uw mobiele telefoon: klik op Instellingen -> zoek: "Noodgevallen" -> werk bij met uw gegevens',
+  d_msg_5: "🚑 Snel hulp nodig? Configureer uw <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android-telefoon</a> of <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple-telefoon en -horloge</a> om een alarm naar de hulpdiensten te sturen met uw locatie wanneer u 5 keer of vaker op de aan/uit-knop drukt!",
+  d_msg_6: "📻 Zet alle audiokanalen van dit dashboard uit door op het luidsprekerpictogram te drukken (links in de paginafooter onderaan uw scherm).",
+  d_msg_close: "Bericht sluiten",
 };

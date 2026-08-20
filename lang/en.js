@@ -418,6 +418,15 @@ var LANG = {
   h_pinToTop: "Pin to top",
   h_unpin: "Unpin",
 
+  // Dashboard rotating messages
+  d_msg_1: '💰 Do you have money issues? Contact the government agency <a href="https://mabs.ie/">MABS</a> for assistance.',
+  d_msg_2: '👬 We all could do with a friend sometime; talk to <a href="https://www.alone.ie/">ALONE</a> if you feel like reaching out.',
+  d_msg_3: "🔒 Surf the Web securely with the reputable <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a> service. <sup>(affiliate)</sup>",
+  d_msg_4: '🆘 Add your medical information to your mobile phone now: Click Settings -> search: "Emergency" -> update with your details',
+  d_msg_5: "🚑 Need help quick? Configure your <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android phone</a> or <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple phone and watch</a> to send an alert to the emergency services with your location when you press the power button on your device 5 or more times!",
+  d_msg_6: "📻 Turn off all audio channels on this dashboard by pressing the speaker icon (left of page footer at bottom of your screen).",
+  d_msg_close: "Dismiss message",
+
   // Footer
   d_customizeDashboard: "Customize Dashboard",
   d_buildOwnPack: "Build Your Own Handi-Pack",

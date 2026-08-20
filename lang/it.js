@@ -305,4 +305,13 @@ var LANG = {
   h_helpAria: "Aiuto per questo modulo",
   h_pinToTop: "Fissa in alto",
   h_unpin: "Rimuovi",
+
+  // Messaggi rotanti della dashboard
+  d_msg_1: '💰 Hai problemi di soldi? Contatta l’agenzia governativa <a href="https://mabs.ie/">MABS</a> per assistenza.',
+  d_msg_2: '👬 Tutti abbiamo bisogno di un amico ogni tanto; parla con <a href="https://www.alone.ie/">ALONE</a> se senti il bisogno di contattare qualcuno.',
+  d_msg_3: "🔒 Naviga sul Web in tutta sicurezza con il rinomato servizio <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a>. <sup>(affiliato)</sup>",
+  d_msg_4: '🆘 Aggiungi ora le tue informazioni mediche al tuo telefono cellulare: clicca Impostazioni -> cerca: "Emergenza" -> aggiorna con i tuoi dati',
+  d_msg_5: "🚑 Ti serve aiuto subito? Configura il tuo <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>telefono Android</a> o <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>iPhone e Apple Watch</a> per inviare un allarme ai servizi di emergenza con la tua posizione quando premi il pulsante di accensione del dispositivo 5 o più volte!",
+  d_msg_6: "📻 Disattiva tutti i canali audio di questa dashboard premendo l’icona dell’altoparlante (a sinistra del piè di pagina, in fondo allo schermo).",
+  d_msg_close: "Chiudi messaggio",
 };

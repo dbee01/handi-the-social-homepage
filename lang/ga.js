@@ -318,4 +318,13 @@ var LANG = {
   h_helpAria: "Cabhair don mhodúl seo",
   h_pinToTop: "Pionnáil go barr",
   h_unpin: "Díphionnáil",
+
+  // Teachtaireachtaí rothlacha an deais
+  d_msg_1: '💰 An bhfuil fadhbanna airgid agat? Déan teagmháil leis an ngníomhaireacht rialtais <a href="https://mabs.ie/">MABS</a> chun cúnamh a fháil.',
+  d_msg_2: '👬 Bheadh cara ag teastáil ó gach duine againn uaireanta; labhair le <a href="https://www.alone.ie/">ALONE</a> má mhothaíonn tú gur mhaith leat labhairt le duine éigin.',
+  d_msg_3: "🔒 Brabhsáil an Gréasán go slán leis an tseirbhís chreidiúnach <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a>. <sup>(cleamhnas)</sup>",
+  d_msg_4: '🆘 Cuir d’fhaisnéis leighis le do ghuthán póca anois: Cliceáil Socruithe -> cuardaigh: "Emergency" -> nuashonraigh le do chuid sonraí',
+  d_msg_5: "🚑 An bhfuil cabhair uait go tapa? Cumraigh do <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>ghuthán Android</a> nó <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>ghuthán agus uaireadóir Apple</a> chun foláireamh a sheoladh chuig na seirbhísí éigeandála le do shuíomh nuair a bhrúnn tú cnaipe cumhachta do ghléis 5 huaire nó níos mó!",
+  d_msg_6: "📻 Múch gach cainéal fuaime ar an deais seo trí bhrú a chur ar an deilbhín cainteora (ar chlé den chos leathanach ag bun do scáileáin).",
+  d_msg_close: "Dún an teachtaireacht",
 };

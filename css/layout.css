@@ -2094,3 +2094,89 @@ footer {
 .search-engine-logo {
     display: none !important;
 }
+
+/* =========================================================
+   NOTICE BOX (rotating message + PWA install banner)
+   Layout only — colors come from the --notice-* variables
+   that each theme defines in its :root block, so the box
+   inherits the active theme instead of clashing with it.
+========================================================= */
+.notice-box {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin: 10px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--notice-text);
+    background: var(--notice-bg);
+    border-left: 6px solid var(--notice-accent);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* =========================================================
+   TEMPORARY: hide the rotating message box only.
+   The install banner (.notice-box--info) stays visible.
+   Remove this block to restore the messages box.
+========================================================= */
+.notice-box:not(.notice-box--info) {
+    display: none;
+}
+
+.notice-box--info {
+    --notice-bg: var(--notice-info-bg);
+    --notice-accent: var(--notice-info-accent);
+    --notice-close: var(--notice-info-close);
+}
+
+.notice-box__text {
+    flex: 1;
+    min-width: 200px;
+}
+
+.notice-box__sub {
+    color: var(--notice-muted);
+}
+
+.notice-box__actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.notice-box__btn {
+    min-width: 100px;
+    min-height: 40px;
+    padding: 8px 18px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--notice-btn-text);
+    background: var(--notice-btn-bg);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.notice-box__btn:hover {
+    opacity: 0.9;
+}
+
+.notice-box__btn--done {
+    background: var(--notice-done-bg);
+}
+
+.notice-box__close {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0 5px;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--notice-close);
+    background: none;
+    border: none;
+    cursor: pointer;
+}

@@ -81,45 +81,24 @@
   }
 
   function showInstallBanner() {
+    // Styling comes from the .notice-box classes (see css/layout.css and
+    // each theme's :root --notice-* variables) so it inherits the active
+    // theme instead of clashing with it.
     const bannerDiv = document.createElement("div");
-    bannerDiv.style.borderLeft = "6px solid #1890ff";
-    bannerDiv.style.borderRadius = "8px";
-    bannerDiv.style.padding = "12px 15px";
-    bannerDiv.style.margin = "10px";
-    bannerDiv.style.fontSize = "1rem";
-    bannerDiv.style.display = "flex";
-    bannerDiv.style.flexWrap = "wrap";
-    bannerDiv.style.justifyContent = "space-between";
-    bannerDiv.style.alignItems = "center";
-    bannerDiv.style.gap = "10px";
-    bannerDiv.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+    bannerDiv.className = "notice-box notice-box--info";
 
     const bannerText = document.createElement("span");
-    bannerText.style.flex = "1";
-    bannerText.style.lineHeight = "1.5";
-    bannerText.style.minWidth = "200px";
+    bannerText.className = "notice-box__text";
     bannerText.innerHTML = `
-                <strong>📲 Install HandiHomepage on your device</strong><br>
-                <span style="color: #444;">Click <strong>install</strong></span>
+                <strong>📲 Install HandiHomepage on your device</strong>
             `;
 
     const btnGroup = document.createElement("span");
-    btnGroup.style.display = "flex";
-    btnGroup.style.gap = "8px";
-    btnGroup.style.flexShrink = "0";
+    btnGroup.className = "notice-box__actions";
 
     const installBtn = document.createElement("button");
+    installBtn.className = "notice-box__btn";
     installBtn.textContent = "📲 Install";
-    installBtn.style.background = "#1890ff";
-    installBtn.style.color = "white";
-    installBtn.style.border = "none";
-    installBtn.style.borderRadius = "6px";
-    installBtn.style.padding = "8px 18px";
-    installBtn.style.fontSize = "1rem";
-    installBtn.style.fontWeight = "bold";
-    installBtn.style.cursor = "pointer";
-    installBtn.style.minWidth = "100px";
-    installBtn.style.minHeight = "40px";
 
     installBtn.onclick = async function () {
       if (deferredPrompt) {
@@ -148,25 +127,18 @@
             'Look for "Add to Home Screen" or "Install" in your browser menu';
         }
         installBtn.textContent = "✓ Installed?";
-        installBtn.style.background = "#52c41a";
+        installBtn.classList.add("notice-box__btn--done");
         bannerText.innerHTML = `
                         <strong>📲 Install HandiHomepage on your device</strong><br>
-                        <span style="color: #444;">${instructions}</span>
+                        <span class="notice-box__sub">${instructions}</span>
                     `;
       }
     };
 
     const closeBtn = document.createElement("button");
+    closeBtn.className = "notice-box__close";
     closeBtn.textContent = "✕";
-    closeBtn.style.background = "none";
-    closeBtn.style.border = "none";
-    closeBtn.style.fontSize = "20px";
-    closeBtn.style.cursor = "pointer";
-    closeBtn.style.color = "#1890ff";
-    closeBtn.style.padding = "0 5px";
-    closeBtn.style.minWidth = "32px";
-    closeBtn.style.minHeight = "32px";
-    closeBtn.style.fontWeight = "bold";
+    closeBtn.setAttribute("aria-label", "Dismiss install banner");
 
     closeBtn.onclick = function () {
       bannerDiv.remove();
@@ -181,7 +153,9 @@
     function addBannerToPage() {
       const header = document.querySelector("header");
       if (header && header.parentNode) {
-        header.parentNode.insertBefore(bannerDiv, header);
+        // Place below the header, on top of the dashboard wrapper,
+        // directly above the rotating messages box.
+        header.parentNode.insertBefore(bannerDiv, header.nextSibling);
       } else {
         document.body.insertBefore(bannerDiv, document.body.firstChild);
       }
@@ -195,82 +169,9 @@
   }
 
   // =========================================================
-  // ROTATING MESSAGE BOX (original)
+  // ROTATING MESSAGE BOX
+  // Moved to js/core/module-buttons.js where it is rendered with
+  // translated content (d_msg_* keys). This file now only handles
+  // the PWA install banner.
   // =========================================================
-  const messages = [
-    '💰 Do you have money issues? Contact the government agency <a href="https://mabs.ie/">MABS</a> for assistance.',
-    '👬 We all could do with a friend sometime; talk to <a href="https://www.alone.ie/">ALONE</a> if you feel like reaching out.',
-    "🔒 Surf the Web securely with the reputable <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a> service. <sup>(affiliate)</sup>",
-    '🆘 Add your medical information to your mobile phone now: Click Settings -> search: "Emergency" -> update with your details',
-    "🚑 Need help quick? Configure your <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android phone</a> or <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple phone and watch</a> to send an alert to the emergency services with your location when you press the power button on your device 5 or more times!",
-    "📻 Turn off all audio channels on this dashboard by pressing the speaker icon (left of page footer at bottom of your screen).",
-  ];
-
-  let currentIndex = 0;
-
-  const msgDiv = document.createElement("div");
-  msgDiv.style.backgroundColor = "#fff3cd";
-  msgDiv.style.borderLeft = "6px solid #ffc107";
-  msgDiv.style.borderRadius = "8px";
-  msgDiv.style.padding = "10px 15px";
-  msgDiv.style.margin = "10px";
-  msgDiv.style.fontSize = "1rem";
-  msgDiv.style.display = "flex";
-  msgDiv.style.justifyContent = "space-between";
-  msgDiv.style.alignItems = "center";
-  msgDiv.style.gap = "10px";
-
-  const textSpan = document.createElement("span");
-  textSpan.style.flex = "1";
-  textSpan.style.lineHeight = "1.5";
-  textSpan.innerHTML = messages[currentIndex];
-
-  const closeBtn = document.createElement("button");
-  closeBtn.textContent = "✕";
-  closeBtn.style.background = "none";
-  closeBtn.style.border = "none";
-  closeBtn.style.fontSize = "18px";
-  closeBtn.style.cursor = "pointer";
-  closeBtn.style.color = "#856404";
-  closeBtn.style.padding = "0 5px";
-  closeBtn.style.minWidth = "32px";
-  closeBtn.style.minHeight = "32px";
-
-  closeBtn.onclick = function () {
-    msgDiv.remove();
-    if (rotationInterval) {
-      clearInterval(rotationInterval);
-    }
-  };
-
-  msgDiv.appendChild(textSpan);
-  msgDiv.appendChild(closeBtn);
-
-  function rotateMessage() {
-    currentIndex = (currentIndex + 1) % messages.length;
-    textSpan.innerHTML = messages[currentIndex];
-  }
-
-  let rotationInterval = setInterval(rotateMessage, 12000);
-
-  function addToPage() {
-    const header = document.querySelector("header");
-    if (header && header.parentNode) {
-      header.parentNode.insertBefore(msgDiv, header.nextSibling);
-    } else {
-      document.body.insertBefore(msgDiv, document.body.firstChild);
-    }
-  }
-
-  window.addEventListener("beforeunload", function () {
-    if (rotationInterval) {
-      clearInterval(rotationInterval);
-    }
-  });
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", addToPage);
-  } else {
-    addToPage();
-  }
 })();

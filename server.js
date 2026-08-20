@@ -50,7 +50,7 @@ try {
 // fetchFeedWithRelay() below. Set to false, or FEED_RELAY_ENABLED=false in
 // .env, to always fetch feeds directly from this server's IP.
 // -----------------------------------------------------------------------------
-const FEED_RELAY_ENABLED = process.env.FEED_RELAY_ENABLED !== "false";
+const FEED_RELAY_ENABLED = process.env.FEED_RELAY_ENABLED !== "true";
 
 const app = express();
 const PORT = process.env.PORT || 8080;

@@ -306,4 +306,13 @@ var LANG = {
   h_helpAria: "Pomoc dla tego modułu",
   h_pinToTop: "Przypnij na górze",
   h_unpin: "Odepnij",
+
+  // Rotacyjne komunikaty pulpitu
+  d_msg_1: '💰 Masz problemy finansowe? Skontaktuj się z agencją rządową <a href="https://mabs.ie/">MABS</a> w celu uzyskania pomocy.',
+  d_msg_2: '👬 Każdemu z nas czasem przydałby się przyjaciel; porozmawiaj z <a href="https://www.alone.ie/">ALONE</a>, jeśli czujesz potrzebę nawiązania kontaktu.',
+  d_msg_3: "🔒 Przeglądaj internet bezpiecznie dzięki renomowanej usłudze <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a>. <sup>(partner)</sup>",
+  d_msg_4: '🆘 Dodaj teraz swoje informacje medyczne do telefonu komórkowego: kliknij Ustawienia -> wyszukaj: „Pogotowie” -> zaktualizuj swoimi danymi',
+  d_msg_5: "🚑 Potrzebujesz szybkiej pomocy? Skonfiguruj swój <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>telefon z Androidem</a> lub <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>iPhone i Apple Watch</a>, aby wysłać alert do służb ratunkowych z Twoją lokalizacją po naciśnięciu przycisku zasilania 5 lub więcej razy!",
+  d_msg_6: "📻 Wyłącz wszystkie kanały audio na tym pulpicie, naciskając ikonę głośnika (po lewej stronie stopki strony na dole ekranu).",
+  d_msg_close: "Zamknij komunikat",
 };

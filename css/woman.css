@@ -718,3 +718,21 @@ p,
 #musicLoadMoreBtn {
     font-size: 16px;
 }
+
+/* =========================================================
+   NOTICE BOX (rotating message + install banner)
+   Colors used by .notice-box in css/layout.css
+========================================================= */
+:root {
+    --notice-bg: #fff0f4;
+    --notice-accent: #d63384;
+    --notice-close: #c2185b;
+    --notice-text: #3d2c3a;
+    --notice-muted: #8a6a7a;
+    --notice-btn-bg: #d63384;
+    --notice-btn-text: #ffffff;
+    --notice-done-bg: #52c41a;
+    --notice-info-bg: #f0f4ff;
+    --notice-info-accent: #5a7fd6;
+    --notice-info-close: #5a7fd6;
+}

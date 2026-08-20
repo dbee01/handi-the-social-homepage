@@ -305,4 +305,13 @@ var LANG = {
   h_helpAria: "Aide pour ce module",
   h_pinToTop: "Épingler en haut",
   h_unpin: "Désépingler",
+
+  // Messages rotatifs du tableau de bord
+  d_msg_1: '💰 Avez-vous des problèmes d’argent ? Contactez l’agence gouvernementale <a href="https://mabs.ie/">MABS</a> pour obtenir de l’aide.',
+  d_msg_2: '👬 Nous avons tous besoin d’un ami parfois ; parlez à <a href="https://www.alone.ie/">ALONE</a> si vous avez envie de tendre la main.',
+  d_msg_3: "🔒 Naviguez sur le Web en toute sécurité avec le service réputé <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a>. <sup>(affilié)</sup>",
+  d_msg_4: '🆘 Ajoutez maintenant vos informations médicales à votre téléphone mobile : cliquez sur Paramètres -> recherchez : « Urgence » -> mettez à jour avec vos informations',
+  d_msg_5: "🚑 Besoin d’aide rapidement ? Configurez votre <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>téléphone Android</a> ou votre <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>iPhone et Apple Watch</a> pour envoyer une alerte aux services d’urgence avec votre position lorsque vous appuyez sur le bouton d’alimentation de votre appareil 5 fois ou plus !",
+  d_msg_6: "📻 Coupez toutes les chaînes audio de ce tableau de bord en appuyant sur l’icône du haut-parleur (à gauche du pied de page, en bas de votre écran).",
+  d_msg_close: "Fermer le message",
 };

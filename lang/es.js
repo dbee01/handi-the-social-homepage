@@ -310,4 +310,13 @@ var LANG = {
   h_helpAria: "Ayuda para este módulo",
   h_pinToTop: "Fijar arriba",
   h_unpin: "Desfijar",
+
+  // Mensajes rotatorios del panel
+  d_msg_1: '💰 ¿Tiene problemas de dinero? Contacte con la agencia gubernamental <a href="https://mabs.ie/">MABS</a> para obtener ayuda.',
+  d_msg_2: '👬 Todos necesitamos un amigo alguna vez; hable con <a href="https://www.alone.ie/">ALONE</a> si siente que quiere contactar con alguien.',
+  d_msg_3: "🔒 Navegue por Internet de forma segura con el reputado servicio <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a>. <sup>(afiliado)</sup>",
+  d_msg_4: '🆘 Añada ahora su información médica a su teléfono móvil: Pulse Configuración -> busque: "Emergencia" -> actualice con sus datos',
+  d_msg_5: "🚑 ¿Necesita ayuda rápida? Configure su <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>teléfono Android</a> o <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>iPhone y Apple Watch</a> para enviar una alerta a los servicios de emergencia con su ubicación al pulsar el botón de encendido 5 o más veces!",
+  d_msg_6: "📻 Apague todos los canales de audio de este panel pulsando el icono del altavoz (a la izquierda del pie de página, en la parte inferior de la pantalla).",
+  d_msg_close: "Cerrar mensaje",
 };
