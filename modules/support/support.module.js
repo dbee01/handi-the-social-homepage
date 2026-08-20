@@ -5,22 +5,29 @@
  */
 
 // modules/support/support.module.js
-// Support module — image or video card with external link and description.
+// Support module — renders the handi-pack &support HTML, or a default
+// welcome block when no custom HTML was provided.
 import { loadSettings } from "../../js/core/settings.js";
 
+const DEFAULT_HTML = [
+  "<h4>Welcome to your custom build handi-pack homepage.</h4>",
+  "<ul>",
+  "  <li>Click the settings cog button in the footer to see a full list of free and premium features.</li>",
+  "  <li>Click on the image above for a free 7 day trial.</li>",
+  "  <li>Share this homepage with your friends (bottom of the page).</li>",
+  "  <li>Finally, you can install this homepage for easy access by following the instructions (above).</li>",
+  "</ul>",
+  "<p>Enjoy!</p>",
+].join("\n");
+
 export default async function initSupport(container) {
-  var t =
-    window.t ||
-    function (k, e) {
-      return e || k;
-    };
   const pinBtn = container.querySelector(".pin-btn");
   container.innerHTML = "";
   if (pinBtn) container.appendChild(pinBtn);
 
   const title = document.createElement("div");
   title.className = "panel-title";
-  var name =
+  const name =
     window.LANG && window.LANG.modules && window.LANG.modules.support
       ? window.LANG.modules.support.name
       : "SUPPORT";
@@ -34,77 +41,9 @@ export default async function initSupport(container) {
   const parentItem = container.closest(".dashboard-item");
   if (parentItem) parentItem.dataset.module = "support";
 
-  const settings = loadSettings();
-  const cfg = settings.support || {};
+  const cfg = (loadSettings().support) || {};
+  const customHtml = (cfg.html || "").trim();
 
-  const mediaUrl = cfg.imageUrl || "";
-  const mediaTitle = cfg.imageTitle || "";
-  const linkUrl = cfg.linkUrl || "";
-  const description = cfg.description || "";
-  const mediaType = cfg.mediaType || detectMediaType(mediaUrl);
-
-  if (!mediaUrl && !linkUrl && !description) {
-    content.innerHTML = `
-      <div class="module-empty">
-        <i class="fa-solid fa-hand-holding-heart"></i>
-        <p>${t("d_configureSupport", "Configure in Settings.")}</p>
-      </div>
-    `;
-    return;
-  }
-
-  var html = '<div class="support-card" style="text-align:center;">';
-
-  if (mediaUrl) {
-    var linkOpen = linkUrl ? '<a href="' + escapeAttr(linkUrl) + '" target="_blank" rel="noopener">' : "";
-    var linkClose = linkUrl ? "</a>" : "";
-    html += linkOpen;
-
-    if (mediaType === "video") {
-      html += '<video src="' + escapeAttr(mediaUrl) + '" controls playsinline ' +
-        'style="max-width:80%;width:100%;height:auto;display:block;margin:0 auto 8px;border-radius:var(--radius);" ' +
-        'poster="' + escapeAttr(mediaUrl) + '#t=0.1"></video>';
-    } else {
-      html += '<img src="' + escapeAttr(mediaUrl) + '" alt="' + escapeAttr(mediaTitle || "Support") + '" class="support-img" style="max-width:80%;width:100%;height:auto;display:block;margin:0 auto 8px;border-radius:var(--radius);" />';
-    }
-
-    html += linkClose;
-  }
-
-  if (mediaTitle) {
-    html += '<h3 class="support-title" style="margin:4px 0;font-family:var(--header-font);font-size:1.2rem;">' + escapeHtml(mediaTitle) + "</h3>";
-  }
-
-  if (linkUrl) {
-    html += '<a href="' + escapeAttr(linkUrl) + '" target="_blank" rel="noopener" class="support-link" style="display:inline-block;margin-bottom:8px;font-weight:700;">' + escapeHtml(linkUrl) + "</a>";
-  }
-
-  if (description) {
-    html += '<p class="support-desc" style="margin-top:8px;line-height:1.5;color:var(--text);text-align:center;">' + escapeHtml(description) + "</p>";
-  }
-
-  html += "</div>";
-
-  content.innerHTML = html;
-}
-
-/** Auto-detect whether a URL points to a video or image. */
-function detectMediaType(url) {
-  if (!url) return "image";
-  // data URI
-  if (url.startsWith("data:video/")) return "video";
-  if (url.startsWith("data:image/")) return "image";
-  // common video extensions
-  if (/\.(mp4|webm|ogg|ogv|mov|avi|mkv)(\?.*)?$/i.test(url)) return "video";
-  return "image";
-}
-
-function escapeHtml(str) {
-  if (!str) return "";
-  return str.replace(/[&<>]/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[m]; });
-}
-
-function escapeAttr(str) {
-  if (!str) return "";
-  return str.replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  // The pack's &support HTML wins; otherwise show the default welcome block.
+  content.innerHTML = customHtml || DEFAULT_HTML;
 }

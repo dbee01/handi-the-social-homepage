@@ -1018,3 +1018,48 @@
 {"ts":"2026-08-19T10:25:33.010Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.22","theme":"techie","lang":"en"},"sid":"smszy44k0qcm9zp"}
 {"ts":"2026-08-19T10:28:30.558Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smszy44k0qcm9zp"}
 {"ts":"2026-08-19T10:28:31.306Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.74","theme":"techie","lang":"en"},"sid":"smszy44k0qcm9zp"}
+{"ts":"2026-08-19T10:30:08.964Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smszy44k0qcm9zp"}
+{"ts":"2026-08-19T10:30:09.681Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.71","theme":"techie","lang":"en"},"sid":"smszy44k0qcm9zp"}
+{"ts":"2026-08-20T08:39:43.911Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:39:45.376Z","level":1,"event":"matrix_login_failed","details":{"username":"@bigboyfoolish:matrix.org","homeserver":"https://matrix.org","error":"MatrixError: [403] You have reached your hard device limit. Please visit your account page to sign some out. (https://matrix.org/_matrix/client/v3/login)"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:39:45.626Z","level":1,"event":"page_load","details":{"loadTimeSec":"4.37","theme":"techie","lang":"en"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:40:53.424Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smt19teuc260ybo"}
+{"ts":"2026-08-20T08:40:53.547Z","level":2,"event":"news_load","details":{"source":"RTE NEWS","articles":8},"sid":"smt19teuc260ybo"}
+{"ts":"2026-08-20T08:40:54.327Z","level":1,"event":"matrix_login_failed","details":{"username":"@bigboyfoolish:matrix.org","homeserver":"https://matrix.org","error":"MatrixError: [403] You have reached your hard device limit. Please visit your account page to sign some out. (https://matrix.org/_matrix/client/v3/login)"},"sid":"smt19teuc260ybo"}
+{"ts":"2026-08-20T08:40:54.599Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.99","theme":"techie","lang":"en"},"sid":"smt19teuc260ybo"}
+{"ts":"2026-08-20T08:42:28.824Z","level":2,"event":"news_load","details":{"source":"RTE NEWS","articles":8},"sid":"smt19teuc260ybo"}
+{"ts":"2026-08-20T08:42:29.185Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smt19teuc260ybo"}
+{"ts":"2026-08-20T08:42:29.484Z","level":1,"event":"matrix_login_failed","details":{"username":"@bigboyfoolish:matrix.org","homeserver":"https://matrix.org","error":"MatrixError: [403] You have reached your hard device limit. Please visit your account page to sign some out. (https://matrix.org/_matrix/client/v3/login)"},"sid":"smt19teuc260ybo"}
+{"ts":"2026-08-20T08:42:30.181Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.34","theme":"techie","lang":"en"},"sid":"smt19teuc260ybo"}
+{"ts":"2026-08-20T08:50:23.754Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:50:24.267Z","level":2,"event":"news_load","details":{"source":"RTE NEWS","articles":8},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:50:24.725Z","level":1,"event":"matrix_login_failed","details":{"username":"@bigboyfoolish:matrix.org","homeserver":"https://matrix.org","error":"MatrixError: [403] You have reached your hard device limit. Please visit your account page to sign some out. (https://matrix.org/_matrix/client/v3/login)"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:50:25.011Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.33","theme":"techie","lang":"en"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:51:22.453Z","level":2,"event":"news_load","details":{"source":"RTE NEWS","articles":8},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:51:22.836Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:51:23.395Z","level":1,"event":"matrix_login_failed","details":{"username":"@bigboyfoolish:matrix.org","homeserver":"https://matrix.org","error":"MatrixError: [403] You have reached your hard device limit. Please visit your account page to sign some out. (https://matrix.org/_matrix/client/v3/login)"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:51:23.590Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.55","theme":"techie","lang":"en"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:54:24.529Z","level":2,"event":"news_load","details":{"source":"RTE NEWS","articles":8},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:54:24.809Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:54:25.264Z","level":1,"event":"matrix_login_failed","details":{"username":"@bigboyfoolish:matrix.org","homeserver":"https://matrix.org","error":"MatrixError: [403] You have reached your hard device limit. Please visit your account page to sign some out. (https://matrix.org/_matrix/client/v3/login)"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:54:25.609Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.46","theme":"techie","lang":"en"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:54:35.558Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:54:35.662Z","level":2,"event":"news_load","details":{"source":"RTE NEWS","articles":8},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:54:36.203Z","level":1,"event":"matrix_login_failed","details":{"username":"@bigboyfoolish:matrix.org","homeserver":"https://matrix.org","error":"MatrixError: [403] You have reached your hard device limit. Please visit your account page to sign some out. (https://matrix.org/_matrix/client/v3/login)"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:54:36.531Z","level":1,"event":"page_load","details":{"loadTimeSec":"1.90","theme":"techie","lang":"en"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:59:47.956Z","level":2,"event":"news_load","details":{"source":"RTE NEWS","articles":8},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:59:47.975Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:59:48.791Z","level":1,"event":"matrix_login_failed","details":{"username":"@bigboyfoolish:matrix.org","homeserver":"https://matrix.org","error":"MatrixError: [403] You have reached your hard device limit. Please visit your account page to sign some out. (https://matrix.org/_matrix/client/v3/login)"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T08:59:48.898Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.69","theme":"techie","lang":"en"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T09:00:17.699Z","level":2,"event":"news_load","details":{"source":"RTE NEWS","articles":8},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T09:00:17.751Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T09:00:18.522Z","level":1,"event":"matrix_login_failed","details":{"username":"@bigboyfoolish:matrix.org","homeserver":"https://matrix.org","error":"MatrixError: [403] You have reached your hard device limit. Please visit your account page to sign some out. (https://matrix.org/_matrix/client/v3/login)"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T09:00:19.035Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.37","theme":"techie","lang":"en"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T09:07:19.133Z","level":2,"event":"news_load","details":{"source":"RTE NEWS","articles":8},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T09:07:19.590Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T09:07:19.886Z","level":1,"event":"matrix_login_failed","details":{"username":"@bigboyfoolish:matrix.org","homeserver":"https://matrix.org","error":"MatrixError: [403] You have reached your hard device limit. Please visit your account page to sign some out. (https://matrix.org/_matrix/client/v3/login)"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T09:07:20.029Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.67","theme":"techie","lang":"en"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T09:08:40.200Z","level":2,"event":"news_load","details":{"source":"RTE NEWS","articles":8},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T09:08:40.287Z","level":2,"event":"mastodon_load","details":{"server":"https://mastodon.ie","posts":20},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T09:08:40.719Z","level":1,"event":"page_load","details":{"loadTimeSec":"2.47","theme":"techie","lang":"en"},"sid":"smt19rw3od88a7p"}
+{"ts":"2026-08-20T09:08:41.182Z","level":1,"event":"matrix_login_failed","details":{"username":"@bigboyfoolish:matrix.org","homeserver":"https://matrix.org","error":"MatrixError: [403] You have reached your hard device limit. Please visit your account page to sign some out. (https://matrix.org/_matrix/client/v3/login)"},"sid":"smt19rw3od88a7p"}

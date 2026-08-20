@@ -1706,7 +1706,8 @@
                             card.classList.add("module-card-disabled");
                         }
                         // Premium modules are locked for free users — greyed
-                        // out and not toggleable regardless of MMR state.
+                        // out and not toggleable regardless of MMR state, and
+                        // their config dropdown is not rendered.
                         const regMod = window.HANDI_MODULE_BY_ID(moduleId);
                         if (
                             regMod &&
@@ -1715,6 +1716,8 @@
                         ) {
                             toggle.classList.add("mmr-disabled");
                             card.classList.add("module-card-disabled");
+                            const cfg = card.querySelector(".module-config");
+                            if (cfg) cfg.style.display = "none";
                         }
                     }
                 });
@@ -2261,6 +2264,19 @@
                         header.addEventListener("click", function (e) {
                             if (e.target.closest(".toggle-switch")) return;
                             const card = this.closest(".module-card");
+                            // Free users can't open premium config dropdowns.
+                            const modId = card
+                                ? card.getAttribute("data-module")
+                                : "";
+                            const reg = modId
+                                ? window.HANDI_MODULE_BY_ID(modId)
+                                : null;
+                            if (
+                                reg &&
+                                reg.tier === "premium" &&
+                                window.PREMIUM_ACTIVE !== true
+                            )
+                                return;
                             const config = card.querySelector(".module-config");
                             if (config) {
                                 const isOpen = config.style.display === "block";

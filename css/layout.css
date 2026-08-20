@@ -269,6 +269,10 @@ header {
     margin-bottom: 16px;
 }
 
+.support-content {
+    padding: 16px 20px;
+}
+
 /* Empty state layout */
 .module-empty {
     display: flex;
@@ -2034,7 +2038,7 @@ footer {
 
 .customize-link {
     text-align: center;
-    margin-bottom: 40px;
+    margin: 0 0 48px;
     display: block !important;
 }
 
@@ -2056,8 +2060,8 @@ footer {
 ========================================================= */
 
 .brand {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 24px;
+    margin-bottom: 24px;
     margin-left: auto;
     margin-right: auto;
     text-align: center;

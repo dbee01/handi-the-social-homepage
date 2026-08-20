@@ -127,6 +127,9 @@
     var supportTitle = qs.get("support-image-title");
     var supportDesc = qs.get("support-description");
     var supportLink = qs.get("support-link-url");
+    // Raw HTML for the support element on the homepage (overrides the default
+    // welcome block when present).
+    if ((v = qs.get("support"))) ensure("support").html = v;
     if (supportImage || supportTitle || supportDesc || supportLink) {
       var support = ensure("support");
       if (supportImage) {
@@ -165,7 +168,8 @@
       qs.get("support-image") ||
       qs.get("support-image-title") ||
       qs.get("support-description") ||
-      qs.get("support-link-url")
+      qs.get("support-link-url") ||
+      qs.get("support")
     )
       autoModules.push("support");
     if (qs.get("gallery")) autoModules.push("gallery");

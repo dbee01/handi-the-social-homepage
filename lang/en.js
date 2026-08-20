@@ -420,5 +420,6 @@ var LANG = {
 
   // Footer
   d_customizeDashboard: "Customize Dashboard",
+  d_buildOwnPack: "Build Your Own Handi-Pack",
   d_freeTrial: "✨ Try Premium",
 };
