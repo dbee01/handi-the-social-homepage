@@ -784,25 +784,104 @@ app.get("/api/calendar-proxy", async (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
+// FEED RELAY HELPERS – some feed hosts (e.g. rte.ie) WAF-block this server's
+// cloud IP and return 403. We retry through public read-only relay proxies,
+// which fetch from their own servers and therefore bypass the IP block.
+// The relays are free third-party services; swap or remove them as needed.
+// -----------------------------------------------------------------------------
+const BLOCKED_DIRECT_HOSTS = ["rte.ie"];
+
+function blockedHost(feedUrl) {
+  try {
+    const host = new URL(feedUrl).hostname.toLowerCase();
+    return BLOCKED_DIRECT_HOSTS.some(
+      (h) => host === h || host.endsWith("." + h),
+    )
+      ? host
+      : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function attemptFeedFetch(url, headers, timeout, proxy) {
+  try {
+    const response = await axios.get(url, {
+      responseType: "text",
+      timeout: timeout || 15000,
+      headers,
+      ...(proxy ? { proxy } : {}),
+    });
+    if (response.status !== 200) {
+      return {
+        ok: false,
+        status: response.status,
+        message: "HTTP " + response.status,
+      };
+    }
+    return { ok: true, data: response.data };
+  } catch (error) {
+    const status = error.response ? error.response.status : 502;
+    return { ok: false, status, message: error.message };
+  }
+}
+
+async function fetchFeedWithRelay(feedUrl, headers) {
+  // Hosts known to block this server's IP are never fetched directly — go
+  // straight to a relay so we don't reach e.g. rte.ie from this IP at all.
+  const blocked = blockedHost(feedUrl);
+  if (blocked) {
+    console.log(`🔄 ${blocked} is IP-blocked for this server; using relay only.`);
+  } else {
+    const direct = await attemptFeedFetch(feedUrl, headers);
+    if (direct.ok) return direct;
+    console.warn(`⚠️ Direct fetch failed (${direct.message}); trying relays...`);
+  }
+  // Relay list: ip : port : username : password
+  // 91.193.255.216:12323:14a05b445d300:f7573b9339
+  const FEED_PROXY = {
+    host: "91.193.255.216",
+    port: 12323,
+    auth: { username: "14a05b445d300", password: "f7573b9339" },
+  };
+  const relays = [
+    // Fetch the feed directly through the authenticated proxy (uses its IP,
+    // bypassing rte.ie's block on this server's IP).
+    { name: "proxy 91.193.255.216:12323", url: feedUrl, proxy: FEED_PROXY },
+    {
+      name: "codetabs",
+      url: "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(feedUrl),
+    },
+  ];
+  for (const relay of relays) {
+    const viaRelay = await attemptFeedFetch(relay.url, headers, 15000, relay.proxy);
+    if (viaRelay.ok) {
+      console.log("✅ Feed fetched via relay: " + relay.name);
+      return viaRelay;
+    }
+    console.warn(`⚠️ Relay ${relay.name} failed (${viaRelay.message})`);
+  }
+  return {
+    ok: false,
+    status: 502,
+    message: "Direct and relay fetches all failed",
+  };
+}
+
+// -----------------------------------------------------------------------------
 // NEWS API – FIXED with proper User-Agent and error handling
 // -----------------------------------------------------------------------------
 app.get("/api/news", async (req, res) => {
   const rssUrl = req.query.url || "https://www.thejournal.ie/feed/";
   console.log(`📰 Fetching news from: ${rssUrl}`);
   try {
-    const response = await axios.get(rssUrl, {
-      responseType: "text",
-      timeout: 15000,
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        Accept: "application/rss+xml, application/xml, text/xml, */*",
-      },
-      // Uncomment if you have SSL certificate issues (temporary)
-      // httpsAgent: new https.Agent({ rejectUnauthorized: false })
+    const result = await fetchFeedWithRelay(rssUrl, {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      Accept: "application/rss+xml, application/xml, text/xml, */*",
     });
-    if (response.status !== 200) throw new Error(`HTTP ${response.status}`);
-    res.type("application/xml").send(response.data);
+    if (!result.ok) throw new Error(result.message);
+    res.type("application/xml").send(result.data);
     console.log("✅ News feed fetched successfully");
   } catch (error) {
     // Log all available error details for debugging
@@ -867,23 +946,18 @@ app.get("/api/feed", async (req, res) => {
   } catch (e) {}
 
   console.log(`🖼️ Fetching feed from: ${feedUrl.substring(0, 100)}...`);
-  try {
-    const response = await axios.get(feedUrl, {
-      responseType: "text",
-      timeout: 15000,
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        Accept: "application/atom+xml, application/rss+xml, application/xml, text/xml, */*",
-      },
-    });
-    res.status(200).type("application/xml").send(response.data);
+  const result = await fetchFeedWithRelay(feedUrl, {
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    Accept: "application/atom+xml, application/rss+xml, application/xml, text/xml, */*",
+  });
+  if (result.ok) {
+    res.status(200).type("application/xml").send(result.data);
     console.log("✅ Feed fetched successfully");
-  } catch (error) {
-    const status = error.response ? error.response.status : 502;
-    console.error("❌ Feed proxy error:", error.message, "status:", status);
-    res.status(status).send("Failed to fetch feed: " + error.message);
+    return;
   }
+  console.error("❌ Feed proxy error:", result.message, "status:", result.status);
+  res.status(result.status || 502).send("Failed to fetch feed: " + result.message);
 });
 
 // -----------------------------------------------------------------------------
