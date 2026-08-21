@@ -54,7 +54,21 @@ function parseRadioInfo(doc) {
 // audio stream URLs keep working through the live-stream path below.
 async function fetchRadioFeed(url) {
   try {
-    const resp = await fetch("/api/feed?url=" + encodeURIComponent(url));
+    // Safety net: never block the module render on a slow/hanging proxy.
+    // Live stream URLs are rejected server-side (415) within milliseconds,
+    // but a misbehaving relay shouldn't stall the UI for minutes.
+    const ctrl = new AbortController();
+    const timer = setTimeout(function () {
+      ctrl.abort();
+    }, 8000);
+    let resp;
+    try {
+      resp = await fetch("/api/feed?url=" + encodeURIComponent(url), {
+        signal: ctrl.signal,
+      });
+    } finally {
+      clearTimeout(timer);
+    }
     if (!resp.ok) return { info: null, tracks: [] };
     const doc = new DOMParser().parseFromString(await resp.text(), "text/xml");
     if (doc.querySelector("parsererror")) return { info: null, tracks: [] };
@@ -445,13 +459,19 @@ export default async function initRadio(container) {
     ).trim();
   } catch (e) {}
 
-  // rte.ie (and its subdomains) IP/geo-block many server and residential IPs.
-  // Route those streams through the server relay proxy (/api/stream); every
-  // other stream plays straight from the browser.
-  function isRteHost(url) {
+  // Hosts that IP/geo-block many server and residential IPs (rte.ie and the
+  // streaming.broadcast.radio mirrors) are played via the server relay proxy
+  // (/api/stream); every other stream plays straight from the browser. Keep
+  // in sync with BLOCKED_DIRECT_HOSTS in server.js.
+  function isProxiedHost(url) {
     try {
       var host = new URL(url).hostname.toLowerCase();
-      return host === "rte.ie" || host.endsWith(".rte.ie");
+      return (
+        host === "rte.ie" ||
+        host.endsWith(".rte.ie") ||
+        host === "streaming.broadcast.radio" ||
+        host.endsWith(".streaming.broadcast.radio")
+      );
     } catch (e) {
       return false;
     }
@@ -790,7 +810,7 @@ export default async function initRadio(container) {
       var a = document.createElement("audio");
       // rte.ie streams are IP/geo-blocked for many IPs — play them through
       // the server relay proxy; everything else plays directly.
-      a.src = isRteHost(url) ? "/api/stream?url=" + encodeURIComponent(url) : url;
+      a.src = isProxiedHost(url) ? "/api/stream?url=" + encodeURIComponent(url) : url;
       a.muted = localStorage.getItem("globalMute") === "true";
       currentAudio = a;
       var pp = a.play();

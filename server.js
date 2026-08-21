@@ -797,7 +797,7 @@ app.get("/api/calendar-proxy", async (req, res) => {
 // which fetch from their own servers and therefore bypass the IP block.
 // The relays are free third-party services; swap or remove them as needed.
 // -----------------------------------------------------------------------------
-const BLOCKED_DIRECT_HOSTS = ["rte.ie"];
+const BLOCKED_DIRECT_HOSTS = ["rte.ie", "streaming.broadcast.radio"];
 
 function blockedHost(feedUrl) {
   try {
@@ -813,21 +813,51 @@ function blockedHost(feedUrl) {
 }
 
 async function attemptFeedFetch(url, headers, timeout, proxy) {
+  let response;
   try {
-    const response = await axios.get(url, {
-      responseType: "text",
+    // Stream mode so we can inspect the upstream content-type before
+    // buffering: a live audio/video stream must never be buffered as a feed.
+    response = await axios.get(url, {
+      responseType: "stream",
       timeout: timeout || 15000,
       headers,
       ...(proxy ? { proxy } : {}),
     });
-    if (response.status !== 200) {
-      return {
-        ok: false,
-        status: response.status,
-        message: "HTTP " + response.status,
-      };
+  } catch (error) {
+    const status = error.response ? error.response.status : 502;
+    return { ok: false, status, message: error.message };
+  }
+  if (response.status !== 200) {
+    try {
+      response.data.destroy();
+    } catch (e) {}
+    return {
+      ok: false,
+      status: response.status,
+      message: "HTTP " + response.status,
+    };
+  }
+  // Bail out immediately when the upstream is a media stream rather than a
+  // feed document — buffering an infinite stream would hang the request.
+  const ctype = String(response.headers["content-type"] || "").toLowerCase();
+  if (
+    ctype &&
+    (ctype.startsWith("audio/") ||
+      ctype.startsWith("video/") ||
+      ctype.indexOf("mpegurl") !== -1 ||
+      ctype === "application/octet-stream")
+  ) {
+    try {
+      response.data.destroy();
+    } catch (e) {}
+    return { ok: false, status: 415, message: "Not a feed (media stream)" };
+  }
+  try {
+    let data = "";
+    for await (const chunk of response.data) {
+      data += chunk;
     }
-    return { ok: true, data: response.data };
+    return { ok: true, data };
   } catch (error) {
     const status = error.response ? error.response.status : 502;
     return { ok: false, status, message: error.message };
@@ -884,12 +914,19 @@ async function fetchFeedWithRelay(feedUrl, headers) {
   } else {
     const direct = await attemptFeedFetch(feedUrl, headers);
     if (direct.ok) return direct;
+    // Definitively not a feed document (e.g. a live audio stream) — don't
+    // waste time trying relays; report the same to the caller.
+    if (direct.status === 415) return direct;
     console.warn(`⚠️ Direct fetch failed (${direct.message}); trying relays...`);
   }
   for (const relay of buildRelays(feedUrl)) {
     const viaRelay = await attemptFeedFetch(relay.url, headers, 15000, relay.proxy);
     if (viaRelay.ok) {
       console.log("✅ Feed fetched via relay: " + relay.name);
+      return viaRelay;
+    }
+    if (viaRelay.status === 415) {
+      console.log("↩️ Upstream is a media stream (not a feed); skipping further relays.");
       return viaRelay;
     }
     console.warn(`⚠️ Relay ${relay.name} failed (${viaRelay.message})`);
