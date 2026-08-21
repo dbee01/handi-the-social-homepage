@@ -138,15 +138,60 @@ app.get("/", (req, res) => {
 const LOG_FILE = path.join(__dirname, "log.txt");
 const LOG_USER = process.env.LOG_USERNAME || "admin";
 const LOG_PASS = process.env.LOG_PASSWORD || "handi";
+// Sensible log-size cap: once the file exceeds LOG_MAX_BYTES it is trimmed to
+// the most recent LOG_KEEP_BYTES (aligned to a line boundary). Override the
+// cap per host via LOG_MAX_BYTES (bytes) in .env.
+const LOG_MAX_BYTES = parseInt(process.env.LOG_MAX_BYTES, 10) || 5 * 1024 * 1024; // 5 MB
+const LOG_KEEP_BYTES = parseInt(process.env.LOG_KEEP_BYTES, 10) || 256 * 1024; // keep last 256 KB when trimming
+// Only events with level <= LOG_LEVEL are persisted. Level 2 is the current
+// default (page loads, errors + all activity); level 1 keeps only important
+// events and errors; level 0 disables client event logging entirely. Set
+// LOG_LEVEL=1 (or 0) in the production .env for the lightest logging.
+const LOG_LEVEL = (() => {
+  const v = parseInt(process.env.LOG_LEVEL, 10);
+  return Number.isNaN(v) ? 2 : v;
+})();
 
 // Ensure log file exists
 if (!fs.existsSync(LOG_FILE)) {
   fs.writeFileSync(LOG_FILE, "", "utf8");
 }
 
+// Trim the log to its most recent LOG_KEEP_BYTES, starting at a line
+// boundary so no partial JSON lines are kept.
+function trimLogFile() {
+  let fd = null;
+  try {
+    fd = fs.openSync(LOG_FILE, "r+");
+    const stat = fs.fstatSync(fd);
+    if (stat.size <= LOG_KEEP_BYTES) return;
+    const buf = Buffer.alloc(LOG_KEEP_BYTES);
+    fs.readSync(fd, buf, 0, LOG_KEEP_BYTES, stat.size - LOG_KEEP_BYTES);
+    let start = 0;
+    while (start < buf.length && buf[start] !== 0x0a) start++;
+    const keep = start < buf.length ? buf.subarray(start + 1) : buf;
+    fs.writeSync(fd, keep, 0, keep.length, 0);
+    fs.ftruncateSync(fd, keep.length);
+  } catch (e) {
+    // Never let log trimming break request handling.
+  } finally {
+    if (fd !== null) {
+      try {
+        fs.closeSync(fd);
+      } catch (e) {}
+    }
+  }
+}
+
 function logWrite(level, event, details, sid) {
+  // Lightest logging: drop events more verbose than the configured level.
+  if ((level || 1) > LOG_LEVEL) return;
   const ts = new Date().toISOString();
   const line = JSON.stringify({ ts, level, event, details, sid: sid || "-" }) + "\n";
+  try {
+    const stat = fs.statSync(LOG_FILE);
+    if (stat.size + line.length > LOG_MAX_BYTES) trimLogFile();
+  } catch (e) {}
   fs.appendFileSync(LOG_FILE, line, "utf8");
 }
 

@@ -3,3 +3,4 @@ node_modules/
 .gtfs-cache/
 package-lock.json
 *.log
+log.txt
