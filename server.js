@@ -834,6 +834,42 @@ async function attemptFeedFetch(url, headers, timeout, proxy) {
   }
 }
 
+// Relay list: ip : port : username : password
+// Credentials come from the host's .env file:
+//   PROXY_USERNAME_1 / PROXY_PASSWORD_1  – IPRoyal residential proxy
+//   PROXY_USERNAME_2 / PROXY_PASSWORD_2  – backup proxy
+function buildRelays(targetUrl) {
+  return [
+    // Preferred: previous proxy server (fastest in testing).
+    {
+      name: "proxy 91.193.255.216:12323",
+      url: targetUrl,
+      proxy: {
+        host: "91.193.255.216",
+        port: 12323,
+        auth: {
+          username: process.env.PROXY_USERNAME_2,
+          password: process.env.PROXY_PASSWORD_2,
+        },
+      },
+    },
+    // Backup: IPRoyal residential proxy (uses its IP, bypassing rte.ie's
+    // block on this server's IP).
+    {
+      name: "IPRoyal residential proxy (geo.iproyal.com:12321)",
+      url: targetUrl,
+      proxy: {
+        host: "geo.iproyal.com",
+        port: 12321,
+        auth: {
+          username: process.env.PROXY_USERNAME_1,
+          password: process.env.PROXY_PASSWORD_1,
+        },
+      },
+    },
+  ];
+}
+
 async function fetchFeedWithRelay(feedUrl, headers) {
   // Relays switched off: try the upstream directly only.
   if (!FEED_RELAY_ENABLED) {
@@ -850,41 +886,7 @@ async function fetchFeedWithRelay(feedUrl, headers) {
     if (direct.ok) return direct;
     console.warn(`⚠️ Direct fetch failed (${direct.message}); trying relays...`);
   }
-  // Relay list: ip : port : username : password
-  // Credentials come from the host's .env file:
-  //   PROXY_USERNAME_1 / PROXY_PASSWORD_1  – IPRoyal residential proxy
-  //   PROXY_USERNAME_2 / PROXY_PASSWORD_2  – backup proxy
-  const FEED_PROXY = {
-    host: "geo.iproyal.com",
-    port: 12321,
-    auth: {
-      username: process.env.PROXY_USERNAME_1,
-      password: process.env.PROXY_PASSWORD_1,
-    },
-  };
-  const relays = [
-    // Preferred: previous proxy server (fastest in testing).
-    {
-      name: "proxy 91.193.255.216:12323",
-      url: feedUrl,
-      proxy: {
-        host: "91.193.255.216",
-        port: 12323,
-        auth: {
-          username: process.env.PROXY_USERNAME_2,
-          password: process.env.PROXY_PASSWORD_2,
-        },
-      },
-    },
-    // Backup: IPRoyal residential proxy (uses its IP, bypassing rte.ie's
-    // block on this server's IP).
-    {
-      name: "IPRoyal residential proxy (geo.iproyal.com:12321)",
-      url: feedUrl,
-      proxy: FEED_PROXY,
-    },
-  ];
-  for (const relay of relays) {
+  for (const relay of buildRelays(feedUrl)) {
     const viaRelay = await attemptFeedFetch(relay.url, headers, 15000, relay.proxy);
     if (viaRelay.ok) {
       console.log("✅ Feed fetched via relay: " + relay.name);
@@ -896,6 +898,50 @@ async function fetchFeedWithRelay(feedUrl, headers) {
     ok: false,
     status: 502,
     message: "Direct and relay fetches all failed",
+  };
+}
+
+// Streaming variants of the helpers above — the response body is piped
+// through instead of buffered, so live radio streams keep flowing.
+async function attemptStreamFetch(url, headers, proxy) {
+  try {
+    const response = await axios.get(url, {
+      responseType: "stream",
+      timeout: 20000,
+      headers,
+      ...(proxy ? { proxy } : {}),
+    });
+    return { ok: true, data: response };
+  } catch (error) {
+    const status = error.response ? error.response.status : 502;
+    return { ok: false, status, message: error.message };
+  }
+}
+
+async function fetchStreamWithRelay(streamUrl, headers) {
+  if (!FEED_RELAY_ENABLED) {
+    return attemptStreamFetch(streamUrl, headers);
+  }
+  const blocked = blockedHost(streamUrl);
+  if (blocked) {
+    console.log(`🔊 ${blocked} is IP-blocked for this server; relaying stream.`);
+  } else {
+    const direct = await attemptStreamFetch(streamUrl, headers);
+    if (direct.ok) return direct;
+    console.warn(`⚠️ Direct stream fetch failed (${direct.message}); trying relays...`);
+  }
+  for (const relay of buildRelays(streamUrl)) {
+    const viaRelay = await attemptStreamFetch(relay.url, headers, relay.proxy);
+    if (viaRelay.ok) {
+      console.log("✅ Stream fetched via relay: " + relay.name);
+      return viaRelay;
+    }
+    console.warn(`⚠️ Relay ${relay.name} failed (${viaRelay.message})`);
+  }
+  return {
+    ok: false,
+    status: 502,
+    message: "Direct and relay stream fetches all failed",
   };
 }
 
@@ -989,6 +1035,57 @@ app.get("/api/feed", async (req, res) => {
   }
   console.error("❌ Feed proxy error:", result.message, "status:", result.status);
   res.status(result.status || 502).send("Failed to fetch feed: " + result.message);
+});
+
+// -----------------------------------------------------------------------------
+// AUDIO STREAM PROXY – lets the Radio module play IP/geo-blocked streams
+// (e.g. rte.ie) by piping them through the same relay logic as feeds. The
+// upstream content-type (and icy metadata) headers are forwarded so the
+// browser <audio> element can play the stream.
+// -----------------------------------------------------------------------------
+app.get("/api/stream", async (req, res) => {
+  let streamUrl = req.query.url;
+  if (!streamUrl) return res.status(400).send("Missing stream URL");
+  try {
+    streamUrl = decodeURIComponent(streamUrl);
+  } catch (e) {}
+
+  console.log(`🔊 Proxying stream from: ${streamUrl.substring(0, 100)}...`);
+  const result = await fetchStreamWithRelay(streamUrl, {
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    Accept: "audio/mpeg, audio/aac, audio/x-mpegurl, audio/*;q=0.9, */*;q=0.8",
+    "Icy-MetaData": "1",
+  });
+  if (!result.ok) {
+    console.error("❌ Stream proxy error:", result.message, "status:", result.status);
+    res.status(result.status || 502).send("Failed to proxy stream: " + result.message);
+    return;
+  }
+  const upstream = result.data;
+  res.status(200).set({
+    "Content-Type": upstream.headers["content-type"] || "audio/mpeg",
+    "Cache-Control": "no-cache, no-store",
+    "Access-Control-Allow-Origin": "*",
+  });
+  // Forward icy-metadata (song titles) when the upstream provides it.
+  if (upstream.headers["icy-metaint"]) {
+    res.set("Icy-MetaInt", upstream.headers["icy-metaint"]);
+  }
+  upstream.data.on("error", function () {
+    try {
+      res.end();
+    } catch (e) {}
+  });
+  upstream.data.pipe(res);
+  // Stop pulling from the upstream when the client disconnects.
+  res.on("close", function () {
+    if (!res.writableEnded) {
+      try {
+        upstream.data.destroy();
+      } catch (e) {}
+    }
+  });
 });
 
 // -----------------------------------------------------------------------------

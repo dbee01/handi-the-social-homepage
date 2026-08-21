@@ -753,6 +753,14 @@
                         />
                         <span id="radioVolumeValue">100%</span>
                     </div>
+                    <div class="config-field">
+                        <label>Audio stream or radio feed URL:</label>
+                        <input
+                            type="url"
+                            id="radioStreamUrl"
+                            placeholder="https://example.com/stream.mp3 or https://example.com/feed.xml"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -1791,6 +1799,10 @@
                             volSpan.innerText =
                                 (settings.radio.volume || 70) + "%";
                     }
+                    if (document.getElementById("radioStreamUrl")) {
+                        document.getElementById("radioStreamUrl").value =
+                            settings.radio.streamUrl || "";
+                    }
                 }
 
                 // Load gallery pixelfed URL
@@ -1982,6 +1994,9 @@
                 settings.radio.volume =
                     parseInt(document.getElementById("radioVolume")?.value) ||
                     100;
+                settings.radio.streamUrl =
+                    document.getElementById("radioStreamUrl")?.value.trim() ||
+                    "";
 
                 if (!settings.news) settings.news = {};
                 settings.news.rssUrl =

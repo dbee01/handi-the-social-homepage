@@ -152,7 +152,14 @@
     if ((v = qs.get("gallery"))) ensure("gallery").pixelfedUrl = v;
     if ((v = qs.get("music"))) ensure("music").streamUrl = v;
     if ((v = qs.get("podcasts") || qs.get("cast"))) ensure("cast").streamUrl = v;
-    if ((v = qs.get("radio"))) ensure("radio").streamUrl = v;
+
+    // Radio stream or feed URL. The raw value is also kept in its own key so
+    // the Radio module knows this URL came from a handi-pack link (only those
+    // are parsed as station feeds — see modules/radio/radio.module.js).
+    if ((v = qs.get("radio"))) {
+      ensure("radio").streamUrl = v;
+      try { localStorage.setItem("handiRadioPackFeed", v); } catch (e) {}
+    }
 
     writeJson("handiSettings", settings);
 

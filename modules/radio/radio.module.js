@@ -7,6 +7,80 @@
 // modules/radio/radio.module.js – international radio stations with country filter
 import { loadSettings } from "../../js/core/settings.js";
 
+// Small HTML escaper for feed metadata rendered into the module.
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// Pull channel-level feed metadata (title, thumbnail, description, author,
+// website link) out of an iTunes-compatible RSS/Atom feed.
+function parseRadioInfo(doc) {
+  function firstText(selector) {
+    const el = doc.querySelector(selector);
+    return el ? (el.textContent || "").trim() : "";
+  }
+  function firstTagText(tagName) {
+    const el = doc.getElementsByTagName(tagName)[0];
+    return el ? (el.textContent || "").trim() : "";
+  }
+  var title = firstText("channel > title") || firstText("feed > title") || "";
+  var image = "";
+  var itunesImage = doc.getElementsByTagName("itunes:image")[0];
+  if (itunesImage) image = (itunesImage.getAttribute("href") || "").trim();
+  if (!image) image = firstText("channel > image > url");
+  var description =
+    firstTagText("itunes:summary") ||
+    firstTagText("itunes:subtitle") ||
+    firstText("channel > description") ||
+    "";
+  var author = firstTagText("itunes:author") || "";
+  var link = firstText("channel > link") || firstText("feed > link") || "";
+  return {
+    title: title,
+    image: image,
+    description: description,
+    author: author,
+    link: link,
+  };
+}
+
+// If `url` is an RSS/Atom radio feed, parse its entries (title + audio
+// enclosure) into station rows. Returns [] when it isn't a feed, so plain
+// audio stream URLs keep working through the live-stream path below.
+async function fetchRadioFeed(url) {
+  try {
+    const resp = await fetch("/api/feed?url=" + encodeURIComponent(url));
+    if (!resp.ok) return { info: null, tracks: [] };
+    const doc = new DOMParser().parseFromString(await resp.text(), "text/xml");
+    if (doc.querySelector("parsererror")) return { info: null, tracks: [] };
+    const items = doc.getElementsByTagName("item");
+    const out = [];
+    for (let i = 0; i < items.length; i++) {
+      const enclosures = items[i].getElementsByTagName("enclosure");
+      if (!enclosures.length) continue;
+      const audioUrl = (enclosures[0].getAttribute("url") || "").trim();
+      if (!audioUrl) continue;
+      const titles = items[i].getElementsByTagName("title");
+      out.push({
+        name: titles.length
+          ? (titles[0].textContent || "").trim()
+          : "Episode " + (i + 1),
+        url: audioUrl,
+        isStream: false,
+        isEpisode: true,
+      });
+    }
+    return { info: parseRadioInfo(doc), tracks: out };
+  } catch (e) {
+    return { info: null, tracks: [] };
+  }
+}
+
 export default async function initRadio(container) {
   var t =
     window.t ||
@@ -371,6 +445,34 @@ export default async function initRadio(container) {
     ).trim();
   } catch (e) {}
 
+  // rte.ie (and its subdomains) IP/geo-block many server and residential IPs.
+  // Route those streams through the server relay proxy (/api/stream); every
+  // other stream plays straight from the browser.
+  function isRteHost(url) {
+    try {
+      var host = new URL(url).hostname.toLowerCase();
+      return host === "rte.ie" || host.endsWith(".rte.ie");
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // A handi-pack `radio` URL may point at an RSS/Atom feed: parse it so its
+  // title / thumbnail / description and entries are shown just like Cast.
+  // Only handi-pack-supplied URLs are parsed as feeds (tracked via
+  // `handiRadioPackFeed`); manually-entered stream URLs stay plain streams.
+  var packFeedUrl = "";
+  try {
+    packFeedUrl = localStorage.getItem("handiRadioPackFeed") || "";
+  } catch (e) {}
+  var radioInfo = null;
+  var feedTracks = [];
+  if (streamUrl && packFeedUrl && streamUrl === packFeedUrl) {
+    var radioFeed = await fetchRadioFeed(streamUrl);
+    feedTracks = radioFeed.tracks || [];
+    if (feedTracks.length) radioInfo = radioFeed.info || null;
+  }
+
   var selectedFlag = storedFlag;
   // If stored as country code, convert to SVG flag
   if (storedFlag && storedFlag.length === 2 && storedFlag.indexOf("<") === -1) {
@@ -402,7 +504,54 @@ export default async function initRadio(container) {
       })
       .join("");
 
+  // Feed info card (title, thumbnail, description, …) above the player.
+  var radioInfoHtml = "";
+  if (radioInfo && (radioInfo.title || radioInfo.image)) {
+    radioInfoHtml =
+      '<div class="radio-info" style="display:flex;gap:12px;align-items:flex-start;margin:0 0 10px;padding:12px;border-radius:10px;border:1px solid color-mix(in srgb, var(--topbar-accent, #0047cc) 25%, transparent);background:color-mix(in srgb, var(--topbar-accent, #0047cc) 5%, transparent);">' +
+      (radioInfo.image
+        ? '<img src="' + escapeHtml(radioInfo.image) + '" alt="" loading="lazy" style="width:88px;height:88px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'"/>'
+        : "") +
+      '<div style="min-width:0;flex:1;">' +
+      (radioInfo.title
+        ? '<div style="font-weight:700;font-size:1.05rem;line-height:1.3;">' +
+          escapeHtml(radioInfo.title) +
+          "</div>"
+        : "") +
+      (radioInfo.author
+        ? '<div style="font-size:0.85rem;opacity:0.7;margin-top:2px;">' +
+          escapeHtml(radioInfo.author) +
+          "</div>"
+        : "") +
+      (radioInfo.description
+        ? '<div style="font-size:0.9rem;line-height:1.4;opacity:0.85;margin-top:6px;"><span id="radioDesc">' +
+          escapeHtml(
+            radioInfo.description.length > 180
+              ? radioInfo.description
+                  .slice(0, 180)
+                  .replace(/\s+\S*$/, "") + "…"
+              : radioInfo.description,
+          ) +
+          "</span>" +
+          (radioInfo.description.length > 180
+            ? ' <a href="#" id="radioDescMore" style="font-weight:700;white-space:nowrap;">' +
+              t("d_more", "More") +
+              "</a>"
+            : "") +
+          "</div>"
+        : "") +
+      (radioInfo.link
+        ? '<a href="' +
+          escapeHtml(radioInfo.link) +
+          '" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-size:0.9rem;font-weight:700;">' +
+          t("d_radioWebsite", "Website") +
+          " ↗</a>"
+        : "") +
+      "</div></div>";
+  }
+
   content.innerHTML =
+    radioInfoHtml +
       '<div class="radio-country-list" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:8px;">' +
       countries.map(function (c) {
         var cls = c.flag === selectedFlag ? ' radio-country-item active' : 'radio-country-item';
@@ -420,6 +569,34 @@ export default async function initRadio(container) {
       down = content.querySelector("#radio-down");
     var synthCanvas = content.querySelector("#radio-synth");
     if (synthCanvas) synthCanvas.style.display = "none";
+
+    // "More" link — inline at the end of the preview text. Expands to the
+    // full description (capped at 500 characters), "Less" collapses back.
+    var descEl = content.querySelector("#radioDesc");
+    var descMoreEl = content.querySelector("#radioDescMore");
+    if (descEl && descMoreEl && radioInfo && radioInfo.description) {
+      var fullDesc = radioInfo.description;
+      var previewDesc =
+        fullDesc.length > 180
+          ? fullDesc.slice(0, 180).replace(/\s+\S*$/, "") + "…"
+          : fullDesc;
+      var clampedDesc =
+        fullDesc.length > 500
+          ? fullDesc.slice(0, 500).replace(/\s+\S*$/, "") + "…"
+          : fullDesc;
+      var moreText = t("d_more", "More"),
+        lessText = t("d_less", "Less");
+      descMoreEl.addEventListener("click", function (e) {
+        e.preventDefault();
+        if (descMoreEl.textContent === lessText) {
+          descEl.textContent = previewDesc;
+          descMoreEl.textContent = moreText;
+        } else {
+          descEl.textContent = clampedDesc;
+          descMoreEl.textContent = lessText;
+        }
+      });
+    }
 
     countryBtns.forEach(function (btn) {
       btn.addEventListener("click", function () {
@@ -467,11 +644,21 @@ export default async function initRadio(container) {
   function renderStations() {
     list.innerHTML = "";
     if (streamUrl) {
-      addStationRow(
-        streamUrl,
-        t("d_liveStream", "Live Stream"),
-        '<i class="fa-solid fa-tower-broadcast"></i>',
-      );
+      if (feedTracks.length) {
+        feedTracks.forEach(function (tr, i) {
+          addStationRow(
+            tr.url,
+            tr.name || t("d_episode", "Episode ") + (i + 1),
+            '<i class="fa-solid fa-tower-broadcast"></i>',
+          );
+        });
+      } else {
+        addStationRow(
+          streamUrl,
+          t("d_liveStream", "Live Stream"),
+          '<i class="fa-solid fa-tower-broadcast"></i>',
+        );
+      }
     }
     if (!selectedFlag) {
       if (!streamUrl) {
@@ -601,7 +788,9 @@ export default async function initRadio(container) {
     error.innerText = "";
     try {
       var a = document.createElement("audio");
-      a.src = url;
+      // rte.ie streams are IP/geo-blocked for many IPs — play them through
+      // the server relay proxy; everything else plays directly.
+      a.src = isRteHost(url) ? "/api/stream?url=" + encodeURIComponent(url) : url;
       a.muted = localStorage.getItem("globalMute") === "true";
       currentAudio = a;
       var pp = a.play();
