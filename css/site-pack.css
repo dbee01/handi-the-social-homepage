@@ -148,8 +148,10 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 .radio-list { border: 2px solid var(--border); background: var(--surface); border-radius: var(--radius); }
 .radio-play-btn { color: #fff; background: var(--primary); }
 .radio-play-btn.playing { background: lightgrey; }
+.radio-play-btn i { color: var(--bg); }
 .radio-player-area { background: transparent; }
 .radio-station span:last-child { color: var(--text); }
+.radio-country-item span { color: var(--text); }
 .radio-scroll-btn { background: var(--primary); border: 2px solid var(--primary); color: #fff; }
 .radio-scroll-btn:hover { background: var(--primary-dark); border-color: var(--primary); }
 .radio-scroll-btn:disabled { background: #94a3b8; border-color: #94a3b8; color: #fff; }
