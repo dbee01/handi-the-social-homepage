@@ -179,6 +179,101 @@
 
     </head>
     <body>
+        <!-- Top share bar — unobtrusive, themed with the primary/text colors -->
+        <nav class="top-sharebar" aria-label="Share this page">
+            <span class="top-sharebar__label">Share</span>
+            <a class="top-sharebar__btn" href="#" data-network="facebook" target="_blank" rel="noopener" title="Share on Facebook" aria-label="Share on Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+            <a class="top-sharebar__btn" href="#" data-network="x" target="_blank" rel="noopener" title="Share on X" aria-label="Share on X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+            <a class="top-sharebar__btn" href="#" data-network="whatsapp" target="_blank" rel="noopener" title="Share on WhatsApp" aria-label="Share on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+            <a class="top-sharebar__btn" href="#" data-network="linkedin" target="_blank" rel="noopener" title="Share on LinkedIn" aria-label="Share on LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg></a>
+            <a class="top-sharebar__btn" href="#" data-network="telegram" target="_blank" rel="noopener" title="Share on Telegram" aria-label="Share on Telegram"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a>
+            <a class="top-sharebar__btn" href="#" data-network="mastodon" target="_blank" rel="noopener" title="Share on Mastodon" aria-label="Share on Mastodon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.268 5.313c-.35-2.578-2.617-4.232-5.076-4.598-1.098-.163-3.28-.472-6.2-.472h-.06c-2.918 0-5.103.31-6.2.472-2.46.366-4.672 1.972-5.024 4.598C.474 7.18.292 9.486.276 11.815c-.018 2.39-.027 4.773.43 7.13.163.855.53 1.74 1.203 2.24.91.68 2.155.847 3.47.826 1.11-.018 2.09-.09 3.172-.018 1.08.07 2.148.36 3.123.89 1.3.71 2.105 1.49 3.23 1.49 1.31 0 2.094-.566 2.575-1.14l.303-.38c.14-.176.3-.42.43-.64.4-.68.54-1.54.72-2.4.12-.58.06-1.05-.09-1.3-.2-.35-.5-.48-.89-.48-.26 0-.57.04-.86.06-.39.04-.8.07-1.22.07-2.67 0-3.79-1.55-3.99-3.54-.02-.22-.03-.45-.03-.68 0-2.16 1.4-3.4 3.39-3.4 1.72 0 3.21.9 3.76 2.75.2.68.31 1.42.36 2.22.02.42.04.84.07 1.28.04.87.15 1.68.4 2.42.52 1.55 1.53 2.36 2.93 2.36.92 0 1.76-.36 2.3-.86.53-.5.88-1.14 1.15-1.82.48-1.2.73-2.5.85-4.1.07-.94.1-1.93.09-2.93-.02-1.37-.17-2.77-.53-4.1m-6.24 6.29c-.74 0-1.35-.65-1.35-1.45 0-.8.61-1.45 1.35-1.45.74 0 1.35.65 1.35 1.45 0 .8-.6 1.45-1.35 1.45m4.96 0c-.74 0-1.35-.65-1.35-1.45 0-.8.61-1.45 1.35-1.45.74 0 1.35.65 1.35 1.45 0 .8-.6 1.45-1.35 1.45"/></svg></a>
+            <a class="top-sharebar__btn" href="#" data-network="email" title="Share by email" aria-label="Share by email"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></a>
+            <a class="top-sharebar__btn" href="#" data-network="copy" title="Copy link" aria-label="Copy link"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg></a>
+        </nav>
+        <style>
+            .top-sharebar {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                height: 40px;
+                padding: 0 12px;
+                font-size: 0.8rem;
+                line-height: 1;
+                background: color-mix(in srgb, var(--topbar-accent, #0047cc) 5%, transparent);
+                border-bottom: 1px solid color-mix(in srgb, var(--topbar-accent, #0047cc) 25%, transparent);
+            }
+            .top-sharebar__label {
+                margin-right: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                font-weight: 600;
+                opacity: 0.65;
+            }
+            .top-sharebar__btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 36px;
+                height: 36px;
+                color: var(--topbar-accent, #0047cc);
+                opacity: 0.8;
+                transition: opacity 0.15s;
+            }
+            .top-sharebar__btn:hover {
+                opacity: 1;
+            }
+            .top-sharebar__btn svg {
+                width: 25px;
+                height: 25px;
+            }
+        </style>
+        <script>
+            // Wire the top share bar links (same share targets as the bottom bar)
+            (function () {
+                var url = encodeURIComponent(window.location.href);
+                var title = encodeURIComponent(document.title || "Handi Homepage");
+                var text = encodeURIComponent("Check out my Handi Homepage!");
+                var hrefs = {
+                    facebook: "https://www.facebook.com/sharer/sharer.php?u=" + url,
+                    x: "https://twitter.com/intent/tweet?url=" + url + "&text=" + text,
+                    whatsapp: "https://wa.me/?text=" + text + "%20" + url,
+                    linkedin: "https://www.linkedin.com/sharing/share-offsite/?url=" + url,
+                    telegram: "https://t.me/share/url?url=" + url + "&text=" + text,
+                    mastodon: "https://mastodon.social/share?text=" + text + "%20" + url,
+                    email: "mailto:?subject=" + title + "&body=" + text + "%0A" + url,
+                };
+                document.querySelectorAll(".top-sharebar__btn[data-network]").forEach(function (el) {
+                    var n = el.getAttribute("data-network");
+                    if (hrefs[n]) el.setAttribute("href", hrefs[n]);
+                });
+                var copyBtn = document.querySelector('.top-sharebar__btn[data-network="copy"]');
+                if (copyBtn) {
+                    copyBtn.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        var done = function () {
+                            copyBtn.setAttribute("title", "Link copied!");
+                            setTimeout(function () {
+                                copyBtn.setAttribute("title", "Copy link");
+                            }, 2000);
+                        };
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(window.location.href).then(done, done);
+                        } else {
+                            var ta = document.createElement("textarea");
+                            ta.value = window.location.href;
+                            document.body.appendChild(ta);
+                            ta.select();
+                            try { document.execCommand("copy"); } catch (err) {}
+                            document.body.removeChild(ta);
+                            done();
+                        }
+                    });
+                }
+            })();
+        </script>
+
         <script src="/js/core/message.js?v=2"></script>
 
         <header>

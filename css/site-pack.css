@@ -260,4 +260,5 @@ p, .music-track-item, .mastodon-description, .radio-station span, #music-status,
   --notice-info-bg: var(--primary-soft);
   --notice-info-accent: var(--primary);
   --notice-info-close: var(--primary);
+  --topbar-accent: var(--primary);
 }

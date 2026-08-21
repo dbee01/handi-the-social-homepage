@@ -17,15 +17,57 @@ function removeFileExtension(filename) {
     .trim();
 }
 
+// Small HTML escaper for podcast metadata rendered into the module.
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// Pull channel-level podcast metadata (title, thumbnail, description,
+// author, website link) out of an iTunes-compatible RSS feed.
+function parseCastInfo(doc) {
+  function firstText(selector) {
+    const el = doc.querySelector(selector);
+    return el ? (el.textContent || "").trim() : "";
+  }
+  function firstTagText(tagName) {
+    const el = doc.getElementsByTagName(tagName)[0];
+    return el ? (el.textContent || "").trim() : "";
+  }
+  var title = firstText("channel > title") || firstText("feed > title") || "";
+  var image = "";
+  var itunesImage = doc.getElementsByTagName("itunes:image")[0];
+  if (itunesImage) image = (itunesImage.getAttribute("href") || "").trim();
+  if (!image) image = firstText("channel > image > url");
+  var description =
+    firstTagText("itunes:summary") ||
+    firstTagText("itunes:subtitle") ||
+    firstText("channel > description") ||
+    "";
+  var author = firstTagText("itunes:author") || "";
+  var link = firstText("channel > link") || firstText("feed > link") || "";
+  return {
+    title: title,
+    image: image,
+    description: description,
+    author: author,
+    link: link,
+  };
+}
+
 // If `url` is an RSS/Atom podcast feed, parse its episodes (title + audio
 // enclosure) into tracks. Returns [] when it isn't a feed, so plain audio
 // stream URLs keep working through the live-stream path below.
 async function fetchCastFeed(url) {
   try {
     const resp = await fetch("/api/feed?url=" + encodeURIComponent(url));
-    if (!resp.ok) return [];
+    if (!resp.ok) return { info: null, tracks: [] };
     const doc = new DOMParser().parseFromString(await resp.text(), "text/xml");
-    if (doc.querySelector("parsererror")) return [];
+    if (doc.querySelector("parsererror")) return { info: null, tracks: [] };
     const items = doc.getElementsByTagName("item");
     const out = [];
     for (let i = 0; i < items.length; i++) {
@@ -43,9 +85,9 @@ async function fetchCastFeed(url) {
         isEpisode: true,
       });
     }
-    return out;
+    return { info: parseCastInfo(doc), tracks: out };
   } catch (e) {
-    return [];
+    return { info: null, tracks: [] };
   }
 }
 
@@ -148,11 +190,14 @@ export default async function initCast(container) {
   } catch (e) {
     streamUrl = "";
   }
+  var castInfo = null;
   if (streamUrl) {
     // Podcast RSS/Atom feed? Then list its episodes; otherwise treat it as a
     // direct audio stream and offer it as a single live track.
-    var feedTracks = await fetchCastFeed(streamUrl);
+    var castFeed = await fetchCastFeed(streamUrl);
+    var feedTracks = castFeed.tracks || [];
     if (feedTracks.length) {
+      castInfo = castFeed.info || null;
       tracks = feedTracks.concat(tracks);
     } else if (await castStreamOk(streamUrl)) {
       tracks = [
@@ -202,7 +247,54 @@ export default async function initCast(container) {
   });
   applyGlobalMute(localStorage.getItem("globalMute") === "true");
 
+  // Podcast info card (title, thumbnail, description, …) above the player.
+  var infoHtml = "";
+  if (castInfo && (castInfo.title || castInfo.image)) {
+    infoHtml =
+      '<div class="cast-info" style="display:flex;gap:12px;align-items:flex-start;margin:0 0 10px;padding:12px;border-radius:10px;border:1px solid color-mix(in srgb, var(--topbar-accent, #0047cc) 25%, transparent);background:color-mix(in srgb, var(--topbar-accent, #0047cc) 5%, transparent);">' +
+      (castInfo.image
+        ? '<img src="' + escapeHtml(castInfo.image) + '" alt="" loading="lazy" style="width:88px;height:88px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'"/>'
+        : "") +
+      '<div style="min-width:0;flex:1;">' +
+      (castInfo.title
+        ? '<div style="font-weight:700;font-size:1.05rem;line-height:1.3;">' +
+          escapeHtml(castInfo.title) +
+          "</div>"
+        : "") +
+      (castInfo.author
+        ? '<div style="font-size:0.85rem;opacity:0.7;margin-top:2px;">' +
+          escapeHtml(castInfo.author) +
+          "</div>"
+        : "") +
+      (castInfo.description
+        ? '<div style="font-size:0.9rem;line-height:1.4;opacity:0.85;margin-top:6px;"><span id="castDesc">' +
+          escapeHtml(
+            castInfo.description.length > 180
+              ? castInfo.description
+                  .slice(0, 180)
+                  .replace(/\s+\S*$/, "") + "…"
+              : castInfo.description,
+          ) +
+          "</span>" +
+          (castInfo.description.length > 180
+            ? ' <a href="#" id="castDescMore" style="font-weight:700;white-space:nowrap;">' +
+              t("d_more", "More") +
+              "</a>"
+            : "") +
+          "</div>"
+        : "") +
+      (castInfo.link
+        ? '<a href="' +
+          escapeHtml(castInfo.link) +
+          '" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-size:0.9rem;font-weight:700;">' +
+          t("d_castWebsite", "Website") +
+          " ↗</a>"
+        : "") +
+      "</div></div>";
+  }
+
   content.innerHTML =
+    infoHtml +
     '<div class="music-now-playing"><canvas id="castSynth" class="music-synth"></canvas><div id="music-status" class="music-status"><span id="music-track-title">—</span><span class="music-state-text">' +
     t("d_ready", "Ready") +
     '</span></div></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-playpause" class="primary">▶</button><button id="music-next">⏭</button></div><div style="text-align:center;margin-bottom:8px;"><button id="castLoadMoreBtn" class="settings-link-btn" style="padding:6px 14px;"><i class="fa-solid fa-cloud-arrow-up"></i> ' +
@@ -215,6 +307,34 @@ export default async function initCast(container) {
     down = content.querySelector("#castScrollDown");
   var playPauseBtn = content.querySelector("#music-playpause"),
     trackTitleSpan = content.querySelector("#music-track-title");
+
+  // "More" link — inline at the end of the preview text. Expands to the
+  // full description (capped at 500 characters), "Less" collapses back.
+  var descEl = content.querySelector("#castDesc");
+  var descMoreEl = content.querySelector("#castDescMore");
+  if (descEl && descMoreEl && castInfo && castInfo.description) {
+    var fullDesc = castInfo.description;
+    var previewDesc =
+      fullDesc.length > 180
+        ? fullDesc.slice(0, 180).replace(/\s+\S*$/, "") + "…"
+        : fullDesc;
+    var clampedDesc =
+      fullDesc.length > 500
+        ? fullDesc.slice(0, 500).replace(/\s+\S*$/, "") + "…"
+        : fullDesc;
+    var moreText = t("d_more", "More"),
+      lessText = t("d_less", "Less");
+    descMoreEl.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (descMoreEl.textContent === lessText) {
+        descEl.textContent = previewDesc;
+        descMoreEl.textContent = moreText;
+      } else {
+        descEl.textContent = clampedDesc;
+        descMoreEl.textContent = lessText;
+      }
+    });
+  }
   var stateSpan = content.querySelector(".music-state-text"),
     prevBtn = content.querySelector("#music-prev"),
     nextBtn = content.querySelector("#music-next");

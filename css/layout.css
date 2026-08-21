@@ -273,6 +273,49 @@ header {
     padding: 16px 20px;
 }
 
+.support-content h3 {
+    margin: 0 0 6px;
+    line-height: 1.3;
+}
+
+.support-content .support-desc {
+    margin: 0 0 4px;
+    color: var(--text-muted, var(--muted, #888));
+}
+
+.support-trial {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 18px;
+    margin: 0;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.support-trial .premium-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--secondary, #f59e0b);
+    color: #fff;
+    font-size: 1.2rem;
+    text-decoration: none;
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.support-trial .premium-link:hover,
+.support-trial .premium-link:focus-visible {
+    transform: scale(1.12);
+    filter: brightness(1.08);
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.5);
+}
+
 /* Empty state layout */
 .module-empty {
     display: flex;

@@ -1671,4 +1671,5 @@ p,
     --notice-info-bg: #0f2114;
     --notice-info-accent: var(--color-primary);
     --notice-info-close: var(--color-primary-bright);
+    --topbar-accent: var(--color-primary);
 }
