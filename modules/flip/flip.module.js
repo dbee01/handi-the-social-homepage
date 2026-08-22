@@ -218,7 +218,7 @@ export default async function initFlip(container) {
 
     const body = document.createElement("div");
     body.style.cssText =
-      "padding:10px;display:flex;flex-direction:column;gap:6px;flex:1;";
+      "padding:16px;display:flex;flex-direction:column;gap:6px;flex:1;";
 
     if (item.title) {
       const h = document.createElement("div");
