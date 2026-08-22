@@ -5,7 +5,7 @@
 
 > Designed for novice, elderly and afficionado Web users - our free, open source and easy-to-use homepage gives you a photo gallery, a music player, radio streaming and much more - all on your homepage. Your personal info never leaves your computer. Make PLE your homepage today!
 
-**[handihomepage.com](https://handihomepage.com)**
+handihomepage DOT com
 
 ## Features
 
