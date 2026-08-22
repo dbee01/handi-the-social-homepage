@@ -6,7 +6,8 @@
 
 // modules/gallery/gallery.module.js
 // FILTER & DISPLAY: prefer a Pixelfed Atom feed (if reachable), otherwise show
-// locally loaded images. No slideshow / prev / next / play controls.
+// locally loaded images. Displays one image with its caption at a time, with
+// left / right scrolling (same pattern as the Mastodon module).
 import { loadGallery, saveGallery } from "../../js/core/storage.js";
 import { loadSettings } from "../../js/core/settings.js";
 
@@ -62,6 +63,20 @@ function formatDate(raw) {
     month: "short",
     day: "numeric",
   });
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(
+    /[&<>]/g,
+    (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m],
+  );
+}
+
+function truncate(str, max) {
+  if (!str) return "";
+  str = String(str);
+  return str.length > max ? str.substring(0, max) + "…" : str;
 }
 
 async function fetchPixelfedFeed(url) {
@@ -146,66 +161,76 @@ export default async function initGallery(container) {
     return btn;
   }
 
-  function makeCard(imgUrl, caption, meta) {
-    const link = meta && meta.link;
-    const card = document.createElement(link ? "a" : "div");
-    card.style.cssText =
-      "display:flex;flex-direction:column;border-radius:12px;overflow:hidden;" +
-      "border:1px solid #e5e7eb;background:#fff;text-decoration:none;color:inherit;";
-    if (link) {
-      card.href = link;
-      card.target = "_blank";
-      card.rel = "noopener noreferrer";
+  // Single-image viewer with left / right scrolling, mirroring the Mastodon module.
+  function makeCarousel(items) {
+    if (!items.length) return null;
+
+    let currentIndex = 0;
+
+    const carousel = document.createElement("div");
+    carousel.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;";
+
+    const leftBtn = document.createElement("button");
+    leftBtn.className = "gallery-scroll-btn";
+    leftBtn.textContent = "‹";
+    leftBtn.style.cssText =
+      "flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1px solid #cbd5e1;" +
+      "background:#fff;cursor:pointer;font-size:1.4rem;line-height:1;color:#334155;";
+    leftBtn.setAttribute("aria-label", t("d_scrollLeft", "Previous image"));
+
+    const view = document.createElement("div");
+    view.className = "gallery-post-view";
+    view.style.cssText = "flex:1;min-width:0;";
+
+    const rightBtn = document.createElement("button");
+    rightBtn.className = "gallery-scroll-btn";
+    rightBtn.textContent = "›";
+    rightBtn.style.cssText = leftBtn.style.cssText;
+    rightBtn.setAttribute("aria-label", t("d_scrollRight", "Next image"));
+
+    carousel.appendChild(leftBtn);
+    carousel.appendChild(view);
+    carousel.appendChild(rightBtn);
+
+    function renderItem() {
+      const item = items[currentIndex];
+      if (!item) {
+        view.innerHTML = "";
+        return;
+      }
+      const img = item.img
+        ? `<img class="gallery-slide-img" src="${item.img}" alt="" loading="lazy" onerror="this.style.display='none'">`
+        : "";
+      const imgHtml = item.link
+        ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" style="display:block;">${img}</a>`
+        : img;
+      const metaParts = [];
+      if (item.author) metaParts.push(escapeHtml(item.author));
+      if (item.date) metaParts.push(escapeHtml(item.date));
+      view.innerHTML = `
+        <div class="gallery-item" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:8px 0;">
+          ${imgHtml}
+          ${item.caption ? `<div class="gallery-caption">${escapeHtml(truncate(item.caption, 120))}</div>` : ""}
+          ${metaParts.length ? `<div style="font-size:0.8rem;color:#64748b;">${metaParts.join(" · ")}</div>` : ""}
+        </div>
+      `;
     }
 
-    const img = document.createElement("img");
-    img.src = imgUrl;
-    img.loading = "lazy";
-    img.style.cssText =
-      "width:100%;height:180px;object-fit:cover;display:block;background:#f1f5f9;";
-    card.appendChild(img);
-
-    const body = document.createElement("div");
-    body.style.cssText =
-      "padding:10px;display:flex;flex-direction:column;gap:4px;";
-
-    if (caption) {
-      const cap = document.createElement("div");
-      cap.style.cssText =
-        "font-size:0.95rem;font-weight:600;line-height:1.3;";
-      cap.textContent = caption;
-      body.appendChild(cap);
+    function go(dir) {
+      if (!items.length) return;
+      currentIndex = (currentIndex + dir + items.length) % items.length;
+      renderItem();
     }
 
-    const metaParts = [];
-    if (meta && meta.author) metaParts.push(meta.author);
-    if (meta && meta.date) metaParts.push(meta.date);
-    if (metaParts.length) {
-      const small = document.createElement("div");
-      small.style.cssText = "font-size:0.8rem;color:#64748b;";
-      small.textContent = metaParts.join(" · ");
-      body.appendChild(small);
-    }
-
-    card.appendChild(body);
-    return card;
-  }
-
-  function renderGrid(items) {
-    const grid = document.createElement("div");
-    grid.style.cssText =
-      "display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));" +
-      "gap:12px;width:100%;";
-    items.forEach(function (item) {
-      grid.appendChild(
-        makeCard(item.img, item.caption, {
-          link: item.link,
-          date: item.date,
-          author: item.author,
-        }),
-      );
+    leftBtn.addEventListener("click", function () {
+      go(-1);
     });
-    return grid;
+    rightBtn.addEventListener("click", function () {
+      go(1);
+    });
+
+    renderItem();
+    return carousel;
   }
 
   // --- Decide what to display: feed first, then uploaded images ---
@@ -235,37 +260,28 @@ export default async function initGallery(container) {
     content.innerHTML = "";
   }
 
+  let items = [];
   if (feedItems.length) {
-    content.appendChild(renderGrid(feedItems));
-    content.appendChild(makeAddButton());
+    items = feedItems;
   } else if (images.length) {
-    // Display uploaded images as a simple grid (no slideshow controls).
-    const grid = document.createElement("div");
-    grid.style.cssText =
-      "display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));" +
-      "gap:10px;width:100%;";
-    images.forEach(function (img) {
-      const card = document.createElement("div");
-      card.style.cssText =
-        "display:flex;flex-direction:column;border-radius:12px;overflow:hidden;" +
-        "border:1px solid #e5e7eb;background:#fff;";
-      const im = document.createElement("img");
-      im.src = img.url;
-      im.loading = "lazy";
-      im.style.cssText =
-        "width:100%;height:140px;object-fit:cover;display:block;background:#f1f5f9;";
-      card.appendChild(im);
-      const cap = document.createElement("div");
-      cap.style.cssText = "padding:8px;font-size:0.85rem;font-weight:600;";
-      cap.textContent = (img.name || "")
-        .replace(/\.[^.]+$/, "")
-        .replace(/[+_\-]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-      card.appendChild(cap);
-      grid.appendChild(card);
+    items = images.map(function (img) {
+      return {
+        img: img.url,
+        caption: (img.name || "")
+          .replace(/\.[^.]+$/, "")
+          .replace(/[+_\-]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim(),
+        link: "",
+        date: "",
+        author: "",
+      };
     });
-    content.appendChild(grid);
+  }
+
+  if (items.length) {
+    const carousel = makeCarousel(items);
+    if (carousel) content.appendChild(carousel);
     content.appendChild(makeAddButton());
   } else {
     content.innerHTML = `
