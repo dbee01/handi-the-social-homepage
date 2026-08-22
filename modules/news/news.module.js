@@ -55,9 +55,6 @@ export default async function initNews(container) {
   const settings = loadSettings();
   const refreshMinutes = settings.news?.refreshInterval || 15;
   const maxArticles = settings.news?.maxArticles || 16;
-  const VISIBLE = 4;
-  const STEP = 2;
-  let currentStart = 0;
   let refreshIntervalId = null;
   let rssUrl = localStorage.getItem(STORAGE_KEY) || "";
 
@@ -283,20 +280,22 @@ export default async function initNews(container) {
         "</div>";
       return;
     }
-    currentStart = 0;
     var sourceDisplay = formatSourceName(channelLink);
 
-    content.innerHTML = `
-      <div class="news-scroll-wrapper" style="display:flex;flex-direction:column;gap:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-          <small style="opacity:0.7;">${escapeHtml(sourceDisplay)}</small>
-          <button id="newsChangeSource" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;" title="${t("d_changeSource", "Change source")}">🔄 ${t("d_changeSource", "Source")}</button>
-        </div>
-        <button id="newsScrollUp" class="news-scroll-btn">▲</button>
-        <div id="newsList" class="news-list"></div>
-        <button id="newsScrollDown" class="news-scroll-btn">▼</button>
-      </div>
-    `;
+    // Header bar with source name and change button
+    var headerBar = document.createElement("div");
+    headerBar.style.cssText =
+      "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;";
+    headerBar.innerHTML =
+      '<small style="opacity:0.7;">' +
+      escapeHtml(sourceDisplay) +
+      "</small>" +
+      '<button id="newsChangeSource" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;" title="' +
+      t("d_changeSource", "Change source") +
+      '"><i class="fa-solid fa-rotate-right"></i> ' +
+      t("d_changeSource", "Source") +
+      "</button>";
+    content.appendChild(headerBar);
 
     var changeBtn = content.querySelector("#newsChangeSource");
     if (changeBtn)
@@ -305,58 +304,70 @@ export default async function initNews(container) {
         renderFeedSelector();
       };
 
-    var list = document.getElementById("newsList");
-    if (!list) return;
+    // Single article viewer with left / right scrolling (same pattern as Mastodon)
+    var currentIndex = 0;
 
-    var articleEls = articles.map(function (article) {
-      var div = document.createElement("div");
-      div.className = "news-article";
-      div.innerHTML = `
-        ${article.imageUrl
-          ? '<img class="news-image" src="' + article.imageUrl + '" alt="" style="width:100%;height:var(--media-height);object-fit:cover;border-radius:8px;margin-bottom:12px;display:block;" onerror="this.style.display=\'none\'">'
-          : '<div style="width:100%;height:var(--media-height);display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:8px;margin-bottom:12px;"><i class="fa-solid fa-newspaper" style="font-size:2rem;color:#94a3b8;"></i></div>'}
-        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
-          <div>${escapeHtml(sourceDisplay)}</div>
-          <div>${escapeHtml(article.pubDate)}</div>
+    var carousel = document.createElement("div");
+    carousel.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;";
+
+    var leftBtn = document.createElement("button");
+    leftBtn.className = "news-carousel-btn";
+    leftBtn.textContent = "‹";
+    leftBtn.style.cssText =
+      "flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1px solid #cbd5e1;" +
+      "background:#fff;cursor:pointer;font-size:1.4rem;line-height:1;color:#334155;";
+    leftBtn.setAttribute("aria-label", t("d_scrollLeft", "Previous article"));
+
+    var view = document.createElement("div");
+    view.className = "news-post-view";
+    view.style.cssText = "flex:1;min-width:0;";
+
+    var rightBtn = document.createElement("button");
+    rightBtn.className = "news-carousel-btn";
+    rightBtn.textContent = "›";
+    rightBtn.style.cssText = leftBtn.style.cssText;
+    rightBtn.setAttribute("aria-label", t("d_scrollRight", "Next article"));
+
+    carousel.appendChild(leftBtn);
+    carousel.appendChild(view);
+    carousel.appendChild(rightBtn);
+    content.appendChild(carousel);
+
+    function renderArticle() {
+      var article = articles[currentIndex];
+      if (!article) {
+        view.innerHTML = "";
+        return;
+      }
+      view.innerHTML = `
+        <div class="news-article" style="margin-bottom:0;padding:16px;border-radius:12px;display:flex;flex-direction:column;gap:12px;">
+          ${article.imageUrl
+            ? '<img class="news-image" src="' + article.imageUrl + '" alt="" style="width:100%;height:var(--media-height);object-fit:contain;border-radius:8px;background:#f1f5f9;display:block;" onerror="this.style.display=\'none\'">'
+            : '<div style="width:100%;height:var(--media-height);display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:8px;"><i class="fa-solid fa-newspaper" style="font-size:2rem;color:#94a3b8;"></i></div>'}
+          <div style="display:flex;justify-content:space-between;">
+            <div>${escapeHtml(sourceDisplay)}</div>
+            <div>${escapeHtml(article.pubDate)}</div>
+          </div>
+          <h3 style="margin:0;"><a href="${article.link}" target="_blank" rel="noopener noreferrer">${escapeHtml(article.title)}</a></h3>
+          <p style="margin:0;">${escapeHtml(article.excerpt)}</p>
         </div>
-        <h3><a href="${article.link}" target="_blank">${escapeHtml(article.title)}</a></h3>
-        <p>${escapeHtml(article.excerpt)}</p>
       `;
-      list.appendChild(div);
-      return div;
+    }
+
+    function go(dir) {
+      if (!articles.length) return;
+      currentIndex = (currentIndex + dir + articles.length) % articles.length;
+      renderArticle();
+    }
+
+    leftBtn.addEventListener("click", function () {
+      go(-1);
+    });
+    rightBtn.addEventListener("click", function () {
+      go(1);
     });
 
-    function updateVisibility() {
-      articleEls.forEach(function (el, i) {
-        el.style.display =
-          i >= currentStart && i < currentStart + VISIBLE ? "" : "none";
-      });
-      var upBtn = document.getElementById("newsScrollUp");
-      var downBtn = document.getElementById("newsScrollDown");
-      if (upBtn) upBtn.style.opacity = currentStart === 0 ? "0.7" : "1";
-      if (downBtn)
-        downBtn.style.opacity =
-          currentStart + VISIBLE >= articleEls.length ? "0.7" : "1";
-    }
-    updateVisibility();
-
-    document.getElementById("newsScrollUp").onclick = function (e) {
-      e.preventDefault();
-      if (currentStart > 0) {
-        currentStart = Math.max(0, currentStart - STEP);
-        updateVisibility();
-      }
-    };
-    document.getElementById("newsScrollDown").onclick = function (e) {
-      e.preventDefault();
-      if (currentStart + VISIBLE < articleEls.length) {
-        currentStart = Math.min(
-          articleEls.length - VISIBLE,
-          currentStart + STEP,
-        );
-        updateVisibility();
-      }
-    };
+    renderArticle();
 
     if (window.refreshDashboardLayout) window.refreshDashboardLayout();
   }
