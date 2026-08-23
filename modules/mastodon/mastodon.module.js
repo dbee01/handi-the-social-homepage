@@ -164,7 +164,7 @@ export default async function initMastodon(container) {
               '<small style="opacity:0.7;">' +
               serverFlag + " " + escapeHtml(serverName) + " · " + feedLabel +
               "</small>" +
-              '<button id="mastodonChangeServer" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;" title="' +
+              '<button id="mastodonChangeServer" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;color:inherit;" title="' +
               t("d_changeServer", "Change server") +
               '"><i class="fa-solid fa-rotate-right"></i> ' +
               t("d_changeServer", "Server") +

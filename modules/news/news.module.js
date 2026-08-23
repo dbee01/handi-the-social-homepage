@@ -292,7 +292,7 @@ export default async function initNews(container) {
       '<small style="opacity:0.7;">' +
       escapeHtml(sourceDisplay) +
       "</small>" +
-      '<button id="newsChangeSource" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;" title="' +
+      '<button id="newsChangeSource" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;color:inherit;" title="' +
       t("d_changeSource", "Change source") +
       '"><i class="fa-solid fa-rotate-right"></i> ' +
       t("d_changeSource", "Source") +
@@ -350,8 +350,8 @@ export default async function initNews(container) {
             <div>${escapeHtml(sourceDisplay)}</div>
             <div>${escapeHtml(article.pubDate)}</div>
           </div>
-          <h3 style="margin:0;"><a href="${article.link}" target="_blank" rel="noopener noreferrer">${escapeHtml(article.title)}</a></h3>
-          <p style="margin:0;">${escapeHtml(article.excerpt)}</p>
+          <h3 style="margin:0;line-height:1.25;"><a href="${article.link}" target="_blank" rel="noopener noreferrer">${escapeHtml(article.title)}</a></h3>
+          <p style="margin:0;line-height:1.35;">${escapeHtml(article.excerpt)}</p>
         </div>
       `;
     }
