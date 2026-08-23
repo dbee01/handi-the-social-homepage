@@ -93,6 +93,24 @@
                 color: #0047cc;
                 font-size: 1.2rem;
             }
+            .header-title {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            .handi-logo .logo-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                color: #1e1e1e;
+                font-size: 20px;
+                font-weight: bold;
+                text-decoration: none;
+                white-space: nowrap;
+            }
+            .handi-logo .logo-link:hover {
+                color: #0047cc;
+            }
             .header-buttons {
                 display: flex;
                 gap: 10px;
@@ -347,7 +365,15 @@
     <body>
         <div class="settings-container">
             <div class="header">
-                <h1>Settings</h1>
+                <div class="header-title">
+                    <div class="handi-logo">
+                        <a href="https://handihomepage.com" class="logo-link">
+                            <i class="fa-solid fa-hand-peace"></i>
+                            <span class="logo-text">Handi Homepage</span>
+                        </a>
+                    </div>
+                    <h1>Settings</h1>
+                </div>
                 <div class="header-buttons">
                     <button class="reset-btn" id="resetBtn">⟳ Reset All</button>
                     <button class="save-exit-btn" id="saveExitBtn">
@@ -355,6 +381,31 @@
                     </button>
                 </div>
             </div>
+
+            <script>
+                // Apply Handi Pack branding (logo, homepage link) if present.
+                (function () {
+                    try {
+                        var logoLink = document.querySelector(
+                            ".handi-logo .logo-link",
+                        );
+                        if (!logoLink) return;
+                        var name = localStorage.getItem("handiPackName");
+                        var logo = localStorage.getItem("handiPackLogo");
+                        var home = localStorage.getItem("handiPackHomepage");
+                        if (home) logoLink.href = home;
+                        if (logo) {
+                            logoLink.innerHTML =
+                                '<img src="' +
+                                logo +
+                                '" alt="" style="height:40px;width:auto;" />';
+                        } else if (name) {
+                            var txt = logoLink.querySelector(".logo-text");
+                            if (txt) txt.textContent = name;
+                        }
+                    } catch (e) {}
+                })();
+            </script>
 
             <div class="header">
                 <h2>Free Elements</h2>

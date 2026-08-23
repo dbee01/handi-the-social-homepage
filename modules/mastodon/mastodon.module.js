@@ -194,13 +194,15 @@ export default async function initMastodon(container) {
           provider = item.provider_name || "";
           image = item.image || "";
         }
+        var cleanTitle = decodeEntities(titleText);
+        var cleanDesc = decodeEntities(description);
         posts.push({
-          title: titleText,
+          title: cleanTitle,
           link: urlLink,
           description:
-            description.length > 150
-              ? description.substring(0, 150) + "..."
-              : description,
+            cleanDesc.length > 150
+              ? cleanDesc.substring(0, 150) + "..."
+              : cleanDesc,
           provider: provider,
           image: image,
         });
@@ -242,7 +244,7 @@ export default async function initMastodon(container) {
         }
         postView.innerHTML = `
           <div class="mastodon-item" style="margin-bottom:0;padding:16px;border-radius:12px;display:flex;flex-direction:column;flex-wrap:nowrap;align-content:center;align-items:center;text-align:center;gap:12px;">
-            ${p.image ? `<img class="mastodon-image" src="${p.image}" alt="" style="width:200px;height:var(--media-height);object-fit:cover;border-radius:8px;" onerror="this.style.display='none'">` : '<div><i class="fa-solid fa-link"></i></div>'}
+            ${p.image ? `<img class="mastodon-image" src="${p.image}" alt="" style="width:100%;height:var(--media-height);object-fit:contain;border-radius:8px;background:#f1f5f9;" onerror="this.style.display='none'">` : '<div><i class="fa-solid fa-link"></i></div>'}
             <div class="mastodon-body" style="flex:1;">
               <a class="mastodon-title" href="${p.link}" target="_blank" rel="noopener noreferrer">${escapeHtml(p.title)}</a>
               ${p.provider ? `<div class="mastodon-provider">${escapeHtml(p.provider)}</div>` : ""}
@@ -319,6 +321,15 @@ export default async function initMastodon(container) {
       /[&<>]/g,
       (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m],
     );
+  }
+
+  // Decode HTML entities (e.g. &#225; -> á) so Irish fadas and other
+  // accented characters survive the escapeHtml() step in renderPost.
+  function decodeEntities(str) {
+    if (!str) return "";
+    var d = document.createElement("div");
+    d.innerHTML = str;
+    return (d.textContent || d.innerText || "").trim();
   }
 
   if (instance) {

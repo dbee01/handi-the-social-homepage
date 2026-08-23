@@ -528,7 +528,7 @@ export default async function initRadio(container) {
   var radioInfoHtml = "";
   if (radioInfo && (radioInfo.title || radioInfo.image)) {
     radioInfoHtml =
-      '<div class="radio-info" style="display:flex;gap:12px;align-items:flex-start;margin:0 0 10px;padding:12px;border-radius:10px;border:1px solid color-mix(in srgb, var(--topbar-accent, #0047cc) 25%, transparent);background:color-mix(in srgb, var(--topbar-accent, #0047cc) 5%, transparent);">' +
+      '<div class="radio-info" style="display:flex;gap:12px;align-items:flex-start;margin:0 0 10px;padding:16px;border-radius:10px;border:1px solid color-mix(in srgb, var(--topbar-accent, #0047cc) 25%, transparent);background:color-mix(in srgb, var(--topbar-accent, #0047cc) 5%, transparent);">' +
       (radioInfo.image
         ? '<img src="' + escapeHtml(radioInfo.image) + '" alt="" loading="lazy" style="width:88px;height:88px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'"/>'
         : "") +

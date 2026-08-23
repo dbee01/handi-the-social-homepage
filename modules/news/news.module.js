@@ -280,6 +280,8 @@ export default async function initNews(container) {
         "</div>";
       return;
     }
+    // Clear the loading indicator before rendering the fetched articles.
+    content.innerHTML = "";
     var sourceDisplay = formatSourceName(channelLink);
 
     // Header bar with source name and change button

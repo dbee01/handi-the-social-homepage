@@ -172,7 +172,7 @@ export default async function initFlip(container) {
   }
 
   content.innerHTML =
-    '<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:24px;color:#64748b;">' +
+    '<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:#64748b;">' +
     '<i class="fa-solid fa-spinner fa-spin"></i> ' +
     t("d_loading", "Loading...") +
     "</div>";
@@ -200,7 +200,7 @@ export default async function initFlip(container) {
     card.style.cssText =
       "flex:0 0 100%;display:flex;flex-direction:column;border-radius:12px;" +
       "overflow:hidden;border:1px solid #e5e7eb;background:#fff;text-decoration:none;" +
-      "color:inherit;scroll-snap-align:start;";
+      "color:inherit;scroll-snap-align:start;padding:16px;";
     if (item.link) {
       card.href = item.link;
       card.target = "_blank";
@@ -212,40 +212,50 @@ export default async function initFlip(container) {
       img.src = item.image;
       img.loading = "lazy";
       img.style.cssText =
-        "width:100%;height:var(--media-height);object-fit:cover;display:block;background:#f1f5f9;";
+        "width:100%;height:var(--media-height);object-fit:contain;display:block;background:#f1f5f9;border-radius:8px;";
       card.appendChild(img);
     }
 
     const body = document.createElement("div");
     body.style.cssText =
-      "padding:16px;display:flex;flex-direction:column;gap:6px;flex:1;";
+      "padding:0;display:flex;flex-direction:column;gap:12px;flex:1;";
+
+    // Source + date row, same layout as the news element
+    if (item.source || item.pubDate) {
+      const metaTop = document.createElement("div");
+      metaTop.style.cssText = "display:flex;justify-content:space-between;";
+      const org = document.createElement("div");
+      org.textContent = item.source || "";
+      const date = document.createElement("div");
+      date.textContent = item.pubDate || "";
+      metaTop.appendChild(org);
+      metaTop.appendChild(date);
+      body.appendChild(metaTop);
+    }
 
     if (item.title) {
-      const h = document.createElement("div");
+      const h = document.createElement("h3");
       h.style.cssText =
-        "font-size:var(--font-size);font-weight:700;line-height:1.25;";
+        "margin:0;padding-top:4px;font-size:var(--font-size);font-weight:700;line-height:1.25;";
       h.textContent = item.title;
       body.appendChild(h);
     }
 
     if (item.description) {
-      const d = document.createElement("div");
+      const d = document.createElement("p");
       d.style.cssText =
-        "font-size: var(--font-size); color: rgb(71, 85, 100); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-weight: normal;";
+        "margin:0;font-size:var(--font-size);color:rgb(71, 85, 100);line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-weight:normal;";
       d.textContent = item.description;
       body.appendChild(d);
     }
 
-    const metaParts = [];
-    if (item.source) metaParts.push(item.source);
-    if (item.author && item.author !== item.source) metaParts.push(item.author);
-    if (item.pubDate) metaParts.push(item.pubDate);
-    if (metaParts.length) {
-      const m = document.createElement("div");
-      m.style.cssText =
+    // Author line (source and date are already shown in the row above)
+    if (item.author && item.author !== item.source) {
+      const a = document.createElement("div");
+      a.style.cssText =
         "font-size:var(--font-size);color:#94a3b8;margin-top:auto;padding-top:4px;";
-      m.textContent = metaParts.join(" · ");
-      body.appendChild(m);
+      a.textContent = item.author;
+      body.appendChild(a);
     }
 
     card.appendChild(body);

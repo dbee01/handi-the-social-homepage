@@ -118,6 +118,14 @@ const staticPath = fs.existsSync(publicPath) ? publicPath : __dirname;
 app.use("/log.txt", (req, res) => res.status(404).send());
 app.use("/.env", (req, res) => res.status(404).send());
 app.use("/.env.example", (req, res) => res.status(404).send());
+
+// Always revalidate the service worker so cache/version changes are picked up
+// promptly (browsers may otherwise serve a stale service-worker.js for 24h).
+app.get("/service-worker.js", (req, res) => {
+  res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.sendFile(path.join(staticPath, "service-worker.js"));
+});
+
 app.use(express.static(staticPath));
 
 app.get("/", (req, res) => {

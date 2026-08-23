@@ -208,7 +208,7 @@ export default async function initGallery(container) {
       if (item.author) metaParts.push(escapeHtml(item.author));
       if (item.date) metaParts.push(escapeHtml(item.date));
       view.innerHTML = `
-        <div class="gallery-item" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:8px 0;">
+        <div class="gallery-item" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:16px;">
           ${imgHtml}
           ${item.caption ? `<div class="gallery-caption">${escapeHtml(truncate(item.caption, 120))}</div>` : ""}
           ${metaParts.length ? `<div style="font-size:0.8rem;color:#64748b;">${metaParts.join(" · ")}</div>` : ""}
@@ -247,7 +247,7 @@ export default async function initGallery(container) {
   let feedItems = [];
   if (feedUrl) {
     content.innerHTML =
-      '<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:24px;color:#64748b;">' +
+      '<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:#64748b;">' +
       '<i class="fa-solid fa-spinner fa-spin"></i> ' +
       t("d_loading", "Loading...") +
       "</div>";

@@ -90,7 +90,7 @@ export default async function initEmergency(container) {
   contentWrapper.className = "emergency-content-wrapper";
   container.appendChild(contentWrapper);
   var content = document.createElement("div");
-  content.style.cssText = "padding:10px;text-align:center;";
+  content.style.cssText = "padding:16px;text-align:center;";
   contentWrapper.appendChild(content);
 
   function applyLockState(btn) {

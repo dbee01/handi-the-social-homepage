@@ -251,7 +251,7 @@ export default async function initCast(container) {
   var infoHtml = "";
   if (castInfo && (castInfo.title || castInfo.image)) {
     infoHtml =
-      '<div class="cast-info" style="display:flex;gap:12px;align-items:flex-start;margin:0 0 10px;padding:12px;border-radius:10px;border:1px solid color-mix(in srgb, var(--topbar-accent, #0047cc) 25%, transparent);background:color-mix(in srgb, var(--topbar-accent, #0047cc) 5%, transparent);">' +
+      '<div class="cast-info" style="display:flex;gap:12px;align-items:flex-start;margin:0 0 10px;padding:16px;border-radius:10px;border:1px solid color-mix(in srgb, var(--topbar-accent, #0047cc) 25%, transparent);background:color-mix(in srgb, var(--topbar-accent, #0047cc) 5%, transparent);">' +
       (castInfo.image
         ? '<img src="' + escapeHtml(castInfo.image) + '" alt="" loading="lazy" style="width:88px;height:88px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'"/>'
         : "") +

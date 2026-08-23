@@ -316,7 +316,7 @@ header {
     border: 1px solid var(--border);
     border-radius: 10px;
 
-    padding: 12px;
+    padding: 16px;
     margin-bottom: 15px;
 
     text-align: center;
@@ -674,7 +674,7 @@ header {
 .module-empty {
     text-align: center;
 
-    padding: 30px;
+    padding: 20px;
 
     color: var(--muted);
 }

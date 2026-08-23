@@ -1,4 +1,4 @@
-const CACHE = "ple-v13";
+const CACHE = "ple-v14";
 
 // Check for updates every 24 hours
 const UPDATE_INTERVAL = 24 * 60 * 60 * 1000;
@@ -56,19 +56,29 @@ self.addEventListener("install", (e) => {
   self.skipWaiting();
 });
 
-// Activate — clean old caches
+// Activate — clean old caches, take control, and reload clients so they
+// pick up the freshly cached assets (cache is cache-first, so without this
+// they would keep serving the old files).
 self.addEventListener("activate", (e) => {
   e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)),
-      );
-    }),
+    caches
+      .keys()
+      .then((keys) => {
+        return Promise.all(
+          keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)),
+        );
+      })
+      .then(() => self.clients.claim())
+      .then(() => self.clients.matchAll())
+      .then((clients) =>
+        clients.forEach((c) => c.postMessage({ type: "update" })),
+      ),
   );
-  self.clients.claim();
 });
 
-// Fetch — cache-first, fall back to network, then offline page
+// Fetch — cache-first, fall back to network, then offline page.
+// Scripts and stylesheets are network-first so code/CSS updates propagate
+// immediately; the cache only serves as an offline fallback for them.
 self.addEventListener("fetch", (e) => {
   // Skip non-GET requests and chrome-extension
   if (e.request.method !== "GET") return;
@@ -79,6 +89,32 @@ self.addEventListener("fetch", (e) => {
 
   // Skip WebRTC / Infobip calls
   if (e.request.url.includes("rtc.cdn.infobip.com")) return;
+
+  const isCode =
+    e.request.destination === "script" ||
+    e.request.destination === "style" ||
+    e.request.url.endsWith(".js") ||
+    e.request.url.endsWith(".css");
+
+  if (isCode) {
+    e.respondWith(
+      fetch(e.request)
+        .then((response) => {
+          if (!response || response.status !== 200) return response;
+          const clone = response.clone();
+          caches.open(CACHE).then((cache) => {
+            cache.put(e.request, clone);
+          });
+          return response;
+        })
+        .catch(() =>
+          caches
+            .match(e.request)
+            .then((cached) => cached || new Response("", { status: 408 })),
+        ),
+    );
+    return;
+  }
 
   e.respondWith(
     caches.match(e.request).then((cached) => {
