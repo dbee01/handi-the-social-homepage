@@ -282,6 +282,10 @@
                 color: #64748b;
                 font-size: 1rem;
             }
+            .config-field small {
+                font-size: 0.85rem;
+                line-height: 1.4;
+            }
             .contact-list {
                 border: 1px solid #e2e8f0;
                 border-radius: 12px;
@@ -429,6 +433,7 @@
                     <div class="config-field">
                         <label>Location:</label
                         ><input type="text" id="weatherLocation" value="Cork" placeholder="City, Country"/>
+                        <small>Enter a city (e.g. Cork) or press Detect My Location.</small>
                     </div>
                     <button id="detectLocationBtn" class="detect-location-btn">
                         <i class="fa-solid fa-location-dot"></i> Detect My
@@ -475,6 +480,7 @@
                             id="castStreamUrl"
                             placeholder="https://example.com/stream.mp3 or https://feed.podbean.com/.../feed.xml"
                         />
+                        <small>Paste a direct audio stream URL (MP3/AAC) or a podcast RSS feed.</small>
                     </div>
                     <button class="upload-btn" id="loadCastBtn">
                         🎙️ Load Podcasts
@@ -501,6 +507,7 @@
                             id="flipProfileUrl"
                             placeholder="https://flipboard.com/@CoinDesk.rss or @CoinDesk"
                         />
+                        <small>A Flipboard profile, e.g. @CoinDesk.</small>
                     </div>
                     <div class="config-field">
                         <label>Flipboard Topic (URL, #topic or 'topic'):</label
@@ -509,6 +516,7 @@
                             id="flipTopicUrl"
                             placeholder="https://flipboard.com/topic/corkcity.rss or #corkcity"
                         />
+                        <small>A Flipboard topic, e.g. #corkcity.</small>
                     </div>
                 </div>
             </div>
@@ -586,6 +594,7 @@
                                 🇳🇿 mastodon.nz
                             </option>
                         </select>
+                        <small>Pick a server, or leave on Default to choose one on the page.</small>
                     </div>
                                         <div class="config-field">
                                                                 <label>Feed type:</label>
@@ -598,11 +607,13 @@
                                                                     <label for="mfProfile" style="font-weight:normal;cursor:pointer;">Follow profile</label>
                                                                 </div>
                                                                 <input type="text" id="mastodonProfile" placeholder="@handi@mastodon.ie" style="margin-left:22px;width:calc(100% - 22px);display:none;">
+                                                                <small id="mastodonProfileHint" style="margin-left:22px;display:none;">Your account, e.g. @handi@mastodon.ie.</small>
                                                                 <div style="margin-bottom:6px;">
                                                                     <input type="radio" name="mastodonFeed" value="hashtag" id="mfHashtag">
                                                                     <label for="mfHashtag" style="font-weight:normal;cursor:pointer;">Follow hashtag</label>
                                                                 </div>
                                                                 <input type="text" id="mastodonHashtag" placeholder="#handihomepage" style="margin-left:22px;width:calc(100% - 22px);display:none;">
+                                                                <small id="mastodonHashtagHint" style="margin-left:22px;display:none;">A hashtag, e.g. #handihomepage.</small>
                                                             </div>
                                     </div>
             </div>
@@ -626,6 +637,7 @@
                             id="chatHomeserver"
                             value="https://matrix.org"
                         />
+                        <small>Install a Matrix protocol private client like Element.io to create your account, then enter your homeserver here.</small>
                     </div>
                     <div class="config-field">
                         <label>Username:</label
@@ -634,6 +646,7 @@
                             id="chatUsername"
                             placeholder="@username:matrix.org"
                         />
+                        <small>Your Matrix ID, e.g. @username:matrix.org.</small>
                     </div>
                     <div class="config-field">
                         <label>Password:</label
@@ -662,6 +675,7 @@
                     <div class="config-field">
                         <label>Room 3:</label
                         ><input type="text" id="chatRoom3" />
+                        <small>Room addresses look like #room:matrix.org. Rooms are optional.</small>
                     </div>
                     <div class="config-field">
                         <label>Refresh interval (sec):</label
@@ -710,6 +724,7 @@
                             id="musicStreamUrl"
                             placeholder="https://example.com/stream.mp3"
                         />
+                        <small>Paste a direct audio stream URL (MP3/AAC).</small>
                     </div>
                     <button class="upload-btn" id="uploadMusicBtn">
                             🎵 Load Music
@@ -748,6 +763,7 @@
                             id="galleryPixelfedUrl"
                             placeholder="https://pixelfed.social/users/username.atom"
                         />
+                        <small>Your Pixelfed Atom feed — photos from this user appear in the element.</small>
                     </div>
                     <button class="upload-btn" id="uploadGalleryBtn">
                             📸 Load Images
@@ -811,6 +827,7 @@
                             id="radioStreamUrl"
                             placeholder="https://example.com/stream.mp3 or https://example.com/feed.xml"
                         />
+                        <small>Paste a live radio stream URL or a radio RSS feed URL.</small>
                     </div>
                 </div>
             </div>
@@ -909,6 +926,7 @@
                                 🇳🇿 New Zealand – RNZ
                             </option>
                         </select>
+                        <small>Choose a feed, or leave on Default to pick one on the page.</small>
                     </div>
                     <div class="config-field">
                         <label>Refresh interval (minutes):</label
@@ -1893,7 +1911,9 @@
                                                 var fb = document.querySelector('input[name="mastodonFeed"][value="' + settings.social.feedType + '"]');
                                                 if (fb) fb.checked = true;
                                                 document.getElementById("mastodonProfile").style.display = settings.social.feedType === "profile" ? "" : "none";
+                                                document.getElementById("mastodonProfileHint").style.display = settings.social.feedType === "profile" ? "" : "none";
                                                 document.getElementById("mastodonHashtag").style.display = settings.social.feedType === "hashtag" ? "" : "none";
+                                                document.getElementById("mastodonHashtagHint").style.display = settings.social.feedType === "hashtag" ? "" : "none";
                                             }
                                             if (settings.social.profile) {
                                                 document.getElementById("mastodonProfile").value = settings.social.profile;
@@ -2676,7 +2696,9 @@
                                     mastodonFeeds.forEach(function(r) {
                                         r.addEventListener("change", function() {
                                             document.getElementById("mastodonProfile").style.display = this.value === "profile" ? "" : "none";
+                                            document.getElementById("mastodonProfileHint").style.display = this.value === "profile" ? "" : "none";
                                             document.getElementById("mastodonHashtag").style.display = this.value === "hashtag" ? "" : "none";
+                                            document.getElementById("mastodonHashtagHint").style.display = this.value === "hashtag" ? "" : "none";
                                         });
                                     });
 
