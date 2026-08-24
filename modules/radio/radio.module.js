@@ -17,6 +17,14 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
+function hostnameOf(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch (e) {
+    return "";
+  }
+}
+
 // Pull channel-level feed metadata (title, thumbnail, description, author,
 // website link) out of an iTunes-compatible RSS/Atom feed.
 function parseRadioInfo(doc) {
@@ -570,7 +578,33 @@ export default async function initRadio(container) {
       "</div></div>";
   }
 
+  // Mastodon-style source bar: website · feed label + change source button.
+  // Only shown when a handi-pack stream/feed URL is configured; the country
+  // chip row below is the selector for the built-in stations.
+  var sourceBarHtml = "";
+  if (streamUrl) {
+    var srcWebsite =
+      hostnameOf((radioInfo && radioInfo.link) || streamUrl) ||
+      hostnameOf(streamUrl);
+    var srcLabel = radioInfo && radioInfo.title
+      ? radioInfo.title
+      : t("d_liveStream", "Live Stream");
+    sourceBarHtml =
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+      '<small style="opacity:0.7;">' +
+      escapeHtml(srcWebsite) +
+      " · " +
+      escapeHtml(srcLabel) +
+      "</small>" +
+      '<button id="radioChangeSource" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;color:inherit;" title="' +
+      t("d_changeSource", "Change source") +
+      '"><i class="fa-solid fa-rotate-right"></i> ' +
+      t("d_changeSource", "Source") +
+      "</button></div>";
+  }
+
   content.innerHTML =
+    sourceBarHtml +
     radioInfoHtml +
       '<div class="radio-country-list" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:8px;">' +
       countries.map(function (c) {
@@ -589,6 +623,13 @@ export default async function initRadio(container) {
       down = content.querySelector("#radio-down");
     var synthCanvas = content.querySelector("#radio-synth");
     if (synthCanvas) synthCanvas.style.display = "none";
+
+    // "Change source" -> open the Radio settings section.
+    var radioChangeBtn = content.querySelector("#radioChangeSource");
+    if (radioChangeBtn)
+      radioChangeBtn.onclick = function () {
+        window.location.href = "settings.html?args=radio";
+      };
 
     // "More" link — inline at the end of the preview text. Expands to the
     // full description (capped at 500 characters), "Less" collapses back.

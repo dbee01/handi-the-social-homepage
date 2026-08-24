@@ -43,6 +43,20 @@ function linkOf(entry) {
   return firstTextNS(entry, ATOM_NS, "id");
 }
 
+// Feed-level alternate link (direct child of <feed>), used for the info card.
+function feedLinkOf(doc) {
+  const links = doc.getElementsByTagNameNS(ATOM_NS, "link");
+  for (let i = 0; i < links.length; i++) {
+    if (links[i].parentNode !== doc.documentElement) continue;
+    const rel = links[i].getAttribute("rel") || "alternate";
+    if (rel === "alternate") {
+      const href = links[i].getAttribute("href");
+      if (href) return href;
+    }
+  }
+  return "";
+}
+
 function imageOf(entry) {
   const media = entry.getElementsByTagNameNS(MEDIA_NS, "content");
   if (media.length) {
@@ -79,12 +93,42 @@ function truncate(str, max) {
   return str.length > max ? str.substring(0, max) + "…" : str;
 }
 
+function hostnameOf(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch (e) {
+    return "";
+  }
+}
+
+// Pixelfed feed URL -> @username (e.g. https://pixelfed.social/users/dansup.atom
+// -> @dansup).
+function accountOfFeedUrl(url) {
+  try {
+    var segs = new URL(url).pathname.split("/").filter(Boolean);
+    var last = (segs[segs.length - 1] || "").replace(/\.atom$/i, "");
+    return last ? "@" + decodeURIComponent(last) : "";
+  } catch (e) {
+    return "";
+  }
+}
+
 async function fetchPixelfedFeed(url) {
   const resp = await fetch("/api/feed?url=" + encodeURIComponent(url));
-  if (!resp.ok) return [];
+  if (!resp.ok) return { info: null, items: [] };
   const text = await resp.text();
   const doc = new DOMParser().parseFromString(text, "text/xml");
-  if (doc.querySelector("parsererror")) return [];
+  if (doc.querySelector("parsererror")) return { info: null, items: [] };
+
+  // Feed-level metadata for the cast-style info card: title, subtitle
+  // (description), logo/icon (thumbnail), and the profile link.
+  const info = {
+    title: firstTextNS(doc, ATOM_NS, "title"),
+    description: stripHtml(firstTextNS(doc, ATOM_NS, "subtitle")),
+    image:
+      firstTextNS(doc, ATOM_NS, "logo") || firstTextNS(doc, ATOM_NS, "icon"),
+    link: feedLinkOf(doc),
+  };
 
   const entries = doc.getElementsByTagNameNS(ATOM_NS, "entry");
   const items = [];
@@ -102,7 +146,7 @@ async function fetchPixelfedFeed(url) {
       author: authorNameOf(entry),
     });
   }
-  return items;
+  return { info: info, items: items };
 }
 
 export default async function initGallery(container) {
@@ -244,6 +288,7 @@ export default async function initGallery(container) {
     feedUrl = "";
   }
 
+  let feedInfo = null;
   let feedItems = [];
   if (feedUrl) {
     content.innerHTML =
@@ -252,7 +297,9 @@ export default async function initGallery(container) {
       t("d_loading", "Loading...") +
       "</div>";
     try {
-      feedItems = await fetchPixelfedFeed(feedUrl);
+      const parsed = await fetchPixelfedFeed(feedUrl);
+      feedItems = parsed.items;
+      feedInfo = parsed.info;
     } catch (err) {
       console.error("Pixelfed feed error:", err);
       feedItems = [];
@@ -279,7 +326,102 @@ export default async function initGallery(container) {
     });
   }
 
+  // Cast-style feed info card (thumbnail, title, description with a More /
+  // Less expand link, and a link to the feed's website).
+  function buildFeedInfoCard(info) {
+    var desc = info.description || "";
+    var preview =
+      desc.length > 180 ? desc.slice(0, 180).replace(/\s+\S*$/, "") + "…" : desc;
+    var clamped =
+      desc.length > 500 ? desc.slice(0, 500).replace(/\s+\S*$/, "") + "…" : desc;
+    var el = document.createElement("div");
+    el.className = "gallery-info";
+    el.style.cssText =
+      "display:flex;gap:12px;align-items:flex-start;margin:0 0 10px;padding:16px;border-radius:10px;" +
+      "border:1px solid color-mix(in srgb, var(--topbar-accent, #0047cc) 25%, transparent);" +
+      "background:color-mix(in srgb, var(--topbar-accent, #0047cc) 5%, transparent);";
+    var html = "";
+    if (info.image)
+      html +=
+        '<img src="' +
+        escapeHtml(info.image) +
+        '" alt="" loading="lazy" style="width:88px;height:88px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'"/>';
+    html += '<div style="min-width:0;flex:1;">';
+    if (info.title)
+      html +=
+        '<div style="font-weight:700;font-size:1.05rem;line-height:1.3;">' +
+        escapeHtml(info.title) +
+        "</div>";
+    if (desc)
+      html +=
+        '<div style="font-size:0.9rem;line-height:1.4;opacity:0.85;margin-top:6px;"><span id="galleryInfoDesc">' +
+        escapeHtml(preview) +
+        "</span>" +
+        (desc.length > 180
+          ? ' <a href="#" id="galleryInfoDescMore" style="font-weight:700;white-space:nowrap;">' +
+            t("d_more", "More") +
+            "</a>"
+          : "") +
+        "</div>";
+    if (info.link)
+      html +=
+        '<a href="' +
+        escapeHtml(info.link) +
+        '" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-size:0.9rem;font-weight:700;">' +
+        t("d_website", "Website") +
+        " ↗</a>";
+    html += "</div>";
+    el.innerHTML = html;
+    var descEl = el.querySelector("#galleryInfoDesc");
+    var moreEl = el.querySelector("#galleryInfoDescMore");
+    if (descEl && moreEl) {
+      var moreText = t("d_more", "More"),
+        lessText = t("d_less", "Less");
+      moreEl.addEventListener("click", function (e) {
+        e.preventDefault();
+        if (moreEl.textContent === lessText) {
+          descEl.textContent = preview;
+          moreEl.textContent = moreText;
+        } else {
+          descEl.textContent = clamped;
+          moreEl.textContent = lessText;
+        }
+      });
+    }
+    return el;
+  }
+
+  // Mastodon-style source bar: website · account + change source button.
+  function buildSourceBar() {
+    var bar = document.createElement("div");
+    bar.style.cssText =
+      "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;";
+    bar.innerHTML =
+      '<small style="opacity:0.7;">' +
+      escapeHtml(hostnameOf(feedUrl)) +
+      " · " +
+      escapeHtml(accountOfFeedUrl(feedUrl)) +
+      "</small>" +
+      '<button id="galleryChangeSource" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;color:inherit;" title="' +
+      t("d_changeSource", "Change source") +
+      '"><i class="fa-solid fa-rotate-right"></i> ' +
+      t("d_changeSource", "Source") +
+      "</button>";
+    var btn = bar.querySelector("#galleryChangeSource");
+    if (btn)
+      btn.onclick = function () {
+        window.location.href = "settings.html?args=gallery";
+      };
+    return bar;
+  }
+
   if (items.length) {
+    // Mastodon-style source bar (only when a Pixelfed feed is active).
+    if (feedItems.length) content.appendChild(buildSourceBar());
+    // Only show the feed info card when a Pixelfed feed is actually active.
+    if (feedItems.length && feedInfo && (feedInfo.title || feedInfo.image || feedInfo.link)) {
+      content.appendChild(buildFeedInfoCard(feedInfo));
+    }
     const carousel = makeCarousel(items);
     if (carousel) content.appendChild(carousel);
     content.appendChild(makeAddButton());

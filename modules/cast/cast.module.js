@@ -27,6 +27,14 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
+function hostnameOf(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch (e) {
+    return "";
+  }
+}
+
 // Pull channel-level podcast metadata (title, thumbnail, description,
 // author, website link) out of an iTunes-compatible RSS feed.
 function parseCastInfo(doc) {
@@ -293,7 +301,31 @@ export default async function initCast(container) {
       "</div></div>";
   }
 
+  // Mastodon-style source bar: website · feed label + change source button.
+  var sourceBarHtml = "";
+  if (streamUrl) {
+    var srcWebsite =
+      hostnameOf((castInfo && castInfo.link) || streamUrl) ||
+      hostnameOf(streamUrl);
+    var srcLabel = castInfo && castInfo.title
+      ? castInfo.title
+      : t("d_castStream", "Live Stream");
+    sourceBarHtml =
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+      '<small style="opacity:0.7;">' +
+      escapeHtml(srcWebsite) +
+      " · " +
+      escapeHtml(srcLabel) +
+      "</small>" +
+      '<button id="castChangeSource" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;color:inherit;" title="' +
+      t("d_changeSource", "Change source") +
+      '"><i class="fa-solid fa-rotate-right"></i> ' +
+      t("d_changeSource", "Source") +
+      "</button></div>";
+  }
+
   content.innerHTML =
+    sourceBarHtml +
     infoHtml +
     '<div class="music-now-playing"><canvas id="castSynth" class="music-synth"></canvas><div id="music-status" class="music-status"><span id="music-track-title">—</span><span class="music-state-text">' +
     t("d_ready", "Ready") +
@@ -307,6 +339,13 @@ export default async function initCast(container) {
     down = content.querySelector("#castScrollDown");
   var playPauseBtn = content.querySelector("#music-playpause"),
     trackTitleSpan = content.querySelector("#music-track-title");
+
+  // "Change source" -> open the Cast settings section.
+  var castChangeBtn = content.querySelector("#castChangeSource");
+  if (castChangeBtn)
+    castChangeBtn.onclick = function () {
+      window.location.href = "settings.html?args=cast";
+    };
 
   // "More" link — inline at the end of the preview text. Expands to the
   // full description (capped at 500 characters), "Less" collapses back.

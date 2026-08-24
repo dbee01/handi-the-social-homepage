@@ -140,7 +140,7 @@ export default async function initPhone(container) {
           }
           <div class="phone-name">
             ${escapeHtml(c.name)}
-            ${c.caregiver ? '<span style="font-size:0.6rem;background:#f59e0b;color:white;padding:1px 5px;border-radius:6px;margin-left:4px;">' + t("d_caregiver", "Caregiver") + "</span>" : ""}
+            ${c.caregiver ? '<span class="elderlyShow" style="font-size:0.6rem;background:#f59e0b;color:white;padding:1px 5px;border-radius:6px;margin-left:4px;">' + t("d_caregiver", "Caregiver") + "</span>" : ""}
           </div>
           </div>
           <div class="phone-actions">

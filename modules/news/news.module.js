@@ -103,6 +103,14 @@ export default async function initNews(container) {
     }
   }
 
+  function hostnameOf(url) {
+    try {
+      return new URL(url).hostname.replace(/^www\./, "");
+    } catch (e) {
+      return "";
+    }
+  }
+
   function extractImageFromEntry(entry, description) {
     description = description || "";
     // Try enclosure
@@ -142,6 +150,11 @@ export default async function initNews(container) {
       var rssChannel = xmlDoc.querySelector("channel");
       var atomFeed = xmlDoc.querySelector("feed");
 
+      // Feed-level metadata (thumbnail, title, description, website link) for
+      // the cast-style info card. RSS: <image><url> + <description>; Atom:
+      // <logo>/<icon> + <subtitle>.
+      var channelInfo = { title: "", link: "", image: "", description: "" };
+
       if (rssChannel) {
         channel = rssChannel;
         channelLink =
@@ -154,6 +167,13 @@ export default async function initNews(container) {
             channel.querySelector("title").textContent &&
             channel.querySelector("title").textContent.trim()) ||
           "News";
+        var chImg = channel.querySelector("image > url");
+        if (chImg && chImg.textContent) channelInfo.image = chImg.textContent.trim();
+        var chDesc = channel.querySelector("description");
+        if (chDesc && chDesc.textContent)
+          channelInfo.description = decodeEntities(
+            chDesc.textContent.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
+          );
         items = xmlDoc.querySelectorAll("item");
       } else if (atomFeed) {
         var selfLink = atomFeed.querySelector('link[rel="self"]');
@@ -163,10 +183,19 @@ export default async function initNews(container) {
             atomFeed.querySelector("title").textContent &&
             atomFeed.querySelector("title").textContent.trim()) ||
           "News";
+        var chLogo = atomFeed.querySelector("logo") || atomFeed.querySelector("icon");
+        if (chLogo && chLogo.textContent) channelInfo.image = chLogo.textContent.trim();
+        var chSub = atomFeed.querySelector("subtitle");
+        if (chSub && chSub.textContent)
+          channelInfo.description = decodeEntities(
+            chSub.textContent.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
+          );
         items = xmlDoc.querySelectorAll("entry");
       } else {
         throw new Error("Unknown feed format");
       }
+      channelInfo.title = channelTitle;
+      channelInfo.link = channelLink;
 
       var articles = [];
       var limit = Math.min(items.length, maxArticles);
@@ -189,12 +218,17 @@ export default async function initNews(container) {
             (item.querySelector("pubDate") &&
               item.querySelector("pubDate").textContent) ||
             "";
-          description =
+          // Keep a raw copy: feeds that embed their thumbnail as an <img>
+          // inside the description (no media:/enclosure tags) need it intact
+          // for image extraction.
+          var rawDesc =
             (item.querySelector("description") &&
               item.querySelector("description").textContent) ||
             "";
-          description = description.replace(/<[^>]*>/g, "");
-          imageUrl = extractImageFromEntry(item, description);
+          description = decodeEntities(
+            rawDesc.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
+          );
+          imageUrl = extractImageFromEntry(item, rawDesc);
         } else {
           artTitle =
             (item.querySelector("title") &&
@@ -213,7 +247,7 @@ export default async function initNews(container) {
             (item.querySelector("updated") &&
               item.querySelector("updated").textContent) ||
             "";
-          description =
+          var rawAtomDesc =
             (item.querySelector("summary") &&
               item.querySelector("summary").textContent &&
               item.querySelector("summary").textContent.trim()) ||
@@ -221,8 +255,10 @@ export default async function initNews(container) {
               item.querySelector("content").textContent &&
               item.querySelector("content").textContent.trim()) ||
             "";
-          description = description.replace(/<[^>]*>/g, "");
-          imageUrl = extractImageFromEntry(item, description);
+          description = decodeEntities(
+            rawAtomDesc.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
+          );
+          imageUrl = extractImageFromEntry(item, rawAtomDesc);
         }
 
         var formattedDate = t("d_dateUnknown", "Date unknown");
@@ -249,7 +285,7 @@ export default async function initNews(container) {
           channelLink: channelLink,
         });
       }
-      renderNews(articles, channelLink, channelTitle);
+      renderNews(articles, channelLink, channelTitle, channelInfo);
       window.logEvent(2, "news_load", { source: formatSourceName(rssUrl), articles: articles.length });
     } catch (err) {
       console.error("News fetch error:", err);
@@ -272,7 +308,72 @@ export default async function initNews(container) {
     }
   }
 
-  function renderNews(articles, channelLink, channelTitle) {
+  // Cast-style feed info card (thumbnail, title, description with a More /
+  // Less expand link, and a link to the feed's website). Returns null when
+  // there is no feed metadata worth showing.
+  function buildFeedInfoCard(info, uid) {
+    if (!info || (!info.title && !info.image && !info.link)) return null;
+    var desc = info.description || "";
+    var preview = desc.length > 180 ? desc.slice(0, 180).replace(/\s+\S*$/, "") + "…" : desc;
+    var clamped = desc.length > 500 ? desc.slice(0, 500).replace(/\s+\S*$/, "") + "…" : desc;
+    var el = document.createElement("div");
+    el.className = uid + "-info";
+    el.style.cssText =
+      "display:flex;gap:12px;align-items:flex-start;margin:0 0 10px;padding:16px;border-radius:10px;" +
+      "border:1px solid color-mix(in srgb, var(--topbar-accent, #0047cc) 25%, transparent);" +
+      "background:color-mix(in srgb, var(--topbar-accent, #0047cc) 5%, transparent);";
+    var html = "";
+    if (info.image)
+      html +=
+        '<img src="' +
+        escapeHtml(info.image) +
+        '" alt="" loading="lazy" style="width:88px;height:88px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'"/>';
+    html += '<div style="min-width:0;flex:1;">';
+    if (info.title)
+      html +=
+        '<div style="font-weight:700;font-size:1.05rem;line-height:1.3;">' +
+        escapeHtml(info.title) +
+        "</div>";
+    if (desc)
+      html +=
+        '<div style="font-size:0.9rem;line-height:1.4;opacity:0.85;margin-top:6px;"><span id="' +
+        uid +
+        '"Desc">' +
+        escapeHtml(preview) +
+        "</span>" +
+        (desc.length > 180
+          ? ' <a href="#" id="' + uid + 'DescMore" style="font-weight:700;white-space:nowrap;">' + t("d_more", "More") + "</a>"
+          : "") +
+        "</div>";
+    if (info.link)
+      html +=
+        '<a href="' +
+        escapeHtml(info.link) +
+        '" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-size:0.9rem;font-weight:700;">' +
+        t("d_website", "Website") +
+        " ↗</a>";
+    html += "</div>";
+    el.innerHTML = html;
+    var descEl = el.querySelector("#" + uid + "Desc");
+    var moreEl = el.querySelector("#" + uid + "DescMore");
+    if (descEl && moreEl) {
+      var moreText = t("d_more", "More"),
+        lessText = t("d_less", "Less");
+      moreEl.addEventListener("click", function (e) {
+        e.preventDefault();
+        if (moreEl.textContent === lessText) {
+          descEl.textContent = preview;
+          moreEl.textContent = moreText;
+        } else {
+          descEl.textContent = clamped;
+          moreEl.textContent = lessText;
+        }
+      });
+    }
+    return el;
+  }
+
+  function renderNews(articles, channelLink, channelTitle, channelInfo) {
     if (!articles.length) {
       content.innerHTML =
         '<div class="module-empty">' +
@@ -284,13 +385,16 @@ export default async function initNews(container) {
     content.innerHTML = "";
     var sourceDisplay = formatSourceName(channelLink);
 
-    // Header bar with source name and change button
+    // Header bar: website · feed label + change source button (Mastodon style)
+    var website = hostnameOf(channelLink) || sourceDisplay;
     var headerBar = document.createElement("div");
     headerBar.style.cssText =
       "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;";
     headerBar.innerHTML =
       '<small style="opacity:0.7;">' +
-      escapeHtml(sourceDisplay) +
+      escapeHtml(website) +
+      " · " +
+      escapeHtml(channelTitle) +
       "</small>" +
       '<button id="newsChangeSource" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;color:inherit;" title="' +
       t("d_changeSource", "Change source") +
@@ -305,6 +409,10 @@ export default async function initNews(container) {
         saveFeed("");
         renderFeedSelector();
       };
+
+    // Cast-style feed info card (thumbnail, title, description, more link).
+    var infoCard = buildFeedInfoCard(channelInfo, "news");
+    if (infoCard) content.appendChild(infoCard);
 
     // Single article viewer with left / right scrolling (same pattern as Mastodon)
     var currentIndex = 0;
@@ -342,11 +450,11 @@ export default async function initNews(container) {
         return;
       }
       view.innerHTML = `
-        <div class="news-article" style="margin-bottom:0;padding:16px;border-radius:12px;display:flex;flex-direction:column;gap:12px;">
+        <div class="news-article" style="margin-bottom:0;padding:16px;border-radius:12px;display:flex;flex-direction:column;gap:12px;text-align:center;">
           ${article.imageUrl
             ? '<img class="news-image" src="' + article.imageUrl + '" alt="" style="width:100%;height:var(--media-height);object-fit:contain;border-radius:8px;background:#f1f5f9;display:block;" onerror="this.style.display=\'none\'">'
             : '<div style="width:100%;height:var(--media-height);display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:8px;"><i class="fa-solid fa-newspaper" style="font-size:2rem;color:#94a3b8;"></i></div>'}
-          <div style="display:flex;justify-content:space-between;">
+          <div style="display:flex;justify-content:center;gap:12px;">
             <div>${escapeHtml(sourceDisplay)}</div>
             <div>${escapeHtml(article.pubDate)}</div>
           </div>
@@ -385,6 +493,15 @@ export default async function initNews(container) {
     return str.replace(/[&<>]/g, function (m) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[m];
     });
+  }
+
+  // Resolve HTML entities (e.g. &#225; -> á) left in feed text after tag
+  // stripping. Idempotent: safe to apply to textContent-derived strings.
+  function decodeEntities(str) {
+    if (!str) return "";
+    var d = document.createElement("div");
+    d.innerHTML = str;
+    return (d.textContent || d.innerText || "").trim();
   }
 
   if (rssUrl) {

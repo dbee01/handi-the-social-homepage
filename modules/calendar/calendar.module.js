@@ -612,7 +612,7 @@ export default async function initCalendar(container) {
       '<span><i class="fa-regular fa-sun"></i> ' +
       t("d_todaysEvents", "Today's Events") +
       "</span>";
-    html += '</div><div style="display:flex;align-items:center;gap:8px;">';
+    html += '</div><div style="display:flex;align-items:center;gap:8px;justify-content:center;">';
     html +=
       '<button id="calendarAlertToggle" class="calendar-refresh-btn" style="font-size:0.85rem;' +
       (alertsEnabled ? 'color:#fff;' : '') +
@@ -662,17 +662,17 @@ export default async function initCalendar(container) {
         html += '<div class="calendar-event-details">';
         html +=
           '<p class="calendar-event-title">' +
-          escapeHtml(event.summary || t("d_untitledEvent", "Untitled Event")) +
+          escapeHtml(decodeEntities(event.summary || t("d_untitledEvent", "Untitled Event"))) +
           "</p>";
         if (event.location)
           html +=
             '<p class="calendar-event-location"><i class="fa-solid fa-location-dot"></i> ' +
-            escapeHtml(event.location) +
+            escapeHtml(decodeEntities(event.location)) +
             "</p>";
         if (event.description)
           html +=
             '<p class="calendar-event-desc">' +
-            escapeHtml(event.description.substring(0, 100)) +
+            escapeHtml(decodeEntities(event.description.substring(0, 100))) +
             (event.description.length > 100 ? "…" : "") +
             "</p>";
         html += "</div>";
@@ -692,7 +692,7 @@ export default async function initCalendar(container) {
       html +=
         " | " + totalEvents + " " + t("d_totalEvents", "total events in feed");
     html += "</span>";
-    html += '<div style="display:flex;gap:8px;">';
+    html += '<div style="display:flex;gap:8px;justify-content:center;">';
     html +=
       '<button id="calendarChangeUrlBtn" class="calendar-refresh-btn" style="font-size:0.8rem;">🔗 ' +
       t("d_changeUrl", "Change URL") +
@@ -767,6 +767,15 @@ export default async function initCalendar(container) {
       /[&<>]/g,
       (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m],
     );
+  }
+
+  // Resolve HTML entities (e.g. &#225; -> á) in event text so accented
+  // characters render properly after the escapeHtml() step. Idempotent.
+  function decodeEntities(str) {
+    if (!str) return "";
+    var d = document.createElement("div");
+    d.innerHTML = str;
+    return d.textContent || d.innerText || "";
   }
 
   if ("Notification" in window && Notification.permission === "default") {

@@ -114,6 +114,7 @@ export default async function initMastodon(container) {
         t("d_loading", "Loading...") +
         "</div>";
       var url;
+      var feedInfo = null;
             if (feedType === "profile" && profileAccount) {
               // Search for account ID first
               var acct = profileAccount.replace(/^@/, "");
@@ -121,6 +122,13 @@ export default async function initMastodon(container) {
               var lookupRes = await fetch(lookupUrl);
               if (!lookupRes.ok) throw new Error("Profile not found");
               var account = await lookupRes.json();
+              // Account metadata doubles as the cast-style feed info card.
+              feedInfo = {
+                title: account.display_name || account.username || "",
+                image: account.avatar || "",
+                description: htmlToText(account.note || ""),
+                link: account.url || "",
+              };
               url = `${instance}/api/v1/accounts/${account.id}/statuses?limit=${limit}`;
             } else if (feedType === "hashtag" && hashtag) {
               var tag = hashtag.replace(/^#/, "");
@@ -171,6 +179,79 @@ export default async function initMastodon(container) {
               "</button>";
       content.appendChild(headerBar);
 
+      // Cast-style feed info card (account avatar, display name, note, link)
+      // for profile feeds.
+      if (feedInfo && (feedInfo.title || feedInfo.image)) {
+        var infoCard = document.createElement("div");
+        infoCard.className = "mastodon-info";
+        infoCard.style.cssText =
+          "display:flex;gap:12px;align-items:flex-start;margin:0 0 10px;padding:16px;border-radius:10px;" +
+          "border:1px solid color-mix(in srgb, var(--topbar-accent, #0047cc) 25%, transparent);" +
+          "background:color-mix(in srgb, var(--topbar-accent, #0047cc) 5%, transparent);";
+        var infoHtml = "";
+        if (feedInfo.image)
+          infoHtml +=
+            '<img src="' +
+            escapeHtml(feedInfo.image) +
+            '" alt="" loading="lazy" style="width:88px;height:88px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'"/>';
+        infoHtml += '<div style="min-width:0;flex:1;">';
+        if (feedInfo.title)
+          infoHtml +=
+            '<div style="font-weight:700;font-size:1.05rem;line-height:1.3;">' +
+            escapeHtml(feedInfo.title) +
+            "</div>";
+        var mDesc = feedInfo.description || "";
+        if (mDesc)
+          infoHtml +=
+            '<div style="font-size:0.9rem;line-height:1.4;opacity:0.85;margin-top:6px;"><span id="mastodonInfoDesc">' +
+            escapeHtml(
+              mDesc.length > 180
+                ? mDesc.slice(0, 180).replace(/\s+\S*$/, "") + "…"
+                : mDesc,
+            ).replace(/\n/g, "<br />") +
+            "</span>" +
+            (mDesc.length > 180
+              ? ' <a href="#" id="mastodonInfoDescMore" style="font-weight:700;white-space:nowrap;">' +
+                t("d_more", "More") +
+                "</a>"
+              : "") +
+            "</div>";
+        if (feedInfo.link)
+          infoHtml +=
+            '<a href="' +
+            escapeHtml(feedInfo.link) +
+            '" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-size:0.9rem;font-weight:700;">' +
+            t("d_website", "Website") +
+            " ↗</a>";
+        infoHtml += "</div>";
+        infoCard.innerHTML = infoHtml;
+        var mDescEl = infoCard.querySelector("#mastodonInfoDesc");
+        var mMoreEl = infoCard.querySelector("#mastodonInfoDescMore");
+        if (mDescEl && mMoreEl) {
+          var mPreview =
+            mDesc.length > 180
+              ? mDesc.slice(0, 180).replace(/\s+\S*$/, "") + "…"
+              : mDesc;
+          var mClamped =
+            mDesc.length > 500
+              ? mDesc.slice(0, 500).replace(/\s+\S*$/, "") + "…"
+              : mDesc;
+          var mMoreText = t("d_more", "More"),
+            mLessText = t("d_less", "Less");
+          mMoreEl.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (mMoreEl.textContent === mLessText) {
+              mDescEl.textContent = mPreview;
+              mMoreEl.textContent = mMoreText;
+            } else {
+              mDescEl.textContent = mClamped;
+              mMoreEl.textContent = mLessText;
+            }
+          });
+        }
+        content.appendChild(infoCard);
+      }
+
       // Build post objects from the fetched data
       var posts = [];
       for (const item of data) {
@@ -179,9 +260,7 @@ export default async function initMastodon(container) {
           // Status format
           titleText = item.account?.display_name || item.account?.username || "";
           urlLink = item.url || "#";
-          var div = document.createElement("div");
-          div.innerHTML = item.content || "";
-          description = div.textContent || div.innerText || "";
+          description = htmlToText(item.content || "");
           var rawAcct = item.account?.acct || "";
           provider = rawAcct ? "@" + rawAcct.replace(/^@/, "") : "";
           var media = item.media_attachments && item.media_attachments[0];
@@ -190,7 +269,7 @@ export default async function initMastodon(container) {
           // Trending links format
           titleText = item.title || t("d_untitled", "Untitled");
           urlLink = item.url || "#";
-          description = item.description || "";
+          description = htmlToText(item.description || "");
           provider = item.provider_name || "";
           image = item.image || "";
         }
@@ -248,7 +327,7 @@ export default async function initMastodon(container) {
             <div class="mastodon-body" style="flex:1;">
               <a class="mastodon-title" href="${p.link}" target="_blank" rel="noopener noreferrer">${escapeHtml(p.title)}</a>
               ${p.provider ? `<div class="mastodon-provider">${escapeHtml(p.provider)}</div>` : ""}
-              ${p.description ? `<div class="mastodon-desc">${escapeHtml(p.description)}</div>` : ""}
+              ${p.description ? `<div class="mastodon-desc">${escapeHtml(p.description).replace(/\n/g, "<br />")}</div>` : ""}
             </div>
           </div>
         `;
@@ -321,6 +400,16 @@ export default async function initMastodon(container) {
       /[&<>]/g,
       (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m],
     );
+  }
+
+  // Convert status HTML to plain text while keeping line breaks: <br> and
+  // block-level elements become newlines, then HTML entities are decoded.
+  function htmlToText(html) {
+    if (!html) return "";
+    var converted = String(html)
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/(p|div|li|h[1-6]|blockquote|tr|table)>/gi, "\n");
+    return decodeEntities(converted).replace(/\n{3,}/g, "\n\n");
   }
 
   // Decode HTML entities (e.g. &#225; -> á) so Irish fadas and other

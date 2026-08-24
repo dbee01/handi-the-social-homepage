@@ -41,8 +41,32 @@ function imageOf(item) {
   return "";
 }
 
+// Channel-level thumbnail (RSS <image><url>) for the feed info card.
+function channelImageOf(channel) {
+  const img = channel.querySelector("image > url");
+  return img ? (img.textContent || "").trim() : "";
+}
+
 function stripHtml(html) {
   return (html || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+// Resolve HTML entities (e.g. &#225; -> á) left over after tag stripping.
+// Idempotent: safe to apply to textContent-derived strings too.
+function decodeEntities(str) {
+  if (!str) return "";
+  const d = document.createElement("div");
+  d.innerHTML = str;
+  return (d.textContent || d.innerText || "").trim();
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(
+    /[&<>"']/g,
+    (m) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m],
+  );
 }
 
 function formatDate(raw) {
@@ -58,7 +82,16 @@ function formatDate(raw) {
 
 function parseFlipFeed(xmlText) {
   const doc = new DOMParser().parseFromString(xmlText, "text/xml");
-  if (doc.querySelector("parsererror")) return [];
+  if (doc.querySelector("parsererror")) return { info: null, items: [] };
+  const channel = doc.querySelector("channel");
+  const info = channel
+    ? {
+        title: decodeEntities(textOf(channel, "title")),
+        link: textOf(channel, "link"),
+        description: decodeEntities(stripHtml(textOf(channel, "description"))),
+        image: channelImageOf(channel),
+      }
+    : null;
   const items = doc.getElementsByTagName("item");
   const out = [];
   for (let i = 0; i < items.length; i++) {
@@ -67,21 +100,21 @@ function parseFlipFeed(xmlText) {
     const link = textOf(item, "link");
     if (!title && !link) continue;
     out.push({
-      title,
+      title: decodeEntities(title),
       link,
-      description: stripHtml(textOf(item, "description")),
+      description: decodeEntities(stripHtml(textOf(item, "description"))),
       image: imageOf(item),
-      source: sourceNameOf(item),
+      source: decodeEntities(sourceNameOf(item)),
       pubDate: formatDate(textOf(item, "pubDate")),
-      author: textOf(item, "author"),
+      author: decodeEntities(textOf(item, "author")),
     });
   }
-  return out;
+  return { info: info, items: out };
 }
 
 async function fetchFlipFeed(url) {
   const resp = await fetch("/api/feed?url=" + encodeURIComponent(url));
-  if (!resp.ok) return [];
+  if (!resp.ok) return { info: null, items: [] };
   const text = await resp.text();
   return parseFlipFeed(text);
 }
@@ -123,6 +156,33 @@ function normalizeFlip(value, type) {
       ? "https://flipboard.com/topic/"
       : "https://flipboard.com/@";
   return tidyFlipboardUrl(base + encodeURIComponent(value) + ".rss");
+}
+
+// Feed URL -> label for the source bar: @profile or #topic, e.g.
+// https://flipboard.com/@armisticemiss.rss -> @armisticemiss
+function flipLabelOf(url) {
+  try {
+    const u = new URL(url);
+    const segs = u.pathname.split("/").filter(Boolean);
+    const last = (segs[segs.length - 1] || "").replace(/\.rss$/i, "");
+    if (!last) return u.hostname.replace(/^www\./, "");
+    const cleaned0 = last.replace(/^[@#]/, "");
+    let cleaned = cleaned0;
+    try {
+      cleaned = decodeURIComponent(cleaned0);
+    } catch (e) {}
+    return segs[0] === "topic" ? "#" + cleaned : "@" + cleaned;
+  } catch (e) {
+    return "";
+  }
+}
+
+function hostnameOf(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch (e) {
+    return "";
+  }
 }
 
 export default async function initFlip(container) {
@@ -177,9 +237,12 @@ export default async function initFlip(container) {
     t("d_loading", "Loading...") +
     "</div>";
 
+  let feedInfo = null;
   let items = [];
   try {
-    items = await fetchFlipFeed(feedUrl);
+    const parsed = await fetchFlipFeed(feedUrl);
+    feedInfo = parsed.info;
+    items = parsed.items;
   } catch (err) {
     console.error("Flip feed error:", err);
     items = [];
@@ -194,18 +257,103 @@ export default async function initFlip(container) {
     return function () {};
   }
 
+  // Mastodon-style source bar: website · profile/topic + change source.
+  const sourceBar = document.createElement("div");
+  sourceBar.style.cssText =
+    "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;";
+  sourceBar.innerHTML =
+    '<small style="opacity:0.7;">' +
+    escapeHtml(hostnameOf(feedUrl)) +
+    " · " +
+    escapeHtml(flipLabelOf(feedUrl)) +
+    "</small>" +
+    '<button id="flipChangeSource" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;color:inherit;" title="' +
+    t("d_changeSource", "Change source") +
+    '"><i class="fa-solid fa-rotate-right"></i> ' +
+    t("d_changeSource", "Source") +
+    "</button>";
+  const flipChangeBtn = sourceBar.querySelector("#flipChangeSource");
+  if (flipChangeBtn)
+    flipChangeBtn.onclick = function () {
+      window.location.href = "settings.html?args=flip";
+    };
+  content.appendChild(sourceBar);
+
+  // Cast-style feed info card (thumbnail, title, description, more link).
+  if (feedInfo && (feedInfo.title || feedInfo.image || feedInfo.link)) {
+    const infoCard = document.createElement("div");
+    infoCard.className = "flip-info";
+    infoCard.style.cssText =
+      "display:flex;gap:12px;align-items:flex-start;margin:0 0 10px;padding:16px;border-radius:10px;" +
+      "border:1px solid color-mix(in srgb, var(--topbar-accent, #0047cc) 25%, transparent);" +
+      "background:color-mix(in srgb, var(--topbar-accent, #0047cc) 5%, transparent);";
+    let infoHtml = "";
+    if (feedInfo.image)
+      infoHtml +=
+        '<img src="' +
+        escapeHtml(feedInfo.image) +
+        '" alt="" loading="lazy" style="width:88px;height:88px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'"/>';
+    infoHtml += '<div style="min-width:0;flex:1;">';
+    if (feedInfo.title)
+      infoHtml +=
+        '<div style="font-weight:700;font-size:1.05rem;line-height:1.3;">' +
+        escapeHtml(feedInfo.title) +
+        "</div>";
+    const desc = feedInfo.description || "";
+    if (desc)
+      infoHtml +=
+        '<div style="font-size:0.9rem;line-height:1.4;opacity:0.85;margin-top:6px;"><span id="flipInfoDesc">' +
+        escapeHtml(
+          desc.length > 180
+            ? desc.slice(0, 180).replace(/\s+\S*$/, "") + "…"
+            : desc,
+        ) +
+        "</span>" +
+        (desc.length > 180
+          ? ' <a href="#" id="flipInfoDescMore" style="font-weight:700;white-space:nowrap;">' +
+            t("d_more", "More") +
+            "</a>"
+          : "") +
+        "</div>";
+    if (feedInfo.link)
+      infoHtml +=
+        '<a href="' +
+        escapeHtml(feedInfo.link) +
+        '" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-size:0.9rem;font-weight:700;">' +
+        t("d_website", "Website") +
+        " ↗</a>";
+    infoHtml += "</div>";
+    infoCard.innerHTML = infoHtml;
+    const descEl = infoCard.querySelector("#flipInfoDesc");
+    const moreEl = infoCard.querySelector("#flipInfoDescMore");
+    if (descEl && moreEl) {
+      const preview =
+        desc.length > 180 ? desc.slice(0, 180).replace(/\s+\S*$/, "") + "…" : desc;
+      const clamped =
+        desc.length > 500 ? desc.slice(0, 500).replace(/\s+\S*$/, "") + "…" : desc;
+      const moreText = t("d_more", "More");
+      const lessText = t("d_less", "Less");
+      moreEl.addEventListener("click", function (e) {
+        e.preventDefault();
+        if (moreEl.textContent === lessText) {
+          descEl.textContent = preview;
+          moreEl.textContent = moreText;
+        } else {
+          descEl.textContent = clamped;
+          moreEl.textContent = lessText;
+        }
+      });
+    }
+    content.appendChild(infoCard);
+  }
+
   function makeCard(item) {
-    const card = document.createElement("a");
+    const card = document.createElement("div");
     card.className = "flip-card";
     card.style.cssText =
       "flex:0 0 100%;display:flex;flex-direction:column;border-radius:12px;" +
-      "overflow:hidden;border:1px solid #e5e7eb;background:#fff;text-decoration:none;" +
-      "color:inherit;scroll-snap-align:start;padding:16px;";
-    if (item.link) {
-      card.href = item.link;
-      card.target = "_blank";
-      card.rel = "noopener noreferrer";
-    }
+      "overflow:hidden;border:1px solid #e5e7eb;background:transparent;" +
+      "color:inherit;scroll-snap-align:start;padding:16px;text-align:center;";
 
     if (item.image) {
       const img = document.createElement("img");
@@ -223,7 +371,7 @@ export default async function initFlip(container) {
     // Source + date row, same layout as the news element
     if (item.source || item.pubDate) {
       const metaTop = document.createElement("div");
-      metaTop.style.cssText = "display:flex;justify-content:space-between;";
+      metaTop.style.cssText = "display:flex;justify-content:center;gap:12px;";
       const org = document.createElement("div");
       org.textContent = item.source || "";
       const date = document.createElement("div");
@@ -237,7 +385,17 @@ export default async function initFlip(container) {
       const h = document.createElement("h3");
       h.style.cssText =
         "margin:0;padding-top:4px;font-size:var(--font-size);font-weight:700;line-height:1.25;";
-      h.textContent = item.title;
+      if (item.link) {
+        const a = document.createElement("a");
+        a.className = "flip-card-link";
+        a.href = item.link;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = item.title;
+        h.appendChild(a);
+      } else {
+        h.textContent = item.title;
+      }
       body.appendChild(h);
     }
 
