@@ -1489,9 +1489,9 @@ textarea:focus {
 }
 
 .module-controls .pin-btn.pinned {
-    background: var(--color-warning) !important;
+    background: var(--color-secondary) !important;
     color: var(--color-bg) !important;
-    border-color: var(--color-warning) !important;
+    border-color: var(--color-secondary) !important;
 }
 
 .module-empty i {

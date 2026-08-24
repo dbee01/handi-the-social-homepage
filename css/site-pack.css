@@ -102,7 +102,7 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 /* ── MODULE CONTROLS ─────────────────────────────────────────────── */
 .module-controls button { background: var(--primary); border: 2px solid var(--primary); color: #fff; }
 .module-controls button:hover { background: var(--primary-dark); border-color: var(--primary); }
-.pin-btn.pinned { background: var(--secondary); border-color: var(--primary); color: #fff; }
+.pin-btn.pinned { background: var(--secondary); border-color: var(--secondary); color: #fff; }
 
 /* ── EMPTY STATE ─────────────────────────────────────────────────── */
 .module-empty { color: var(--text-muted); }

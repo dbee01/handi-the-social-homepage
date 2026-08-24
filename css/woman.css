@@ -24,6 +24,7 @@ body {
     color: #3d2c3a;
     font-family: "Playfair Display", Georgia, "Times New Roman", serif;
     --music-synth-hue: 330;
+    --secondary: #c2185b;
 }
 
 /* ---------- HELP MODAL ---------- */
@@ -174,8 +175,8 @@ header {
     border-color: #d63384;
 }
 .pin-btn.pinned {
-    background: #d63384;
-    border-color: #c2185b;
+    background: var(--secondary);
+    border-color: var(--secondary);
     color: white;
 }
 
