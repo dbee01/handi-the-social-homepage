@@ -195,6 +195,10 @@ export default async function initAi(container) {
       engine = await pipeline("text-generation", modelDef.id, {
         dtype: modelDef.dtype || "int8",
         device: "wasm",
+        // Our model files sit at the repo root (no onnx/ subfolder), but
+        // transformers.js defaults `subfolder` to "onnx" for these model
+        // classes — override it so the ONNX weights are found locally.
+        subfolder: "",
         progress_callback: (p) => {
           if (!p) return;
           if (p.status === "progress") {
