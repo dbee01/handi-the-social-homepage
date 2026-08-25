@@ -59,9 +59,9 @@ self.addEventListener("install", (e) => {
   self.skipWaiting();
 });
 
-// Activate — clean old caches, take control, and reload clients so they
-// pick up the freshly cached assets (cache is cache-first, so without this
-// they would keep serving the old files).
+// Activate — clean old caches, take control. (No "update" broadcast here:
+// that would auto-reload every open tab on every SW activation. Update
+// detection only happens via checkForUpdates(), which is content-based.)
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches
@@ -71,11 +71,7 @@ self.addEventListener("activate", (e) => {
           keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)),
         );
       })
-      .then(() => self.clients.claim())
-      .then(() => self.clients.matchAll())
-      .then((clients) =>
-        clients.forEach((c) => c.postMessage({ type: "update" })),
-      ),
+      .then(() => self.clients.claim()),
   );
 });
 
@@ -208,6 +204,3 @@ async function checkForUpdates() {
 self.addEventListener("message", (e) => {
   if (e.data === "check-update") checkForUpdates();
 });
-
-// Check on service worker start
-checkForUpdates();

@@ -40,22 +40,6 @@
                 document.documentElement.setAttribute("data-theme", _t);
             } catch (e) {}
         </script>
-        <script>
-            // Listen for service worker update messages
-            if (navigator.serviceWorker) {
-                navigator.serviceWorker.addEventListener(
-                    "message",
-                    function (e) {
-                        if (e.data && e.data.type === "update") {
-                            console.log(
-                                "[SW] Update detected – reloading page",
-                            );
-                            location.reload();
-                        }
-                    },
-                );
-            }
-        </script>
         <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css" />
         <link rel="stylesheet" href="/css/main.css" />
         <script>

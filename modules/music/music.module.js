@@ -52,6 +52,18 @@ export default async function initMusic(container) {
       return e || k;
     };
 
+  // If a previous module instance left an <audio> element playing (the
+  // dashboard re-inits this module without calling the old instance's cleanup),
+  // kill it now — otherwise loadMusic() below revokes its blob URL and the
+  // orphaned element dies with a "Network Error".
+  var orphan = window.__handiMusicAudio;
+  if (orphan) {
+    try { orphan.pause(); } catch (e) {}
+    try { orphan.removeAttribute("src"); orphan.load(); } catch (e) {}
+    if (orphan.parentNode) orphan.parentNode.removeChild(orphan);
+    window.__handiMusicAudio = null;
+  }
+
   const headerRow = document.createElement("div");
   headerRow.className = "music-header-row";
   const title = document.createElement("div");
@@ -176,7 +188,8 @@ export default async function initMusic(container) {
     		currentIndex = -1,
     		isPlaying = false,
     		stopVisualiser = null,
-    		pendingAutoPlayIndex = -1;
+    		pendingAutoPlayIndex = -1,
+    		recoveryAttempts = 0;
 
 	  function applyGlobalMute(muted) {
 	    if (currentAudio) currentAudio.muted = muted;
@@ -293,6 +306,7 @@ export default async function initMusic(container) {
       try { a.pause(); } catch (e) {}
       try { a.removeAttribute("src"); a.load(); } catch (e) {}
       if (a.parentNode) a.parentNode.removeChild(a);
+      if (window.__handiMusicAudio === a) window.__handiMusicAudio = null;
     }
     pendingAutoPlayIndex = -1;
     stopVisualiserAndClear();
@@ -319,7 +333,7 @@ export default async function initMusic(container) {
     }, 3000);
   }
 
-  function playTrack(index, autoPlay) {
+  function playTrack(index, autoPlay, startAt) {
     if (autoPlay === undefined) autoPlay = true;
     if (isLocked) {
       showError(t("d_playerLocked", "Player locked – unlock to play"));
@@ -345,7 +359,25 @@ export default async function initMusic(container) {
       audio.muted = localStorage.getItem("globalMute") === "true";
       audio.src = track.url;
       (document.body || document.documentElement).appendChild(audio);
+      window.__handiMusicAudio = audio;
       currentAudio = audio;
+
+      // Resume from a previous position (used by the blob-URL self-heal).
+      if (startAt) {
+        audio.addEventListener(
+          "loadedmetadata",
+          function () {
+            try {
+              if (audio.currentTime !== startAt) audio.currentTime = startAt;
+            } catch (e) {}
+          },
+          { once: true },
+        );
+      }
+      // Actual playback started — the source is healthy again.
+      audio.addEventListener("playing", function () {
+        recoveryAttempts = 0;
+      });
 
       audio.addEventListener("waiting", function () {
         if (currentAudio === audio && isPlaying) {
@@ -363,8 +395,28 @@ export default async function initMusic(container) {
         }
       });
       audio.addEventListener("error", function () {
-        var err = audio.error,
-          em = t("d_cannotPlayFile", "Cannot play file");
+        var err = audio.error;
+
+        // The file lives on-device, so a "network error" means the browser
+        // invalidated the blob URL (revoked / evicted / closed on tab sleep or
+        // screen-off, which is the Vivaldi-tablet ~60s cut-out). Rebuild the
+        // blob URL from the stored File and resume from the same position.
+        if (track && track.file && err && err.code === MediaError.MEDIA_ERR_NETWORK) {
+          if (recoveryAttempts < 3) {
+            recoveryAttempts++;
+            var resumeAt = audio.currentTime || 0;
+            isPlaying = false;
+            stopCurrentAudio(true);
+            try { URL.revokeObjectURL(track.url); } catch (e) {}
+            try { track.url = URL.createObjectURL(track.file); } catch (e) { track.url = ""; }
+            if (track.url) {
+              playTrack(currentIndex, true, resumeAt);
+              return;
+            }
+          }
+        }
+
+        var em = t("d_cannotPlayFile", "Cannot play file");
         if (err) {
           switch (err.code) {
             case MediaError.MEDIA_ERR_ABORTED:
@@ -595,6 +647,7 @@ export default async function initMusic(container) {
       try { a.pause(); } catch (e) {}
       try { a.removeAttribute("src"); a.load(); } catch (e) {}
       if (a.parentNode) a.parentNode.removeChild(a);
+      if (window.__handiMusicAudio === a) window.__handiMusicAudio = null;
     }
     stopVisualiserAndClear();
   };
