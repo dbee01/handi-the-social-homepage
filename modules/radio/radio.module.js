@@ -77,7 +77,7 @@ async function fetchRadioFeed(url) {
     } finally {
       clearTimeout(timer);
     }
-    if (!resp.ok) return { info: null, tracks: [] };
+    if (!resp.ok) return { status: resp.status, info: null, tracks: [] };
     const doc = new DOMParser().parseFromString(await resp.text(), "text/xml");
     if (doc.querySelector("parsererror")) return { info: null, tracks: [] };
     const items = doc.getElementsByTagName("item");
@@ -500,12 +500,38 @@ export default async function initRadio(container) {
   try {
     packFeedUrl = localStorage.getItem("handiRadioPackFeed") || "";
   } catch (e) {}
+  // A URL that clearly points at a media file, or one the server already told
+  // us is a live stream (415 "not a feed"), is never re-probed — otherwise
+  // every page load fires a doomed /api/feed request for a plain stream.
+  function looksLikeMediaStream(u) {
+    return /\.(mp3|m4a|aac|ogg|opus|flac|wav|m3u8?|pls)$/i.test(
+      u.split("?")[0],
+    );
+  }
   var radioInfo = null;
   var feedTracks = [];
-  if (streamUrl && packFeedUrl && streamUrl === packFeedUrl) {
+  var feedRejected = false;
+  try {
+    feedRejected =
+      localStorage.getItem("handiRadioPackFeedRejected") === streamUrl;
+  } catch (e) {}
+  if (
+    streamUrl &&
+    packFeedUrl &&
+    streamUrl === packFeedUrl &&
+    !feedRejected &&
+    !looksLikeMediaStream(streamUrl)
+  ) {
     var radioFeed = await fetchRadioFeed(streamUrl);
     feedTracks = radioFeed.tracks || [];
     if (feedTracks.length) radioInfo = radioFeed.info || null;
+    else if (radioFeed.status === 415) {
+      // Definitively a live stream rather than a feed — remember it so
+      // subsequent page loads skip the probe.
+      try {
+        localStorage.setItem("handiRadioPackFeedRejected", streamUrl);
+      } catch (e) {}
+    }
   }
 
   var selectedFlag = storedFlag;

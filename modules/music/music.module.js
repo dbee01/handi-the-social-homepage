@@ -16,6 +16,10 @@ function removeFileExtension(filename) {
     .trim();
 }
 
+// Persists { index, t, playing } across reloads so playback can be resumed
+// after the browser or service worker reloads the page mid-song.
+const MUSIC_SESSION_KEY = "handiMusicSession";
+
 // Returns true only when the URL answers with a 2xx status (HEAD first, GET fallback).
 async function musicStreamOk(url) {
   function withTimeout(opts) {
@@ -190,6 +194,43 @@ export default async function initMusic(container) {
     		stopVisualiser = null,
     		pendingAutoPlayIndex = -1,
     		recoveryAttempts = 0;
+
+	  function readSession() {
+	    try {
+	      var s = JSON.parse(
+	        sessionStorage.getItem(MUSIC_SESSION_KEY) || "null",
+	      );
+	      if (s && typeof s.index === "number" && typeof s.t === "number")
+	        return s;
+	    } catch (e) {}
+	    return null;
+	  }
+	  function saveSession(playing) {
+	    try {
+	      sessionStorage.setItem(
+	        MUSIC_SESSION_KEY,
+	        JSON.stringify({
+	          index: currentIndex,
+	          t: currentAudio ? currentAudio.currentTime || 0 : 0,
+	          playing: !!playing,
+	          at: Date.now(),
+	        }),
+	      );
+	    } catch (e) {}
+	  }
+
+	  // Remember where we are when the page goes away (reload, background,
+	  // tab switch) so playback can be resumed if the page is reloaded.
+	  function onPageHide() {
+	    if (currentAudio && isPlaying) saveSession(true);
+	    else if (currentIndex !== -1) saveSession(false);
+	  }
+	  function onVisibilityChange() {
+	    if (document.visibilityState === "hidden" && currentAudio && isPlaying)
+	      saveSession(true);
+	  }
+	  window.addEventListener("pagehide", onPageHide);
+	  document.addEventListener("visibilitychange", onVisibilityChange);
 
 	  function applyGlobalMute(muted) {
 	    if (currentAudio) currentAudio.muted = muted;
@@ -379,6 +420,18 @@ export default async function initMusic(container) {
         recoveryAttempts = 0;
       });
 
+      // Keep the resume position fresh (used by the blob-URL self-heal and
+      // by the post-reload resume). Throttled — every ~3s is plenty.
+      var lastPosSave = 0;
+      audio.addEventListener("timeupdate", function () {
+        if (currentAudio !== audio) return;
+        var now = Date.now();
+        if (now - lastPosSave > 3000) {
+          lastPosSave = now;
+          saveSession(true);
+        }
+      });
+
       audio.addEventListener("waiting", function () {
         if (currentAudio === audio && isPlaying) {
           stateSpan.innerText = " | " + t("d_buffering", "Buffering…");
@@ -404,7 +457,11 @@ export default async function initMusic(container) {
         if (track && track.file && err && err.code === MediaError.MEDIA_ERR_NETWORK) {
           if (recoveryAttempts < 3) {
             recoveryAttempts++;
-            var resumeAt = audio.currentTime || 0;
+            var s = readSession();
+            var resumeAt =
+              audio.currentTime ||
+              (s && s.index === currentIndex ? s.t : 0) ||
+              0;
             isPlaying = false;
             stopCurrentAudio(true);
             try { URL.revokeObjectURL(track.url); } catch (e) {}
@@ -455,6 +512,7 @@ export default async function initMusic(container) {
             stateSpan.innerText = " | " + t("d_playing", "...playing");
             updateTrackIconsAndActive();
             ensureVisualiserRunning();
+            saveSession(true);
           }).catch(function (err) {
             // If autoplay was blocked (common on mobile when not in a user gesture),
             // set up a pending state that the user can resume with a tap.
@@ -529,6 +587,7 @@ export default async function initMusic(container) {
       stateSpan.innerText = " | " + t("d_paused", "...paused");
       updateTrackIconsAndActive();
       stopVisualiserAndClear();
+      saveSession(false);
     } else {
       var pp = currentAudio.play();
       if (pp !== undefined) {
@@ -538,6 +597,7 @@ export default async function initMusic(container) {
           stateSpan.innerText = " | " + t("d_playing", "...playing");
           updateTrackIconsAndActive();
           ensureVisualiserRunning();
+          saveSession(true);
         }).catch(function (err) {
           showError(t("d_cannotResume", "Cannot resume"));
         });
@@ -599,6 +659,30 @@ export default async function initMusic(container) {
     playlist.appendChild(el);
   });
 
+  // Resume a session that was playing when the page was reloaded (tab
+  // restore, service-worker / cross-tab reload, etc.). On mobile, autoplay
+  // may be blocked — the play() rejection leaves the track selected as
+  // "Tap ▶ to play".
+  (function () {
+    var s = readSession();
+    if (!s) return;
+    if (s.index < 0 || s.index >= tracks.length) return;
+    if (!s.playing) {
+      currentIndex = s.index;
+      trackTitleSpan.innerText = removeFileExtension(tracks[s.index].name);
+      stateSpan.innerText = " | " + t("d_paused", " Paused");
+      updateTrackIconsAndActive();
+      return;
+    }
+    // Only auto-resume recent sessions that were actively playing.
+    if (Date.now() - (s.at || 0) > 6 * 60 * 60 * 1000) return;
+    var resumeIndex = s.index;
+    var resumeAt = s.t > 0 ? s.t : 0;
+    setTimeout(function () {
+      playTrack(resumeIndex, true, resumeAt);
+    }, 400);
+  })();
+
   lockToggle.addEventListener("click", function (e) {
     e.stopPropagation();
     isLocked = !isLocked;
@@ -641,6 +725,8 @@ export default async function initMusic(container) {
   applyLockState();
 
   return function () {
+    window.removeEventListener("pagehide", onPageHide);
+    document.removeEventListener("visibilitychange", onVisibilityChange);
     var a = currentAudio;
     currentAudio = null;
     if (a) {
