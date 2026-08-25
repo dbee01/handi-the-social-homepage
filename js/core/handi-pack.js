@@ -9,6 +9,7 @@
 //
 // A pack link looks like:
 //   /?handi-pack=Name&description=...&colors=c1|c2|c3|c4|c5&font=f1|f2&...
+//   &text-font=...&header-font=...&flipboard-user=...&background-image=...&...
 //   &elements=gallery,chat,social&weather-location=...&radio=...&...
 //
 // This script runs early (before theme CSS), writes the mapped values into
@@ -80,9 +81,11 @@
     // flip / flip-profile names. The `flip` param is always a topic — it is
     // written to the topic slot only; the flip module passes a full URL
     // through verbatim (no flipboard.com prefix added) and only prefixes
-    // bare topic words.
+    // bare topic words. `flipboard-user` is a profile (e.g. a bare username
+    // or @user) and maps to the same slot as flipboard-profile.
     if ((v = qs.get("flipboard-topic"))) ensure("flip").topicUrl = v;
     if ((v = qs.get("flipboard-profile"))) ensure("flip").profileUrl = v;
+    if ((v = qs.get("flipboard-user"))) ensure("flip").profileUrl = v;
     if ((v = qs.get("flip"))) ensure("flip").topicUrl = v;
     if ((v = qs.get("flip-profile"))) ensure("flip").profileUrl = v;
 
@@ -175,6 +178,7 @@
     if (
       qs.get("flipboard-topic") ||
       qs.get("flipboard-profile") ||
+      qs.get("flipboard-user") ||
       qs.get("flip") ||
       qs.get("flip-profile")
     )
@@ -251,7 +255,9 @@
     // ---------------------------------------------------------------------
     var colorsRaw = qs.get("colors");
     var fontRaw = qs.get("font");
-    if (colorsRaw || fontRaw) {
+    var textFont = qs.get("text-font");
+    var headerFont = qs.get("header-font");
+    if (colorsRaw || fontRaw || textFont || headerFont) {
       var css = ":root {\n";
       if (colorsRaw) {
         var c = colorsRaw.split("|").map(function (x) { return x.trim(); });
@@ -271,6 +277,8 @@
         if (f[0]) css += "  --text-font: " + f[0] + ";\n";
         if (f[1]) css += "  --header-font: " + f[1] + ";\n";
       }
+      if (textFont) css += "  --text-font: " + textFont + ";\n";
+      if (headerFont) css += "  --header-font: " + headerFont + ";\n";
       css += "}\n";
       try { localStorage.setItem("handiCustomTheme", css); } catch (e) {}
     }
