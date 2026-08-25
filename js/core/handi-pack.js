@@ -156,12 +156,38 @@
     if ((v = qs.get("music"))) ensure("music").streamUrl = v;
     if ((v = qs.get("podcasts") || qs.get("cast"))) ensure("cast").streamUrl = v;
 
-    // Radio stream or feed URL. The raw value is also kept in its own key so
-    // the Radio module knows this URL came from a handi-pack link (only those
-    // are parsed as station feeds — see modules/radio/radio.module.js).
+    // Radio stream or feed URL, optionally labelled "Station Name:url". The
+    // name is kept in settings.radio.streamName so the Radio module can label
+    // the row instead of the generic "Live Stream". The raw URL is also kept
+    // in its own key so the Radio module knows this URL came from a handi-pack
+    // link (only those are parsed as station feeds — see
+    // modules/radio/radio.module.js).
     if ((v = qs.get("radio"))) {
+      var radioUrl = v;
+      var radioName = "";
+      // Split "Name:https://…" at the last colon before the scheme so names
+      // containing colons still work and bare URLs pass through untouched.
+      var schemeColon = v.indexOf("://");
+      var sep = schemeColon > 0 ? v.lastIndexOf(":", schemeColon - 1) : -1;
+      if (sep > 0) {
+        radioName = v.slice(0, sep).trim();
+        radioUrl = v.slice(sep + 1).trim();
+      }
+      ensure("radio").streamUrl = radioUrl;
+      if (radioName) ensure("radio").streamName = radioName;
+      try { localStorage.setItem("handiRadioPackFeed", radioUrl); } catch (e) {}
+    }
+
+    // Alternative: separate radio-url / radio-name parameters. The URL may
+    // arrive with a stray leading colon (":https://…") from pack builders
+    // that joined "name:url" — strip it if present.
+    if ((v = qs.get("radio-url"))) {
+      v = v.replace(/^:\s*/, "").trim();
       ensure("radio").streamUrl = v;
       try { localStorage.setItem("handiRadioPackFeed", v); } catch (e) {}
+    }
+    if ((v = qs.get("radio-name"))) {
+      ensure("radio").streamName = v;
     }
 
     writeJson("handiSettings", settings);
@@ -173,7 +199,7 @@
     // ---------------------------------------------------------------------
     var elementsRaw = qs.get("elements");
     var autoModules = [];
-    if (qs.get("radio")) autoModules.push("radio");
+    if (qs.get("radio") || qs.get("radio-url")) autoModules.push("radio");
     if (qs.get("news")) autoModules.push("news");
     if (
       qs.get("flipboard-topic") ||

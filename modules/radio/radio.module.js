@@ -467,6 +467,13 @@ export default async function initRadio(container) {
     ).trim();
   } catch (e) {}
 
+  // Optional station label from a handi-pack "Name:url" radio parameter.
+  var radioStreamName = "";
+  try {
+    radioStreamName =
+      (loadSettings().radio && loadSettings().radio.streamName) || "";
+  } catch (e) {}
+
   // Hosts that IP/geo-block many server and residential IPs (rte.ie and the
   // streaming.broadcast.radio mirrors) are played via the server relay proxy
   // (/api/stream); every other stream plays straight from the browser. Keep
@@ -588,7 +595,7 @@ export default async function initRadio(container) {
       hostnameOf(streamUrl);
     var srcLabel = radioInfo && radioInfo.title
       ? radioInfo.title
-      : t("d_liveStream", "Live Stream");
+      : (radioStreamName || t("d_liveStream", "Live Stream"));
     sourceBarHtml =
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
       '<small style="opacity:0.7;">' +
@@ -716,7 +723,7 @@ export default async function initRadio(container) {
       } else {
         addStationRow(
           streamUrl,
-          t("d_liveStream", "Live Stream"),
+          radioStreamName || t("d_liveStream", "Live Stream"),
           '<i class="fa-solid fa-tower-broadcast"></i>',
         );
       }
