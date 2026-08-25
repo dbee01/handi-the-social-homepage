@@ -193,7 +193,9 @@ export default async function initMusic(container) {
     		isPlaying = false,
     		stopVisualiser = null,
     		pendingAutoPlayIndex = -1,
-    		recoveryAttempts = 0;
+    		recoveryAttempts = 0,
+    		lastProgress = 0,
+    		stallCheck = null;
 
 	  function readSession() {
 	    try {
@@ -361,6 +363,41 @@ export default async function initMusic(container) {
     updateTrackIconsAndActive();
   }
 
+  // Rebuild the blob URL for a local file and resume from the last known
+  // position. Used both on a hard media error and when the blob pull stalls
+  // without firing an error (the Vivaldi-tablet cut-out). Returns false when
+  // there is nothing to recover (stream, attempts exhausted).
+  function attemptRecovery(audio) {
+    var track = tracks[currentIndex];
+    if (!track || !track.file) return false;
+    if (recoveryAttempts >= 3) return false;
+    var s = readSession();
+    var resumeAt =
+      (audio && audio.currentTime) ||
+      (s && s.index === currentIndex ? s.t : 0) ||
+      0;
+    // If the pull died within the last few seconds of the track, resuming at
+    // the same spot would just re-stall on the same tail bytes — advance to
+    // the next track instead of looping.
+    if (
+      audio &&
+      isFinite(audio.duration) &&
+      audio.duration > 0 &&
+      resumeAt > audio.duration - 4
+    ) {
+      playNext();
+      return true;
+    }
+    recoveryAttempts++;
+    isPlaying = false;
+    stopCurrentAudio(true);
+    try { URL.revokeObjectURL(track.url); } catch (e) {}
+    try { track.url = URL.createObjectURL(track.file); } catch (e) { track.url = ""; }
+    if (!track.url) return false;
+    playTrack(currentIndex, true, resumeAt);
+    return true;
+  }
+
   function showError(msg) {
     stateSpan.innerText = msg;
     setTimeout(function () {
@@ -396,6 +433,14 @@ export default async function initMusic(container) {
       var audio = document.createElement("audio");
       audio.setAttribute("playsinline", "");
       audio.setAttribute("webkit-playsinline", "");
+      // The file is already local (an in-memory blob), so ask the browser to
+      // buffer the whole thing up front instead of relying on progressive
+      // range pulls — a failed range read is the tablet cut-out. Capped: a
+      // multi-hundred-MB file buffered fully could OOM a tablet.
+      audio.preload =
+        track.file && track.file.size > 50 * 1024 * 1024
+          ? "metadata"
+          : "auto";
       audio.volume = 1.0;
       audio.muted = localStorage.getItem("globalMute") === "true";
       audio.src = track.url;
@@ -418,6 +463,7 @@ export default async function initMusic(container) {
       // Actual playback started — the source is healthy again.
       audio.addEventListener("playing", function () {
         recoveryAttempts = 0;
+        lastProgress = Date.now();
       });
 
       // Keep the resume position fresh (used by the blob-URL self-heal and
@@ -426,6 +472,7 @@ export default async function initMusic(container) {
       audio.addEventListener("timeupdate", function () {
         if (currentAudio !== audio) return;
         var now = Date.now();
+        lastProgress = now;
         if (now - lastPosSave > 3000) {
           lastPosSave = now;
           saveSession(true);
@@ -454,23 +501,8 @@ export default async function initMusic(container) {
         // invalidated the blob URL (revoked / evicted / closed on tab sleep or
         // screen-off, which is the Vivaldi-tablet ~60s cut-out). Rebuild the
         // blob URL from the stored File and resume from the same position.
-        if (track && track.file && err && err.code === MediaError.MEDIA_ERR_NETWORK) {
-          if (recoveryAttempts < 3) {
-            recoveryAttempts++;
-            var s = readSession();
-            var resumeAt =
-              audio.currentTime ||
-              (s && s.index === currentIndex ? s.t : 0) ||
-              0;
-            isPlaying = false;
-            stopCurrentAudio(true);
-            try { URL.revokeObjectURL(track.url); } catch (e) {}
-            try { track.url = URL.createObjectURL(track.file); } catch (e) { track.url = ""; }
-            if (track.url) {
-              playTrack(currentIndex, true, resumeAt);
-              return;
-            }
-          }
+        if (err && err.code === MediaError.MEDIA_ERR_NETWORK) {
+          if (attemptRecovery(audio)) return;
         }
 
         var em = t("d_cannotPlayFile", "Cannot play file");
@@ -719,12 +751,28 @@ export default async function initMusic(container) {
     });
   }
 
+  // Watchdog: a local file buffers instantly, so if the element says it's
+  // playing but makes no progress for a while, the blob pull has stalled
+  // (Vivaldi tablet cut-out) without firing an error event. Rebuild and
+  // resume rather than hanging on "Buffering…" forever.
+  stallCheck = setInterval(function () {
+    if (!isPlaying || !currentAudio || currentAudio.paused) return;
+    if (currentAudio.readyState < 2) return; // no data yet — not a stall
+    if (Date.now() - lastProgress > 8000) {
+      attemptRecovery(currentAudio);
+    }
+  }, 3000);
+
   if (pinBtn) {
     headerActions.appendChild(pinBtn);
   }
   applyLockState();
 
   return function () {
+    if (stallCheck) {
+      clearInterval(stallCheck);
+      stallCheck = null;
+    }
     window.removeEventListener("pagehide", onPageHide);
     document.removeEventListener("visibilitychange", onVisibilityChange);
     var a = currentAudio;
