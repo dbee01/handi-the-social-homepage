@@ -39,7 +39,10 @@ echo "==> ONNX Runtime Web WASM (v${ORT_VERSION})"
 curl -fsSL "${ORT_TARBALL}" -o "${TMP}/ort.tgz"
 tar -xzf "${TMP}/ort.tgz" -C "${TMP}"
 cp "${TMP}/package/dist/ort.bundle.min.mjs" "${TJS_DIR}/ort.bundle.min.mjs"
-cp "${TMP}/package/dist/ort-wasm-simd-threaded.wasm" "${WASM_DIR}/ort-wasm-simd-threaded.wasm"
+# ort.bundle.min.mjs is the JSEP build: it dynamically imports the .jsep.mjs
+# glue module and loads the .jsep.wasm binary, so both must be vendored too.
+cp "${TMP}/package/dist/ort-wasm-simd-threaded.jsep.mjs" "${WASM_DIR}/ort-wasm-simd-threaded.jsep.mjs"
+cp "${TMP}/package/dist/ort-wasm-simd-threaded.jsep.wasm" "${WASM_DIR}/ort-wasm-simd-threaded.jsep.wasm"
 
 echo "==> AI model ${MODEL_REPO}"
 for f in ${MODEL_FILES}; do
