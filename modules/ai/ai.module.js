@@ -32,6 +32,16 @@ function saveHistory(msgs) {
   localStorage.setItem(CHAT_STORAGE, JSON.stringify(trimmed));
 }
 
+// True when the model files are already stored by the service worker — the
+// "first load takes a few minutes" note should only show once.
+async function isModelCached() {
+  try {
+    return !!(await caches.match("/models/SmolLM2-135M-Instruct/model_int8.onnx"));
+  } catch (e) {
+    return false;
+  }
+}
+
 export default async function initAi(container) {
   const t = window.t || function (k, e) { return e || k; };
   const pinBtn = container.querySelector(".pin-btn");
@@ -60,15 +70,18 @@ export default async function initAi(container) {
   let chatHistory = loadHistory();
   let selectedModel = MODELS[0].id;
   let isDownloading = false;
+  let isFirstLoad = true;
 
   function escapeHtml(str) {
     if (!str) return "";
     return str.replace(/[&<>]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m]);
   }
 
-  function renderProgress(text, pct) {
+  function renderProgress(text, pct, icon) {
     content.innerHTML =
-      '<div class="llm-progress"><i class="fa-solid fa-download fa-bounce"></i><p>' +
+      '<div class="llm-progress"><i class="' +
+      (icon || "fa-solid fa-download fa-bounce") +
+      '"></i><p>' +
       escapeHtml(text) +
       "</p>" +
       (pct !== undefined
@@ -102,6 +115,16 @@ export default async function initAi(container) {
       t("d_llmClear", "Clear chat") +
       '">🗑</button>' +
       "</div>" +
+      (isFirstLoad && !engine
+        ? '<div class="llm-first-note">' +
+          escapeHtml(
+            t(
+              "d_llmFirstLoad",
+              "First download: the AI model (~140MB) is stored on this device. On the first try this can take a few minutes — later loads are instant.",
+            ),
+          ) +
+          "</div>"
+        : "") +
       '<div class="llm-messages" id="llmMessages">' +
       (chatHistory.length === 0
         ? '<div class="module-empty"><i class="fa-solid fa-brain"></i><p>' +
@@ -173,12 +196,28 @@ export default async function initAi(container) {
         dtype: modelDef.dtype || "int8",
         device: "wasm",
         progress_callback: (p) => {
-          if (p && p.status === "progress") {
-            const pct = Math.round((p.progress || 0) * 100);
+          if (!p) return;
+          if (p.status === "progress") {
+            // In transformers.js v3 `progress` is already a percentage (0–100).
+            const pct = Math.max(0, Math.min(100, Math.round(p.progress || 0)));
             renderProgress(t("d_llmDownloading", "Loading") + " " + pct + "%", pct);
+          } else if (p.status === "done" && p.file === "model_int8.onnx") {
+            // The big model file finished downloading. What follows — loading
+            // the 130MB ONNX into the WASM engine and the warm-up run — is
+            // silent and can take a minute or two on tablets, so say so
+            // instead of looking hung at "100%".
+            renderProgress(
+              t(
+                "d_llmPreparing",
+                "Preparing model… (first load can take a minute or two on tablets)",
+              ),
+              undefined,
+              "fa-solid fa-spinner fa-spin",
+            );
           }
         },
       });
+      isFirstLoad = false;
       render();
     } catch (e) {
       console.error("AI load error:", e);
@@ -272,5 +311,7 @@ export default async function initAi(container) {
     container.appendChild(popup);
   });
 
+  // Only show the "takes a few minutes" note while the model is not cached.
+  isFirstLoad = !(await isModelCached());
   render();
 }
