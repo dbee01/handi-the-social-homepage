@@ -1123,7 +1123,14 @@ app.get("/api/feed", async (req, res) => {
     console.log("✅ Feed fetched successfully");
     return;
   }
-  console.error("❌ Feed proxy error:", result.message, "status:", result.status);
+  if (result.status === 415) {
+    // Expected: the URL is a live audio/video stream, not a feed document.
+    // The radio module uses this to fall back to stream playback, so it
+    // isn't an error worth alarming in the logs.
+    console.log(`↩️ Not a feed (media stream): ${result.message}`);
+  } else {
+    console.error("❌ Feed proxy error:", result.message, "status:", result.status);
+  }
   res.status(result.status || 502).send("Failed to fetch feed: " + result.message);
 });
 
