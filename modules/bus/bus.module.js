@@ -105,6 +105,7 @@ export default async function initBus(container) {
     style.id = "bus-live-style";
     style.textContent = `
       .bus-item { padding:4px 0; font-size:0.9rem; }
+      .bus-dest { color:#64748b; font-size:0.85rem; margin-left:6px; }
       .bus-no-buses { color:#64748b; font-size:0.85rem; }
       .bus-icon-live {
         display: inline-block;
@@ -255,10 +256,15 @@ export default async function initBus(container) {
             t("d_scheduled", "Scheduled") +
             "</span>";
 
+        // Destination / headsign (e.g. "Northwood") — where this bus is going.
+        const dest = d.headsign
+          ? ' <span class="bus-dest">→ ' + escapeHtml(d.headsign) + "</span>"
+          : "";
+
         return `
           <div class="bus-item">
             ${label}
-            ${arrivalText} <span class="bus-eta">${etaStr}</span>
+            ${arrivalText} <span class="bus-eta">${etaStr}</span>${dest}
           </div>`;
       })
       .join("");

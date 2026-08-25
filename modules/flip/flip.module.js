@@ -360,7 +360,7 @@ export default async function initFlip(container) {
       img.src = item.image;
       img.loading = "lazy";
       img.style.cssText =
-        "width:100%;height:var(--media-height);object-fit:contain;display:block;background:#f1f5f9;border-radius:8px;";
+        "width:100%;height:var(--media-height);object-fit:contain;display:block;border-radius:8px;";
       card.appendChild(img);
     }
 

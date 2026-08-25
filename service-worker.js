@@ -1,4 +1,4 @@
-const CACHE = "ple-v14";
+const CACHE = "ple-v15";
 
 // Check for updates every 24 hours
 const UPDATE_INTERVAL = 24 * 60 * 60 * 1000;
@@ -38,6 +38,9 @@ const PRECACHE = [
   "/js/vendor/Sortable.min.js",
   "/js/vendor/rrule.min.js",
   "/js/vendor/matrix-js-sdk.bundle.js",
+  "/js/vendor/transformers/transformers.js",
+  "/js/vendor/transformers/ort.bundle.min.mjs",
+  "/js/vendor/transformers/onnxruntime-web/ort-wasm-simd-threaded.wasm",
   "/images/favicon.png",
   "/images/favicon.ico",
   "/images/dashboard.jpg",

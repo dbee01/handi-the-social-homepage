@@ -452,8 +452,8 @@ export default async function initNews(container) {
       view.innerHTML = `
         <div class="news-article" style="margin-bottom:0;padding:16px;border-radius:12px;display:flex;flex-direction:column;gap:12px;text-align:center;">
           ${article.imageUrl
-            ? '<img class="news-image" src="' + article.imageUrl + '" alt="" style="width:100%;height:var(--media-height);object-fit:contain;border-radius:8px;background:#f1f5f9;display:block;" onerror="this.style.display=\'none\'">'
-            : '<div style="width:100%;height:var(--media-height);display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:8px;"><i class="fa-solid fa-newspaper" style="font-size:2rem;color:#94a3b8;"></i></div>'}
+            ? '<img class="news-image" src="' + article.imageUrl + '" alt="" style="width:100%;height:var(--media-height);object-fit:contain;border-radius:8px;display:block;" onerror="this.style.display=\'none\'">'
+            : '<div style="width:100%;height:var(--media-height);display:flex;align-items:center;justify-content:center;border-radius:8px;"><i class="fa-solid fa-newspaper" style="font-size:2rem;color:#94a3b8;"></i></div>'}
           <div style="display:flex;justify-content:center;gap:12px;">
             <div>${escapeHtml(sourceDisplay)}</div>
             <div>${escapeHtml(article.pubDate)}</div>

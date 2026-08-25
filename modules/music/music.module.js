@@ -178,69 +178,13 @@ export default async function initMusic(container) {
     		stopVisualiser = null,
     		pendingAutoPlayIndex = -1;
 
-    	// Reuse a single Audio element for the lifetime of this module instance.
-    	// Keeping one element alive helps mobile browsers maintain the autoplay grant
-    	// so that onended -> playNext() is more likely to succeed.
-    	var sharedAudio = document.createElement("audio");
-    	sharedAudio.preload = "auto";
-    	sharedAudio.setAttribute("playsinline", "");
-    	sharedAudio.setAttribute("webkit-playsinline", "");
-    	sharedAudio.volume = 1.0;
-
-    	sharedAudio.addEventListener("waiting", function () {
-    		if (currentAudio === sharedAudio && isPlaying) {
-    			stateSpan.innerText = " | " + t("d_buffering", "Buffering…");
-    		}
-    	});
-    	sharedAudio.addEventListener("canplay", function () {
-    		if (currentAudio === sharedAudio && isPlaying) {
-    			stateSpan.innerText = " | " + t("d_playing", "...playing");
-    		}
-    	});
-    	sharedAudio.addEventListener("stalled", function () {
-    		if (currentAudio === sharedAudio && isPlaying) {
-    			stateSpan.innerText = " | " + t("d_buffering", "Buffering…");
-    		}
-    	});
-    	sharedAudio.addEventListener("error", function (e) {
-    		var err = sharedAudio.error,
-    			em = t("d_cannotPlayFile", "Cannot play file");
-    		if (err) {
-    			switch (err.code) {
-    				case MediaError.MEDIA_ERR_ABORTED:
-    					em = t("d_playbackAborted", "Playback aborted");
-    					break;
-    				case MediaError.MEDIA_ERR_NETWORK:
-    					em = t("d_networkError", "Network error");
-    					break;
-    				case MediaError.MEDIA_ERR_DECODE:
-    					em = t("d_fileCorrupted", "File corrupted or unsupported format");
-    					break;
-    				case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-    					em = t("d_formatNotSupported", "Format not supported");
-    					break;
-    				default:
-    					em = t("d_unknownError", "Unknown error");
-    			}
-    		}
-    		showError(em);
-    		isPlaying = false;
-    		playPauseBtn.innerHTML = "▶";
-    		updateTrackIconsAndActive();
-    	});
-    	sharedAudio.addEventListener("ended", function () {
-    		// onended: try to auto-advance.  If the browser blocks it
-    		// (autoplay policy), the catch path will set up a prompt.
-    		playNext();
-    	});
-
-  	function applyGlobalMute(muted) {
-  		sharedAudio.muted = muted;
-  	}
-  	window.addEventListener("globalMuteToggle", function (e) {
-  		applyGlobalMute(e.detail.muted);
-  	});
-  	applyGlobalMute(localStorage.getItem("globalMute") === "true");
+	  function applyGlobalMute(muted) {
+	    if (currentAudio) currentAudio.muted = muted;
+	  }
+	  window.addEventListener("globalMuteToggle", function (e) {
+	    applyGlobalMute(e.detail.muted);
+	  });
+	  applyGlobalMute(localStorage.getItem("globalMute") === "true");
 
   content.innerHTML =
     '<div class="music-now-playing"><canvas id="music-synth" class="music-synth"></canvas><div id="music-status" class="music-status"><span id="music-track-title">—</span><span class="music-state-text">' +
@@ -343,9 +287,13 @@ export default async function initMusic(container) {
   }
 
   function stopCurrentAudio(keepIndex) {
-    try { sharedAudio.pause(); } catch (e) {}
-    try { sharedAudio.removeAttribute("src"); sharedAudio.load(); } catch (e) {}
+    var a = currentAudio;
     currentAudio = null;
+    if (a) {
+      try { a.pause(); } catch (e) {}
+      try { a.removeAttribute("src"); a.load(); } catch (e) {}
+      if (a.parentNode) a.parentNode.removeChild(a);
+    }
     pendingAutoPlayIndex = -1;
     stopVisualiserAndClear();
     if (!keepIndex) {
@@ -380,21 +328,74 @@ export default async function initMusic(container) {
     if (index < 0 || index >= tracks.length) return;
     if (currentAudio && currentIndex === index && isPlaying) return;
 
-    // Stop any previous playback on the shared element
-    try { sharedAudio.pause(); } catch (e) {}
+    stopCurrentAudio(true);
     currentIndex = index;
     pendingAutoPlayIndex = -1;
     var track = tracks[currentIndex];
     trackTitleSpan.innerText = removeFileExtension(track.name);
 
     try {
-      sharedAudio.src = track.url;
-      sharedAudio.muted = localStorage.getItem("globalMute") === "true";
-      sharedAudio.load();
-      currentAudio = sharedAudio;
+      // Fresh element per play (same as the Cast module, which does not suffer
+      // the ~60s cut-out). Keep it in the DOM while playing so Android Chrome
+      // treats it as active, gesture-initiated media instead of pausing it.
+      var audio = document.createElement("audio");
+      audio.setAttribute("playsinline", "");
+      audio.setAttribute("webkit-playsinline", "");
+      audio.volume = 1.0;
+      audio.muted = localStorage.getItem("globalMute") === "true";
+      audio.src = track.url;
+      (document.body || document.documentElement).appendChild(audio);
+      currentAudio = audio;
+
+      audio.addEventListener("waiting", function () {
+        if (currentAudio === audio && isPlaying) {
+          stateSpan.innerText = " | " + t("d_buffering", "Buffering…");
+        }
+      });
+      audio.addEventListener("canplay", function () {
+        if (currentAudio === audio && isPlaying) {
+          stateSpan.innerText = " | " + t("d_playing", "...playing");
+        }
+      });
+      audio.addEventListener("stalled", function () {
+        if (currentAudio === audio && isPlaying) {
+          stateSpan.innerText = " | " + t("d_buffering", "Buffering…");
+        }
+      });
+      audio.addEventListener("error", function () {
+        var err = audio.error,
+          em = t("d_cannotPlayFile", "Cannot play file");
+        if (err) {
+          switch (err.code) {
+            case MediaError.MEDIA_ERR_ABORTED:
+              em = t("d_playbackAborted", "Playback aborted");
+              break;
+            case MediaError.MEDIA_ERR_NETWORK:
+              em = t("d_networkError", "Network error");
+              break;
+            case MediaError.MEDIA_ERR_DECODE:
+              em = t("d_fileCorrupted", "File corrupted or unsupported format");
+              break;
+            case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+              em = t("d_formatNotSupported", "Format not supported");
+              break;
+            default:
+              em = t("d_unknownError", "Unknown error");
+          }
+        }
+        showError(em);
+        isPlaying = false;
+        playPauseBtn.innerHTML = "▶";
+        updateTrackIconsAndActive();
+      });
+      audio.addEventListener("ended", function () {
+        // Auto-advance. If the browser blocks the next play() (autoplay
+        // policy), the catch path sets up a pending state to resume by tap.
+        playNext();
+      });
 
       if (autoPlay) {
-        var pp = sharedAudio.play();
+        var pp = audio.play();
         if (pp !== undefined) {
           pp.then(function () {
             isPlaying = true;
@@ -470,14 +471,14 @@ export default async function initMusic(container) {
       return;
     }
     if (isPlaying) {
-      sharedAudio.pause();
+      currentAudio.pause();
       isPlaying = false;
       playPauseBtn.innerHTML = "▶";
       stateSpan.innerText = " | " + t("d_paused", "...paused");
       updateTrackIconsAndActive();
       stopVisualiserAndClear();
     } else {
-      var pp = sharedAudio.play();
+      var pp = currentAudio.play();
       if (pp !== undefined) {
         pp.then(function () {
           isPlaying = true;
@@ -588,11 +589,13 @@ export default async function initMusic(container) {
   applyLockState();
 
   return function () {
-    try { sharedAudio.pause(); } catch (e) {}
-    try { sharedAudio.removeAttribute("src"); sharedAudio.load(); } catch (e) {}
+    var a = currentAudio;
     currentAudio = null;
-    // Revoke the shared audio element so it can be GC'd
-    sharedAudio = null;
+    if (a) {
+      try { a.pause(); } catch (e) {}
+      try { a.removeAttribute("src"); a.load(); } catch (e) {}
+      if (a.parentNode) a.parentNode.removeChild(a);
+    }
     stopVisualiserAndClear();
   };
 }
