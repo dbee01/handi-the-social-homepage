@@ -63,8 +63,6 @@ export default async function initChat(container) {
     settings.chat?.password ||
     (typeof import.meta !== "undefined" && import.meta.env?.VITE_MATRIX_PASS) ||
     "";
-  // Also support legacy accessToken if provided
-  let legacyToken = settings.chat?.accessToken || "";
 
   let matrixClient = null;
   let refreshIntervalId = null;
@@ -79,29 +77,49 @@ export default async function initChat(container) {
   // =====================================================
 
   async function initMatrixClient() {
-    if (!username || !password) {
-      if (legacyToken && settings.chat?.userId) {
+    // 1) Reuse a stored session when we have one. No login call, so the server
+    //    does not register a new device on every module init / page load / VPN
+    //    hop (which is what fills the Matrix 20-device limit).
+    if (settings.chat?.accessToken && settings.chat?.userId) {
+      try {
+        matrixClient = window.matrixcs.createClient({
+          baseUrl: homeserver,
+          accessToken: settings.chat.accessToken,
+          userId: settings.chat.userId,
+          deviceId: settings.chat.deviceId,
+        });
+        // Cheap token validation. Only re-login when the token is actually
+        // rejected — a transient network error must not churn logins.
         try {
-          matrixClient = window.matrixcs.createClient({
-            baseUrl: homeserver,
-            accessToken: legacyToken,
-            userId: settings.chat.userId,
-          });
-          await matrixClient.getUserId();
-          return true;
-        } catch {
-          matrixClient = null;
+          await matrixClient.whoami();
+        } catch (err) {
+          if (err && (err.httpStatus === 401 || err.errcode === "M_UNKNOWN_TOKEN")) {
+            console.warn("Matrix session expired, logging in again:", err);
+            matrixClient = null;
+          }
         }
+        if (matrixClient) return true;
+      } catch (err) {
+        console.warn("Matrix stored session unusable, logging in again:", err);
+        matrixClient = null;
       }
-      return false;
     }
+
+    if (!username || !password) return false;
 
     try {
       matrixClient = window.matrixcs.createClient({ baseUrl: homeserver });
-      const resp = await matrixClient.loginWithPassword(username, password);
+      // Reuse the previous device_id so re-login updates that same device
+      // instead of registering a new one each time.
+      const resp = await matrixClient.login("m.login.password", {
+        user: username,
+        password: password,
+        device_id: settings.chat?.deviceId || undefined,
+      });
       settings.chat = settings.chat || {};
       settings.chat.accessToken = resp.access_token;
       settings.chat.userId = resp.user_id;
+      settings.chat.deviceId = resp.device_id;
       localStorage.setItem("handiSettings", JSON.stringify(settings));
       return true;
     } catch (err) {
