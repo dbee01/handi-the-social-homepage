@@ -20,6 +20,7 @@ let gtfsLib = null;
 let db = null;
 let importReady = false;
 let importPromise = null;
+let gtfsMissingLogged = false;
 
 // Load config
 const configPath = path.join(__dirname, "..", "..", "config.json");
@@ -156,7 +157,20 @@ async function doImport() {
 
 async function ensureLib() {
   if (!gtfsLib) {
-    gtfsLib = await import("gtfs");
+    try {
+      gtfsLib = await import("gtfs");
+    } catch (e) {
+      // gtfs is an optional dependency (its native better-sqlite3 module
+      // can't build on hosts without Python/build tools). The bus endpoints
+      // already handle a missing library gracefully — log it once only.
+      if (!gtfsMissingLogged) {
+        gtfsMissingLogged = true;
+        console.warn(
+          "[GTFS] 'gtfs' library unavailable (native better-sqlite3 not built on this host) — static bus data disabled",
+        );
+      }
+      throw e;
+    }
   }
   return gtfsLib;
 }

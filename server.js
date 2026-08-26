@@ -1211,6 +1211,101 @@ app.get("/api/news-image", async (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
+// LIVE FOOTBALL RADAR – proxies the API-Football "live=all" fixtures endpoint.
+// The API key stays server-side (never shipped to the browser). Responses are
+// cached in-memory so a dashboard polling every minute doesn't burn the API
+// quota — tune SPORTS_CACHE_SECONDS in .env (default 300s; the free tier only
+// allows ~100 requests/day).
+// -----------------------------------------------------------------------------
+const APISPORTS_BASE = "https://v3.football.api-sports.io";
+let sportsCache = { key: "all", at: 0, data: null };
+
+app.get("/api/sports/live", async (req, res) => {
+  const apiKey = process.env.APISPORTS_KEY;
+  if (!apiKey) {
+    return res
+      .status(503)
+      .json({ error: "not_configured", message: "APISPORTS_KEY not set in .env" });
+  }
+  const ttlMs =
+    (parseInt(process.env.SPORTS_CACHE_SECONDS, 10) || 300) * 1000;
+  // Optional league filter (comma-separated API-Football league ids).
+  const leaguesParam = String(req.query.leagues || "").trim();
+  const cacheKey = leaguesParam || "all";
+  if (
+    sportsCache.data &&
+    sportsCache.key === cacheKey &&
+    Date.now() - sportsCache.at < ttlMs
+  ) {
+    return res.json(sportsCache.data);
+  }
+  try {
+    const upstream = await axios.get(APISPORTS_BASE + "/fixtures", {
+      params: { live: "all" },
+      headers: { "x-apisports-key": apiKey },
+      timeout: 15000,
+    });
+    const body = upstream.data || {};
+    if (!Array.isArray(body.response)) {
+      return res
+        .status(502)
+        .json({ error: "upstream", message: "Bad upstream response" });
+    }
+    const wanted = leaguesParam
+      ? new Set(
+          leaguesParam
+            .split(",")
+            .map((s) => parseInt(s, 10))
+            .filter((n) => Number.isFinite(n)),
+        )
+      : null;
+    let matches = body.response.map((f) => ({
+      id: f.fixture && f.fixture.id,
+      leagueId: f.league && f.league.id,
+      league:
+        (f.league &&
+          (f.league.name +
+            (f.league.country ? " · " + f.league.country : ""))) ||
+        "",
+      leagueLogo: f.league && f.league.logo,
+      status: f.fixture && f.fixture.status ? f.fixture.status.short : "",
+      minute:
+        f.fixture &&
+        f.fixture.status &&
+        typeof f.fixture.status.elapsed === "number"
+          ? f.fixture.status.elapsed
+          : null,
+      home: f.teams && f.teams.home ? f.teams.home.name : "",
+      homeLogo: f.teams && f.teams.home ? f.teams.home.logo : "",
+      away: f.teams && f.teams.away ? f.teams.away.name : "",
+      awayLogo: f.teams && f.teams.away ? f.teams.away.logo : "",
+      scoreHome: f.goals && typeof f.goals.home === "number" ? f.goals.home : 0,
+      scoreAway: f.goals && typeof f.goals.away === "number" ? f.goals.away : 0,
+      events: Array.isArray(f.events)
+        ? f.events
+            .filter(
+              (e) => e && (e.type === "Goal" || e.type === "Card" || e.type === "Var"),
+            )
+            .map((e) => ({
+              type: e.type,
+              detail: e.detail || "",
+              time: e.time && typeof e.time.elapsed === "number" ? e.time.elapsed : null,
+              team: e.team ? e.team.name : "",
+              player: e.player ? e.player.name : "",
+            }))
+        : [],
+    }));
+    if (wanted && wanted.size) {
+      matches = matches.filter((m) => wanted.has(m.leagueId));
+    }
+    const payload = { updatedAt: Date.now(), matches };
+    sportsCache = { key: cacheKey, at: Date.now(), data: payload };
+    res.json(payload);
+  } catch (error) {
+    console.error("❌ Sports API error:", error.message);
+    res.status(502).json({ error: "upstream", message: error.message });
+  }
+});
 // AUDIO STREAM PROXY – lets the Radio module play IP/geo-blocked streams
 // (e.g. rte.ie) by piping them through the same relay logic as feeds. The
 // upstream content-type (and icy metadata) headers are forwarded so the

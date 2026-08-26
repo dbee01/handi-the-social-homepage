@@ -905,6 +905,29 @@
                 </div>
             </div>
 
+            <!-- Sports Module -->
+            <div class="module-card" data-module="sports">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-futbol"></i>
+                        <h3>Sports</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Leagues to show:</label>
+                        <div
+                            id="sportsLeagues"
+                            style="display:flex;flex-direction:column;gap:4px;max-height:220px;overflow-y:auto;border:1px solid #e5e7eb;border-radius:8px;padding:8px;"
+                        ></div>
+                        <small>Nothing ticked = show all live leagues.</small>
+                    </div>
+                </div>
+            </div>
+
 
                         <!-- ============================================================ -->
                     <!-- PREMIUM MODULES SECTION -->
@@ -1707,6 +1730,39 @@
             // ============================================================
             const MODULES = window.HANDI_MODULE_IDS();
 
+            // Curated league picker for the Sports (live football) module.
+            // IDs are API-Football league ids; nothing ticked = all live.
+            const SPORTS_LEAGUES = [
+                { id: 2, name: "UEFA Champions League" },
+                { id: 3, name: "UEFA Europa League" },
+                { id: 39, name: "Premier League" },
+                { id: 40, name: "EFL Championship" },
+                { id: 135, name: "Serie A" },
+                { id: 140, name: "La Liga" },
+                { id: 78, name: "Bundesliga" },
+                { id: 61, name: "Ligue 1" },
+                { id: 88, name: "Eredivisie" },
+                { id: 94, name: "Primeira Liga" },
+                { id: 179, name: "Scottish Premiership" },
+                { id: 203, name: "Super Lig" },
+                { id: 253, name: "MLS" },
+                { id: 71, name: "Brasileirao Serie A" },
+                { id: 128, name: "Liga Profesional Argentina" },
+                { id: 262, name: "Liga MX" },
+                { id: 292, name: "K League 1" },
+                { id: 98, name: "J1 League" },
+                { id: 113, name: "Allsvenskan" },
+                { id: 307, name: "Saudi Pro League" },
+            ];
+
+            // Football icon for the league picker (SVG, no emoji).
+            const SPORTS_FOOTBALL_ICON =
+                '<svg viewBox="0 0 24 24" width="14" height="14" style="flex-shrink:0;vertical-align:middle;" aria-hidden="true">' +
+                '<circle cx="12" cy="12" r="10" fill="#fff" stroke="#1e293b" stroke-width="1.5"/>' +
+                '<path d="M12 8.6L15.2 11 14 14.8 10 14.8 8.8 11Z" fill="#1e293b"/>' +
+                '<path d="M12 8.6V2M15.2 11l6.3-2.1M14 14.8l3.9 5.3M10 14.8l-3.9 5.3M8.8 11l-6.3-2.1" stroke="#1e293b" stroke-width="1.2" fill="none"/>' +
+                "</svg>";
+
             // Mastodon servers with inline SVG flags (mirrors modules/mastodon/mastodon.module.js)
             const MASTODON_SERVERS = [
               { flag: '<svg viewBox="0 0 30 20" width="20" height="14"><rect width="10" height="20" fill="#169b62"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ff883e"/></svg>', name: "mastodon.ie", url: "https://mastodon.ie" },
@@ -1971,6 +2027,47 @@
                     }
                 }
 
+                // Load sports settings
+                if (settings.sports) {
+                    var spBox = document.getElementById("sportsLeagues");
+                    if (spBox) {
+                        // Render the league checkboxes once
+                        if (!spBox.querySelector("input")) {
+                            SPORTS_LEAGUES.forEach(function (lg) {
+                                var lbl = document.createElement("label");
+                                lbl.style.cssText =
+                                    "display:flex;align-items:center;gap:8px;font-size:0.9rem;cursor:pointer;";
+                                var cb = document.createElement("input");
+                                cb.type = "checkbox";
+                                cb.value = lg.id;
+                                lbl.appendChild(cb);
+                                var iconSpan = document.createElement("span");
+                                iconSpan.style.display = "inline-flex";
+                                iconSpan.innerHTML = SPORTS_FOOTBALL_ICON;
+                                lbl.appendChild(iconSpan);
+                                lbl.appendChild(
+                                    document.createTextNode(lg.name),
+                                );
+                                spBox.appendChild(lbl);
+                            });
+                        }
+                        var savedLeagues = String(
+                            settings.sports.leagueIds || "",
+                        )
+                            .split(",")
+                            .map(function (s) {
+                                return s.trim();
+                            })
+                            .filter(Boolean);
+                        spBox
+                            .querySelectorAll("input[type=checkbox]")
+                            .forEach(function (cb) {
+                                cb.checked =
+                                    savedLeagues.indexOf(cb.value) !== -1;
+                            });
+                    }
+                }
+
                 // Load flip settings
                 if (settings.flip) {
                     if (document.getElementById("flipProfileUrl")) {
@@ -2102,6 +2199,18 @@
                     parseInt(
                         document.getElementById("newsMaxArticles")?.value,
                     ) || 4;
+
+                if (!settings.sports) settings.sports = {};
+                var spIds = [];
+                var spList = document.getElementById("sportsLeagues");
+                if (spList) {
+                    spList
+                        .querySelectorAll("input[type=checkbox]:checked")
+                        .forEach(function (cb) {
+                            spIds.push(cb.value);
+                        });
+                }
+                settings.sports.leagueIds = spIds.join(",");
 
                 if (!settings.flip) settings.flip = {};
                 settings.flip.profileUrl =

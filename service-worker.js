@@ -1,4 +1,4 @@
-const CACHE = "ple-v15";
+const CACHE = "ple-v16";
 
 // Check for updates every 24 hours
 const UPDATE_INTERVAL = 24 * 60 * 60 * 1000;
@@ -75,9 +75,12 @@ self.addEventListener("activate", (e) => {
   );
 });
 
-// Fetch — cache-first, fall back to network, then offline page.
-// Scripts and stylesheets are network-first so code/CSS updates propagate
-// immediately; the cache only serves as an offline fallback for them.
+// Fetch — HTML pages and code are network-first so fresh deploys reach
+// online clients immediately; the cache only serves as an offline fallback.
+// Everything else (images, fonts, manifest) is cache-first, then network.
+// HTML being cache-first is what left devices stuck on a stale — or blank —
+// snapshot of the page: the cached copy was served forever and only replaced
+// when the 24h checkForUpdates() happened to detect a change.
 self.addEventListener("fetch", (e) => {
   // Skip non-GET requests and chrome-extension
   if (e.request.method !== "GET") return;
@@ -94,6 +97,36 @@ self.addEventListener("fetch", (e) => {
     e.request.destination === "style" ||
     e.request.url.endsWith(".js") ||
     e.request.url.endsWith(".css");
+
+  // Page loads (and anything the browser wants as HTML)
+  const isPage =
+    e.request.mode === "navigate" ||
+    (e.request.headers.get("accept") || "").includes("text/html");
+
+  if (isPage) {
+    e.respondWith(
+      fetch(e.request)
+        .then((response) => {
+          if (!response || response.status !== 200) return response;
+          const clone = response.clone();
+          caches.open(CACHE).then((cache) => {
+            cache.put(e.request, clone);
+          });
+          return response;
+        })
+        .catch(() =>
+          caches.match(e.request).then((cached) => {
+            if (cached) return cached;
+            // User is offline — show fallback for HTML pages
+            return new Response(
+              "<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;font-size:1.5rem;color:#64748b;'>📡 You're offline</body></html>",
+              { headers: { "Content-Type": "text/html" } },
+            );
+          }),
+        ),
+    );
+    return;
+  }
 
   if (isCode) {
     e.respondWith(
@@ -115,11 +148,10 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
+  // Images, fonts, manifest, etc. — cache-first, then network
   e.respondWith(
     caches.match(e.request).then((cached) => {
       if (cached) return cached;
-
-      // Not in cache — try network, then cache it
       return fetch(e.request)
         .then((response) => {
           if (!response || response.status !== 200) return response;
@@ -129,16 +161,7 @@ self.addEventListener("fetch", (e) => {
           });
           return response;
         })
-        .catch(() => {
-          // User is offline — show fallback for HTML pages
-          if (e.request.headers.get("accept")?.includes("text/html")) {
-            return new Response(
-              "<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;font-size:1.5rem;color:#64748b;'>📡 You're offline</body></html>",
-              { headers: { "Content-Type": "text/html" } },
-            );
-          }
-          return new Response("", { status: 408 });
-        });
+        .catch(() => new Response("", { status: 408 }));
     }),
   );
 });

@@ -27,6 +27,7 @@ const DEFAULT_SETTINGS = {
     refreshInterval: 15,
     maxArticles: 10,
   },
+  sports: { leagueIds: "" },
   flip: { profileUrl: "", topicUrl: "" },
   mastodon: { instanceUrl: "https://mastodon.ie", limit: 4 },
   live_bus: { routeIds: "", stopIds: "" },

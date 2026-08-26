@@ -95,6 +95,15 @@ window.HANDI_MODULES = [
     defaultEnabled: 1,
     settingsConfig: { rssUrl: "", refresh: 15, maxArticles: 10 },
   },
+  {
+    id: "sports",
+    name: "Sports",
+    icon: '<i class="fa-solid fa-futbol"></i>',
+    desc: "Live football scores & key events",
+    tier: "free",
+    defaultEnabled: 0,
+    settingsConfig: {},
+  },
 
   // ─── Premium modules ───────────────────────────────────────────────────
   {
