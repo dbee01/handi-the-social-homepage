@@ -735,6 +735,17 @@
             };
         </script>
 
+        <script>
+            // Admin-built pack (builder-admin.html stamp): unlock premium modules
+            window.HANDI_PACK_ADMIN = (function () {
+                try {
+                    return localStorage.getItem("handiPackAdmin") === "1";
+                } catch (e) {
+                    return false;
+                }
+            })();
+        </script>
+
         <!-- ========== SUBSCRIPTION CHECK ========== -->
         <script>
             (async function () {
@@ -790,7 +801,7 @@
 
                         let mmr = window.getMMR();
 
-                        if (window.PREMIUM_ACTIVE === false) {
+                        if (window.PREMIUM_ACTIVE === false && !window.HANDI_PACK_ADMIN) {
                             let changed = false;
                             const premiumIds = window
                                 .HANDI_PREMIUM_MODULES()

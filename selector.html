@@ -12,6 +12,14 @@
         <script>
             // Premium module check for selector — unified Stripe subscription flow
             window.PREMIUM_ACTIVE = false;
+            // Admin-built pack (builder-admin.html stamp): unlock premium modules
+            window.HANDI_PACK_ADMIN = (function () {
+                try {
+                    return localStorage.getItem("handiPackAdmin") === "1";
+                } catch (e) {
+                    return false;
+                }
+            })();
             window._premiumChecked = false;
             (async function () {
                 var host = window.location.hostname;
@@ -1159,20 +1167,20 @@
                         let state = enabled[mod.id];
                         if (state === 3) return; // hidden — skip entirely
                         let isActive = state === 1;
-                                                let isDisabled = state === 2 || window.PREMIUM_ACTIVE !== true;
+                                                let isDisabled = state === 2 || (window.PREMIUM_ACTIVE !== true && !window.HANDI_PACK_ADMIN);
                                                 let div = document.createElement("div");
                                                 div.className =
                                                     "module-item premium-module" +
                                                                                 (isDisabled ? " module-disabled" : "");
                                                     let btnLabel, btnClass;
-                                                                            if (isActive && window.PREMIUM_ACTIVE === true) {
+                                                                            if (isActive && (window.PREMIUM_ACTIVE === true || window.HANDI_PACK_ADMIN)) {
                                                                                 btnLabel = window.LANG.btnRemove;
                                                                                 btnClass = "btn-remove";
                                                                             } else if (isDisabled) {
                                                                                 btnLabel = window.LANG.btnDisabled;
                                                                                 btnClass = "btn-add";
                                                                             } else {
-                                                                                if (window.PREMIUM_ACTIVE !== true) {
+                                                                                if (window.PREMIUM_ACTIVE !== true && !window.HANDI_PACK_ADMIN) {
                                                                                     isDisabled = true;
                                                                                     btnLabel = window.LANG.btnDisabled;
                                                                                     btnClass = "btn-add";

@@ -11,6 +11,14 @@
         <script>
             // Premium status — used to lock the Support toggle for free users
             window.PREMIUM_ACTIVE = false;
+            // Admin-built pack (builder-admin.html stamp): unlock premium modules
+            window.HANDI_PACK_ADMIN = (function () {
+                try {
+                    return localStorage.getItem("handiPackAdmin") === "1";
+                } catch (e) {
+                    return false;
+                }
+            })();
             (async function () {
                 var host = window.location.hostname;
                 if (
@@ -1805,7 +1813,8 @@
                         if (
                             regMod &&
                             regMod.tier === "premium" &&
-                            window.PREMIUM_ACTIVE !== true
+                            window.PREMIUM_ACTIVE !== true &&
+                            !window.HANDI_PACK_ADMIN
                         ) {
                             toggle.classList.add("mmr-disabled");
                             card.classList.add("module-card-disabled");
@@ -2374,7 +2383,8 @@
                             if (
                                 reg &&
                                 reg.tier === "premium" &&
-                                window.PREMIUM_ACTIVE !== true
+                                window.PREMIUM_ACTIVE !== true &&
+                                !window.HANDI_PACK_ADMIN
                             )
                                 return;
                             const config = card.querySelector(".module-config");

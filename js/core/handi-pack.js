@@ -17,13 +17,20 @@
 // handiBgDataUrl, and pack metadata), then redirects to a clean URL so the
 // normal app bootstrap picks everything up.
 
-(function () {
+(async function () {
   "use strict";
 
   try {
     var qs = new URLSearchParams(window.location.search);
     var hasPack = qs.has("handi-pack") || qs.has("elements") || qs.has("colors");
     if (!hasPack) return;
+
+    // Pack id stamp secrets. The public builder (builder.html) signs with
+    // PACK_SECRET; the admin builder (builder-admin.html) signs with
+    // PACK_SECRET_ADMIN. A valid admin signature unlocks premium modules
+    // for free users (settings / selector / dashboard honour handiPackAdmin).
+    var PACK_SECRET = "handihomepage-handi-pack-v1";
+    var PACK_SECRET_ADMIN = "handihomepage-handi-pack-admin-v1";
 
     // ---------------------------------------------------------------------
     // Helpers
@@ -40,6 +47,65 @@
       try {
         localStorage.setItem(key, JSON.stringify(value));
       } catch (e) {}
+    }
+
+    // Parse "Name: number" contact lines from a pack parameter.
+    function parseContactLines(str) {
+      return (str || "")
+        .split(/\r?\n/)
+        .map(function (line) {
+          line = (line || "").trim();
+          if (!line) return null;
+          var i = line.indexOf(":");
+          if (i <= 0) return { name: line, number: line };
+          return {
+            name: line.slice(0, i).trim(),
+            number: line.slice(i + 1).trim(),
+          };
+        })
+        .filter(Boolean);
+    }
+
+    // Verify the pack id stamp: recompute the HMAC over the sorted query
+    // (minus id) with both secrets. An admin-secret match proves the link
+    // came from builder-admin.html and premium modules may be unlocked.
+    async function stampPackId(qs) {
+      var packId = qs.get("id");
+      if (!packId || !window.crypto || !crypto.subtle) return;
+      try {
+        var canonical = new URLSearchParams(qs);
+        canonical.delete("id");
+        canonical.sort();
+        var canonicalStr = canonical.toString();
+        var enc = new TextEncoder();
+        var candidates = [
+          { secret: PACK_SECRET_ADMIN, flag: "handiPackAdmin" },
+          { secret: PACK_SECRET, flag: "handiPackVerified" },
+        ];
+        for (var i = 0; i < candidates.length; i++) {
+          var key = await crypto.subtle.importKey(
+            "raw",
+            enc.encode(candidates[i].secret),
+            { name: "HMAC", hash: "SHA-256" },
+            false,
+            ["sign"]
+          );
+          var sig = await crypto.subtle.sign(
+            "HMAC",
+            key,
+            enc.encode(canonicalStr)
+          );
+          var hex = Array.from(new Uint8Array(sig))
+            .map(function (b) { return b.toString(16).padStart(2, "0"); })
+            .join("");
+          if (hex === packId) {
+            try { localStorage.setItem(candidates[i].flag, "1"); } catch (e) {}
+            if (candidates[i].flag === "handiPackAdmin") {
+              try { localStorage.setItem("handiPackVerified", "1"); } catch (e) {}
+            }
+          }
+        }
+      } catch (e) { /* verification is best-effort */ }
     }
 
     var settings = readJson("handiSettings");
@@ -138,10 +204,14 @@
     var supportDesc = qs.get("support-description");
     var supportLink = qs.get("support-link-url");
     // Raw HTML for the support element on the homepage (overrides the default
-    // welcome block when present).
-    if ((v = qs.get("support"))) ensure("support").html = v;
+    // welcome block when present). A bare `support=1` is just the enable flag
+    // and must never be rendered as HTML.
+    if ((v = qs.get("support")) && v !== "1") ensure("support").html = v;
     if (supportImage || supportTitle || supportDesc || supportLink) {
       var support = ensure("support");
+      // Drop any stale raw-HTML override (e.g. a pre-fix visit stored the
+      // bare support=1 flag as html) so the configured resource renders.
+      delete support.html;
       if (supportImage) {
         support.imageUrl = supportImage;
         support.mediaType = "image";
@@ -190,6 +260,20 @@
       ensure("radio").streamName = v;
     }
 
+    // Premium modules (admin-signed packs): bus, calendar, phone, emergency.
+    if ((v = qs.get("bus-routes"))) {
+      var bus = ensure("live_bus");
+      bus.routeIds = v;
+      bus.stopIds = v;
+    }
+    if ((v = qs.get("calendar"))) ensure("calendar").url = v;
+    if ((v = qs.get("phone-contacts"))) {
+      ensure("phone").contacts = parseContactLines(v);
+    }
+    if ((v = qs.get("emergency-contacts"))) {
+      ensure("emergency_alert").contacts = parseContactLines(v);
+    }
+
     writeJson("handiSettings", settings);
 
     // ---------------------------------------------------------------------
@@ -224,6 +308,10 @@
     if (qs.get("gallery")) autoModules.push("gallery");
     if (qs.get("music")) autoModules.push("music");
     if (qs.get("podcasts") || qs.get("cast")) autoModules.push("cast");
+    if (qs.get("bus-routes")) autoModules.push("live_bus");
+    if (qs.get("calendar")) autoModules.push("calendar");
+    if (qs.get("phone-contacts")) autoModules.push("phone");
+    if (qs.get("emergency-contacts")) autoModules.push("emergency_alert");
 
     if (elementsRaw || autoModules.length) {
       // Keep this list in sync with js/core/module-registry.js.
@@ -330,6 +418,7 @@
     // ---------------------------------------------------------------------
     // Reload on a clean URL so theme CSS + module bootstrap see the new state
     // ---------------------------------------------------------------------
+    await stampPackId(qs);
     window.location.replace(window.location.pathname || "/");
   } catch (e) {
     console.error("Handi Pack import failed:", e);

@@ -57,6 +57,9 @@ export default async function initNews(container) {
   const maxArticles = settings.news?.maxArticles || 16;
   let refreshIntervalId = null;
   let rssUrl = localStorage.getItem(STORAGE_KEY) || "";
+  // Set by renderNews — re-renders the carousel view when a lazy-loaded
+  // WordPress featured image arrives.
+  var renderCurrentArticle = null;
 
   function saveFeed(url) {
     rssUrl = url;
@@ -134,6 +137,65 @@ export default async function initNews(container) {
     return m ? m[1] : "";
   }
 
+  // WordPress feeds often omit per-item images entirely. For those articles,
+  // ask the server to fetch the article page and pull out the featured image
+  // (og:image / wp-post-image). Runs with limited concurrency so a refresh
+  // doesn't fire many page fetches at once. Only ever called for WordPress
+  // feeds — normal feeds keep their existing image handling untouched.
+  async function enrichArticleImages(articles) {
+    var missing = [];
+    articles.forEach(function (a) {
+      if (!a.imageUrl && a.link && a.link !== "#")
+        missing.push(a);
+    });
+    if (!missing.length) return;
+    var i = 0;
+    async function worker() {
+      while (i < missing.length) {
+        var a = missing[i++];
+        var url = await fetchFeaturedImage(a.link);
+        if (url) {
+          a.imageUrl = url;
+          if (renderCurrentArticle) renderCurrentArticle();
+        }
+      }
+    }
+    await Promise.all([worker(), worker()]);
+  }
+
+  function fetchFeaturedImage(link) {
+    return new Promise(function (resolve) {
+      try {
+        var cache = JSON.parse(
+          localStorage.getItem("handiNewsImageCache") || "{}",
+        );
+        var hit = cache[link];
+        if (hit && Date.now() - hit.at < 24 * 60 * 60 * 1000) {
+          resolve(hit.url || "");
+          return;
+        }
+      } catch (e) {}
+      fetch("/api/news-image?url=" + encodeURIComponent(link))
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (data) {
+          var url = (data && data.url) || "";
+          try {
+            var cache = JSON.parse(
+              localStorage.getItem("handiNewsImageCache") || "{}",
+            );
+            cache[link] = { url: url, at: Date.now() };
+            localStorage.setItem("handiNewsImageCache", JSON.stringify(cache));
+          } catch (e) {}
+          resolve(url);
+        })
+        .catch(function () {
+          resolve("");
+        });
+    });
+  }
+
   async function fetchNews() {
     try {
       content.innerHTML =
@@ -147,6 +209,7 @@ export default async function initNews(container) {
       if (xmlDoc.querySelector("parsererror")) throw new Error("Invalid XML");
 
       var channel, items, channelLink, channelTitle;
+      var isWordPress = false;
       var rssChannel = xmlDoc.querySelector("channel");
       var atomFeed = xmlDoc.querySelector("feed");
 
@@ -175,6 +238,9 @@ export default async function initNews(container) {
             chDesc.textContent.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
           );
         items = xmlDoc.querySelectorAll("item");
+        var rssGen = channel.querySelector("generator");
+        if (rssGen && rssGen.textContent && /wordpress/i.test(rssGen.textContent))
+          isWordPress = true;
       } else if (atomFeed) {
         var selfLink = atomFeed.querySelector('link[rel="self"]');
         channelLink = selfLink ? selfLink.getAttribute("href") || "#" : "#";
@@ -191,6 +257,9 @@ export default async function initNews(container) {
             chSub.textContent.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
           );
         items = xmlDoc.querySelectorAll("entry");
+        var atomGen = atomFeed.querySelector("generator");
+        if (atomGen && atomGen.textContent && /wordpress/i.test(atomGen.textContent))
+          isWordPress = true;
       } else {
         throw new Error("Unknown feed format");
       }
@@ -286,6 +355,9 @@ export default async function initNews(container) {
         });
       }
       renderNews(articles, channelLink, channelTitle, channelInfo);
+      // WordPress feeds: items carry no image, so fetch the featured image
+      // from each article page. Normal feeds keep their existing behavior.
+      if (isWordPress) enrichArticleImages(articles);
       window.logEvent(2, "news_load", { source: formatSourceName(rssUrl), articles: articles.length });
     } catch (err) {
       console.error("News fetch error:", err);
@@ -463,6 +535,7 @@ export default async function initNews(container) {
         </div>
       `;
     }
+    renderCurrentArticle = renderArticle;
 
     function go(dir) {
       if (!articles.length) return;

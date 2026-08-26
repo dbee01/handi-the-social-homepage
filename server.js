@@ -1135,6 +1135,82 @@ app.get("/api/feed", async (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
+// NEWS ARTICLE FEATURED-IMAGE – WordPress feeds often carry no per-item image.
+// Fetch the article page server-side (CORS blocks the browser from doing it)
+// and pull out the featured image: og:image meta first, then the core
+// wp-post-image <img>. Results are cached in-memory so refreshes don't
+// re-fetch every article page.
+// -----------------------------------------------------------------------------
+const newsImageCache = new Map(); // pageUrl -> { url, expiresAt }
+const NEWS_IMAGE_TTL = 24 * 60 * 60 * 1000;
+const NEWS_IMAGE_TTL_NEGATIVE = 6 * 60 * 60 * 1000;
+
+function extractFeaturedImage(html, pageUrl) {
+  function abs(u) {
+    if (!u) return "";
+    try {
+      return new URL(u, pageUrl).href;
+    } catch (e) {
+      return "";
+    }
+  }
+  // 1. og:image meta tag (property can appear in any attribute order).
+  const metas = html.match(/<meta\b[^>]*>/gi) || [];
+  for (const meta of metas) {
+    if (!/\bproperty=["']og:image(?:["']|:)/i.test(meta)) continue;
+    const m = meta.match(/\bcontent=["']([^"']*)["']/i);
+    if (m && m[1]) return abs(m[1].trim());
+  }
+  // 2. WordPress core featured image: <img class="...wp-post-image...">.
+  const imgs = html.match(/<img\b[^>]*>/gi) || [];
+  for (const img of imgs) {
+    if (!/class=["'][^"']*wp-post-image/i.test(img)) continue;
+    const src = img.match(/\bsrc=["']([^"']*)["']/i);
+    if (src && src[1]) return abs(src[1].trim());
+    const srcset = img.match(/\bsrcset=["']([^"']*)["']/i);
+    if (srcset && srcset[1]) {
+      return abs(srcset[1].split(",")[0].trim().split(/\s+/)[0]);
+    }
+  }
+  return "";
+}
+
+app.get("/api/news-image", async (req, res) => {
+  const raw = req.query.url;
+  if (!raw) return res.status(400).json({ url: "" });
+  let pageUrl = raw;
+  try {
+    pageUrl = decodeURIComponent(raw);
+  } catch (e) {}
+  // Only http(s) targets — refuse everything else.
+  if (!/^https?:\/\//i.test(pageUrl)) return res.status(400).json({ url: "" });
+
+  const cached = newsImageCache.get(pageUrl);
+  if (cached && Date.now() < cached.expiresAt) {
+    return res.json({ url: cached.url });
+  }
+
+  const result = await fetchFeedWithRelay(pageUrl, {
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  });
+
+  let url = "";
+  if (result.ok && result.data) {
+    url = extractFeaturedImage(result.data, pageUrl);
+  }
+  // Positive results live 24h; negative ones 6h so refreshes don't re-fetch
+  // article pages that simply have no featured image.
+  newsImageCache.set(pageUrl, {
+    url,
+    expiresAt: Date.now() + (url ? NEWS_IMAGE_TTL : NEWS_IMAGE_TTL_NEGATIVE),
+  });
+  if (newsImageCache.size > 5000) newsImageCache.clear();
+  res.json({ url });
+});
+
+// -----------------------------------------------------------------------------
 // AUDIO STREAM PROXY – lets the Radio module play IP/geo-blocked streams
 // (e.g. rte.ie) by piping them through the same relay logic as feeds. The
 // upstream content-type (and icy metadata) headers are forwarded so the

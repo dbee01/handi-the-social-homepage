@@ -12,6 +12,10 @@
   function isPremiumUser() {
     // If already determined by dashboard/selector, use that
     if (window.PREMIUM_ACTIVE === true) return true;
+    // Admin-built pack (builder-admin.html stamp): premium modules unlocked
+    try {
+      if (localStorage.getItem("handiPackAdmin") === "1") return true;
+    } catch (e) {}
     // Check Stripe subscription localStorage key
     if (localStorage.getItem("stripe_subscription_id")) return true;
     // Legacy fallback

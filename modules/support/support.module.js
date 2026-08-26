@@ -69,9 +69,49 @@ export default async function initSupport(container) {
   const parentItem = container.closest(".dashboard-item");
   if (parentItem) parentItem.dataset.module = "support";
 
-  const cfg = (loadSettings().support) || {};
+  const cfg = loadSettings().support || {};
   const customHtml = (cfg.html || "").trim();
 
-  // The pack's &support HTML wins; otherwise show the default welcome block.
-  content.innerHTML = customHtml || defaultHtml();
+  // 1. A custom &support=<html> pack override wins.
+  if (customHtml) {
+    content.innerHTML = customHtml;
+    return;
+  }
+
+  // 2. Otherwise render the configured support resource (image/video,
+  //    title, description, link) when present.
+  const hasResource =
+    cfg.imageUrl || cfg.imageTitle || cfg.description || cfg.linkUrl;
+  if (hasResource) {
+    const parts = [];
+    if (cfg.imageUrl) {
+      parts.push(
+        cfg.mediaType === "video"
+          ? '<video class="support-media" controls playsinline src="' +
+            esc(cfg.imageUrl) +
+            '"></video>'
+          : '<img class="support-media" src="' +
+            esc(cfg.imageUrl) +
+            '" alt="' +
+            esc(cfg.imageTitle || "") +
+            '" loading="lazy" />'
+      );
+    }
+    if (cfg.imageTitle) parts.push("<h3>" + esc(cfg.imageTitle) + "</h3>");
+    if (cfg.description) {
+      parts.push('<p class="support-desc">' + esc(cfg.description) + "</p>");
+    }
+    if (cfg.linkUrl) {
+      parts.push(
+        '<a class="support-link" href="' +
+          esc(cfg.linkUrl) +
+          '" target="_blank" rel="noopener">Learn More &rarr;</a>'
+      );
+    }
+    content.innerHTML = parts.join("\n");
+    return;
+  }
+
+  // 3. Fall back to the default welcome block.
+  content.innerHTML = defaultHtml();
 }
