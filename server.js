@@ -1211,14 +1211,75 @@ app.get("/api/news-image", async (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
-// LIVE FOOTBALL RADAR – proxies the API-Football "live=all" fixtures endpoint.
+// TODAY'S FOOTBALL FIXTURES – proxies the API-Football "fixtures?date=…"
+// endpoint (Europe/Dublin timezone) and trims each fixture to the fields the
+// sports module needs: kickoff time, venue, teams, score and key events.
 // The API key stays server-side (never shipped to the browser). Responses are
 // cached in-memory so a dashboard polling every minute doesn't burn the API
 // quota — tune SPORTS_CACHE_SECONDS in .env (default 300s; the free tier only
 // allows ~100 requests/day).
+//
+// League filtering happens server-side after the fetch: the free API-Sports
+// plan rejects league-filtered queries ("Free plans do not have access to
+// this season"), so we always fetch the full day and filter by league id here.
 // -----------------------------------------------------------------------------
 const APISPORTS_BASE = "https://v3.football.api-sports.io";
 let sportsCache = { key: "all", at: 0, data: null };
+
+// Pre-match odds are cached per fixture for longer than the fixtures list
+// (odds move slowly and each odds request costs one API call per fixture —
+// tune SPORTS_ODDS_CACHE_SECONDS in .env, default 1h).
+const ODDS_TTL =
+  (parseInt(process.env.SPORTS_ODDS_CACHE_SECONDS, 10) || 3600) * 1000;
+let oddsCache = {}; // fixtureId -> { at, data }
+
+// Statuses where the match has kicked off / finished — no pre-match odds.
+const STARTED_STATUS = new Set([
+  "1H", "2H", "HT", "ET", "P", "LIVE", "FT", "AET", "PEN",
+  "SUSP", "INT", "ABD", "AWD", "WO",
+]);
+
+function isStartedStatus(s) {
+  return STARTED_STATUS.has(String(s || "").toUpperCase());
+}
+
+// Best odds across all bookmakers for the three match-winner outcomes.
+// Returns { home: {odd,bookmaker}, draw: {...}, away: {...} } or null.
+async function fetchBestOdds(fixtureId, apiKey) {
+  const res = await axios.get(APISPORTS_BASE + "/odds", {
+    params: { fixture: fixtureId },
+    headers: { "x-apisports-key": apiKey },
+    timeout: 12000,
+  });
+  const body = res.data || {};
+  if (!Array.isArray(body.response) || !body.response.length) return null;
+  const entry = body.response[0];
+  const best = {};
+  for (const bm of entry.bookmakers || []) {
+    for (const bet of bm.bets || []) {
+      // Match Winner (bet id 1) — don't match "Second Half Winner" etc.
+      if (bet.id !== 1 && bet.name !== "Match Winner") continue;
+      for (const v of bet.values || []) {
+        const label = String(v.value || "").toLowerCase();
+        const key =
+          label === "home" || label === "1"
+            ? "home"
+            : label === "draw" || label === "x"
+              ? "draw"
+              : label === "away" || label === "2"
+                ? "away"
+                : null;
+        if (!key) continue;
+        const odd = parseFloat(v.odd);
+        if (!Number.isFinite(odd) || odd <= 1) continue;
+        if (!best[key] || odd > best[key].odd) {
+          best[key] = { odd, bookmaker: bm.name || "" };
+        }
+      }
+    }
+  }
+  return Object.keys(best).length ? best : null;
+}
 
 app.get("/api/sports/live", async (req, res) => {
   const apiKey = process.env.APISPORTS_KEY;
@@ -1228,83 +1289,131 @@ app.get("/api/sports/live", async (req, res) => {
       .json({ error: "not_configured", message: "APISPORTS_KEY not set in .env" });
   }
   const ttlMs =
-    (parseInt(process.env.SPORTS_CACHE_SECONDS, 10) || 300) * 1000;
+    (parseInt(process.env.SPORTS_CACHE_SECONDS, 10) || 900) * 1000;
   // Optional league filter (comma-separated API-Football league ids).
   const leaguesParam = String(req.query.leagues || "").trim();
   const cacheKey = leaguesParam || "all";
+  let matches;
   if (
     sportsCache.data &&
     sportsCache.key === cacheKey &&
     Date.now() - sportsCache.at < ttlMs
   ) {
-    return res.json(sportsCache.data);
-  }
-  try {
-    const upstream = await axios.get(APISPORTS_BASE + "/fixtures", {
-      params: { live: "all" },
-      headers: { "x-apisports-key": apiKey },
-      timeout: 15000,
-    });
-    const body = upstream.data || {};
-    if (!Array.isArray(body.response)) {
+    matches = sportsCache.data.matches;
+  } else {
+    try {
+      // "Today" in Irish local time so kickoff times are the local ones.
+      const today = new Date().toLocaleDateString("en-CA", {
+        timeZone: "Europe/Dublin",
+      });
+      const upstream = await axios.get(APISPORTS_BASE + "/fixtures", {
+        params: { date: today, timezone: "Europe/Dublin" },
+        headers: { "x-apisports-key": apiKey },
+        timeout: 15000,
+      });
+      const body = upstream.data || {};
+      if (!Array.isArray(body.response)) {
+        return res
+          .status(502)
+          .json({ error: "upstream", message: "Bad upstream response" });
+      }
+      const wanted = leaguesParam
+        ? new Set(
+            leaguesParam
+              .split(",")
+              .map((s) => parseInt(s, 10))
+              .filter((n) => Number.isFinite(n)),
+          )
+        : null;
+      matches = body.response.map((f) => ({
+        id: f.fixture && f.fixture.id,
+        leagueId: f.league && f.league.id,
+        league:
+          (f.league &&
+            (f.league.name +
+              (f.league.country ? " · " + f.league.country : ""))) ||
+          "",
+        leagueLogo: f.league && f.league.logo,
+        status: f.fixture && f.fixture.status ? f.fixture.status.short : "",
+        minute:
+          f.fixture &&
+          f.fixture.status &&
+          typeof f.fixture.status.elapsed === "number"
+            ? f.fixture.status.elapsed
+            : null,
+        // Kickoff time (HH:MM, Europe/Dublin) — the API echoes local time
+        // back because we pass timezone=Europe/Dublin.
+        time: f.fixture && f.fixture.date ? f.fixture.date.slice(11, 16) : null,
+        venue: (f.fixture && f.fixture.venue && f.fixture.venue.name) || "",
+        home: f.teams && f.teams.home ? f.teams.home.name : "",
+        homeLogo: f.teams && f.teams.home ? f.teams.home.logo : "",
+        away: f.teams && f.teams.away ? f.teams.away.name : "",
+        awayLogo: f.teams && f.teams.away ? f.teams.away.logo : "",
+        scoreHome: f.goals && typeof f.goals.home === "number" ? f.goals.home : 0,
+        scoreAway: f.goals && typeof f.goals.away === "number" ? f.goals.away : 0,
+        events: Array.isArray(f.events)
+          ? f.events
+              .filter(
+                (e) =>
+                  e &&
+                  (e.type === "Goal" || e.type === "Card" || e.type === "Var"),
+              )
+              .map((e) => ({
+                type: e.type,
+                detail: e.detail || "",
+                time:
+                  e.time && typeof e.time.elapsed === "number"
+                    ? e.time.elapsed
+                    : null,
+                team: e.team ? e.team.name : "",
+                player: e.player ? e.player.name : "",
+              }))
+          : [],
+      }));
+      if (wanted && wanted.size) {
+        matches = matches.filter((m) => wanted.has(m.leagueId));
+      }
+      sportsCache = {
+        key: cacheKey,
+        at: Date.now(),
+        data: { updatedAt: Date.now(), date: today, matches },
+      };
+    } catch (error) {
+      console.error("❌ Sports API error:", error.message);
       return res
         .status(502)
-        .json({ error: "upstream", message: "Bad upstream response" });
+        .json({ error: "upstream", message: error.message });
     }
-    const wanted = leaguesParam
-      ? new Set(
-          leaguesParam
-            .split(",")
-            .map((s) => parseInt(s, 10))
-            .filter((n) => Number.isFinite(n)),
-        )
-      : null;
-    let matches = body.response.map((f) => ({
-      id: f.fixture && f.fixture.id,
-      leagueId: f.league && f.league.id,
-      league:
-        (f.league &&
-          (f.league.name +
-            (f.league.country ? " · " + f.league.country : ""))) ||
-        "",
-      leagueLogo: f.league && f.league.logo,
-      status: f.fixture && f.fixture.status ? f.fixture.status.short : "",
-      minute:
-        f.fixture &&
-        f.fixture.status &&
-        typeof f.fixture.status.elapsed === "number"
-          ? f.fixture.status.elapsed
-          : null,
-      home: f.teams && f.teams.home ? f.teams.home.name : "",
-      homeLogo: f.teams && f.teams.home ? f.teams.home.logo : "",
-      away: f.teams && f.teams.away ? f.teams.away.name : "",
-      awayLogo: f.teams && f.teams.away ? f.teams.away.logo : "",
-      scoreHome: f.goals && typeof f.goals.home === "number" ? f.goals.home : 0,
-      scoreAway: f.goals && typeof f.goals.away === "number" ? f.goals.away : 0,
-      events: Array.isArray(f.events)
-        ? f.events
-            .filter(
-              (e) => e && (e.type === "Goal" || e.type === "Card" || e.type === "Var"),
-            )
-            .map((e) => ({
-              type: e.type,
-              detail: e.detail || "",
-              time: e.time && typeof e.time.elapsed === "number" ? e.time.elapsed : null,
-              team: e.team ? e.team.name : "",
-              player: e.player ? e.player.name : "",
-            }))
-        : [],
-    }));
-    if (wanted && wanted.size) {
-      matches = matches.filter((m) => wanted.has(m.leagueId));
-    }
-    const payload = { updatedAt: Date.now(), matches };
-    sportsCache = { key: cacheKey, at: Date.now(), data: payload };
-    res.json(payload);
-  } catch (error) {
-    console.error("❌ Sports API error:", error.message);
-    res.status(502).json({ error: "upstream", message: error.message });
   }
+
+  // Pre-match odds for the selected leagues only (never for the unfiltered
+  // "all games" view — that could be 100+ fixtures and would burn the quota).
+  if (leaguesParam) {
+    const now = Date.now();
+    const stale = matches.filter(
+      (m) =>
+        m.id &&
+        !isStartedStatus(m.status) &&
+        (!oddsCache[m.id] || now - oddsCache[m.id].at >= ODDS_TTL),
+    );
+    // Cap the number of odds fetches per refresh.
+    await Promise.allSettled(
+      stale.slice(0, 20).map(async (m) => {
+        try {
+          const odds = await fetchBestOdds(m.id, apiKey);
+          if (odds) oddsCache[m.id] = { at: Date.now(), data: odds };
+        } catch (e) {
+          /* keep whatever we had */
+        }
+      }),
+    );
+    matches = matches.map((m) => ({
+      ...m,
+      odds: oddsCache[m.id] ? oddsCache[m.id].data : null,
+    }));
+  }
+
+  res.json({ ...sportsCache.data, matches });
 });
 // AUDIO STREAM PROXY – lets the Radio module play IP/geo-blocked streams
 // (e.g. rte.ie) by piping them through the same relay logic as feeds. The

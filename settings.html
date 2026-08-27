@@ -922,7 +922,7 @@
                             id="sportsLeagues"
                             style="display:flex;flex-direction:column;gap:4px;max-height:220px;overflow-y:auto;border:1px solid #e5e7eb;border-radius:8px;padding:8px;"
                         ></div>
-                        <small>Nothing ticked = show all live leagues.</small>
+                        <small>Nothing ticked = all of today's fixtures.</small>
                     </div>
                 </div>
             </div>
@@ -1732,6 +1732,8 @@
             // Curated league picker for the Sports (live football) module.
             // IDs are API-Football league ids; nothing ticked = all live.
             const SPORTS_LEAGUES = [
+                { id: 357, name: "League of Ireland Premier Division" },
+                { id: 358, name: "League of Ireland First Division" },
                 { id: 2, name: "UEFA Champions League" },
                 { id: 3, name: "UEFA Europa League" },
                 { id: 39, name: "Premier League" },
@@ -2051,7 +2053,7 @@
                             });
                         }
                         var savedLeagues = String(
-                            settings.sports.leagueIds || "",
+                            settings.sports.leagueIds || "357",
                         )
                             .split(",")
                             .map(function (s) {
