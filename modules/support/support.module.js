@@ -40,7 +40,7 @@ function getPackMeta() {
 // link for the 7 day free trial.
 function defaultHtml() {
   const { name, description } = getPackMeta();
-  const title = name || "Welcome to your custom build handi-pack homepage.";
+  const title = name || "Welcome to your custom build handi-site homepage.";
   return [
     "<h3>" + esc(title) + "</h3>",
     description ? '<p class="support-desc">' + esc(description) + "</p>" : "",

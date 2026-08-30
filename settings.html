@@ -19,6 +19,18 @@
                     return false;
                 }
             })();
+            // Modules granted by an admin-built pack link. Only these premium
+            // modules are unlocked by the pack — everything else stays Premium-only.
+            window.HANDI_PACK_MODULES = (function () {
+                try {
+                    var list = JSON.parse(
+                        localStorage.getItem("handiPackModules") || "[]",
+                    );
+                    return Array.isArray(list) ? list : [];
+                } catch (e) {
+                    return [];
+                }
+            })();
             (async function () {
                 var host = window.location.hostname;
                 if (
@@ -556,13 +568,100 @@
                 </div>
                 <div class="module-config">
                     <div class="config-field">
-                        <label>Newsletter feed URL:</label
+                        <label>Feed:</label>
+                        <select id="newsletterFeedUrl">
+                            <option value="">
+                                — Default (Handi newsletter) —
+                            </option>
+                            <option value="__custom__">
+                                Custom feed…
+                            </option>
+                            <option
+                                value="https://www.rte.ie/feeds/rss/news.xml"
+                            >
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="10" height="20" fill="#169b62"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ff883e"/></svg> Ireland – RTÉ
+                            </option>
+                            <option
+                                value="https://feeds.bbci.co.uk/news/rss.xml"
+                            >
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="20" fill="#012169"/><path d="M0 0l30 20M30 0L0 20" stroke="#fff" stroke-width="4"/><path d="M0 0l30 20M30 0L0 20" stroke="#c8102e" stroke-width="2"/><line x1="15" y1="0" x2="15" y2="20" stroke="#fff" stroke-width="6"/><line x1="0" y1="10" x2="30" y2="10" stroke="#fff" stroke-width="6"/><line x1="15" y1="0" x2="15" y2="20" stroke="#c8102e" stroke-width="3"/><line x1="0" y1="10" x2="30" y2="10" stroke="#c8102e" stroke-width="3"/></svg> UK – BBC
+                            </option>
+                            <option value="https://www.lemonde.fr/rss/une.xml">
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="10" height="20" fill="#002395"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ed2939"/></svg> France – Le Monde
+                            </option>
+                            <option
+                                value="https://www.spiegel.de/schlagzeilen/index.rss"
+                            >
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="6.67" fill="#000"/><rect y="6.67" width="30" height="6.67" fill="#d00"/><rect y="13.34" width="30" height="6.66" fill="#fc0"/></svg> Deutschland – Spiegel
+                            </option>
+                            <option
+                                value="https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada"
+                            >
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="5" fill="#c60b1e"/><rect y="5" width="30" height="10" fill="#ffc400"/><rect y="15" width="30" height="5" fill="#c60b1e"/></svg> España – El País
+                            </option>
+                            <option
+                                value="https://www.corriere.it/rss/homepage.xml"
+                            >
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="10" height="20" fill="#009246"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce2b37"/></svg> Italia – Corriere
+                            </option>
+                            <option
+                                value="https://feeds.nos.nl/nosnieuwsalgemeen"
+                            >
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="6.67" fill="#ae1c28"/><rect y="6.67" width="30" height="6.67" fill="#fff"/><rect y="13.34" width="30" height="6.66" fill="#21468b"/></svg> Nederland – NOS
+                            </option>
+                            <option value="https://tvn24.pl/najnowsze.xml">
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="10" fill="#fff"/><rect y="10" width="30" height="10" fill="#dc143c"/></svg> Polska – TVN24
+                            </option>
+                            <option
+                                value="https://feeds.feedburner.com/PublicoRSS"
+                            >
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="12" height="20" fill="#006600"/><rect x="12" width="18" height="20" fill="#f00"/><circle cx="12" cy="10" r="4" fill="#fc0" stroke="#000" stroke-width=".5"/></svg> Portugal – Público
+                            </option>
+                            <option
+                                value="https://www.standaard.be/rss/section/1f2838d4-99ea-49f0-9102-138784c7ea7c"
+                            >
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="10" height="20" fill="#000"/><rect x="10" width="10" height="20" fill="#fae042"/><rect x="20" width="10" height="20" fill="#ed2939"/></svg> België – De Standaard
+                            </option>
+                            <option value="https://www.nzz.ch/recent.rss">
+                                <svg viewBox="0 0 20 20" width="20" height="14"><rect width="20" height="20" fill="#d52b1e"/><line x1="7" y1="5" x2="13" y2="15" stroke="#fff" stroke-width="2.5"/><line x1="13" y1="5" x2="7" y2="15" stroke="#fff" stroke-width="2.5"/></svg> Schweiz – NZZ
+                            </option>
+                            <option value="https://www.svt.se/nyheter/rss.xml">
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="20" fill="#006aa7"/><line x1="10" y1="0" x2="10" y2="20" stroke="#fecc00" stroke-width="4"/><line x1="0" y1="8" x2="30" y2="12" stroke="#fecc00" stroke-width="4"/></svg> Sverige – SVT
+                            </option>
+                            <option
+                                value="https://www.nrk.no/nyheter/siste.rss"
+                            >
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="20" fill="#ef2b2d"/><line x1="8" y1="0" x2="8" y2="20" stroke="#fff" stroke-width="4"/><line x1="0" y1="8" x2="30" y2="12" stroke="#fff" stroke-width="4"/><line x1="10" y1="0" x2="10" y2="20" stroke="#002868" stroke-width="2"/><line x1="0" y1="9" x2="30" y2="11" stroke="#002868" stroke-width="2"/></svg> Norge – NRK
+                            </option>
+                            <option value="https://feeds.npr.org/1001/rss.xml">
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="1.54" fill="#b22234"/><rect y="1.54" width="30" height="1.54" fill="#fff"/><rect y="3.08" width="30" height="1.54" fill="#b22234"/><rect y="4.62" width="30" height="1.54" fill="#fff"/><rect y="6.15" width="30" height="1.54" fill="#b22234"/><rect y="7.69" width="30" height="1.54" fill="#fff"/><rect y="9.23" width="30" height="1.54" fill="#b22234"/><rect y="10.77" width="30" height="1.54" fill="#fff"/><rect y="12.31" width="30" height="1.54" fill="#b22234"/><rect y="13.85" width="30" height="1.54" fill="#fff"/><rect y="15.38" width="30" height="1.54" fill="#b22234"/><rect y="16.92" width="30" height="1.54" fill="#fff"/><rect y="18.46" width="30" height="1.54" fill="#b22234"/><rect width="10" height="10.77" fill="#3c3b6e"/></svg> USA – NPR
+                            </option>
+                            <option
+                                value="https://www.cbc.ca/webfeed/rss/rss-topstories"
+                            >
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="20" fill="#f00"/><rect x="7.5" width="15" height="20" fill="#fff"/><path d="M15 3l1.5 4.5h5l-4 3 1.5 4.5-4-3-4 3 1.5-4.5-4-3h5z" fill="#f00"/></svg> Canada – CBC
+                            </option>
+                            <option
+                                value="https://www.abc.net.au/news/feed/51120/rss.xml"
+                            >
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="20" fill="#00008b"/><circle cx="15" cy="10" r="4" fill="#fff"/><circle cx="13" cy="9" r=".8" fill="#00008b"/><circle cx="17" cy="9" r=".8" fill="#00008b"/><circle cx="15" cy="11" r=".6" fill="#00008b"/></svg> Australia – ABC
+                            </option>
+                            <option
+                                value="https://www.rnz.co.nz/rss/national.xml"
+                            >
+                                <svg viewBox="0 0 30 20" width="20" height="14"><rect width="30" height="20" fill="#00008b"/><circle cx="15" cy="10" r="4" fill="#fff"/><circle cx="13" cy="9" r=".8" fill="#00008b"/><circle cx="17" cy="9" r=".8" fill="#00008b"/><circle cx="15" cy="11" r=".6" fill="#00008b"/></svg> New Zealand – RNZ
+                            </option>
+                        </select>
+                        <small>Pick a feed, or choose Default for the Handi newsletter.</small>
+                    </div>
+                    <div class="config-field" id="newsletterCustomField" style="display:none;">
+                        <label>Custom feed URL:</label
                         ><input
-                            type="text"
-                            id="newsletterFeedUrl"
-                            placeholder="https://rss.app/feeds/h5mRnOsCNYaZRYxA.xml"
+                            type="url"
+                            id="newsletterCustomFeedUrl"
+                            placeholder="https://example.com/feed.xml"
                         />
-                        <small>The Handi newsletter feed (rss.app). Leave blank for the default.</small>
+                        <small>Enter your own RSS feed URL.</small>
                     </div>
                 </div>
             </div>
@@ -1846,6 +1945,16 @@
                     });
             }
 
+            // A premium module is usable when the user is actually Premium, or
+            // when an admin-built pack link granted that specific module.
+            function isPremiumGranted(moduleId) {
+                return (
+                    window.PREMIUM_ACTIVE === true ||
+                    (window.HANDI_PACK_ADMIN &&
+                        window.HANDI_PACK_MODULES.indexOf(moduleId) !== -1)
+                );
+            }
+
             function applySettingsToToggles() {
                 const settings = loadSettings();
                 const mmr = window.getMMR();
@@ -1878,24 +1987,25 @@
                             card.style.display = "";
                         }
                         // Support is pinned ON for free users — immutable,
-                        // only premium users can toggle it off.
+                        // only premium users can toggle it off. Admin-built
+                        // packs are not pinned: support follows the pack grant.
                         if (
                             moduleId === "support" &&
-                            window.PREMIUM_ACTIVE !== true
+                            window.PREMIUM_ACTIVE !== true &&
+                            !window.HANDI_PACK_ADMIN
                         ) {
                             toggle.classList.add("active");
                             toggle.classList.add("mmr-disabled");
                             card.classList.add("module-card-disabled");
                         }
-                        // Premium modules are locked for free users — greyed
-                        // out and not toggleable regardless of MMR state, and
-                        // their config dropdown is not rendered.
+                        // Premium modules are locked for non-granted users —
+                        // greyed out and not toggleable regardless of MMR
+                        // state, and their config dropdown is not rendered.
                         const regMod = window.HANDI_MODULE_BY_ID(moduleId);
                         if (
                             regMod &&
                             regMod.tier === "premium" &&
-                            window.PREMIUM_ACTIVE !== true &&
-                            !window.HANDI_PACK_ADMIN
+                            !isPremiumGranted(moduleId)
                         ) {
                             toggle.classList.add("mmr-disabled");
                             card.classList.add("module-card-disabled");
@@ -2107,9 +2217,32 @@
 
                 // Load newsletter settings
                 if (settings.newsletter) {
-                    if (document.getElementById("newsletterFeedUrl")) {
-                        document.getElementById("newsletterFeedUrl").value =
-                            settings.newsletter.feedUrl || "";
+                    var nlSelect = document.getElementById("newsletterFeedUrl");
+                    var nlCustom = document.getElementById("newsletterCustomFeedUrl");
+                    var nlCustomField = document.getElementById("newsletterCustomField");
+                    var savedFeed = settings.newsletter.feedUrl || "";
+                    if (nlSelect) {
+                        // If the saved feed matches one of the curated options, select it;
+                        // otherwise treat it as a custom feed.
+                        var known = Array.prototype.some.call(
+                            nlSelect.options,
+                            function (o) {
+                                return o.value === savedFeed && o.value !== "__custom__";
+                            },
+                        );
+                        if (known) {
+                            nlSelect.value = savedFeed;
+                            if (nlCustom) nlCustom.value = "";
+                        } else if (savedFeed) {
+                            nlSelect.value = "__custom__";
+                            if (nlCustom) nlCustom.value = savedFeed;
+                        } else {
+                            nlSelect.value = "";
+                        }
+                        if (nlCustomField) {
+                            nlCustomField.style.display =
+                                nlSelect.value === "__custom__" ? "" : "none";
+                        }
                     }
                 }
 
@@ -2252,8 +2385,14 @@
                     document.getElementById("flipTopicUrl")?.value.trim() || "";
 
                 if (!settings.newsletter) settings.newsletter = {};
-                settings.newsletter.feedUrl =
-                    document.getElementById("newsletterFeedUrl")?.value.trim() || "";
+                var nlSelect = document.getElementById("newsletterFeedUrl");
+                var nlSelectVal = nlSelect ? nlSelect.value : "";
+                if (nlSelectVal === "__custom__") {
+                    settings.newsletter.feedUrl =
+                        document.getElementById("newsletterCustomFeedUrl")?.value.trim() || "";
+                } else {
+                    settings.newsletter.feedUrl = nlSelectVal;
+                }
 
                 if (!settings.social) settings.social = {};
                 settings.social.instance =
@@ -2529,8 +2668,7 @@
                             if (
                                 reg &&
                                 reg.tier === "premium" &&
-                                window.PREMIUM_ACTIVE !== true &&
-                                !window.HANDI_PACK_ADMIN
+                                !isPremiumGranted(modId)
                             )
                                 return;
                             const config = card.querySelector(".module-config");
@@ -2871,6 +3009,19 @@
                                             document.getElementById("mastodonHashtagHint").style.display = this.value === "hashtag" ? "" : "none";
                                         });
                                     });
+
+                                    // Newsletter feed dropdown: show the custom URL input only
+                                    // when "Custom feed…" is selected.
+                                    var newsletterFeedSelect = document.getElementById("newsletterFeedUrl");
+                                    var newsletterCustomField = document.getElementById("newsletterCustomField");
+                                    if (newsletterFeedSelect) {
+                                        newsletterFeedSelect.addEventListener("change", function () {
+                                            if (newsletterCustomField) {
+                                                newsletterCustomField.style.display =
+                                                    this.value === "__custom__" ? "" : "none";
+                                            }
+                                        });
+                                    }
 
                                     if (detectLocationBtn)
                 detectLocationBtn.addEventListener("click", detectMyLocation);

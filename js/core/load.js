@@ -67,24 +67,64 @@ window.triggerLoad = function (opts) {
       return { name: f.name, file: f, url: URL.createObjectURL(f), size: f.size };
     });
 
-    var result = onFiles ? onFiles(files) : null;
-
     function done() {
       var el = document.getElementById("tl-overlay");
       if (el) el.remove();
       input.remove();
     }
 
-    if (result && typeof result.then === "function") {
-      result.then(done, function (e) {
-        if (onError) onError(e.message || "Load failed");
-        done();
-      });
-    } else {
-      setTimeout(done, 800);
-    }
+    // Yield to the browser first so the spinner is painted BEFORE the
+    // (potentially slow) file-saving work starts; remove it only when done.
+    setTimeout(function () {
+      var result = onFiles ? onFiles(files) : null;
+      if (result && typeof result.then === "function") {
+        result.then(done, function (e) {
+          if (onError) onError(e.message || "Load failed");
+          done();
+        });
+      } else {
+        setTimeout(done, 800);
+      }
+    }, 50);
   });
 
   document.body.appendChild(input);
   input.click();
 };
+
+// Clicking a panel title collapses/expands everything below it in that
+// panel. Works for all modules: those where .panel-title is a direct
+// sibling of the content, and those (music/cast/radio/emergency) where the
+// title lives inside a *-header-row wrapper.
+document.addEventListener("click", function (e) {
+  var title = e.target.closest(".panel-title");
+  if (!title) return;
+  // Ignore clicks on interactive controls inside the title (help button,
+  // lock toggle, etc.) so they keep their own behaviour.
+  if (e.target.closest("button, a, input, select, textarea")) return;
+
+  // The header is the title itself, or the header-row that wraps it.
+  var header = title;
+  var parent = title.parentElement;
+  if (parent && /-header-row$/.test(parent.className || "")) {
+    header = parent;
+  }
+
+  var siblings = [];
+  var el = header.nextElementSibling;
+  while (el) {
+    siblings.push(el);
+    el = el.nextElementSibling;
+  }
+  if (!siblings.length) return;
+
+  var collapsed = siblings[0].style.display === "none";
+  siblings.forEach(function (s) {
+    s.style.display = collapsed ? "" : "none";
+  });
+
+  // Keep the masonry grid in sync with the new panel height.
+  requestAnimationFrame(function () {
+    if (window.refreshDashboardLayout) window.refreshDashboardLayout();
+  });
+});

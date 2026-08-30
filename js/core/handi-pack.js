@@ -15,8 +15,13 @@
 //
 // This script runs early (before theme CSS), writes the mapped values into
 // localStorage (handiSettings, handiMasterModules, handiCustomTheme,
-// handiBgDataUrl, and pack metadata), then redirects to a clean URL so the
-// normal app bootstrap picks everything up.
+// handiBgDataUrl, handiPackModules and pack metadata), then redirects to a
+// clean URL so the normal app bootstrap picks everything up.
+//
+// handiPackModules (JSON array) is the list of module ids the pack turns on.
+// It is only written when the pack carries a valid admin signature, so an
+// admin-built link unlocks exactly the elements it included — every other
+// premium module stays locked for free users.
 
 (async function () {
   "use strict";
@@ -70,9 +75,12 @@
     // Verify the pack id stamp: recompute the HMAC over the sorted query
     // (minus id) with both secrets. An admin-secret match proves the link
     // came from builder-admin.html and premium modules may be unlocked.
+    // Returns true when the admin signature matched (and only then does the
+    // pack get to grant premium modules).
     async function stampPackId(qs) {
       var packId = qs.get("id");
-      if (!packId || !window.crypto || !crypto.subtle) return;
+      if (!packId || !window.crypto || !crypto.subtle) return false;
+      var matchedAdmin = false;
       try {
         var canonical = new URLSearchParams(qs);
         canonical.delete("id");
@@ -102,11 +110,13 @@
           if (hex === packId) {
             try { localStorage.setItem(candidates[i].flag, "1"); } catch (e) {}
             if (candidates[i].flag === "handiPackAdmin") {
+              matchedAdmin = true;
               try { localStorage.setItem("handiPackVerified", "1"); } catch (e) {}
             }
           }
         }
       } catch (e) { /* verification is best-effort */ }
+      return matchedAdmin;
     }
 
     var settings = readJson("handiSettings");
@@ -347,6 +357,10 @@
     // ---------------------------------------------------------------------
     var elementsRaw = qs.get("elements");
     var autoModules = [];
+    // Module ids the pack turns on. Only persisted (as "handiPackModules")
+    // when the pack is admin-signed, so premium unlocks are limited to the
+    // exact elements the pack included.
+    var grantedModules = null;
     if (qs.get("radio") || qs.get("radio-url")) autoModules.push("radio");
     if (qs.get("news")) autoModules.push("news");
     if (
@@ -431,6 +445,9 @@
         next[id] = 1;
       });
       writeJson("handiMasterModules", next);
+      grantedModules = Object.keys(next).filter(function (id) {
+        return next[id] === 1;
+      });
     }
 
     // ---------------------------------------------------------------------
@@ -487,7 +504,20 @@
     // ---------------------------------------------------------------------
     // Reload on a clean URL so theme CSS + module bootstrap see the new state
     // ---------------------------------------------------------------------
-    await stampPackId(qs);
+    var adminVerified = await stampPackId(qs);
+
+    // An admin-signed pack grants premium access to ONLY the modules it
+    // actually includes. Persist that grant list so settings / selector /
+    // dashboard can keep every other premium module locked. A non-admin
+    // (or unsigned) pack revokes any previous grant list.
+    if (adminVerified && grantedModules) {
+      try {
+        localStorage.setItem("handiPackModules", JSON.stringify(grantedModules));
+      } catch (e) {}
+    } else {
+      try { localStorage.removeItem("handiPackModules"); } catch (e) {}
+    }
+
     window.location.replace(window.location.pathname || "/");
   } catch (e) {
     console.error("Handi Pack import failed:", e);
