@@ -111,7 +111,6 @@ export default async function initMusic(container) {
   var parentItem = container.closest(".dashboard-item");
   if (parentItem) {
     parentItem.dataset.module = "music";
-    parentItem.style.minHeight = "420px";
   }
 
   var tracks = [];
