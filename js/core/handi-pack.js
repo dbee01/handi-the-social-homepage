@@ -11,6 +11,7 @@
 //   /?handi-pack=Name&description=...&colors=c1|c2|c3|c4|c5&font=f1|f2&...
 //   &text-font=...&header-font=...&flipboard-user=...&background-image=...&...
 //   &elements=gallery,chat,social&weather-location=...&radio=...&...
+//   &sports=loi,premier-league   (league selection for the sports module)
 //
 // This script runs early (before theme CSS), writes the mapped values into
 // localStorage (handiSettings, handiMasterModules, handiCustomTheme,
@@ -226,6 +227,12 @@
     if ((v = qs.get("music"))) ensure("music").streamUrl = v;
     if ((v = qs.get("podcasts") || qs.get("cast"))) ensure("cast").streamUrl = v;
 
+    // Newsletter — RSS feed URL (defaults to the Handi newsletter feed when
+    // absent). Enables the module just like the other feed params.
+    if ((v = qs.get("newsletter"))) {
+      ensure("newsletter").feedUrl = v;
+    }
+
     // Radio stream or feed URL, optionally labelled "Station Name:url". The
     // name is kept in settings.radio.streamName so the Radio module can label
     // the row instead of the generic "Live Stream". The raw URL is also kept
@@ -260,6 +267,60 @@
       ensure("radio").streamName = v;
     }
 
+    // Sports — live football. Value is a comma-separated league selection:
+    // API-Football league ids ("sports=357,358") or friendly slugs
+    // ("sports=loi,premier-league"). A bare "sports=1" / "sports=" just
+    // enables the module with its default (League of Ireland).
+    var SPORTS_LEAGUE_ALIASES = {
+      "league-of-ireland-premier-division": "357",
+      "league-of-ireland-first-division": "358",
+      "league-of-ireland": "357,358",
+      loi: "357,358",
+      "champions-league": "2",
+      "uefa-champions-league": "2",
+      "europa-league": "3",
+      "uefa-europa-league": "3",
+      "premier-league": "39",
+      "efl-championship": "40",
+      championship: "40",
+      "serie-a": "135",
+      "la-liga": "140",
+      bundesliga: "78",
+      "ligue-1": "61",
+      eredivisie: "88",
+      "primeira-liga": "94",
+      "scottish-premiership": "179",
+      "super-lig": "203",
+      mls: "253",
+      "brasileirao-serie-a": "71",
+      "liga-profesional-argentina": "128",
+      "liga-mx": "262",
+      "k-league-1": "292",
+      "j1-league": "98",
+      allsvenskan: "113",
+      "saudi-pro-league": "307",
+    };
+    if (qs.has("sports")) {
+      var sportsIds = [];
+      String(qs.get("sports") || "")
+        .split(",")
+        .forEach(function (tok) {
+          tok = (tok || "").trim().toLowerCase().replace(/\s+/g, "-");
+          if (!tok || tok === "1") return;
+          if (/^\d+$/.test(tok)) {
+            if (sportsIds.indexOf(tok) === -1) sportsIds.push(tok);
+            return;
+          }
+          var mapped = SPORTS_LEAGUE_ALIASES[tok];
+          if (mapped) {
+            mapped.split(",").forEach(function (id) {
+              if (sportsIds.indexOf(id) === -1) sportsIds.push(id);
+            });
+          }
+        });
+      if (sportsIds.length) ensure("sports").leagueIds = sportsIds.join(",");
+    }
+
     // Premium modules (admin-signed packs): bus, calendar, phone, emergency.
     if ((v = qs.get("bus-routes"))) {
       var bus = ensure("live_bus");
@@ -272,6 +333,9 @@
     }
     if ((v = qs.get("emergency-contacts"))) {
       ensure("emergency_alert").contacts = parseContactLines(v);
+    }
+    if ((v = qs.get("sports"))) {
+      ensure("sports").leagues = v;
     }
 
     writeJson("handiSettings", settings);
@@ -308,10 +372,13 @@
     if (qs.get("gallery")) autoModules.push("gallery");
     if (qs.get("music")) autoModules.push("music");
     if (qs.get("podcasts") || qs.get("cast")) autoModules.push("cast");
+    if (qs.has("newsletter")) autoModules.push("newsletter");
     if (qs.get("bus-routes")) autoModules.push("live_bus");
     if (qs.get("calendar")) autoModules.push("calendar");
     if (qs.get("phone-contacts")) autoModules.push("phone");
     if (qs.get("emergency-contacts")) autoModules.push("emergency_alert");
+    if (qs.get("sports")) autoModules.push("sports");
+    if (qs.has("sports")) autoModules.push("sports");
 
     if (elementsRaw || autoModules.length) {
       // Keep this list in sync with js/core/module-registry.js.
@@ -327,10 +394,12 @@
         "flip",
         "llm",
         "cast",
+        "newsletter",
         "phone",
         "live_bus",
         "emergency_alert",
         "support",
+        "sports",
       ];
       var idMap = {
         bus: "live_bus",

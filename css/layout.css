@@ -392,6 +392,7 @@ header {
 /* ── SHARED MEDIA HEIGHT (gallery, flip, mastodon, news) ────────── */
 :root { --media-height: 280px; }
 .flip-card img,
+.newsletter-card img,
 .mastodon-image,
 .news-image {
     height: var(--media-height);
@@ -444,6 +445,7 @@ header {
     .gallery-slide-img,
     .mastodon-image,
     .flip-card img,
+    .newsletter-card img,
     .news-image {
         height: calc(var(--media-height) * 0.64) !important;
     }
@@ -1029,6 +1031,16 @@ header {
 }
 
 .flip-card h3 a:hover {
+    text-decoration: underline;
+}
+
+/* Newsletter card: only the title is a link (underline on hover) */
+.newsletter-card h3 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.newsletter-card h3 a:hover {
     text-decoration: underline;
 }
 

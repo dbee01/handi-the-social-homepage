@@ -543,6 +543,30 @@
                 </div>
             </div>
 
+            <!-- Newsletter Module -->
+            <div class="module-card" data-module="newsletter">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                        <h3>Newsletter</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Newsletter feed URL:</label
+                        ><input
+                            type="text"
+                            id="newsletterFeedUrl"
+                            placeholder="https://rss.app/feeds/h5mRnOsCNYaZRYxA.xml"
+                        />
+                        <small>The Handi newsletter feed (rss.app). Leave blank for the default.</small>
+                    </div>
+                </div>
+            </div>
+
             <!-- Mastodon Module -->
             <div class="module-card" data-module="social">
                 <div class="module-header">
@@ -2081,6 +2105,14 @@
                     }
                 }
 
+                // Load newsletter settings
+                if (settings.newsletter) {
+                    if (document.getElementById("newsletterFeedUrl")) {
+                        document.getElementById("newsletterFeedUrl").value =
+                            settings.newsletter.feedUrl || "";
+                    }
+                }
+
                 // Load chat settings (incl. Handi Pack rooms)
                 if (settings.chat) {
                     if (
@@ -2218,6 +2250,10 @@
                     document.getElementById("flipProfileUrl")?.value.trim() || "";
                 settings.flip.topicUrl =
                     document.getElementById("flipTopicUrl")?.value.trim() || "";
+
+                if (!settings.newsletter) settings.newsletter = {};
+                settings.newsletter.feedUrl =
+                    document.getElementById("newsletterFeedUrl")?.value.trim() || "";
 
                 if (!settings.social) settings.social = {};
                 settings.social.instance =

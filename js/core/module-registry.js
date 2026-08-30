@@ -36,6 +36,15 @@ window.HANDI_MODULES = [
     settingsConfig: { profileUrl: "", topicUrl: "" },
   },
   {
+    id: "newsletter",
+    name: "Newsletter",
+    icon: '<i class="fa-solid fa-envelope-open-text"></i>',
+    desc: "Handi newsletter feed",
+    tier: "free",
+    defaultEnabled: 0,
+    settingsConfig: { feedUrl: "" },
+  },
+  {
     id: "social",
     name: "Social",
     icon: '<i class="fa-solid fa-at"></i>',

@@ -28,6 +28,7 @@ const DEFAULT_SETTINGS = {
     maxArticles: 10,
   },
   sports: { leagueIds: "357" },
+  newsletter: { feedUrl: "" },
   flip: { profileUrl: "", topicUrl: "" },
   mastodon: { instanceUrl: "https://mastodon.ie", limit: 4 },
   live_bus: { routeIds: "", stopIds: "" },
