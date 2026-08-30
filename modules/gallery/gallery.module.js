@@ -174,7 +174,10 @@ export default async function initGallery(container) {
   container.appendChild(content);
 
   const parentItem = container.closest(".dashboard-item");
-  if (parentItem) parentItem.dataset.module = "gallery";
+  if (parentItem) {
+    parentItem.dataset.module = "gallery";
+    parentItem.style.minHeight = "unset";
+  }
 
   let images = [];
   try {

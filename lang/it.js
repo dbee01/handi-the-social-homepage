@@ -60,6 +60,9 @@ var LANG = {
     support: { name: "Supporto", desc: "Link di supporto" },
     cast: { name: "Podcast", desc: "Lettore podcast" },
     llm: { name: "LLM", desc: "Chat AI privato" },
+    flip: { name: "Flipboard", desc: "Notizie curate" },
+    newsletter: { name: "Newsletter", desc: "Riepilogo email" },
+    sports: { name: "Sport", desc: "Calcio live" },
   },
   d_loading: "Caricamento...",
   d_noData: "Nessun dato.",
@@ -70,6 +73,12 @@ var LANG = {
   d_chooseAnother: "Altra fonte",
   d_scrollUp: "Scorri su",
   d_scrollDown: "Scorri giù",
+  d_scrollLeft: "Scorri a sinistra",
+  d_scrollRight: "Scorri a destra",
+  d_more: "Di più",
+  d_less: "Di meno",
+  d_website: "Sito web",
+  d_help: "Aiuto",
   d_selectFeed: "Seleziona fonte",
   d_selectServer: "Seleziona server Mastodon",
   d_selectCountry: "Seleziona paese",
@@ -215,6 +224,20 @@ var LANG = {
         d_configureSupport: "Configure in Settings.",
         d_noSupport: "No support links configured.",
 
+        // Flip (Flipboard)
+        d_flipConfigure: "Aggiungi un URL di profilo o argomento Flipboard nelle Impostazioni.",
+        d_flipEmpty: "Nessun elemento trovato.",
+
+        // Newsletter
+        d_newsletterEmpty: "Nessun elemento della newsletter trovato.",
+
+        // Sports
+        d_sportsNoKey: "Lo sport dal vivo non è configurato sul server.",
+        d_sportsNoKeyHint: "Aggiungi APISPORTS_KEY al .env del server e riavvia.",
+        d_sportsError: "Impossibile caricare le partite di oggi.",
+        d_sportsNone: "Nessuna partita oggi.",
+        d_sportsToday: "Oggi",
+
   d_customizeDashboard: "Personalizza dashboard",
   d_freeTrial: "✨ Prova Premium",
   s_settings: "Impostazioni",
@@ -297,6 +320,15 @@ var LANG = {
 
       h_support:
         "<strong>🤝 Supporto</strong><br><br>• L'elemento Supporto contiene un caricamento di immagini o video.<br>• Il link può essere al tuo sito web, negozio, pagina donazioni, fornitore biglietti ecc.<br>• Configura in <strong>Impostazioni → Supporto</strong>.<br>• Carica un'immagine o un video (salvato come URL dati).<br>• Aggiungi un titolo, un link URL esterno e una descrizione.<br>• Tutti i dati vengono salvati localmente nel tuo browser.",
+
+  h_flip:
+        "<strong>➡️ Flipboard</strong><br><br>• Mostra storie curate da un profilo o argomento Flipboard.<br>• Aggiungi un profilo (<code>@user</code>) o argomento (<code>#topic</code>) in <strong>Impostazioni → Flipboard</strong>.<br>• Usa <strong>‹ ›</strong> per scorrere le storie.<br>• Clicca su una storia per aprirla sul sito di origine.",
+
+  h_newsletter:
+        "<strong>✉️ Newsletter</strong><br><br>• Mostra gli ultimi elementi del feed scelto o della newsletter Handi.<br>• Scegli un feed in <strong>Impostazioni → Newsletter</strong>.<br>• Usa <strong>‹ ›</strong> per scorrere gli elementi.<br>• Clicca su un titolo per leggere l'elemento completo.",
+
+  h_sports:
+        "<strong>⚽ Sport</strong><br><br>• Mostra le partite di calcio in diretta di oggi e le quote.<br>• Scegli quali campionati seguire in <strong>Impostazioni → Sport</strong>.<br>• Tocca un riquadro quote per aprire il sito del bookmaker.<br>• Richiede la configurazione del server (APISPORTS_KEY).",
 
   h_modalTitle: "Aiuto modulo",
   h_gotIt: "Ho capito",

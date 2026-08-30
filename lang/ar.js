@@ -60,6 +60,9 @@ var LANG = {
     support: { name: "الدعم", desc: "روابط الدعم" },
     cast: { name: "بودكاست", desc: "مشغل البودكاست" },
     llm: { name: "LLM", desc: "محادثة ذكاء اصطناعي خاصة" },
+    flip: { name: "فليبورد", desc: "أخبار منسقة" },
+    newsletter: { name: "النشرة الإخبارية", desc: "ملخص بريدي" },
+    sports: { name: "الرياضة", desc: "كرة قدم مباشرة" },
   },
   d_loading: "جار التحميل...",
   d_noData: "لا توجد بيانات.",
@@ -70,6 +73,12 @@ var LANG = {
   d_chooseAnother: "مصدر آخر",
   d_scrollUp: "التمرير للأعلى",
   d_scrollDown: "التمرير للأسفل",
+  d_scrollLeft: "التمرير لليسار",
+  d_scrollRight: "التمرير لليمين",
+  d_more: "المزيد",
+  d_less: "أقل",
+  d_website: "الموقع الإلكتروني",
+  d_help: "مساعدة",
   d_selectFeed: "اختر مصدراً",
   d_selectServer: "اختر خادم ماستودون",
   d_selectCountry: "اختر بلداً",
@@ -214,6 +223,20 @@ var LANG = {
         d_configureSupport: "Configure in Settings.",
         d_noSupport: "No support links configured.",
 
+        // Flip (Flipboard)
+        d_flipConfigure: "أضف رابط ملف أو موضوع Flipboard في الإعدادات.",
+        d_flipEmpty: "لم يتم العثور على عناصر.",
+
+        // Newsletter
+        d_newsletterEmpty: "لا توجد عناصر في النشرة الإخبارية.",
+
+        // Sports
+        d_sportsNoKey: "الرياضة المباشرة غير مهيأة على الخادم.",
+        d_sportsNoKeyHint: "أضف APISPORTS_KEY إلى .env الخاص بالخادم وأعد التشغيل.",
+        d_sportsError: "تعذر تحميل مباريات اليوم.",
+        d_sportsNone: "لا مباريات اليوم.",
+        d_sportsToday: "اليوم",
+
   d_customizeDashboard: "تخصيص لوحة القيادة",
   d_freeTrial: "✨ جرّب بريميوم",
   s_settings: "الإعدادات",
@@ -295,6 +318,15 @@ var LANG = {
 
       h_support:
         "<strong>🤝 الدعم</strong><br><br>• يحتوي عنصر الدعم على تحميل صورة أو فيديو.<br>• يمكن أن يكون الرابط إلى موقعك الإلكتروني أو متجرك أو صفحة التبرعات أو مورد التذاكر إلخ.<br>• التكوين في <strong>الإعدادات → الدعم</strong>.<br>• قم بتحميل صورة أو فيديو (مخزن كـ data URL).<br>• أضف عنوانًا ورابط URL خارجي ووصفًا.<br>• يتم حفظ جميع البيانات محليًا في متصفحك.",
+
+  h_flip:
+        "<strong>➡️ فليبورد</strong><br><br>• يعرض قصصًا منسقة من ملف أو موضوع Flipboard.<br>• أضف ملفًا (<code>@user</code>) أو موضوعًا (<code>#topic</code>) في <strong>الإعدادات → فليبورد</strong>.<br>• استخدم <strong>‹ ›</strong> للتنقل بين القصص.<br>• انقر على أي قصة لفتحها على الموقع الأصلي.",
+
+  h_newsletter:
+        "<strong>✉️ النشرة الإخبارية</strong><br><br>• يعرض أحدث العناصر من الخلاصة التي اخترتها أو نشرة Handi.<br>• اختر خلاصة في <strong>الإعدادات → النشرة الإخبارية</strong>.<br>• استخدم <strong>‹ ›</strong> للتنقل بين العناصر.<br>• انقر على أي عنوان لقراءة العنصر كاملاً.",
+
+  h_sports:
+        "<strong>⚽ الرياضة</strong><br><br>• يعرض مباريات كرة القدم المباشرة اليوم والاحتمالات.<br>• اختر الدوريات التي تريد متابعتها في <strong>الإعدادات → الرياضة</strong>.<br>• اضغط على صندوق الاحتمالات لفتح موقع المراهنات.<br>• يتطلب تهيئة الخادم (APISPORTS_KEY).",
 
   h_modalTitle: "مساعدة الوحدة",
   h_gotIt: "فهمت",

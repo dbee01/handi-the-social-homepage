@@ -62,6 +62,9 @@ var LANG = {
     support: { name: "Wsparcie", desc: "Linki wsparcia" },
     cast: { name: "Podcast", desc: "Odtwarzacz podcastów" },
     llm: { name: "LLM", desc: "Prywatny czat AI" },
+    flip: { name: "Flipboard", desc: "Wybrane wiadomości" },
+    newsletter: { name: "Biuletyn", desc: "Podsumowanie e-mail" },
+    sports: { name: "Sport", desc: "Piłka nożna na żywo" },
   },
   d_loading: "Ładowanie...",
   d_noData: "Brak danych.",
@@ -72,6 +75,12 @@ var LANG = {
   d_chooseAnother: "Inne źródło",
   d_scrollUp: "Przewiń w górę",
   d_scrollDown: "Przewiń w dół",
+  d_scrollLeft: "Przewiń w lewo",
+  d_scrollRight: "Przewiń w prawo",
+  d_more: "Więcej",
+  d_less: "Mniej",
+  d_website: "Strona internetowa",
+  d_help: "Pomoc",
   d_selectFeed: "Wybierz źródło",
   d_selectServer: "Wybierz serwer Mastodon",
   d_selectCountry: "Wybierz kraj",
@@ -216,6 +225,20 @@ var LANG = {
         d_configureSupport: "Configure in Settings.",
         d_noSupport: "No support links configured.",
 
+        // Flip (Flipboard)
+        d_flipConfigure: "Dodaj URL profilu lub tematu Flipboard w Ustawieniach.",
+        d_flipEmpty: "Nie znaleziono elementów.",
+
+        // Newsletter
+        d_newsletterEmpty: "Nie znaleziono elementów biuletynu.",
+
+        // Sports
+        d_sportsNoKey: "Sport na żywo nie jest skonfigurowany na serwerze.",
+        d_sportsNoKeyHint: "Dodaj APISPORTS_KEY do .env serwera i uruchom ponownie.",
+        d_sportsError: "Nie udało się załadować dzisiejszych meczów.",
+        d_sportsNone: "Brak meczów dzisiaj.",
+        d_sportsToday: "Dzisiaj",
+
   d_customizeDashboard: "Dostosuj pulpit",
   d_freeTrial: "✨ Wypróbuj Premium",
   s_settings: "Ustawienia",
@@ -298,6 +321,15 @@ var LANG = {
 
       h_support:
         "<strong>🤝 Wsparcie</strong><br><br>• Element Wsparcia zawiera przesyłanie obrazu lub wideo.<br>• Link może prowadzić do Twojej strony internetowej, sklepu, strony darowizn, dostawcy biletów itp.<br>• Skonfiguruj w <strong>Ustawienia → Wsparcie</strong>.<br>• Prześlij obraz lub wideo (zapisane jako URL danych).<br>• Dodaj tytuł, zewnętrzny link URL i opis.<br>• Wszystkie dane są zapisywane lokalnie w przeglądarce.",
+
+  h_flip:
+        "<strong>➡️ Flipboard</strong><br><br>• Pokazuje wybrane artykuły z profilu lub tematu Flipboard.<br>• Dodaj profil (<code>@user</code>) lub temat (<code>#topic</code>) w <strong>Ustawienia → Flipboard</strong>.<br>• Użyj <strong>‹ ›</strong>, aby przewijać artykuły.<br>• Kliknij dowolny artykuł, aby otworzyć go na stronie źródłowej.",
+
+  h_newsletter:
+        "<strong>✉️ Biuletyn</strong><br><br>• Pokazuje najnowsze pozycje z wybranego kanału lub biuletynu Handi.<br>• Wybierz kanał w <strong>Ustawienia → Biuletyn</strong>.<br>• Użyj <strong>‹ ›</strong>, aby przewijać pozycje.<br>• Kliknij dowolny nagłówek, aby przeczytać całą pozycję.",
+
+  h_sports:
+        "<strong>⚽ Sport</strong><br><br>• Pokazuje dzisiejsze mecze piłki nożnej na żywo i kursy.<br>• Wybierz ligi do obserwowania w <strong>Ustawienia → Sport</strong>.<br>• Kliknij pole kursu, aby otworzyć witrynę bukmachera.<br>• Wymaga konfiguracji serwera (APISPORTS_KEY).",
 
   h_modalTitle: "Pomoc modułu",
   h_gotIt: "Rozumiem",

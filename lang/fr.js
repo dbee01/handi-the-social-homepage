@@ -61,6 +61,9 @@ var LANG = {
     support: { name: "Support", desc: "Liens de support" },
     cast: { name: "Podcast", desc: "Lecteur de podcast" },
     llm: { name: "LLM", desc: "Chat IA privé" },
+    flip: { name: "Flipboard", desc: "Actualités sélectionnées" },
+    newsletter: { name: "Newsletter", desc: "Résumé par e-mail" },
+    sports: { name: "Sport", desc: "Football en direct" },
   },
   d_loading: "Chargement...",
   d_noData: "Aucune donnée.",
@@ -71,6 +74,12 @@ var LANG = {
   d_chooseAnother: "Autre source",
   d_scrollUp: "Défiler vers le haut",
   d_scrollDown: "Défiler vers le bas",
+  d_scrollLeft: "Défiler vers la gauche",
+  d_scrollRight: "Défiler vers la droite",
+  d_more: "Plus",
+  d_less: "Moins",
+  d_website: "Site web",
+  d_help: "Aide",
   d_selectFeed: "Sélectionner une source",
   d_selectServer: "Sélectionner un serveur Mastodon",
   d_selectCountry: "Sélectionner un pays",
@@ -215,6 +224,20 @@ var LANG = {
         d_configureSupport: "Configure in Settings.",
         d_noSupport: "No support links configured.",
 
+        // Flip (Flipboard)
+        d_flipConfigure: "Ajoutez une URL de profil ou de sujet Flipboard dans les Paramètres.",
+        d_flipEmpty: "Aucun élément trouvé.",
+
+        // Newsletter
+        d_newsletterEmpty: "Aucun élément de newsletter trouvé.",
+
+        // Sports
+        d_sportsNoKey: "Le sport en direct n'est pas configuré sur le serveur.",
+        d_sportsNoKeyHint: "Ajoutez APISPORTS_KEY au .env du serveur et redémarrez.",
+        d_sportsError: "Impossible de charger les matchs du jour.",
+        d_sportsNone: "Aucun match aujourd'hui.",
+        d_sportsToday: "Aujourd'hui",
+
   d_customizeDashboard: "Personnaliser le tableau de bord",
   d_freeTrial: "✨ Essayer Premium",
   s_settings: "Paramètres",
@@ -297,6 +320,15 @@ var LANG = {
 
       h_support:
         "<strong>🤝 Support</strong><br><br>• L'élément Support contient un téléchargement d'image ou de vidéo.<br>• Le lien peut être vers votre site web, boutique, page de dons, fournisseur de billets, etc.<br>• Configurer dans <strong>Paramètres → Support</strong>.<br>• Téléchargez une image ou une vidéo (stockée en URL de données).<br>• Ajoutez un titre, un lien URL externe et une description.<br>• Toutes les données sont enregistrées localement dans votre navigateur.",
+
+  h_flip:
+        "<strong>➡️ Flipboard</strong><br><br>• Affiche des articles sélectionnés depuis un profil ou un sujet Flipboard.<br>• Ajoutez un profil (<code>@user</code>) ou un sujet (<code>#topic</code>) dans <strong>Paramètres → Flipboard</strong>.<br>• Utilisez <strong>‹ ›</strong> pour parcourir les articles.<br>• Cliquez sur un article pour l'ouvrir sur le site source.",
+
+  h_newsletter:
+        "<strong>✉️ Newsletter</strong><br><br>• Affiche les derniers éléments de votre flux choisi ou de la newsletter Handi.<br>• Choisissez un flux dans <strong>Paramètres → Newsletter</strong>.<br>• Utilisez <strong>‹ ›</strong> pour parcourir les éléments.<br>• Cliquez sur un titre pour lire l'élément complet.",
+
+  h_sports:
+        "<strong>⚽ Sport</strong><br><br>• Affiche les matchs de football en direct du jour et les cotes.<br>• Choisissez les ligues à suivre dans <strong>Paramètres → Sport</strong>.<br>• Touchez une case de cote pour ouvrir le site du bookmaker.<br>• Nécessite une configuration du serveur (APISPORTS_KEY).",
 
   h_modalTitle: "Aide du module",
   h_gotIt: "J'ai compris",

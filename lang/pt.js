@@ -60,6 +60,9 @@ var LANG = {
     support: { name: "Suporte", desc: "Links de suporte" },
     cast: { name: "Podcast", desc: "Player de podcast" },
     llm: { name: "LLM", desc: "Chat privado com IA" },
+    flip: { name: "Flipboard", desc: "Notícias selecionadas" },
+    newsletter: { name: "Boletim", desc: "Resumo por e-mail" },
+    sports: { name: "Desporto", desc: "Futebol ao vivo" },
   },
   d_loading: "A carregar...",
   d_noData: "Sem dados.",
@@ -70,6 +73,12 @@ var LANG = {
   d_chooseAnother: "Outra fonte",
   d_scrollUp: "Subir",
   d_scrollDown: "Descer",
+  d_scrollLeft: "Esquerda",
+  d_scrollRight: "Direita",
+  d_more: "Mais",
+  d_less: "Menos",
+  d_website: "Site",
+  d_help: "Ajuda",
   d_selectFeed: "Selecionar fonte",
   d_selectServer: "Selecionar servidor Mastodon",
   d_selectCountry: "Selecionar país",
@@ -215,6 +224,20 @@ var LANG = {
         d_configureSupport: "Configure in Settings.",
         d_noSupport: "No support links configured.",
 
+        // Flip (Flipboard)
+        d_flipConfigure: "Adicione um URL de perfil ou tópico do Flipboard nas Configurações.",
+        d_flipEmpty: "Nenhum item encontrado.",
+
+        // Newsletter
+        d_newsletterEmpty: "Nenhum item do boletim encontrado.",
+
+        // Sports
+        d_sportsNoKey: "O desporto ao vivo não está configurado no servidor.",
+        d_sportsNoKeyHint: "Adicione APISPORTS_KEY ao .env do servidor e reinicie.",
+        d_sportsError: "Não foi possível carregar os jogos de hoje.",
+        d_sportsNone: "Sem jogos hoje.",
+        d_sportsToday: "Hoje",
+
   d_customizeDashboard: "Personalizar painel",
   d_freeTrial: "✨ Experimentar Premium",
   s_settings: "Configurações",
@@ -297,6 +320,15 @@ var LANG = {
 
       h_support:
         "<strong>🤝 Suporte</strong><br><br>• O elemento Suporte contém um upload de imagem ou vídeo.<br>• O link pode ser para o seu site, loja, página de doações, fornecedor de bilhetes, etc.<br>• Configurar em <strong>Configurações → Suporte</strong>.<br>• Carregue uma imagem ou vídeo (armazenado como URL de dados).<br>• Adicione um título, link URL externo e descrição.<br>• Todos os dados são guardados localmente no seu navegador.",
+
+  h_flip:
+        "<strong>➡️ Flipboard</strong><br><br>• Mostra histórias selecionadas de um perfil ou tópico do Flipboard.<br>• Adicione um perfil (<code>@user</code>) ou tópico (<code>#topic</code>) em <strong>Configurações → Flipboard</strong>.<br>• Use <strong>‹ ›</strong> para percorrer as histórias.<br>• Clique numa história para abri-la no site de origem.",
+
+  h_newsletter:
+        "<strong>✉️ Boletim</strong><br><br>• Mostra os itens mais recentes do feed que escolheu ou do boletim Handi.<br>• Escolha um feed em <strong>Configurações → Boletim</strong>.<br>• Use <strong>‹ ›</strong> para percorrer os itens.<br>• Clique num título para ler o item completo.",
+
+  h_sports:
+        "<strong>⚽ Desporto</strong><br><br>• Mostra os jogos de futebol ao vivo de hoje e as odds.<br>• Escolha que ligas seguir em <strong>Configurações → Desporto</strong>.<br>• Toque numa caixa de odds para abrir o site da casa de apostas.<br>• Requer configuração do servidor (APISPORTS_KEY).",
 
   h_modalTitle: "Ajuda do módulo",
   h_gotIt: "Percebi",

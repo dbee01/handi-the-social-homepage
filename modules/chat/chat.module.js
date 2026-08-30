@@ -125,7 +125,13 @@ export default async function initChat(container) {
     } catch (err) {
       console.error("Matrix login failed:", err);
       matrixClient = null;
-      window.logEvent(1, "matrix_login_failed", { username: username, homeserver: homeserver, error: err.message });
+      // Obfuscate the username before logging so the raw account name is never
+      // persisted in analytics — keep the first 2 characters, mask the rest.
+      var maskedUser = String(username || "");
+      maskedUser = maskedUser.length > 2
+        ? maskedUser.slice(0, 2) + "*".repeat(maskedUser.length - 2)
+        : maskedUser;
+      window.logEvent(1, "matrix_login_failed", { username: maskedUser, homeserver: homeserver, error: err.message });
       return false;
     }
   }

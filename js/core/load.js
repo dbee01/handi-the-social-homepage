@@ -99,6 +99,9 @@ window.triggerLoad = function (opts) {
 document.addEventListener("click", function (e) {
   var title = e.target.closest(".panel-title");
   if (!title) return;
+  // The support panel is fixed/un-collapsible: leave it alone.
+  var dashboardItem = title.closest(".dashboard-item");
+  if (dashboardItem && dashboardItem.dataset.module === "support") return;
   // Ignore clicks on interactive controls inside the title (help button,
   // lock toggle, etc.) so they keep their own behaviour.
   if (e.target.closest("button, a, input, select, textarea")) return;

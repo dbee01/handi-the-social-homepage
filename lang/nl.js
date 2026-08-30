@@ -62,6 +62,9 @@ var LANG = {
     support: { name: "Ondersteuning", desc: "Ondersteuningslinks" },
     cast: { name: "Podcast", desc: "Podcast-speler" },
     llm: { name: "LLM", desc: "Privé AI-chat" },
+    flip: { name: "Flipboard", desc: "Samengesteld nieuws" },
+    newsletter: { name: "Nieuwsbrief", desc: "E-mailoverzicht" },
+    sports: { name: "Sport", desc: "Live voetbal" },
   },
   d_loading: "Laden...",
   d_noData: "Geen gegevens.",
@@ -72,6 +75,12 @@ var LANG = {
   d_chooseAnother: "Andere bron",
   d_scrollUp: "Omhoog",
   d_scrollDown: "Omlaag",
+  d_scrollLeft: "Naar links",
+  d_scrollRight: "Naar rechts",
+  d_more: "Meer",
+  d_less: "Minder",
+  d_website: "Website",
+  d_help: "Help",
   d_selectFeed: "Nieuwsbron selecteren",
   d_selectServer: "Mastodon-server selecteren",
   d_selectCountry: "Land selecteren",
@@ -216,6 +225,20 @@ var LANG = {
         d_configureSupport: "Configure in Settings.",
         d_noSupport: "No support links configured.",
 
+        // Flip (Flipboard)
+        d_flipConfigure: "Voeg een Flipboard-profiel- of onderwerp-URL toe in Instellingen.",
+        d_flipEmpty: "Geen items gevonden.",
+
+        // Newsletter
+        d_newsletterEmpty: "Geen nieuwsbriefitems gevonden.",
+
+        // Sports
+        d_sportsNoKey: "Live sport is niet geconfigureerd op de server.",
+        d_sportsNoKeyHint: "Voeg APISPORTS_KEY toe aan de .env van de server en herstart.",
+        d_sportsError: "De wedstrijden van vandaag konden niet worden geladen.",
+        d_sportsNone: "Vandaag geen wedstrijden.",
+        d_sportsToday: "Vandaag",
+
   d_customizeDashboard: "Dashboard aanpassen",
   d_freeTrial: "✨ Probeer Premium",
   s_settings: "Instellingen",
@@ -298,6 +321,15 @@ var LANG = {
 
       h_support:
         "<strong>🤝 Ondersteuning</strong><br><br>• Het Ondersteuning-element bevat een afbeelding- of video-upload.<br>• De link kan naar uw website, winkel, donatiepagina, ticketleverancier enz. zijn.<br>• Configureren in <strong>Instellingen → Ondersteuning</strong>.<br>• Upload een afbeelding of video (opgeslagen als data-URL).<br>• Voeg een titel, externe URL-link en beschrijving toe.<br>• Alle gegevens worden lokaal in uw browser opgeslagen.",
+
+  h_flip:
+        "<strong>➡️ Flipboard</strong><br><br>• Toont samengestelde verhalen uit een Flipboard-profiel of -onderwerp.<br>• Voeg een profiel (<code>@user</code>) of onderwerp (<code>#topic</code>) toe in <strong>Instellingen → Flipboard</strong>.<br>• Gebruik <strong>‹ ›</strong> om door verhalen te bladeren.<br>• Klik op een verhaal om het op de bronsite te openen.",
+
+  h_newsletter:
+        "<strong>✉️ Nieuwsbrief</strong><br><br>• Toont de nieuwste items uit je gekozen feed of de Handi-nieuwsbrief.<br>• Kies een feed in <strong>Instellingen → Nieuwsbrief</strong>.<br>• Gebruik <strong>‹ ›</strong> om door items te bladeren.<br>• Klik op een kop om het volledige item te lezen.",
+
+  h_sports:
+        "<strong>⚽ Sport</strong><br><br>• Toont de live voetbalwedstrijden van vandaag en de noteringen.<br>• Kies welke competities je wilt volgen in <strong>Instellingen → Sport</strong>.<br>• Tik op een notering om de site van de bookmaker te openen.<br>• Vereist serverconfiguratie (APISPORTS_KEY).",
 
   h_modalTitle: "Module-hulp",
   h_gotIt: "Begrepen",
