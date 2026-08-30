@@ -786,8 +786,7 @@
                     host === "localhost" ||
                     host === "127.0.0.1" ||
                     host.startsWith("192.168.") ||
-                    host.startsWith("staging.") ||
-                    host.startsWith("senior.")
+                    host.startsWith("staging.")
                 ) {
                     window.PREMIUM_ACTIVE = true;
                     window.dispatchEvent(new Event("premiumChecked"));
