@@ -46,11 +46,7 @@ live() {
 
   else
     src="/home/daz/git/ple/"
-    if [ "$site" = "senior" ]; then
-    path="domains/senior.handihomepage.com/hbuilds/current/nodejs/"
-  else
-    path="domains/${site}.handihomepage.com/nodejs/"
-  fi
+    path="domains/${site}.handihomepage.com/hbuilds/current/nodejs/"
 
     rsync -avz -e 'ssh -p 65002' \
       --exclude='node_modules' \
