@@ -164,24 +164,24 @@
         <script src="/js/core/module-registry.js"></script>
 
         <script>
-            // Fill the social-graph (Open Graph) tags from the handi-pack: the
-            // background image (handiBgDataUrl) as the preview image, plus the
-            // pack name/description. When none is set the static fallback stays.
+            // Fill the social-graph (Open Graph) tags from the handi-pack link:
+            //   handi-pack → og:title, description → og:description,
+            //   logo → og:image. Falls back to the static Handi values.
             try {
                 function __ogSet(attr, name, value) {
                     var el = document.querySelector('meta[' + attr + '="' + name + '"]');
                     if (el) el.setAttribute("content", value);
                 }
                 var packName = localStorage.getItem("handiPackName");
-                var packBg = localStorage.getItem("handiBgDataUrl");
+                var packLogo = localStorage.getItem("handiPackLogo");
                 var packDesc = localStorage.getItem("handiPackDescription");
                 if (packName)
                     __ogSet("property", "og:title", packName + " – Handi Homepage");
                 if (packDesc)
                     __ogSet("property", "og:description", packDesc);
-                if (packBg && /^https?:\/\//i.test(packBg)) {
-                    __ogSet("property", "og:image", packBg);
-                    __ogSet("name", "twitter:image", packBg);
+                if (packLogo && /^https?:\/\//i.test(packLogo)) {
+                    __ogSet("property", "og:image", packLogo);
+                    __ogSet("name", "twitter:image", packLogo);
                 }
                 __ogSet("property", "og:url", window.location.href);
             } catch (e) {}
