@@ -126,9 +126,12 @@ export async function loadGallery() {
             });
         }
 
-        export async function saveCastFn(files) {
+        // Save podcast files one-by-one in their own transactions. A single
+        // transaction holding several large blobs can stall/time out on
+        // low-end devices, and per-file commits let us report real progress.
+        // onProgress(doneBytes, totalBytes, name) is called after each file.
+        export async function saveCastFn(files, onProgress) {
             const database = await initDB();
-            // Clear first in a separate transaction
             await new Promise((resolve, reject) => {
                 const tx = database.transaction(['audiopod'], 'readwrite');
                 const store = tx.objectStore('audiopod');
@@ -136,17 +139,52 @@ export async function loadGallery() {
                 tx.oncomplete = () => resolve();
                 tx.onerror = () => reject(tx.error);
             });
-            // Then add in a fresh transaction
-            return new Promise((resolve, reject) => {
-                const tx = database.transaction(['audiopod'], 'readwrite');
-                const store = tx.objectStore('audiopod');
-                let added = 0;
-                files.forEach((file) => {
-                    const req = store.add({ name: file.name, type: file.type, file: file.file || file });
+            const totalBytes = (files || []).reduce(function (sum, file) {
+                const f = file.file || file;
+                return sum + ((f && f.size) || 0);
+            }, 0);
+            let doneBytes = 0;
+            for (let i = 0; i < (files || []).length; i++) {
+                const file = files[i];
+                const f = file.file || file;
+                await new Promise((resolve, reject) => {
+                    const tx = database.transaction(['audiopod'], 'readwrite');
+                    const store = tx.objectStore('audiopod');
+                    const req = store.add({
+                        name: file.name,
+                        type: f.type || file.type || "",
+                        file: f,
+                    });
+                    req.onsuccess = () => resolve();
                     req.onerror = () => reject(req.error);
                 });
-                tx.oncomplete = () => resolve();
-                tx.onerror = () => reject(tx.error);
+                doneBytes += (f && f.size) || 0;
+                if (onProgress) {
+                    try {
+                        onProgress(doneBytes, totalBytes, file.name || "");
+                    } catch (e) { /* ignore */ }
+                }
+            }
+        }
+
+        // Names/sizes of stored podcasts only — cheap for the Settings list
+        // (no Blob URLs created, unlike loadCastFn).
+        export async function listCastFiles() {
+            const database = await initDB();
+            return new Promise((resolve) => {
+                const tx = database.transaction(['audiopod'], 'readonly');
+                const store = tx.objectStore('audiopod');
+                const req = store.getAll();
+                req.onsuccess = () => {
+                    resolve((req.result || []).map(function (f) {
+                        return {
+                            name: f.name || "",
+                            type: f.type || "",
+                            size: (f.file && f.file.size) || 0,
+                        };
+                    }));
+                };
+                req.onerror = () => resolve([]);
             });
         }
 

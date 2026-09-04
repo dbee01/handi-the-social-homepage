@@ -44,24 +44,54 @@ window.triggerLoad = function (opts) {
       document.head.appendChild(s);
     }
 
-    // Build spinner directly on body
+    // Build overlay directly on body. Two modes: the classic spinner (default)
+    // and a progress bar (opts.progress) used by the Cast podcast uploads,
+    // where the onFiles callback reports bytes written via opts.setProgress.
+    var showProgress = !!opts.progress;
     var overlay = document.createElement("div");
     overlay.id = "tl-overlay";
     overlay.setAttribute("style",
       "position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2147483647;" +
       "display:flex;align-items:center;justify-content:center");
-    overlay.innerHTML =
-      "<div style=\"background:#fff;border-radius:18px;padding:40px 56px;" +
-      "text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.3);font-family:sans-serif\">" +
-      "<div style=\"width:44px;height:44px;border:5px solid #e2e8f0;" +
-      "border-top-color:#0047cc;border-radius:50%;margin:0 auto 18px;" +
-      "animation:tl-spin .7s linear infinite\"></div>" +
-      "<p style=\"margin:0;font-size:1.1rem;font-weight:600;color:#1e293b\">" +
-      "Loading " + raw.length + " file" + (raw.length > 1 ? "s" : "") + "…</p></div>";
+    if (showProgress) {
+      overlay.innerHTML =
+        "<div style=\"background:#fff;border-radius:18px;padding:28px 36px;" +
+        "text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.3);font-family:sans-serif;min-width:300px;max-width:90vw\">" +
+        "<p style=\"margin:0 0 12px;font-size:1rem;font-weight:600;color:#1e293b\">Saving your files…</p>" +
+        "<div style=\"width:100%;height:14px;background:#e2e8f0;border-radius:999px;overflow:hidden;\">" +
+        "<div id=\"tl-fill\" style=\"width:0%;height:100%;background:#0047cc;border-radius:999px;transition:width .3s ease;\"></div>" +
+        "</div>" +
+        "<p id=\"tl-status\" style=\"margin:10px 0 0;font-size:.85rem;color:#475569;overflow-wrap:anywhere;\"></p>" +
+        "</div>";
+    } else {
+      overlay.innerHTML =
+        "<div style=\"background:#fff;border-radius:18px;padding:40px 56px;" +
+        "text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.3);font-family:sans-serif\">" +
+        "<div style=\"width:44px;height:44px;border:5px solid #e2e8f0;" +
+        "border-top-color:#0047cc;border-radius:50%;margin:0 auto 18px;" +
+        "animation:tl-spin .7s linear infinite\"></div>" +
+        "<p style=\"margin:0;font-size:1.1rem;font-weight:600;color:#1e293b\">" +
+        "Loading " + raw.length + " file" + (raw.length > 1 ? "s" : "") + "…</p></div>";
+    }
     document.body.appendChild(overlay);
 
     // Force layout so overlay paints
     overlay.offsetHeight;
+
+    // Byte-accurate progress updater, exposed to the caller's onFiles so it
+    // can tick the bar as each file finishes saving to IndexedDB.
+    opts.setProgress = function (done, total, text) {
+      if (!showProgress) return;
+      var pct =
+        total > 0
+          ? Math.max(0, Math.min(100, Math.round((done / total) * 100)))
+          : 0;
+      var fill = overlay.querySelector("#tl-fill");
+      if (fill) fill.style.width = pct + "%";
+      var status = overlay.querySelector("#tl-status");
+      if (status)
+        status.textContent = (text ? text + " — " : "") + pct + "%";
+    };
 
     var files = raw.map(function (f) {
       return { name: f.name, file: f, url: URL.createObjectURL(f), size: f.size };

@@ -501,6 +501,10 @@
                     <button class="upload-btn" id="loadCastBtn">
                         🎙️ Load Podcasts
                     </button>
+                    <div
+                        id="castUploadedList"
+                        style="margin-top:8px;font-size:0.9rem;text-align:left;"
+                    ></div>
                 </div>
             </div>
 
@@ -2834,20 +2838,96 @@
 
                         // Cast Load Podcasts button
                         const castLoadBtn = document.getElementById("loadCastBtn");
+
+                        // Show which podcast files are stored on this device.
+                        async function refreshCastUploadedList() {
+                            var listEl = document.getElementById(
+                                "castUploadedList",
+                            );
+                            if (!listEl) return;
+                            try {
+                                const { listCastFiles } = await import(
+                                    "/js/core/storage.js",
+                                );
+                                const items = await listCastFiles();
+                                if (!items.length) {
+                                    listEl.innerHTML = "";
+                                    return;
+                                }
+                                const totalMB =
+                                    items.reduce(
+                                        (sum, it) => sum + (it.size || 0),
+                                        0,
+                                    ) / 1048576;
+                                listEl.innerHTML =
+                                    '<small style="opacity:0.75;display:block;margin-bottom:4px;">' +
+                                    "Uploaded podcasts (" +
+                                    items.length +
+                                    ", " +
+                                    totalMB.toFixed(1) +
+                                    ' MB):</small>' +
+                                    items
+                                        .map(function (it) {
+                                            return (
+                                                '<div style="display:flex;align-items:center;gap:6px;padding:2px 0;">' +
+                                                '<i class="fa-solid fa-podcast" style="opacity:0.6;flex-shrink:0;"></i>' +
+                                                '<span style="overflow-wrap:anywhere;">' +
+                                                escapeHtml(it.name) +
+                                                "</span></div>"
+                                            );
+                                        })
+                                        .join("");
+                            } catch (e) {}
+                        }
+
                         if (castLoadBtn) {
                             castLoadBtn.addEventListener("click", () => {
-                                window.triggerLoad({
+                                var loadOpts = {
                                     accept: "audio/*",
                                     multiple: true,
                                     maxSizeMB: 250,
+                                    progress: true,
                                     onFiles: async (files) => {
-                                                                                                                                                    const { saveCastFn } = await import("/js/core/storage.js");
-                                                                                                                                                    await saveCastFn(files);
-                                                                                                                                            },
+                                        try {
+                                            const { saveCastFn } = await import(
+                                                "/js/core/storage.js",
+                                            );
+                                            await saveCastFn(
+                                                files,
+                                                function (doneBytes, totalBytes, name) {
+                                                    if (loadOpts.setProgress) {
+                                                        loadOpts.setProgress(
+                                                            doneBytes,
+                                                            totalBytes,
+                                                            name,
+                                                        );
+                                                    }
+                                                },
+                                            );
+                                        } catch (err) {
+                                            var quota =
+                                                err &&
+                                                (err.name ===
+                                                    "QuotaExceededError" ||
+                                                    /quota/i.test(
+                                                        err.message || "",
+                                                    ));
+                                            alert(
+                                                quota
+                                                    ? "Not enough storage on this device to save the podcasts."
+                                                    : "Could not save podcasts: " +
+                                                      (err.message || err),
+                                            );
+                                            return;
+                                        }
+                                        refreshCastUploadedList();
+                                    },
                                     onError: (msg) => alert(msg),
-                                });
+                                };
+                                window.triggerLoad(loadOpts);
                             });
                         }
+                        refreshCastUploadedList();
 
                                                 // Support media upload (image or video)
                                                 var supportUploadBtn = document.getElementById("supportUploadBtn");

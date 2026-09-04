@@ -180,36 +180,71 @@ export default async function initCast(container) {
     parentItem.dataset.module = "cast";
   }
 
-  var tracks = [];
+  // Save uploaded podcast files with a byte-accurate progress bar (drawn by
+  // the triggerLoad overlay). Returns true on success; shows an alert and
+  // returns false on failure (e.g. storage quota).
+  async function saveUploadedFiles(files, loadOpts) {
     try {
-      tracks = await loadCastFn();
+      await saveCastFn(files, function (doneBytes, totalBytes, name) {
+        if (loadOpts && loadOpts.setProgress) {
+          loadOpts.setProgress(doneBytes, totalBytes, name);
+        }
+      });
+      return true;
     } catch (err) {
-      tracks = [];
+      var quota =
+        err &&
+        (err.name === "QuotaExceededError" ||
+          /quota/i.test(err.message || ""));
+      alert(
+        quota
+          ? t(
+              "d_castStorageBlocked",
+              "Not enough storage on this device to save the podcasts.",
+            )
+          : t("d_castLoadFailed", "Could not save podcasts") +
+            ": " +
+            (err.message || err),
+      );
+      return false;
     }
-
-  // LIST & PLAY: when a stream/feed URL is configured and reachable, use it.
-  var streamUrl = "";
-  try {
-    streamUrl = (
-      (loadSettings().cast && loadSettings().cast.streamUrl) ||
-      ""
-    ).trim();
-  } catch (e) {
-    streamUrl = "";
   }
+
+  // 1. Uploaded podcasts always win: when files are stored on the device they
+  //    are shown INSTEAD of the configured feed URL (upload overrides feed).
+  var tracks = [];
+  try {
+    tracks = await loadCastFn();
+  } catch (err) {
+    tracks = [];
+  }
+  var hasUploads = tracks.length > 0;
+
+  // 2. Only when nothing is uploaded do we fall back to a stream/feed URL.
+  var streamUrl = "";
   var castInfo = null;
-  if (streamUrl) {
-    // Podcast RSS/Atom feed? Then list its episodes; otherwise treat it as a
-    // direct audio stream and offer it as a single live track.
-    var castFeed = await fetchCastFeed(streamUrl);
-    var feedTracks = castFeed.tracks || [];
-    if (feedTracks.length) {
-      castInfo = castFeed.info || null;
-      tracks = feedTracks.concat(tracks);
-    } else if (await castStreamOk(streamUrl)) {
-      tracks = [
-        { name: t("d_castStream", "Live Stream"), url: streamUrl, isStream: true },
-      ].concat(tracks);
+  if (!hasUploads) {
+    try {
+      streamUrl = (
+        (loadSettings().cast && loadSettings().cast.streamUrl) ||
+        ""
+      ).trim();
+    } catch (e) {
+      streamUrl = "";
+    }
+    if (streamUrl) {
+      // Podcast RSS/Atom feed? Then list its episodes; otherwise treat it as a
+      // direct audio stream and offer it as a single live track.
+      var castFeed = await fetchCastFeed(streamUrl);
+      var feedTracks = castFeed.tracks || [];
+      if (feedTracks.length) {
+        castInfo = castFeed.info || null;
+        tracks = feedTracks;
+      } else if (await castStreamOk(streamUrl)) {
+        tracks = [
+          { name: t("d_castStream", "Live Stream"), url: streamUrl, isStream: true },
+        ];
+      }
     }
   }
 
@@ -224,19 +259,22 @@ export default async function initCast(container) {
     var loadBtn = content.querySelector("#castLoadBtn");
     if (loadBtn)
       loadBtn.onclick = function () {
-        window.triggerLoad({
+        var loadOpts = {
           accept: "audio/*",
           multiple: true,
           maxSizeMB: 250,
-          onFiles: async (files) => {
-                      await saveCastFn(files);
-                      container.innerHTML = "";
-                      initCast(container);
-                    },
+          progress: true,
+          onFiles: async function (files) {
+            if (await saveUploadedFiles(files, loadOpts)) {
+              container.innerHTML = "";
+              initCast(container);
+            }
+          },
           onError: function (msg) {
             alert(msg);
           },
-        });
+        };
+        window.triggerLoad(loadOpts);
       };
     return;
   }
@@ -741,17 +779,22 @@ export default async function initCast(container) {
   var loadMoreBtn = content.querySelector("#castLoadMoreBtn");
   if (loadMoreBtn) {
     loadMoreBtn.addEventListener("click", function () {
-      window.triggerLoad({
+      var loadOpts = {
         accept: "audio/*",
         multiple: true,
         maxSizeMB: 250,
+        progress: true,
         onFiles: async function (files) {
-                  await saveCastFn(files);
-                  container.innerHTML = "";
-                  initCast(container);
-                },
-        onError: function (msg) { alert(msg); },
-      });
+          if (await saveUploadedFiles(files, loadOpts)) {
+            container.innerHTML = "";
+            initCast(container);
+          }
+        },
+        onError: function (msg) {
+          alert(msg);
+        },
+      };
+      window.triggerLoad(loadOpts);
     });
   }
 
