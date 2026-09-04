@@ -141,20 +141,53 @@ export default async function initMusic(container) {
     return;
   }
 
-  // LIST & PLAY: when a stream URL is configured and reachable, play it first.
-  var streamUrl = "";
-  try {
-    streamUrl = (
-      (loadSettings().music && loadSettings().music.streamUrl) ||
-      ""
-    ).trim();
-  } catch (e) {
-    streamUrl = "";
+  // Save the given (already merged) music files with a byte-accurate progress
+  // bar (drawn by the triggerLoad overlay). Alerts and returns false on error.
+  async function saveUploadedFiles(files, loadOpts) {
+    try {
+      await saveMusic(files, function (doneBytes, totalBytes, name) {
+        if (loadOpts && loadOpts.setProgress) {
+          loadOpts.setProgress(doneBytes, totalBytes, name);
+        }
+      });
+      return true;
+    } catch (err) {
+      var quota =
+        err &&
+        (err.name === "QuotaExceededError" ||
+          /quota/i.test(err.message || ""));
+      alert(
+        quota
+          ? t(
+              "d_musicStorageBlocked",
+              "Not enough storage on this device to save the music files.",
+            )
+          : t("d_musicLoadFailed", "Could not save music") +
+            ": " +
+            (err.message || err),
+      );
+      return false;
+    }
   }
-  if (streamUrl && (await musicStreamOk(streamUrl))) {
-    tracks = [
-      { name: t("d_musicStream", "Live Stream"), url: streamUrl, isStream: true },
-    ].concat(tracks);
+
+  // LIST & PLAY: uploaded files always win. A configured stream URL is only
+  // used as a fallback when there is nothing stored on the device.
+  var hasUploads = tracks.length > 0;
+  var streamUrl = "";
+  if (!hasUploads) {
+    try {
+      streamUrl = (
+        (loadSettings().music && loadSettings().music.streamUrl) ||
+        ""
+      ).trim();
+    } catch (e) {
+      streamUrl = "";
+    }
+    if (streamUrl && (await musicStreamOk(streamUrl))) {
+      tracks = [
+        { name: t("d_musicStream", "Live Stream"), url: streamUrl, isStream: true },
+      ].concat(tracks);
+    }
   }
 
   if (!tracks.length) {
@@ -168,21 +201,26 @@ export default async function initMusic(container) {
     var uBtn = content.querySelector("#musicUploadBtn");
     if (uBtn)
       uBtn.onclick = function () {
-        window.triggerLoad({
+        var loadOpts = {
           accept: "audio/*",
           multiple: true,
           maxSizeMB: 1024,
+          progress: true,
           onFiles: async (files) => {
             var existing = [];
-            try { existing = await loadMusic(); } catch (e) {}
-            await saveMusic([...existing, ...files]);
-            container.innerHTML = "";
-            initMusic(container);
+            try {
+              existing = await loadMusic();
+            } catch (e) {}
+            if (await saveUploadedFiles([...existing, ...files], loadOpts)) {
+              container.innerHTML = "";
+              initMusic(container);
+            }
           },
           onError: function (msg) {
             alert(msg);
           },
-        });
+        };
+        window.triggerLoad(loadOpts);
       };
     return;
   }
@@ -734,19 +772,26 @@ export default async function initMusic(container) {
   var loadMoreBtn = content.querySelector("#musicLoadMoreBtn");
   if (loadMoreBtn) {
     loadMoreBtn.addEventListener("click", function () {
-      window.triggerLoad({
+      var loadOpts = {
         accept: "audio/*",
         multiple: true,
         maxSizeMB: 1024,
+        progress: true,
         onFiles: async function (files) {
           var existing = [];
-          try { existing = await loadMusic(); } catch (e) {}
-          await saveMusic([...existing, ...files]);
-          container.innerHTML = "";
-          initMusic(container);
+          try {
+            existing = await loadMusic();
+          } catch (e) {}
+          if (await saveUploadedFiles([...existing, ...files], loadOpts)) {
+            container.innerHTML = "";
+            initMusic(container);
+          }
         },
-        onError: function (msg) { alert(msg); },
-      });
+        onError: function (msg) {
+          alert(msg);
+        },
+      };
+      window.triggerLoad(loadOpts);
     });
   }
 

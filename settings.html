@@ -708,6 +708,10 @@
                             🎵 Load Music
                         </button>
                         <span class="upload-status" id="musicStatus"></span>
+                        <div
+                            id="musicUploadedList"
+                            style="margin-top:8px;font-size:0.9rem;text-align:left;"
+                        ></div>
                 </div>
             </div>
 
@@ -2808,29 +2812,173 @@
                     });
                 });
 
-            document
-                .getElementById("uploadMusicBtn")
-                ?.addEventListener("click", () => {
-                    window.triggerLoad({
+            // ============================================================
+            // MUSIC UPLOAD + LIBRARY LIST
+            // ============================================================
+            var uploadMusicBtn = document.getElementById("uploadMusicBtn");
+
+            // Show which music files are stored on this device.
+            async function refreshMusicUploadedList() {
+                var listEl = document.getElementById("musicUploadedList");
+                if (!listEl) return;
+                try {
+                    const { listMusicFiles } = await import(
+                        "/js/core/storage.js",
+                    );
+                    const items = await listMusicFiles();
+                    if (!items.length) {
+                        listEl.innerHTML = "";
+                        return;
+                    }
+                    const totalMB =
+                        items.reduce((sum, it) => sum + (it.size || 0), 0) /
+                        1048576;
+                    listEl.innerHTML =
+                        '<small style="opacity:0.75;display:block;margin-bottom:4px;">' +
+                        "Uploaded music (" +
+                        items.length +
+                        ", " +
+                        totalMB.toFixed(1) +
+                        ' MB):</small>' +
+                        items
+                            .map(function (it) {
+                                return (
+                                    '<div style="display:flex;align-items:center;gap:8px;padding:2px 0;">' +
+                                    '<i class="fa-solid fa-music" style="opacity:0.6;flex-shrink:0;"></i>' +
+                                    '<span style="overflow-wrap:anywhere;flex:1;">' +
+                                    escapeHtml(it.name) +
+                                    "</span>" +
+                                    '<button type="button" data-id="' +
+                                    it.id +
+                                    '" title="Remove" aria-label="Remove" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:1rem;line-height:1;padding:4px 8px;border-radius:6px;">✕</button>' +
+                                    "</div>"
+                                );
+                            })
+                            .join("") +
+                        '<button type="button" id="musicClearAll" style="margin-top:6px;background:none;border:1px solid #d1d5db;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:0.85rem;color:#64748b;">Remove all</button>';
+
+                    // Remove a single music file.
+                    listEl
+                        .querySelectorAll("button[data-id]")
+                        .forEach(function (btn) {
+                            btn.addEventListener("click", async function () {
+                                try {
+                                    const { deleteMusicFile } = await import(
+                                        "/js/core/storage.js",
+                                    );
+                                    await deleteMusicFile(Number(btn.dataset.id));
+                                } catch (err) {
+                                    alert(
+                                        "Could not remove music file: " +
+                                            (err.message || err),
+                                    );
+                                }
+                                refreshMusicUploadedList();
+                            });
+                        });
+
+                    // Remove every music file.
+                    var clearAllBtn = listEl.querySelector("#musicClearAll");
+                    if (clearAllBtn)
+                        clearAllBtn.addEventListener("click", async function () {
+                            if (
+                                !confirm(
+                                    "Remove all uploaded music from this device?",
+                                )
+                            )
+                                return;
+                            try {
+                                const { clearMusicFiles } = await import(
+                                    "/js/core/storage.js",
+                                );
+                                await clearMusicFiles();
+                            } catch (err) {
+                                alert(
+                                    "Could not remove music files: " +
+                                        (err.message || err),
+                                );
+                            }
+                            refreshMusicUploadedList();
+                        });
+                } catch (e) {}
+            }
+
+            if (uploadMusicBtn)
+                uploadMusicBtn.addEventListener("click", () => {
+                    var loadOpts = {
                         accept: "audio/*",
                         multiple: true,
                         maxSizeMB: 1024,
+                        progress: true,
                         onFiles: async (files) => {
-                                                    const { saveMusic } = await import("/js/core/storage.js");
-                                                    await saveMusic(files);
-                            var el = document.getElementById("musicStatus");
-                            if (el) {
-                                el.textContent = "✅ " + window.t("d_musicLoaded", files.length + " music files loaded");
-                                el.style.color = "#16a34a";
-                                setTimeout(function () { el.textContent = ""; }, 4000);
+                            try {
+                                const { saveMusic, loadMusic } = await import(
+                                    "/js/core/storage.js",
+                                );
+                                // Add to the existing library rather than wipe it.
+                                var existing = [];
+                                try {
+                                    existing = await loadMusic();
+                                } catch (e) {}
+                                await saveMusic(
+                                    [...existing, ...files],
+                                    function (doneBytes, totalBytes, name) {
+                                        if (loadOpts.setProgress) {
+                                            loadOpts.setProgress(
+                                                doneBytes,
+                                                totalBytes,
+                                                name,
+                                            );
+                                        }
+                                    },
+                                );
+                            } catch (err) {
+                                var quota =
+                                    err &&
+                                    (err.name === "QuotaExceededError" ||
+                                        /quota/i.test(err.message || ""));
+                                var el = document.getElementById("musicStatus");
+                                if (el) {
+                                    el.textContent =
+                                        "❌ " +
+                                        (quota
+                                            ? "Not enough storage on this device."
+                                            : "Could not save music files: " +
+                                              (err.message || err));
+                                    el.style.color = "#dc2626";
+                                    setTimeout(function () {
+                                        el.textContent = "";
+                                    }, 6000);
+                                }
+                                return;
+                            }
+                            refreshMusicUploadedList();
+                            var ok = document.getElementById("musicStatus");
+                            if (ok) {
+                                ok.textContent =
+                                    "✅ " +
+                                    window.t(
+                                        "d_musicLoaded",
+                                        files.length + " music files loaded",
+                                    );
+                                ok.style.color = "#16a34a";
+                                setTimeout(function () {
+                                    ok.textContent = "";
+                                }, 4000);
                             }
                         },
                         onError: (msg) => {
                             var el = document.getElementById("musicStatus");
-                            if (el) { el.textContent = "❌ " + msg; el.style.color = "#dc2626"; }
+                            if (el) {
+                                el.textContent = "❌ " + msg;
+                                el.style.color = "#dc2626";
+                            }
                         },
-                    });
+                    };
+                    window.triggerLoad(loadOpts);
                 });
+
+            refreshMusicUploadedList();
 
             // ============================================================
             // INITIALIZATION

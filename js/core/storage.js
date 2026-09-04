@@ -36,7 +36,7 @@ function initDB() {
     });
 }
 
-export async function saveMusic(files) {
+export async function saveMusic(files, onProgress) {
     const database = await initDB();
     await new Promise((resolve, reject) => {
         const tx = database.transaction(['music'], 'readwrite');
@@ -45,16 +45,28 @@ export async function saveMusic(files) {
         tx.oncomplete = () => resolve();
         tx.onerror = () => reject(tx.error);
     });
-    return new Promise((resolve, reject) => {
-        const tx = database.transaction(['music'], 'readwrite');
-        const store = tx.objectStore('music');
-        files.forEach((file) => {
-            const req = store.add({ name: file.name, type: file.type, file: file.file || file });
+    // Save one file per transaction so several large files can't stall in a
+    // single write, and report bytes written after each file.
+    const totalBytes = (files || []).reduce(function (sum, file) {
+        const f = file.file || file;
+        return sum + ((f && f.size) || 0);
+    }, 0);
+    let doneBytes = 0;
+    for (let i = 0; i < (files || []).length; i++) {
+        const file = files[i];
+        const f = file.file || file;
+        await new Promise((resolve, reject) => {
+            const tx = database.transaction(['music'], 'readwrite');
+            const store = tx.objectStore('music');
+            const req = store.add({ name: file.name, type: f.type || file.type || '', file: f });
+            req.onsuccess = () => resolve();
             req.onerror = () => reject(req.error);
         });
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-    });
+        doneBytes += (f && f.size) || 0;
+        if (onProgress) {
+            try { onProgress(doneBytes, totalBytes, file.name || ''); } catch (e) {}
+        }
+    }
 }
 
 let _musicBlobUrls = [];
@@ -255,6 +267,49 @@ export async function clearGallery() {
     return new Promise((resolve, reject) => {
         const tx = database.transaction(['gallery'], 'readwrite');
         const store = tx.objectStore('gallery');
+        const req = store.clear();
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+    });
+}
+
+// Cheap listing (id/name/size only — no Blob URLs) for the Settings list.
+export async function listMusicFiles() {
+    const database = await initDB();
+    return new Promise((resolve) => {
+        const tx = database.transaction(['music'], 'readonly');
+        const store = tx.objectStore('music');
+        const req = store.getAll();
+        req.onsuccess = () => {
+            resolve((req.result || []).map(function (f) {
+                return {
+                    id: f.id,
+                    name: f.name || "",
+                    type: f.type || "",
+                    size: (f.file && f.file.size) || 0,
+                };
+            }));
+        };
+        req.onerror = () => resolve([]);
+    });
+}
+
+export async function deleteMusicFile(id) {
+    const database = await initDB();
+    return new Promise((resolve, reject) => {
+        const tx = database.transaction(['music'], 'readwrite');
+        const store = tx.objectStore('music');
+        const req = store.delete(id);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+    });
+}
+
+export async function clearMusicFiles() {
+    const database = await initDB();
+    return new Promise((resolve, reject) => {
+        const tx = database.transaction(['music'], 'readwrite');
+        const store = tx.objectStore('music');
         const req = store.clear();
         req.onsuccess = () => resolve();
         req.onerror = () => reject(req.error);
