@@ -110,10 +110,12 @@ export default async function initAi(container) {
       (engine
         ? t("d_llmLoaded", "Loaded")
         : '<i class="fa-solid fa-download"></i> ' + t("d_llmLoad", "Load")) +
-      "</button>" +
-      '<button id="llmClearBtn" class="llm-clear-btn" title="' +
-      t("d_llmClear", "Clear chat") +
-      '">🗑</button>' +
+      '</button>' +
+      // Trash / clear-chat button commented out for now (kept in the code
+      // so it's easy to re-enable).
+      // '<button id="llmClearBtn" class="llm-clear-btn" title="' +
+      // t("d_llmClear", "Clear chat") +
+      // '">🗑</button>' +
       "</div>" +
       (isFirstLoad && !engine
         ? '<div class="llm-first-note">' +
@@ -157,12 +159,16 @@ export default async function initAi(container) {
       "</div>";
 
     content.querySelector("#llmLoadBtn").addEventListener("click", loadModel);
-    content.querySelector("#llmClearBtn").addEventListener("click", () => {
-      chatHistory = [];
-      saveHistory(chatHistory);
-      if (engine && typeof engine.resetChat === "function") engine.resetChat();
-      render();
-    });
+    // Clear-chat (Trash) button is commented out; only bind the handler if
+    // the button is present.
+    const clearBtn = content.querySelector("#llmClearBtn");
+    if (clearBtn)
+      clearBtn.addEventListener("click", () => {
+        chatHistory = [];
+        saveHistory(chatHistory);
+        if (engine && typeof engine.resetChat === "function") engine.resetChat();
+        render();
+      });
     content.querySelector("#llmSendBtn").addEventListener("click", send);
     content.querySelector("#llmInput").addEventListener("keydown", (e) => {
       if (e.key === "Enter") send();
