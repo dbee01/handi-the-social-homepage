@@ -2655,7 +2655,7 @@
                 }
             }
 
-            function detectMyLocation() {
+            async function detectMyLocation() {
                 if (!navigator.geolocation) {
                     alert("Geolocation not supported.");
                     return;
@@ -2665,12 +2665,38 @@
                     weatherPreview.innerHTML =
                         '<i class="fa-solid fa-spinner fa-spin"></i> Detecting...';
                 }
+
+                // If the permission is already hard-blocked, say so up front
+                // (granting later needs a reload anyway). When it is "prompt"
+                // the getCurrentPosition call below triggers the browser prompt.
+                try {
+                    if (navigator.permissions && navigator.permissions.query) {
+                        const permState = await navigator.permissions.query({
+                            name: "geolocation",
+                        });
+                        if (permState.state === "denied") {
+                            weatherPreview.innerHTML =
+                                '<span class="error">Location is blocked for this site. Allow location in your browser/site settings, then reload and try again.</span>';
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    /* permissions API not available — fall through */
+                }
+
                 navigator.geolocation.getCurrentPosition(
                     async (position) => {
-                        const url = `https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`;
+                        const url =
+                            "https://nominatim.openstreetmap.org/reverse?lat=" +
+                            position.coords.latitude +
+                            "&lon=" +
+                            position.coords.longitude +
+                            "&format=json";
                         try {
                             const response = await fetch(url, {
-                                headers: { "User-Agent": "HandiHomepage/1.0" },
+                                headers: {
+                                    "User-Agent": "HandiHomepage/1.0",
+                                },
                             });
                             const data = await response.json();
                             let city =
@@ -2688,9 +2714,30 @@
                                 '<span class="error">Could not detect city.</span>';
                         }
                     },
-                    () => {
+                    (err) => {
+                        // Report the actual reason instead of always blaming
+                        // permissions — "unavailable"/"timeout" are common
+                        // even when permission was granted.
+                        const code = err && err.code;
+                        let msg =
+                            "Could not get your location. Try again or type the city.";
+                        if (code === 1) {
+                            msg =
+                                "Location permission denied — allow location for this site in your browser, then reload and try again.";
+                        } else if (code === 2) {
+                            msg =
+                                "Could not determine your location (GPS/location unavailable). Try again or type the city.";
+                        } else if (code === 3) {
+                            msg =
+                                "Location request timed out. Try again or type the city.";
+                        }
                         weatherPreview.innerHTML =
-                            '<span class="error">Location permission denied.</span>';
+                            '<span class="error">' + msg + "</span>";
+                    },
+                    {
+                        enableHighAccuracy: false,
+                        timeout: 15000,
+                        maximumAge: 30000,
                     },
                 );
             }
