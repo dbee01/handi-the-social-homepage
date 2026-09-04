@@ -46,7 +46,11 @@ live() {
 
   else
     src="/home/daz/git/ple/"
+    if [ "$site" = "senior" ]; then
+    path="domains/senior.handihomepage.com/hbuilds/current/nodejs/"
+  else
     path="domains/${site}.handihomepage.com/hbuilds/current/nodejs/"
+  fi
 
     rsync -avz -e 'ssh -p 65002' \
       --exclude='node_modules' \
@@ -57,6 +61,7 @@ live() {
       --exclude='.gtfs-cache' \
       "$src" \
       "u247564401@82.29.191.118:${path}"
-    ssh -p 65002 u247564401@82.29.191.118 "pkill -f 'lsnode:.*${site}\.handihomepage' 2>/dev/null; sleep 3; echo Restarted"
+    ssh -p 65002 u247564401@82.29.191.118 "pkill -f 'lsnode:.*${site}' 2>/dev/null; sleep 3; echo Restarted
+"
   fi
 }
