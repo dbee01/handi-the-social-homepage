@@ -126,18 +126,96 @@ app.get("/service-worker.js", (req, res) => {
   res.sendFile(path.join(staticPath, "service-worker.js"));
 });
 
-app.use(express.static(staticPath));
+// index:false — let the app.get("/") route below handle / so it can inject
+// pack-specific social-graph tags; static middleware must not serve index.html.
+app.use(express.static(staticPath, { index: false }));
+
+// -----------------------------------------------------------------------------
+// SOCIAL GRAPH (Open Graph / Twitter) for handi-pack links
+// Share-preview crawlers don't execute the client-side pack import in
+// index.html, so pack-specific meta tags must already be in the served HTML.
+// The pack link query params map to:
+//   handi-pack → og:title, description → og:description, logo → og:image.
+// Without pack params the static defaults baked into index.html are kept.
+// Values are HTML-escaped before injection (they are user-supplied).
+// -----------------------------------------------------------------------------
+function escapeHtmlAttr(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+// Swap the content= of one meta tag. index.html keeps a fixed token layout:
+//   <meta … attr="name" … content="…" … />  (whitespace/newlines flexible)
+function setMetaContent(html, attr, name, value) {
+  const re = new RegExp(
+    '<meta\\s+' + attr + '="' + name + '"\\s+content="[^"]*"\\s*/?>',
+  );
+  if (!re.test(html)) return html;
+  const escaped = escapeHtmlAttr(value);
+  return html.replace(
+    re,
+    '<meta ' + attr + '="' + name + '" content="' + escaped + '" />',
+  );
+}
+
+// Absolute URL of the current request (honours a TLS-terminating proxy).
+function fullRequestUrl(req) {
+  const proto =
+    String(req.headers["x-forwarded-proto"] || "")
+      .split(",")[0]
+      .trim() || req.protocol || "https";
+  const host = req.get("host") || "";
+  return proto + "://" + host + req.originalUrl;
+}
+
+// index.html is static for the life of the process — read it once and reuse.
+let cachedIndexHtml = null;
 
 app.get("/", (req, res) => {
   const indexPath = path.join(staticPath, "index.html");
-  if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    res.json({
+  if (!fs.existsSync(indexPath)) {
+    return res.json({
       message: "API running",
       endpoints: ["/api/bus-realtime", "/api/news"],
     });
   }
+  if (cachedIndexHtml === null) {
+    cachedIndexHtml = fs.readFileSync(indexPath, "utf8");
+  }
+
+  let html = cachedIndexHtml;
+  const packTitle = req.query["handi-pack"];
+  const packDesc = req.query.description;
+  const packLogo = req.query.logo;
+  const hasPack =
+    (packTitle && String(packTitle).trim()) ||
+    (packDesc && String(packDesc).trim()) ||
+    (packLogo && /^https?:\/\//i.test(String(packLogo)));
+
+  if (hasPack) {
+    if (packTitle && String(packTitle).trim()) {
+      html = setMetaContent(html, "property", "og:title", String(packTitle).trim());
+    }
+    if (packDesc && String(packDesc).trim()) {
+      html = setMetaContent(
+        html,
+        "property",
+        "og:description",
+        String(packDesc).trim(),
+      );
+    }
+    if (packLogo && /^https?:\/\//i.test(String(packLogo))) {
+      html = setMetaContent(html, "property", "og:image", String(packLogo).trim());
+      html = setMetaContent(html, "name", "twitter:image", String(packLogo).trim());
+    }
+  }
+  // og:url should point at the exact page being shared/crawled.
+  html = setMetaContent(html, "property", "og:url", fullRequestUrl(req));
+
+  res.type("html").send(html);
 });
 
 // -----------------------------------------------------------------------------
