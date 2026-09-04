@@ -1890,6 +1890,19 @@
                     }
                 });
 
+                // Load the saved weather location into the input. It is a
+                // header field (not a module card), so without this it always
+                // shows the HTML default "Cork" instead of the saved value
+                // (e.g. "Oslo").
+                if (settings.weather) {
+                    const weatherLocInput =
+                        document.getElementById("weatherLocation");
+                    if (weatherLocInput) {
+                        weatherLocInput.value =
+                            settings.weather.location || "Cork";
+                    }
+                }
+
                 // Load phone contacts
                 if (settings.phone?.contacts) {
                     phoneContacts = settings.phone.contacts;
