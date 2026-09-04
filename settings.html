@@ -2869,14 +2869,75 @@
                                     items
                                         .map(function (it) {
                                             return (
-                                                '<div style="display:flex;align-items:center;gap:6px;padding:2px 0;">' +
+                                                '<div style="display:flex;align-items:center;gap:8px;padding:2px 0;">' +
                                                 '<i class="fa-solid fa-podcast" style="opacity:0.6;flex-shrink:0;"></i>' +
-                                                '<span style="overflow-wrap:anywhere;">' +
+                                                '<span style="overflow-wrap:anywhere;flex:1;">' +
                                                 escapeHtml(it.name) +
-                                                "</span></div>"
+                                                "</span>" +
+                                                '<button type="button" data-id="' +
+                                                it.id +
+                                                '" title="Remove" aria-label="Remove" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:1rem;line-height:1;padding:4px 8px;border-radius:6px;">✕</button>' +
+                                                "</div>"
                                             );
                                         })
-                                        .join("");
+                                        .join("") +
+                                    '<button type="button" id="castClearAll" style="margin-top:6px;background:none;border:1px solid #d1d5db;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:0.85rem;color:#64748b;">Remove all</button>';
+
+                                // Remove a single uploaded podcast.
+                                listEl
+                                    .querySelectorAll("button[data-id]")
+                                    .forEach(function (btn) {
+                                        btn.addEventListener(
+                                            "click",
+                                            async function () {
+                                                try {
+                                                    const { deleteCastFile } =
+                                                        await import(
+                                                            "/js/core/storage.js",
+                                                        );
+                                                    await deleteCastFile(
+                                                        Number(btn.dataset.id),
+                                                    );
+                                                } catch (err) {
+                                                    alert(
+                                                        "Could not remove podcast: " +
+                                                            (err.message ||
+                                                                err),
+                                                    );
+                                                }
+                                                refreshCastUploadedList();
+                                            },
+                                        );
+                                    });
+
+                                // Remove every uploaded podcast.
+                                var clearAllBtn =
+                                    listEl.querySelector("#castClearAll");
+                                if (clearAllBtn)
+                                    clearAllBtn.addEventListener(
+                                        "click",
+                                        async function () {
+                                            if (
+                                                !confirm(
+                                                    "Remove all uploaded podcasts from this device?",
+                                                )
+                                            )
+                                                return;
+                                            try {
+                                                const { clearCastFiles } =
+                                                    await import(
+                                                        "/js/core/storage.js",
+                                                    );
+                                                await clearCastFiles();
+                                            } catch (err) {
+                                                alert(
+                                                    "Could not remove podcasts: " +
+                                                        (err.message || err),
+                                                );
+                                            }
+                                            refreshCastUploadedList();
+                                        },
+                                    );
                             } catch (e) {}
                         }
 

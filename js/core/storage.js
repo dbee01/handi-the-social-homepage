@@ -168,7 +168,8 @@ export async function loadGallery() {
         }
 
         // Names/sizes of stored podcasts only — cheap for the Settings list
-        // (no Blob URLs created, unlike loadCastFn).
+        // (no Blob URLs created, unlike loadCastFn). Includes the record id so
+        // individual files can be deleted.
         export async function listCastFiles() {
             const database = await initDB();
             return new Promise((resolve) => {
@@ -178,6 +179,7 @@ export async function loadGallery() {
                 req.onsuccess = () => {
                     resolve((req.result || []).map(function (f) {
                         return {
+                            id: f.id,
                             name: f.name || "",
                             type: f.type || "",
                             size: (f.file && f.file.size) || 0,
@@ -185,6 +187,28 @@ export async function loadGallery() {
                     }));
                 };
                 req.onerror = () => resolve([]);
+            });
+        }
+
+        export async function deleteCastFile(id) {
+            const database = await initDB();
+            return new Promise((resolve, reject) => {
+                const tx = database.transaction(['audiopod'], 'readwrite');
+                const store = tx.objectStore('audiopod');
+                const req = store.delete(id);
+                req.onsuccess = () => resolve();
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        export async function clearCastFiles() {
+            const database = await initDB();
+            return new Promise((resolve, reject) => {
+                const tx = database.transaction(['audiopod'], 'readwrite');
+                const store = tx.objectStore('audiopod');
+                const req = store.clear();
+                req.onsuccess = () => resolve();
+                req.onerror = () => reject(req.error);
             });
         }
 
