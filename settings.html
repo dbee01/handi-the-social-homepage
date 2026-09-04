@@ -19,6 +19,18 @@
                     return false;
                 }
             })();
+            // Modules granted by an admin-built pack link. Only these premium
+            // modules are unlocked by the pack — everything else stays Premium-only.
+            window.HANDI_PACK_MODULES = (function () {
+                try {
+                    var list = JSON.parse(
+                        localStorage.getItem("handiPackModules") || "[]",
+                    );
+                    return Array.isArray(list) ? list : [];
+                } catch (e) {
+                    return [];
+                }
+            })();
             (async function () {
                 var host = window.location.hostname;
                 if (
@@ -1808,6 +1820,16 @@
                     });
             }
 
+            // A premium module is usable when the user is actually Premium, or
+            // when an admin-built pack link granted that specific module.
+            function isPremiumGranted(moduleId) {
+                return (
+                    window.PREMIUM_ACTIVE === true ||
+                    (window.HANDI_PACK_ADMIN &&
+                        window.HANDI_PACK_MODULES.indexOf(moduleId) !== -1)
+                );
+            }
+
             function applySettingsToToggles() {
                 const settings = loadSettings();
                 const mmr = window.getMMR();
@@ -1840,24 +1862,25 @@
                             card.style.display = "";
                         }
                         // Support is pinned ON for free users — immutable,
-                        // only premium users can toggle it off.
+                        // only premium users can toggle it off. Admin-built
+                        // packs are not pinned: support follows the pack grant.
                         if (
                             moduleId === "support" &&
-                            window.PREMIUM_ACTIVE !== true
+                            window.PREMIUM_ACTIVE !== true &&
+                            !window.HANDI_PACK_ADMIN
                         ) {
                             toggle.classList.add("active");
                             toggle.classList.add("mmr-disabled");
                             card.classList.add("module-card-disabled");
                         }
-                        // Premium modules are locked for free users — greyed
-                        // out and not toggleable regardless of MMR state, and
-                        // their config dropdown is not rendered.
+                        // Premium modules are locked for non-granted users —
+                        // greyed out and not toggleable regardless of MMR
+                        // state, and their config dropdown is not rendered.
                         const regMod = window.HANDI_MODULE_BY_ID(moduleId);
                         if (
                             regMod &&
                             regMod.tier === "premium" &&
-                            window.PREMIUM_ACTIVE !== true &&
-                            !window.HANDI_PACK_ADMIN
+                            !isPremiumGranted(moduleId)
                         ) {
                             toggle.classList.add("mmr-disabled");
                             card.classList.add("module-card-disabled");
@@ -2471,8 +2494,7 @@
                             if (
                                 reg &&
                                 reg.tier === "premium" &&
-                                window.PREMIUM_ACTIVE !== true &&
-                                !window.HANDI_PACK_ADMIN
+                                !isPremiumGranted(modId)
                             )
                                 return;
                             const config = card.querySelector(".module-config");

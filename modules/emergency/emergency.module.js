@@ -61,7 +61,6 @@ export default async function initEmergency(container) {
     lockToggle.innerHTML = isLocked
       ? '<i class="fa-solid fa-lock"></i>'
       : '<i class="fa-solid fa-lock-open"></i>';
-    lockToggle.style.color = isLocked ? "#cc0000" : "#008000";
   }
   updateLockIcon();
   lockToggle.addEventListener("click", function (e) {

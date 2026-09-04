@@ -72,6 +72,9 @@ var LANG = {
     support: { name: "Tacaíocht", desc: "Naisc tacaíochta" },
     cast: { name: "Podchraoladh", desc: "Seinnteoir podchraoltaí" },
     llm: { name: "LLM", desc: "Comhrá príobháideach AI" },
+    flip: { name: "Flipboard", desc: "Nuacht coimeádta" },
+    newsletter: { name: "Nuachtlitir", desc: "Achoimre ríomhphoist" },
+    sports: { name: "Spórt", desc: "Peil bheo" },
   },
 
   d_loading: "Á lódáil...",
@@ -83,6 +86,12 @@ var LANG = {
   d_chooseAnother: "Roghnaigh foinse eile",
   d_scrollUp: "Scrollaigh Suas",
   d_scrollDown: "Scrollaigh Síos",
+  d_scrollLeft: "Scrollaigh ar chlé",
+  d_scrollRight: "Scrollaigh ar dheis",
+  d_more: "Tuilleadh",
+  d_less: "Níos lú",
+  d_website: "Suíomh gréasáin",
+  d_help: "Cabhair",
   d_selectFeed: "Roghnaigh foinse nuachta",
   d_selectServer: "Roghnaigh freastalaí Mastodon",
   d_selectCountry: "Roghnaigh tír",
@@ -227,6 +236,20 @@ var LANG = {
         d_configureSupport: "Configure in Settings.",
         d_noSupport: "No support links configured.",
 
+        // Flip (Flipboard)
+        d_flipConfigure: "Cuir URL próifíle nó topaice Flipboard leis sna Socruithe.",
+        d_flipEmpty: "Ní bhfuarthas aon mhír.",
+
+        // Newsletter
+        d_newsletterEmpty: "Ní bhfuarthas aon mhír nuachtlitreach.",
+
+        // Sports
+        d_sportsNoKey: "Níl spórt beo cumraithe ar an bhfreastalaí.",
+        d_sportsNoKeyHint: "Cuir APISPORTS_KEY le .env an fhreastalaí agus atosaigh.",
+        d_sportsError: "Níorbh fhéidir cluichí an lae inniu a lódáil.",
+        d_sportsNone: "Níl aon chluiche inniu.",
+        d_sportsToday: "Inniu",
+
   d_customizeDashboard: "Saincheap an Deais",
   d_freeTrial: "✨ Bain triail as Préimh",
 
@@ -310,6 +333,15 @@ var LANG = {
 
       h_support:
         "<strong>🤝 Tacaíocht</strong><br><br>• Tá uaslódáil íomhá nó físeáin san eilimint Tacaíochta.<br>• Is féidir an nasc a bheith chuig do shuíomh gréasáin, siopa, leathanach síntiús, soláthraí ticéad srl.<br>• Cumraigh in <strong>Socruithe → Tacaíocht</strong>.<br>• Uaslódáil íomhá nó físeán (stóráilte mar URL sonraí).<br>• Cuir teideal, nasc URL seachtrach, agus cur síos leis.<br>• Sábháiltear na sonraí go léir go háitiúil i do bhrabhsálaí.",
+
+  h_flip:
+        "<strong>➡️ Flipboard</strong><br><br>• Taispeánann scéalta coimeádta ó phróifíl nó topaic Flipboard.<br>• Cuir próifíl (<code>@user</code>) nó topaic (<code>#topic</code>) leis in <strong>Socruithe → Flipboard</strong>.<br>• Úsáid <strong>‹ ›</strong> chun scrollú trí scéalta.<br>• Cliceáil ar scéal ar bith chun é a oscailt ar an suíomh foinse.",
+
+  h_newsletter:
+        "<strong>✉️ Nuachtlitir</strong><br><br>• Taispeánann na míreanna is déanaí ó do fhotha roghnaithe nó ó nuachtlitir Handi.<br>• Roghnaigh fotha in <strong>Socruithe → Nuachtlitir</strong>.<br>• Úsáid <strong>‹ ›</strong> chun scrollú trí mhíreanna.<br>• Cliceáil ar aon cheannteideal chun an mhír iomlán a léamh.",
+
+  h_sports:
+        "<strong>⚽ Spórt</strong><br><br>• Taispeánann cluichí peile beo an lae inniu agus na hodds.<br>• Roghnaigh na sraitheanna le leanúint in <strong>Socruithe → Spórt</strong>.<br>• Tapáil bosca odds chun suíomh an gheallghlacadóra a oscailt.<br>• Teastaíonn cumraíocht an fhreastalaí (APISPORTS_KEY).",
 
   h_modalTitle: "Cabhair an Mhodúil",
   h_gotIt: "Tuigim",

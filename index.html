@@ -777,6 +777,18 @@
                     return false;
                 }
             })();
+            // Modules granted by an admin-built pack link — only these premium
+            // modules are unlocked by the pack; the rest stay Premium-only.
+            window.HANDI_PACK_MODULES = (function () {
+                try {
+                    var list = JSON.parse(
+                        localStorage.getItem("handiPackModules") || "[]",
+                    );
+                    return Array.isArray(list) ? list : [];
+                } catch (e) {
+                    return [];
+                }
+            })();
         </script>
 
         <!-- ========== SUBSCRIPTION CHECK ========== -->
@@ -788,8 +800,7 @@
                     host === "localhost" ||
                     host === "127.0.0.1" ||
                     host.startsWith("192.168.") ||
-                    host.startsWith("staging.") ||
-                    host.startsWith("senior.")
+                    host.startsWith("staging.")
                 ) {
                     window.PREMIUM_ACTIVE = true;
                     window.dispatchEvent(new Event("premiumChecked"));
@@ -834,7 +845,7 @@
 
                         let mmr = window.getMMR();
 
-                        if (window.PREMIUM_ACTIVE === false && !window.HANDI_PACK_ADMIN) {
+                        if (window.PREMIUM_ACTIVE === false) {
                             let changed = false;
                             const premiumIds = window
                                 .HANDI_PREMIUM_MODULES()
@@ -844,16 +855,26 @@
                                 // stay hidden — never surfaced or forced.
                                 const reg = window.HANDI_MODULE_BY_ID(id);
                                 if (reg && reg.defaultEnabled === 3) continue;
+                                // An admin-built pack unlocks only the modules
+                                // it actually included — everything else stays
+                                // blocked for free users.
+                                const granted =
+                                    window.HANDI_PACK_ADMIN &&
+                                    window.HANDI_PACK_MODULES.indexOf(id) !==
+                                        -1;
                                 // Support is pinned on for free users: it always
                                 // shows (position 1) and its settings toggle is
                                 // greyed out — only premium can turn it off.
+                                // When a pack grants support it follows the pack.
                                 if (id === "support") {
+                                    if (granted) continue;
                                     if (mmr[id] !== 1) {
                                         mmr[id] = 1;
                                         changed = true;
                                     }
                                     continue;
                                 }
+                                if (granted) continue;
                                 if (mmr[id] !== 2) {
                                     mmr[id] = 2;
                                     changed = true;
@@ -949,7 +970,7 @@
                         if (el)
                             el.textContent = window.t(
                                 "d_buildOwnPack",
-                                "Build Your Own Handi-Pack",
+                                "Build Your Own Handi-Site",
                             );
                         el = document.querySelector(".brand a");
                         if (el)

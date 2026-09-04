@@ -20,6 +20,27 @@
                     return false;
                 }
             })();
+            // Modules granted by an admin-built pack link. Only these premium
+            // modules are unlocked by the pack — everything else stays Premium-only.
+            window.HANDI_PACK_MODULES = (function () {
+                try {
+                    var list = JSON.parse(
+                        localStorage.getItem("handiPackModules") || "[]",
+                    );
+                    return Array.isArray(list) ? list : [];
+                } catch (e) {
+                    return [];
+                }
+            })();
+            // A premium module is usable when the user is actually Premium, or
+            // when an admin-built pack link granted that specific module.
+            window.isPremiumGranted = function (moduleId) {
+                return (
+                    window.PREMIUM_ACTIVE === true ||
+                    (window.HANDI_PACK_ADMIN &&
+                        window.HANDI_PACK_MODULES.indexOf(moduleId) !== -1)
+                );
+            };
             window._premiumChecked = false;
             (async function () {
                 var host = window.location.hostname;
@@ -1167,28 +1188,25 @@
                         let state = enabled[mod.id];
                         if (state === 3) return; // hidden — skip entirely
                         let isActive = state === 1;
-                                                let isDisabled = state === 2 || (window.PREMIUM_ACTIVE !== true && !window.HANDI_PACK_ADMIN);
-                                                let div = document.createElement("div");
-                                                div.className =
-                                                    "module-item premium-module" +
-                                                                                (isDisabled ? " module-disabled" : "");
-                                                    let btnLabel, btnClass;
-                                                                            if (isActive && (window.PREMIUM_ACTIVE === true || window.HANDI_PACK_ADMIN)) {
-                                                                                btnLabel = window.LANG.btnRemove;
-                                                                                btnClass = "btn-remove";
-                                                                            } else if (isDisabled) {
-                                                                                btnLabel = window.LANG.btnDisabled;
-                                                                                btnClass = "btn-add";
-                                                                            } else {
-                                                                                if (window.PREMIUM_ACTIVE !== true && !window.HANDI_PACK_ADMIN) {
-                                                                                    isDisabled = true;
-                                                                                    btnLabel = window.LANG.btnDisabled;
-                                                                                    btnClass = "btn-add";
-                                                                                } else {
-                                                                                    btnLabel = window.LANG.btnAdd;
-                                                                                    btnClass = "btn-add";
-                                                                                }
-                                                                            }
+                        // Only real Premium users, or modules explicitly granted
+                        // by an admin-built pack link, can toggle premium modules.
+                        let granted = window.isPremiumGranted(mod.id);
+                        let isDisabled = state === 2 || !granted;
+                        let div = document.createElement("div");
+                        div.className =
+                            "module-item premium-module" +
+                            (isDisabled ? " module-disabled" : "");
+                        let btnLabel, btnClass;
+                        if (isDisabled) {
+                            btnLabel = window.LANG.btnDisabled;
+                            btnClass = "btn-add";
+                        } else if (isActive) {
+                            btnLabel = window.LANG.btnRemove;
+                            btnClass = "btn-remove";
+                        } else {
+                            btnLabel = window.LANG.btnAdd;
+                            btnClass = "btn-add";
+                        }
                         var modName =
                             window.LANG.modules && window.LANG.modules[mod.id]
                                 ? window.LANG.modules[mod.id].name

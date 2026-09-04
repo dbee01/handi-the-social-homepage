@@ -177,8 +177,7 @@ export default async function initCast(container) {
   container.appendChild(content);
   var parentItem = container.closest(".dashboard-item");
   if (parentItem) {
-    parentItem.dataset.module = "music";
-    parentItem.style.minHeight = "420px";
+    parentItem.dataset.module = "cast";
   }
 
   var tracks = [];

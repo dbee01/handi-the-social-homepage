@@ -77,6 +77,9 @@ var LANG = {
     task: { name: "Tasks", desc: "To-do list" },
     support: { name: "Support", desc: "Support links" },
     llm: { name: "LLM", desc: "Private AI chat" },
+    flip: { name: "Flipboard", desc: "Curated news" },
+    newsletter: { name: "Newsletter", desc: "Email digest" },
+    sports: { name: "Sports", desc: "Live football" },
   },
 
   // Dashboard component strings
@@ -89,6 +92,12 @@ var LANG = {
   d_chooseAnother: "Choose another source",
   d_scrollUp: "Scroll Up",
   d_scrollDown: "Scroll Down",
+  d_scrollLeft: "Scroll left",
+  d_scrollRight: "Scroll right",
+  d_more: "More",
+  d_less: "Less",
+  d_website: "Website",
+  d_help: "Help",
   d_selectFeed: "Select a news source",
   d_selectServer: "Select a Mastodon server",
   d_selectCountry: "Select country",
@@ -281,6 +290,20 @@ var LANG = {
                 d_configureSupport: "Configure in Settings.",
                 d_noSupport: "No support links configured.",
 
+                // Flip (Flipboard)
+                d_flipConfigure: "Add a Flipboard profile or topic URL in Settings.",
+                d_flipEmpty: "No flips found.",
+
+                // Newsletter
+                d_newsletterEmpty: "No newsletter items found.",
+
+                // Sports
+                d_sportsNoKey: "Live sports is not configured on the server.",
+                d_sportsNoKeyHint: "Add APISPORTS_KEY to the server's .env and restart.",
+                d_sportsError: "Could not load today's fixtures.",
+                d_sportsNone: "No fixtures today.",
+                d_sportsToday: "Today",
+
         // Weather
   d_weatherDisabled: "Weather module disabled.",
   d_enableWeather: "Enable in Settings → Weather",
@@ -410,6 +433,15 @@ var LANG = {
             h_support:
               "<strong>🤝 Support</strong><br><br>• The Support element contains an image or video upload.<br>• The link can be to your website, shop, donation page, ticket supplier etc.<br>• Configure in <strong>Settings → Support</strong>.<br>• Upload an image or video (stored as data URL).<br>• Add a title, external URL link, and description.<br>• All data is saved locally in your browser.",
 
+            h_flip:
+              "<strong>➡️ Flipboard</strong><br><br>• Shows curated stories from a Flipboard profile or topic.<br>• Add a profile (<code>@user</code>) or topic (<code>#topic</code>) URL in <strong>Settings → Flipboard</strong>.<br>• Use <strong>‹ ›</strong> to scroll through stories.<br>• Click any story to open it on the source website.",
+
+            h_newsletter:
+              "<strong>✉️ Newsletter</strong><br><br>• Shows the latest items from your chosen feed or the Handi newsletter.<br>• Pick a feed in <strong>Settings → Newsletter</strong>.<br>• Use <strong>‹ ›</strong> to scroll through items.<br>• Click any heading to read the full item.",
+
+            h_sports:
+              "<strong>⚽ Sports</strong><br><br>• Shows today's live football fixtures and odds.<br>• Choose which leagues to follow in <strong>Settings → Sports</strong>.<br>• Tap an odds box to open the bookmaker's site.<br>• Requires the server to be configured (APISPORTS_KEY).",
+
     h_modalTitle: "Module Help",
   h_gotIt: "Got it",
   h_noHelp: "No specific help available.",
@@ -429,7 +461,7 @@ var LANG = {
 
   // Footer
   d_customizeDashboard: "Customize Dashboard",
-  d_buildOwnPack: "Build Your Own Handi-Pack",
+  d_buildOwnPack: "Build Your Own Handi-Site",
   d_freeTrial: "✨ Try Premium",
 
   // Search placeholder

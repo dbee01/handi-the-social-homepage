@@ -61,6 +61,9 @@ var LANG = {
     support: { name: "Cymorth", desc: "Dolenni cymorth" },
     cast: { name: "Podlediad", desc: "Chwaraewr podlediadau" },
     llm: { name: "LLM", desc: "Sgwrs AI preifat" },
+    flip: { name: "Flipboard", desc: "Newyddion curadurol" },
+    newsletter: { name: "Cylchlythyr", desc: "Crynodeb e-bost" },
+    sports: { name: "Chwaraeon", desc: "Pêl-droed byw" },
   },
   d_loading: "Wrthi'n llwytho...",
   d_noData: "Dim data.",
@@ -71,6 +74,12 @@ var LANG = {
   d_chooseAnother: "Ffynhonnell arall",
   d_scrollUp: "Sgrolio i fyny",
   d_scrollDown: "Sgrolio i lawr",
+  d_scrollLeft: "Sgrolio i'r chwith",
+  d_scrollRight: "Sgrolio i'r dde",
+  d_more: "Mwy",
+  d_less: "Llai",
+  d_website: "Gwefan",
+  d_help: "Cymorth",
   d_selectFeed: "Dewis ffynhonnell",
   d_selectServer: "Dewis gweinydd Mastodon",
   d_selectCountry: "Dewis gwlad",
@@ -215,6 +224,20 @@ var LANG = {
         d_configureSupport: "Configure in Settings.",
         d_noSupport: "No support links configured.",
 
+        // Flip (Flipboard)
+        d_flipConfigure: "Ychwanegwch URL proffil neu bwnc Flipboard yn y Gosodiadau.",
+        d_flipEmpty: "Dim eitemau wedi'u canfod.",
+
+        // Newsletter
+        d_newsletterEmpty: "Dim eitemau cylchlythyr wedi'u canfod.",
+
+        // Sports
+        d_sportsNoKey: "Nid yw chwaraeon byw wedi'i ffurfweddu ar y gweinydd.",
+        d_sportsNoKeyHint: "Ychwanegwch APISPORTS_KEY i .env y gweinydd ac ailgychwynwch.",
+        d_sportsError: "Methu llwytho gemau heddiw.",
+        d_sportsNone: "Dim gemau heddiw.",
+        d_sportsToday: "Heddiw",
+
   d_customizeDashboard: "Addasu'r Dangosfwrdd",
   d_freeTrial: "✨ Rhowch gynnig ar Premiwm",
   s_settings: "Gosodiadau",
@@ -297,6 +320,15 @@ var LANG = {
 
       h_support:
         "<strong>🤝 Cymorth</strong><br><br>• Mae'r elfen Gymorth yn cynnwys llwytho delwedd neu fideo.<br>• Gall y ddolen fod i'ch gwefan, siop, tudalen rhoi, cyflenwr tocynnau ac ati.<br>• Ffurfweddu yn <strong>Gosodiadau → Cymorth</strong>.<br>• Llwythwch ddelwedd neu fideo (wedi'i storio fel URL data).<br>• Ychwanegwch deitl, dolen URL allanol, a disgrifiad.<br>• Mae'r holl ddata'n cael ei gadw'n lleol yn eich porwr.",
+
+  h_flip:
+        "<strong>➡️ Flipboard</strong><br><br>• Yn dangos straeon curadurol o broffil neu bwnc Flipboard.<br>• Ychwanegwch broffil (<code>@user</code>) neu bwnc (<code>#topic</code>) yn <strong>Gosodiadau → Flipboard</strong>.<br>• Defnyddiwch <strong>‹ ›</strong> i sgrolio trwy straeon.<br>• Cliciwch unrhyw stori i'w hagor ar y wefan wreiddiol.",
+
+  h_newsletter:
+        "<strong>✉️ Cylchlythyr</strong><br><br>• Yn dangos yr eitemau diweddaraf o'ch porthiant neu gylchlythyr Handi.<br>• Dewiswch borthiant yn <strong>Gosodiadau → Cylchlythyr</strong>.<br>• Defnyddiwch <strong>‹ ›</strong> i sgrolio trwy eitemau.<br>• Cliciwch unrhyw bennawd i ddarllen yr eitem lawn.",
+
+  h_sports:
+        "<strong>⚽ Chwaraeon</strong><br><br>• Yn dangos gemau pêl-droed byw heddiw a'r ods.<br>• Dewiswch pa gynghreiriau i'w dilyn yn <strong>Gosodiadau → Chwaraeon</strong>.<br>• Tapiwch flwch ods i agor safle'r bwci.<br>• Mae angen ffurfweddu'r gweinydd (APISPORTS_KEY).",
 
   h_modalTitle: "Cymorth Modiwl",
   h_gotIt: "Iawn",
