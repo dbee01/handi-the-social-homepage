@@ -406,6 +406,89 @@
             .error {
                 color: #dc2626;
             }
+            /* Custom flag dropdown (replaces native #newsRssUrl select) */
+            .flag-select-wrap {
+                position: relative;
+                display: inline-block;
+                width: 100%;
+                max-width: 360px;
+            }
+            .flag-select-btn {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+                width: 100%;
+                border: 1px solid #cbd5e1;
+                border-radius: 10px;
+                background: #fff;
+                padding: 8px 12px;
+                font-size: medium;
+                color: #1e293b;
+                cursor: pointer;
+                text-align: left;
+            }
+            .flag-select-btn:hover {
+                border-color: #94a3b8;
+            }
+            .flag-select-current {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .flag-select-caret {
+                color: #64748b;
+                flex: 0 0 auto;
+            }
+            .flag-select-menu {
+                position: absolute;
+                top: calc(100% + 4px);
+                left: 0;
+                z-index: 50;
+                margin: 0;
+                padding: 4px;
+                list-style: none;
+                background: #fff;
+                border: 1px solid #cbd5e1;
+                border-radius: 10px;
+                box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+                max-height: 240px;
+                overflow-y: auto;
+                min-width: 100%;
+                width: max-content;
+            }
+            .flag-select-menu li {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 6px 10px;
+                border-radius: 6px;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+            .flag-select-menu li:hover,
+            .flag-select-menu li[aria-selected="true"] {
+                background: #eef2ff;
+            }
+            .flag-img {
+                width: 20px;
+                height: 15px;
+                object-fit: cover;
+                border-radius: 2px;
+                box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+                flex: 0 0 auto;
+            }
+            .flag-placeholder {
+                width: 20px;
+                flex: 0 0 auto;
+            }
+            .flag-select-native {
+                display: none !important;
+            }
         </style>
 
     </head>
@@ -829,7 +912,34 @@
                 <div class="module-config">
                     <div class="config-field">
                         <label>RSS Feed:</label>
-                        <select id="newsRssUrl">
+                        <div class="flag-select-wrap">
+                            <button
+                                type="button"
+                                id="newsFlagBtn"
+                                class="flag-select-btn"
+                                aria-haspopup="listbox"
+                                aria-expanded="false"
+                            >
+                                <span class="flag-select-current" id="newsFlagCurrent">
+                                    <span class="flag-placeholder"></span>
+                                    <span class="flag-label"
+                                        >— Default (page selector) —</span
+                                    >
+                                </span>
+                                <span class="flag-select-caret">▼</span>
+                            </button>
+                            <ul
+                                class="flag-select-menu"
+                                id="newsFlagMenu"
+                                role="listbox"
+                                hidden
+                            ></ul>
+                        </div>
+                        <select
+                            id="newsRssUrl"
+                            class="flag-select-native"
+                            hidden
+                        >
                             <option value="">
                                 — Default (page selector) —
                             </option>
@@ -3601,6 +3711,146 @@
                 }
             });
         </script>
+        <!-- ========== NEWS RSS FLAG DROPDOWN ========== -->
+        <script>
+            // Custom SVG-flag dropdown for the News RSS feed select. The native
+            // #newsRssUrl select stays in the DOM (hidden) as the value source
+            // of truth so existing save/load code keeps working unchanged.
+            (function () {
+                var FLAG_CDN = "https://flagcdn.com/";
+                var NEWS_FLAGS = {
+                    "https://www.rte.ie/feeds/rss/news.xml": "ie",
+                    "https://feeds.bbci.co.uk/news/rss.xml": "gb",
+                    "https://www.lemonde.fr/rss/une.xml": "fr",
+                    "https://www.spiegel.de/schlagzeilen/index.rss": "de",
+                    "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada": "es",
+                    "https://www.corriere.it/rss/homepage.xml": "it",
+                    "https://feeds.nos.nl/nosnieuwsalgemeen": "nl",
+                    "https://tvn24.pl/najnowsze.xml": "pl",
+                    "https://feeds.feedburner.com/PublicoRSS": "pt",
+                    "https://www.standaard.be/rss/section/1f2838d4-99ea-49f0-9102-138784c7ea7c": "be",
+                    "https://www.nzz.ch/recent.rss": "ch",
+                    "https://www.svt.se/nyheter/rss.xml": "se",
+                    "https://www.nrk.no/nyheter/siste.rss": "no",
+                    "https://feeds.npr.org/1001/rss.xml": "us",
+                    "https://www.cbc.ca/webfeed/rss/rss-topstories": "ca",
+                    "https://www.abc.net.au/news/feed/51120/rss.xml": "au",
+                    "https://www.rnz.co.nz/rss/national.xml": "nz",
+                };
+
+                function flagSpan(code) {
+                    if (!code) {
+                        var ph = document.createElement("span");
+                        ph.className = "flag-placeholder";
+                        return ph;
+                    }
+                    var img = document.createElement("img");
+                    img.className = "flag-img";
+                    img.alt = "";
+                    img.loading = "lazy";
+                    img.src = FLAG_CDN + code + ".svg";
+                    img.onerror = function () {
+                        img.style.display = "none";
+                    };
+                    return img;
+                }
+
+                function init() {
+                    var sel = document.getElementById("newsRssUrl");
+                    var btn = document.getElementById("newsFlagBtn");
+                    var menu = document.getElementById("newsFlagMenu");
+                    var current = document.getElementById("newsFlagCurrent");
+                    if (!sel || !btn || !menu || !current) return;
+
+                    var items = [];
+                    for (var i = 0; i < sel.options.length; i++) {
+                        (function (opt) {
+                            var li = document.createElement("li");
+                            li.setAttribute("role", "option");
+                            li.setAttribute("data-value", opt.value);
+                            li.appendChild(
+                                flagSpan(NEWS_FLAGS[opt.value] || ""),
+                            );
+                            li.appendChild(
+                                document.createTextNode(opt.textContent),
+                            );
+                            li.addEventListener("click", function () {
+                                selectOption(opt.value);
+                            });
+                            menu.appendChild(li);
+                            items.push(li);
+                        })(sel.options[i]);
+                    }
+
+                    function renderSelected() {
+                        var opt =
+                            sel.selectedIndex >= 0
+                                ? sel.options[sel.selectedIndex]
+                                : null;
+                        var value = opt ? opt.value : "";
+                        var label = opt
+                            ? opt.textContent
+                            : "— Default (page selector) —";
+                        current.innerHTML = "";
+                        current.appendChild(
+                            flagSpan(NEWS_FLAGS[value] || ""),
+                        );
+                        var span = document.createElement("span");
+                        span.className = "flag-label";
+                        span.textContent = label;
+                        current.appendChild(span);
+                        for (var k = 0; k < items.length; k++) {
+                            items[k].setAttribute(
+                                "aria-selected",
+                                String(
+                                    items[k].getAttribute("data-value") ===
+                                        value,
+                                ),
+                            );
+                        }
+                    }
+
+                    function selectOption(value) {
+                        sel.value = value;
+                        sel.dispatchEvent(new Event("change"));
+                        renderSelected();
+                        closeMenu();
+                    }
+
+                    function openMenu() {
+                        menu.hidden = false;
+                        btn.setAttribute("aria-expanded", "true");
+                    }
+                    function closeMenu() {
+                        menu.hidden = true;
+                        btn.setAttribute("aria-expanded", "false");
+                    }
+
+                    btn.addEventListener("click", function (e) {
+                        e.stopPropagation();
+                        if (menu.hidden) openMenu();
+                        else closeMenu();
+                    });
+                    document.addEventListener("click", function (e) {
+                        if (!e.target.closest(".flag-select-wrap")) {
+                            closeMenu();
+                        }
+                    });
+                    document.addEventListener("keydown", function (e) {
+                        if (e.key === "Escape") closeMenu();
+                    });
+
+                    renderSelected();
+                }
+
+                if (document.readyState === "loading") {
+                    document.addEventListener("DOMContentLoaded", init);
+                } else {
+                    init();
+                }
+            })();
+        </script>
+
         <!-- ========== TRANSLATE SETTINGS PAGE ========== -->
         <script>
             (function populate() {
