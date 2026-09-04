@@ -2418,7 +2418,27 @@
                     )
                 )
                     return;
+                // Reset must not cancel Premium: preserve the subscription and
+                // admin-pack grant keys while clearing everything else.
+                const premiumKeys = [
+                    "stripe_subscription_id",
+                    "premium_expiry",
+                    "handiPackAdmin",
+                    "handiPackModules",
+                ];
+                const saved = {};
+                for (const k of premiumKeys) {
+                    try {
+                        const v = localStorage.getItem(k);
+                        if (v !== null) saved[k] = v;
+                    } catch (e) {}
+                }
                 localStorage.clear();
+                for (const k in saved) {
+                    try {
+                        localStorage.setItem(k, saved[k]);
+                    } catch (e) {}
+                }
                 sessionStorage.clear();
                 // Re-initialize the MMR from registry defaults after clearing
                 window.resetMMR();
