@@ -270,6 +270,9 @@ button.radio-country-item span {
 .radio-station span:last-child {
     color: #1e293b;
 }
+.radio-station i {
+    color: unset;
+}
 
 .radio-scroll-btn {
     background: #0047cc;
