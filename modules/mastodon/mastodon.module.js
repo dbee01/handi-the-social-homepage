@@ -115,6 +115,7 @@ export default async function initMastodon(container) {
         "</div>";
       var url;
       var feedInfo = null;
+      var feedIsLocal = false;
             if (feedType === "profile" && profileAccount) {
               // Search for account ID first
               var acct = profileAccount.replace(/^@/, "");
@@ -134,7 +135,12 @@ export default async function initMastodon(container) {
               var tag = hashtag.replace(/^#/, "");
               url = `${instance}/api/v1/timelines/tag/${encodeURIComponent(tag)}?limit=${limit}`;
             } else {
-              url = `${instance}/api/v1/trends/links?limit=${limit}`;
+              // The fediverse-wide "trending links" list is identical on every
+              // instance (which made choosing a different server look like a
+              // bug). Show THIS server's own local posts instead so each server
+              // really has different content.
+              feedIsLocal = true;
+              url = `${instance}/api/v1/timelines/public?local=true&limit=${limit}`;
             }
       const res = await fetch(url);
 
@@ -144,7 +150,7 @@ export default async function initMastodon(container) {
       if (!Array.isArray(data) || !data.length) {
         content.innerHTML =
           '<div class="module-empty" style="padding: 20px; text-align: center;">' +
-          t("d_noData", "No trending links") +
+          t("d_noData", "No posts yet") +
           "</div>";
         refreshPackery();
         return;
@@ -167,7 +173,9 @@ export default async function initMastodon(container) {
               ? '<i class="fa-solid fa-user"></i> ' + escapeHtml(profileAccount)
               : feedType === "hashtag" && hashtag
                 ? '<i class="fa-solid fa-hashtag"></i> ' + escapeHtml(hashtag.replace(/^#/, ""))
-                : '<i class="fa-solid fa-arrow-trend-up"></i> ' + t("d_trending", "Trending");
+                : feedIsLocal
+                  ? '<i class="fa-solid fa-asterisk"></i> ' + t("d_localFeed", "Local feed")
+                  : '<i class="fa-solid fa-arrow-trend-up"></i> ' + t("d_trending", "Trending");
             headerBar.innerHTML =
               '<small style="opacity:0.7;">' +
               serverFlag + " " + escapeHtml(serverName) + " · " + feedLabel +
@@ -256,14 +264,19 @@ export default async function initMastodon(container) {
       var posts = [];
       for (const item of data) {
         var titleText, urlLink, description, provider, image;
-        if (feedType === "profile" || feedType === "hashtag") {
-          // Status format
-          titleText = item.account?.display_name || item.account?.username || "";
-          urlLink = item.url || "#";
-          description = htmlToText(item.content || "");
-          var rawAcct = item.account?.acct || "";
+        if (feedIsLocal || feedType === "profile" || feedType === "hashtag") {
+          // Status format (local timeline, profile or hashtag). Local feeds
+          // include boosts, so unwrap them to the original post.
+          var st =
+            item && item.reblog && typeof item.reblog === "object"
+              ? item.reblog
+              : item;
+          titleText = st.account?.display_name || st.account?.username || "";
+          urlLink = st.url || "#";
+          description = htmlToText(st.content || "");
+          var rawAcct = st.account?.acct || "";
           provider = rawAcct ? "@" + rawAcct.replace(/^@/, "") : "";
-          var media = item.media_attachments && item.media_attachments[0];
+          var media = st.media_attachments && st.media_attachments[0];
           image = media ? media.preview_url || media.url || "" : "";
         } else {
           // Trending links format
