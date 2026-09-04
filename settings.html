@@ -751,6 +751,10 @@
                             📸 Load Images
                         </button>
                         <span class="upload-status" id="galleryStatus"></span>
+                        <div
+                            id="galleryUploadedList"
+                            style="margin-top:8px;font-size:0.9rem;text-align:left;"
+                        ></div>
                     <small
                         >Rename image filenames in caption format:
                         My+Lovely+Horse.jpg -> My Lovely Horse</small
@@ -2788,29 +2792,175 @@
             // ============================================================
             // FILE LOADS (using triggerLoad + storage.js)
             // ============================================================
-            document
-                .getElementById("uploadGalleryBtn")
-                ?.addEventListener("click", () => {
-                    window.triggerLoad({
+            // ============================================================
+            // GALLERY UPLOAD + IMAGE LIST
+            // ============================================================
+            var uploadGalleryBtn = document.getElementById("uploadGalleryBtn");
+
+            // Show which images are stored on this device.
+            async function refreshGalleryUploadedList() {
+                var listEl = document.getElementById("galleryUploadedList");
+                if (!listEl) return;
+                try {
+                    const { listGalleryFiles } = await import(
+                        "/js/core/storage.js",
+                    );
+                    const items = await listGalleryFiles();
+                    if (!items.length) {
+                        listEl.innerHTML = "";
+                        return;
+                    }
+                    const totalMB =
+                        items.reduce((sum, it) => sum + (it.size || 0), 0) /
+                        1048576;
+                    listEl.innerHTML =
+                        '<small style="opacity:0.75;display:block;margin-bottom:4px;">' +
+                        "Uploaded images (" +
+                        items.length +
+                        ", " +
+                        totalMB.toFixed(1) +
+                        ' MB):</small>' +
+                        items
+                            .map(function (it) {
+                                return (
+                                    '<div style="display:flex;align-items:center;gap:8px;padding:2px 0;">' +
+                                    '<i class="fa-solid fa-image" style="opacity:0.6;flex-shrink:0;"></i>' +
+                                    '<span style="overflow-wrap:anywhere;flex:1;">' +
+                                    escapeHtml(it.name) +
+                                    "</span>" +
+                                    '<button type="button" data-id="' +
+                                    it.id +
+                                    '" title="Remove" aria-label="Remove" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:1rem;line-height:1;padding:4px 8px;border-radius:6px;">✕</button>' +
+                                    "</div>"
+                                );
+                            })
+                            .join("") +
+                        '<button type="button" id="galleryClearAll" style="margin-top:6px;background:none;border:1px solid #d1d5db;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:0.85rem;color:#64748b;">Remove all</button>';
+
+                    listEl
+                        .querySelectorAll("button[data-id]")
+                        .forEach(function (btn) {
+                            btn.addEventListener("click", async function () {
+                                try {
+                                    const { deleteGalleryFile } = await import(
+                                        "/js/core/storage.js",
+                                    );
+                                    await deleteGalleryFile(
+                                        Number(btn.dataset.id),
+                                    );
+                                } catch (err) {
+                                    alert(
+                                        "Could not remove image: " +
+                                            (err.message || err),
+                                    );
+                                }
+                                refreshGalleryUploadedList();
+                            });
+                        });
+
+                    var clearAllBtn = listEl.querySelector("#galleryClearAll");
+                    if (clearAllBtn)
+                        clearAllBtn.addEventListener(
+                            "click",
+                            async function () {
+                                if (
+                                    !confirm(
+                                        "Remove all uploaded images from this device?",
+                                    )
+                                )
+                                    return;
+                                try {
+                                    const { clearGallery } = await import(
+                                        "/js/core/storage.js",
+                                    );
+                                    await clearGallery();
+                                } catch (err) {
+                                    alert(
+                                        "Could not remove images: " +
+                                            (err.message || err),
+                                    );
+                                }
+                                refreshGalleryUploadedList();
+                            },
+                        );
+                } catch (e) {}
+            }
+
+            if (uploadGalleryBtn)
+                uploadGalleryBtn.addEventListener("click", () => {
+                    var loadOpts = {
                         accept: "image/*",
                         multiple: true,
                         maxSizeMB: 10,
+                        progress: true,
                         onFiles: async (files) => {
-                                                    const { saveGallery } = await import("/js/core/storage.js");
-                                                    await saveGallery(files);
-                            var el = document.getElementById("galleryStatus");
-                            if (el) {
-                                el.textContent = "✅ " + window.t("d_imagesLoaded", files.length + " images loaded");
-                                el.style.color = "#16a34a";
-                                setTimeout(function () { el.textContent = ""; }, 4000);
+                            try {
+                                const { saveGallery, loadGallery } =
+                                    await import("/js/core/storage.js");
+                                // Add to the existing library rather than wipe it.
+                                var existing = [];
+                                try {
+                                    existing = await loadGallery();
+                                } catch (e) {}
+                                await saveGallery(
+                                    [...existing, ...files],
+                                    function (doneBytes, totalBytes, name) {
+                                        if (loadOpts.setProgress) {
+                                            loadOpts.setProgress(
+                                                doneBytes,
+                                                totalBytes,
+                                                name,
+                                            );
+                                        }
+                                    },
+                                );
+                            } catch (err) {
+                                var quota =
+                                    err &&
+                                    (err.name === "QuotaExceededError" ||
+                                        /quota/i.test(err.message || ""));
+                                var el = document.getElementById("galleryStatus");
+                                if (el) {
+                                    el.textContent =
+                                        "❌ " +
+                                        (quota
+                                            ? "Not enough storage on this device."
+                                            : "Could not save images: " +
+                                              (err.message || err));
+                                    el.style.color = "#dc2626";
+                                    setTimeout(function () {
+                                        el.textContent = "";
+                                    }, 6000);
+                                }
+                                return;
+                            }
+                            refreshGalleryUploadedList();
+                            var ok = document.getElementById("galleryStatus");
+                            if (ok) {
+                                ok.textContent =
+                                    "✅ " +
+                                    window.t(
+                                        "d_imagesLoaded",
+                                        files.length + " images loaded",
+                                    );
+                                ok.style.color = "#16a34a";
+                                setTimeout(function () {
+                                    ok.textContent = "";
+                                }, 4000);
                             }
                         },
                         onError: (msg) => {
                             var el = document.getElementById("galleryStatus");
-                            if (el) { el.textContent = "❌ " + msg; el.style.color = "#dc2626"; }
+                            if (el) {
+                                el.textContent = "❌ " + msg;
+                                el.style.color = "#dc2626";
+                            }
                         },
-                    });
+                    };
+                    window.triggerLoad(loadOpts);
                 });
+
+            refreshGalleryUploadedList();
 
             // ============================================================
             // MUSIC UPLOAD + LIBRARY LIST

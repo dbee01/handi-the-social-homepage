@@ -186,16 +186,43 @@ export default async function initGallery(container) {
     console.error("Gallery load error:", err);
   }
 
+  // Save picked images with a byte-accurate progress bar (drawn by the
+  // triggerLoad overlay). Alerts and returns false on failure.
+  async function saveUploadedImages(newImages, loadOpts) {
+    try {
+      await saveGallery(newImages, function (doneBytes, totalBytes, name) {
+        if (loadOpts && loadOpts.setProgress) {
+          loadOpts.setProgress(doneBytes, totalBytes, name);
+        }
+      });
+      return true;
+    } catch (err) {
+      var quota =
+        err &&
+        (err.name === "QuotaExceededError" ||
+          /quota/i.test(err.message || ""));
+      alert(
+        quota
+          ? "Not enough storage on this device to save the images."
+          : "Could not save images: " + (err.message || err),
+      );
+      return false;
+    }
+  }
+
   function createFileInput() {
-    window.triggerLoad({
+    var loadOpts = {
       accept: "image/*",
       multiple: true,
+      progress: true,
       onFiles: async function (newImages) {
-        await saveGallery([...images, ...newImages]);
-        container.innerHTML = "";
-        initGallery(container);
+        if (await saveUploadedImages([...images, ...newImages], loadOpts)) {
+          container.innerHTML = "";
+          initGallery(container);
+        }
       },
-    });
+    };
+    window.triggerLoad(loadOpts);
   }
 
   function makeAddButton() {
@@ -280,7 +307,8 @@ export default async function initGallery(container) {
     return carousel;
   }
 
-  // --- Decide what to display: feed first, then uploaded images ---
+  // --- Decide what to display: uploaded images win over the feed ---
+  const hasUploads = images.length > 0;
   let feedUrl = "";
   try {
     feedUrl = (
@@ -293,7 +321,7 @@ export default async function initGallery(container) {
 
   let feedInfo = null;
   let feedItems = [];
-  if (feedUrl) {
+  if (feedUrl && !hasUploads) {
     content.innerHTML =
       '<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:#64748b;">' +
       '<i class="fa-solid fa-spinner fa-spin"></i> ' +
@@ -311,9 +339,7 @@ export default async function initGallery(container) {
   }
 
   let items = [];
-  if (feedItems.length) {
-    items = feedItems;
-  } else if (images.length) {
+  if (images.length) {
     items = images.map(function (img) {
       return {
         img: img.url,
@@ -327,6 +353,8 @@ export default async function initGallery(container) {
         author: "",
       };
     });
+  } else if (feedItems.length) {
+    items = feedItems;
   }
 
   // Cast-style feed info card (thumbnail, title, description with a More /
