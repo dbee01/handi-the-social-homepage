@@ -5,13 +5,11 @@
  */
 
 // modules/newsletter/newsletter.module.js
-// NEWSLETTER: reads the Handi newsletter RSS feed and shows its issues as a
+// NEWSLETTER: reads a newsletter RSS feed and shows its issues as a
 // horizontal card scroller (image, title, snippet, date) with a link back to
 // the source, plus left/right scroll buttons. Cloned from the flip module.
+// The feed URL comes from Settings — there is no built-in default feed.
 import { loadSettings } from "../../js/core/settings.js";
-
-// Handi's own newsletter feed (rss.app). Overridable in Settings.
-const DEFAULT_FEED = "https://rss.app/feeds/h5mRnOsCNYaZRYxA.xml";
 
 const MEDIA_NS = "http://search.yahoo.com/mrss/";
 
@@ -168,11 +166,19 @@ export default async function initNewsletter(container) {
   const parentItem = container.closest(".dashboard-item");
   if (parentItem) parentItem.dataset.module = "newsletter";
 
-  let feedUrl = DEFAULT_FEED;
+  let feedUrl = "";
   try {
     const s = loadSettings();
-    feedUrl = (s.newsletter && s.newsletter.feedUrl) || DEFAULT_FEED;
+    feedUrl = ((s.newsletter && s.newsletter.feedUrl) || "").trim();
   } catch (e) {}
+
+  if (!feedUrl) {
+    content.innerHTML =
+      '<div class="module-empty"><i class="fa-solid fa-envelope-open-text"></i><p>' +
+      t("d_newsletterConfigure", "Add a newsletter feed URL in Settings.") +
+      "</p></div>";
+    return function () {};
+  }
 
   content.innerHTML =
     '<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:#64748b;">' +
@@ -241,7 +247,12 @@ export default async function initNewsletter(container) {
         escapeHtml(feedInfo.title) +
         "</div>";
     const desc = feedInfo.description || "";
-    if (desc)
+    // Don't repeat the title when the feed's description is identical to it
+    // (e.g. the callout showing "handi newsletter" twice).
+    const descDuplicatesTitle =
+      !!feedInfo.title &&
+      desc.toLowerCase() === String(feedInfo.title).toLowerCase();
+    if (desc && !descDuplicatesTitle)
       infoHtml +=
         '<div style="font-size:0.9rem;line-height:1.4;opacity:0.85;margin-top:6px;"><span id="newsletterInfoDesc">' +
         escapeHtml(

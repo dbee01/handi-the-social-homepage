@@ -327,4 +327,7 @@ var LANG = {
   d_msg_5: "🚑 An bhfuil cabhair uait go tapa? Cumraigh do <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>ghuthán Android</a> nó <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>ghuthán agus uaireadóir Apple</a> chun foláireamh a sheoladh chuig na seirbhísí éigeandála le do shuíomh nuair a bhrúnn tú cnaipe cumhachta do ghléis 5 huaire nó níos mó!",
   d_msg_6: "📻 Múch gach cainéal fuaime ar an deais seo trí bhrú a chur ar an deilbhín cainteora (ar chlé den chos leathanach ag bun do scáileáin).",
   d_msg_close: "Dún an teachtaireacht",
+
+  // Search placeholder
+  d_searchPlaceholder: "Cuardach príobháideach anseo...",
 };

@@ -319,4 +319,7 @@ var LANG = {
   d_msg_5: "🚑 ¿Necesita ayuda rápida? Configure su <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>teléfono Android</a> o <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>iPhone y Apple Watch</a> para enviar una alerta a los servicios de emergencia con su ubicación al pulsar el botón de encendido 5 o más veces!",
   d_msg_6: "📻 Apague todos los canales de audio de este panel pulsando el icono del altavoz (a la izquierda del pie de página, en la parte inferior de la pantalla).",
   d_msg_close: "Cerrar mensaje",
+
+  // Search placeholder
+  d_searchPlaceholder: "Búsqueda privada aquí...",
 };

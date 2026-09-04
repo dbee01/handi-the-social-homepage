@@ -315,4 +315,7 @@ var LANG = {
   d_msg_5: "🚑 Potrzebujesz szybkiej pomocy? Skonfiguruj swój <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>telefon z Androidem</a> lub <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>iPhone i Apple Watch</a>, aby wysłać alert do służb ratunkowych z Twoją lokalizacją po naciśnięciu przycisku zasilania 5 lub więcej razy!",
   d_msg_6: "📻 Wyłącz wszystkie kanały audio na tym pulpicie, naciskając ikonę głośnika (po lewej stronie stopki strony na dole ekranu).",
   d_msg_close: "Zamknij komunikat",
+
+  // Search placeholder
+  d_searchPlaceholder: "Prywatne wyszukiwanie tutaj...",
 };

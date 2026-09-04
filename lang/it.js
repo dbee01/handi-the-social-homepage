@@ -314,4 +314,7 @@ var LANG = {
   d_msg_5: "🚑 Ti serve aiuto subito? Configura il tuo <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>telefono Android</a> o <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>iPhone e Apple Watch</a> per inviare un allarme ai servizi di emergenza con la tua posizione quando premi il pulsante di accensione del dispositivo 5 o più volte!",
   d_msg_6: "📻 Disattiva tutti i canali audio di questa dashboard premendo l’icona dell’altoparlante (a sinistra del piè di pagina, in fondo allo schermo).",
   d_msg_close: "Chiudi messaggio",
+
+  // Search placeholder
+  d_searchPlaceholder: "Ricerca privata qui...",
 };

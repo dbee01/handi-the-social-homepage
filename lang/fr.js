@@ -314,4 +314,7 @@ var LANG = {
   d_msg_5: "🚑 Besoin d’aide rapidement ? Configurez votre <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>téléphone Android</a> ou votre <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>iPhone et Apple Watch</a> pour envoyer une alerte aux services d’urgence avec votre position lorsque vous appuyez sur le bouton d’alimentation de votre appareil 5 fois ou plus !",
   d_msg_6: "📻 Coupez toutes les chaînes audio de ce tableau de bord en appuyant sur l’icône du haut-parleur (à gauche du pied de page, en bas de votre écran).",
   d_msg_close: "Fermer le message",
+
+  // Search placeholder
+  d_searchPlaceholder: "Recherche privée ici...",
 };

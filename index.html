@@ -280,6 +280,20 @@
             </div>
         </header>
         <script>
+            // Translate the search box placeholder (dictionary loaded in <head>
+            // by /lang/loader.js; falls back to the English text in the markup).
+            try {
+                var searchBox = document.getElementById("searchInput");
+                if (searchBox && window.t) {
+                    searchBox.placeholder = window.t(
+                        "d_searchPlaceholder",
+                        "Private search query here...",
+                    );
+                }
+            } catch (e) {}
+        </script>
+
+        <script>
             // Apply Handi Pack branding (logo, homepage link, title) if present.
             (function () {
                 try {
@@ -418,7 +432,7 @@
         </script>
 
         <div class="customize-link">
-            <a href="https://handihomepage.com/handi-builder/">Build Your Own Handi-Pack</a>
+            <a href="https://handihomepage.com/handi-builder/">Build Your Own Handi-homepage</a>
         </div>
 
         <div class="brand">

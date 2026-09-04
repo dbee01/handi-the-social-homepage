@@ -315,4 +315,7 @@ var LANG = {
   d_msg_5: "🚑 Snel hulp nodig? Configureer uw <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android-telefoon</a> of <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple-telefoon en -horloge</a> om een alarm naar de hulpdiensten te sturen met uw locatie wanneer u 5 keer of vaker op de aan/uit-knop drukt!",
   d_msg_6: "📻 Zet alle audiokanalen van dit dashboard uit door op het luidsprekerpictogram te drukken (links in de paginafooter onderaan uw scherm).",
   d_msg_close: "Bericht sluiten",
+
+  // Search placeholder
+  d_searchPlaceholder: "Privé zoekopdracht hier...",
 };

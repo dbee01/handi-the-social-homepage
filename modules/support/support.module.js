@@ -85,7 +85,9 @@ export default async function initSupport(container) {
   if (hasResource) {
     const parts = [];
     if (cfg.imageUrl) {
-      parts.push(
+      // Videos stay unlinked (their controls need clicks); images link to the
+      // same destination as the Link URL configured in Settings.
+      const media =
         cfg.mediaType === "video"
           ? '<video class="support-media" controls playsinline src="' +
             esc(cfg.imageUrl) +
@@ -94,8 +96,20 @@ export default async function initSupport(container) {
             esc(cfg.imageUrl) +
             '" alt="' +
             esc(cfg.imageTitle || "") +
-            '" loading="lazy" />'
-      );
+            '" loading="lazy" />';
+      if (cfg.mediaType !== "video" && cfg.linkUrl) {
+        parts.push(
+          '<a class="support-media-link" href="' +
+            esc(cfg.linkUrl) +
+            '" target="_blank" rel="noopener" aria-label="' +
+            esc(cfg.imageTitle || "") +
+            '">' +
+            media +
+            "</a>"
+        );
+      } else {
+        parts.push(media);
+      }
     }
     if (cfg.imageTitle) parts.push("<h3>" + esc(cfg.imageTitle) + "</h3>");
     if (cfg.description) {

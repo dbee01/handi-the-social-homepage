@@ -227,8 +227,9 @@
     if ((v = qs.get("music"))) ensure("music").streamUrl = v;
     if ((v = qs.get("podcasts") || qs.get("cast"))) ensure("cast").streamUrl = v;
 
-    // Newsletter — RSS feed URL (defaults to the Handi newsletter feed when
-    // absent). Enables the module just like the other feed params.
+    // Newsletter — RSS feed URL for the newsletter module (no default feed;
+    // the module shows a configure prompt until one is set). Enables the
+    // module just like the other feed params.
     if ((v = qs.get("newsletter"))) {
       ensure("newsletter").feedUrl = v;
     }

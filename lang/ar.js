@@ -312,4 +312,7 @@ var LANG = {
   d_msg_5: "🚑 هل تحتاج إلى مساعدة سريعة؟ اضبط <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>هاتف أندرويد</a> أو <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>هاتف وساعة آبل</a> لإرسال تنبيه إلى خدمات الطوارئ مع موقعك عند الضغط على زر الطاقة في جهازك 5 مرات أو أكثر!",
   d_msg_6: "📻 قم بإيقاف تشغيل جميع القنوات الصوتية في لوحة التحكم هذه بالضغط على أيقونة مكبر الصوت (يسار تذييل الصفحة أسفل شاشتك).",
   d_msg_close: "إغلاق الرسالة",
+
+  // Search placeholder
+  d_searchPlaceholder: "بحث خاص هنا...",
 };

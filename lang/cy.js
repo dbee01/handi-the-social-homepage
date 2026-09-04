@@ -314,4 +314,7 @@ var LANG = {
   d_msg_5: "🚑 Angen help yn gyflym? Ffurfweddwch eich <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>ffôn Android</a> neu <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>ffôn ac oriawr Apple</a> i anfon rhybudd at y gwasanaethau brys gyda’ch lleoliad pan fyddwch yn pwyso botwm pŵer eich dyfais 5 gwaith neu fwy!",
   d_msg_6: "📻 Diffoddwch bob sianel sain ar y dangosfwrdd hwn trwy wasgu’r eicon siaradwr (chwith troedyn y dudalen ar waelod eich sgrin).",
   d_msg_close: "Cau’r neges",
+
+  // Search placeholder
+  d_searchPlaceholder: "Chwiliad preifat yma...",
 };

@@ -290,7 +290,7 @@
                 font-size: 1rem;
             }
             .config-field small {
-                font-size: 0.85rem;
+                font-size: 0.95rem;
                 line-height: 1.4;
             }
             .mastodon-server-list {
@@ -478,24 +478,6 @@
                 </div>
                 <div class="module-config">
                     <div class="config-field">
-                        <label>Default volume:</label>
-                        <input
-                            type="range"
-                            id="castVolume"
-                            min="0"
-                            max="100"
-                            value="100"
-                        />
-                        <span id="castVolumeValue">100%</span>
-                    </div>
-                    <div class="config-field">
-                        <label>Sound lock (disabled by default):</label>
-                        <select id="castSoundLock">
-                            <option value="false">Off</option>
-                            <option value="true">On</option>
-                        </select>
-                    </div>
-                    <div class="config-field">
                         <label>Audio stream or podcast feed URL:</label>
                         <input
                             type="url"
@@ -556,13 +538,14 @@
                 </div>
                 <div class="module-config">
                     <div class="config-field">
-                        <label>Newsletter feed URL:</label
+                        <label for="newsletterFeedUrl">Newsletter feed URL:</label
                         ><input
                             type="text"
                             id="newsletterFeedUrl"
-                            placeholder="https://rss.app/feeds/h5mRnOsCNYaZRYxA.xml"
+                            placeholder="https://example.com/newsletter/feed.xml"
+                            inputmode="url"
                         />
-                        <small>The Handi newsletter feed (rss.app). Leave blank for the default.</small>
+                        <small>RSS.app features an email-to-feed service that is perfect for non-private emails eg. email newsletters. Sign up for a newsletter email at RSS.app and enter the feed URL here.</small>
                     </div>
                 </div>
             </div>
@@ -690,16 +673,6 @@
                 </div>
                 <div class="module-config">
                     <div class="config-field">
-                        <label>Default volume:</label
-                        ><input
-                            type="range"
-                            id="musicVolume"
-                            min="0"
-                            max="100"
-                            value="100"
-                        /><span id="volumeValue">100%</span>
-                    </div>
-                    <div class="config-field">
                         <label>Default shuffle:</label
                         ><select id="musicShuffle">
                             <option value="false">Off</option>
@@ -797,17 +770,6 @@
                                                     <option value="au">Australia</option>
                                                     <option value="nz">New Zealand</option>
                                                 </select>
-                    </div>
-                    <div class="config-field">
-                        <label>Default Volume:</label>
-                        <input
-                            type="range"
-                            id="radioVolume"
-                            min="0"
-                            max="100"
-                            value="100"
-                        />
-                        <span id="radioVolumeValue">100%</span>
                     </div>
                     <div class="config-field">
                         <label>Audio stream or radio feed URL:</label>
@@ -1965,15 +1927,6 @@
                         document.getElementById("radioCountry").value =
                             settings.radio.defaultCountry || "";
                     }
-                    if (document.getElementById("radioVolume")) {
-                        document.getElementById("radioVolume").value =
-                            settings.radio.volume || 70;
-                        const volSpan =
-                            document.getElementById("radioVolumeValue");
-                        if (volSpan)
-                            volSpan.innerText =
-                                (settings.radio.volume || 70) + "%";
-                    }
                     if (document.getElementById("radioStreamUrl")) {
                         document.getElementById("radioStreamUrl").value =
                             settings.radio.streamUrl || "";
@@ -2193,9 +2146,6 @@
                                     "";
 
                 if (!settings.music) settings.music = {};
-                settings.music.volume =
-                    parseInt(document.getElementById("musicVolume")?.value) ||
-                    100;
                 settings.music.shuffle =
                                     document.getElementById("musicShuffle")?.value === "true";
                                 settings.music.streamUrl =
@@ -2203,11 +2153,6 @@
                                     "";
 
                                 if (!settings.cast) settings.cast = {};
-                                settings.cast.volume =
-                                    parseInt(document.getElementById("castVolume")?.value) ||
-                                    100;
-                                settings.cast.soundLock =
-                                    document.getElementById("castSoundLock")?.value === "true";
                                 settings.cast.streamUrl =
                                     document.getElementById("castStreamUrl")?.value.trim() ||
                                     "";
@@ -2215,10 +2160,7 @@
                                 if (!settings.radio) settings.radio = {};
                                                 settings.radio.defaultCountry =
                                                     document.getElementById("radioCountry")?.value || "";
-                settings.radio.volume =
-                    parseInt(document.getElementById("radioVolume")?.value) ||
-                    100;
-                settings.radio.streamUrl =
+                                                settings.radio.streamUrl =
                     document.getElementById("radioStreamUrl")?.value.trim() ||
                     "";
 
@@ -2728,17 +2670,6 @@
             }
 
             // ============================================================
-            // RADIO VOLUME SLIDER
-            // ============================================================
-            const radioVolumeSlider = document.getElementById("radioVolume");
-            const radioVolumeSpan = document.getElementById("radioVolumeValue");
-            if (radioVolumeSlider && radioVolumeSpan) {
-                radioVolumeSlider.addEventListener("input", () => {
-                    radioVolumeSpan.innerText = radioVolumeSlider.value + "%";
-                });
-            }
-
-            // ============================================================
             // FILE LOADS (using triggerLoad + storage.js)
             // ============================================================
             document
@@ -2792,22 +2723,6 @@
             // ============================================================
             // INITIALIZATION
             // ============================================================
-            const volSlider = document.getElementById("musicVolume");
-                        const volSpan = document.getElementById("volumeValue");
-                        if (volSlider && volSpan)
-                            volSlider.addEventListener(
-                                "input",
-                                () => (volSpan.innerText = volSlider.value + "%"),
-                            );
-
-                        // Cast volume slider
-                        const castVolSlider = document.getElementById("castVolume");
-                        const castVolSpan = document.getElementById("castVolumeValue");
-                        if (castVolSlider && castVolSpan)
-                            castVolSlider.addEventListener(
-                                "input",
-                                () => (castVolSpan.innerText = castVolSlider.value + "%"),
-                            );
 
                         // Cast Load Podcasts button
                         const castLoadBtn = document.getElementById("loadCastBtn");
@@ -3215,9 +3130,6 @@
                         if (txt.indexOf("Load Images") > -1)
                             el.textContent =
                                 "📸 " + t("s_loadImages", "Load Images");
-                        if (txt === "Default volume:")
-                            el.textContent =
-                                t("s_defaultVolume", "Default volume") + ":";
                         if (txt === "Default shuffle:")
                             el.textContent =
                                 t("s_defaultShuffle", "Default shuffle") + ":";

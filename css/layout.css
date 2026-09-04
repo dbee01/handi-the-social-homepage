@@ -291,6 +291,17 @@ header {
     object-fit: contain;
 }
 
+/* When the support image links to the configured Link URL */
+.support-content .support-media-link {
+    display: inline-block;
+    max-width: 100%;
+    line-height: 0;
+}
+
+.support-content .support-media-link:hover .support-media {
+    opacity: 0.9;
+}
+
 .support-content .support-desc {
     margin: 0 0 4px;
     color: var(--text-muted, var(--muted, #888));
@@ -1517,10 +1528,15 @@ button,
     display: flex;
     gap: 6px;
     align-items: center;
+    flex-wrap: wrap;
+    min-width: 0;
+    width: 100%;
 }
 
 .llm-model-select {
     flex: 1;
+    min-width: 0; /* allow shrink below the longest <option> text */
+    max-width: 100%;
     padding: 6px 10px;
     border: 2px solid #d1d5db;
     border-radius: 8px;
@@ -1628,10 +1644,13 @@ button,
 .llm-input-row {
     display: flex;
     gap: 6px;
+    min-width: 0;
+    width: 100%;
 }
 
 .llm-input {
     flex: 1;
+    min-width: 0; /* allow shrink below the input's intrinsic width */
     padding: 10px 14px;
     border: 2px solid #d1d5db;
     border-radius: 10px;
