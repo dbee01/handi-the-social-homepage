@@ -3613,11 +3613,18 @@
                     t("s_settings", "Settings") + " - Handi Homepage";
                 var h1 = document.querySelector("h1");
                 if (h1) h1.textContent = t("s_settings", "Settings");
-                var h2 = document.querySelector("h2");
-                if (h2)
-                    h2.textContent = t(
+                // Section headings: first h2 = Free Elements, second h2 =
+                // Premium Elements (private).
+                var h2s = document.querySelectorAll("h2");
+                if (h2s[0])
+                    h2s[0].textContent = t(
                         "s_freeElements",
                         "Free Elements (share)",
+                    );
+                if (h2s[1])
+                    h2s[1].textContent = t(
+                        "s_premiumElements",
+                        "Premium Elements (private)",
                     );
                 var rb = document.getElementById("resetBtn");
                 if (rb) rb.textContent = "⟳ " + t("s_resetAll", "Reset All");

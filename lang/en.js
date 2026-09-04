@@ -283,6 +283,7 @@ var LANG = {
 
       d_noCast: "Load your podcasts here",
         d_loadCast: "Load Podcasts",
+        d_loadCastFn: "Load Podcasts",
         d_castLoadFailed: "Failed to load podcast library.",
                 d_castStorageBlocked: 'Your browser blocks storage. Check Firefox settings → Privacy → make sure "Never remember history" is OFF.',
 
@@ -296,6 +297,7 @@ var LANG = {
 
                 // Newsletter
                 d_newsletterEmpty: "No newsletter items found.",
+                d_newsletterConfigure: "Add a newsletter feed URL in Settings.",
 
                 // Sports
                 d_sportsNoKey: "Live sports is not configured on the server.",
@@ -371,7 +373,7 @@ var LANG = {
   s_password: "Password",
   s_room: "Room",
   s_refreshInterval: "Refresh interval",
-  s_premiumElements: "Premium Elements",
+  s_premiumElements: "Premium Elements (private)",
   s_liveBusTracker: "Live Irish Bus Tracker",
   s_route: "Route",
   s_busRoute: "Bus Route",
