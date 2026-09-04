@@ -2684,6 +2684,34 @@
                     /* permissions API not available — fall through */
                 }
 
+                // Approximate fallback for devices without a GPS/Wi-Fi/cell fix
+                // (e.g. a desktop with no Wi-Fi): reverse-look up the internet
+                // address and fill in the nearest city.
+                async function detectViaIp() {
+                    try {
+                        const resp = await fetch("https://ipwho.is/", {
+                            headers: { Accept: "application/json" },
+                        });
+                        const data = await resp.json();
+                        const city = data.city;
+                        if (city && weatherLocationInput) {
+                            weatherLocationInput.value = city;
+                            await showWeatherPreview();
+                            if (weatherPreview) {
+                                weatherPreview.innerHTML +=
+                                    ' <small style="opacity:0.7;">(approximate — enable GPS/Wi-Fi for a precise fix)</small>';
+                            }
+                            return;
+                        }
+                    } catch (err) {
+                        /* fall through to the error below */
+                    }
+                    if (weatherPreview) {
+                        weatherPreview.innerHTML =
+                            '<span class="error">Could not determine your location. Try again or type the city.</span>';
+                    }
+                }
+
                 navigator.geolocation.getCurrentPosition(
                     async (position) => {
                         const url =
@@ -2715,21 +2743,19 @@
                         }
                     },
                     (err) => {
-                        // Report the actual reason instead of always blaming
-                        // permissions — "unavailable"/"timeout" are common
-                        // even when permission was granted.
                         const code = err && err.code;
+                        if (code === 2 || code === 3) {
+                            // No GPS/Wi-Fi/cell fix (common on desktops without
+                            // a location service) — fall back to an approximate
+                            // IP-based location instead of giving up.
+                            detectViaIp();
+                            return;
+                        }
                         let msg =
-                            "Could not get your location. Try again or type the city.";
-                        if (code === 1) {
+                            "Location permission denied — allow location for this site in your browser, then reload and try again.";
+                        if (code !== 1) {
                             msg =
-                                "Location permission denied — allow location for this site in your browser, then reload and try again.";
-                        } else if (code === 2) {
-                            msg =
-                                "Could not determine your location (GPS/location unavailable). Try again or type the city.";
-                        } else if (code === 3) {
-                            msg =
-                                "Location request timed out. Try again or type the city.";
+                                "Could not get your location. Try again or type the city.";
                         }
                         weatherPreview.innerHTML =
                             '<span class="error">' + msg + "</span>";
