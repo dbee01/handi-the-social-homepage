@@ -464,6 +464,7 @@ export default async function initGallery(container) {
         <button id="galleryUploadBtn" class="settings-link-btn">
           <i class="fa-solid fa-upload"></i> ${t("d_uploadImages", "Load Images")}
         </button>
+        <small style="display:block;margin-top:10px;opacity:0.7;">or choose your favourite account on Pixelfed to follow by entering the username URL</small>
       </div>
     `;
     const uploadBtn = content.querySelector("#galleryUploadBtn");
