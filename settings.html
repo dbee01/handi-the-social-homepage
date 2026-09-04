@@ -37,7 +37,8 @@
                     host === "localhost" ||
                     host === "127.0.0.1" ||
                     host.startsWith("192.168.") ||
-                    host.startsWith("10.")
+                    host.startsWith("10.") ||
+                    host.startsWith("staging.")
                 ) {
                     window.PREMIUM_ACTIVE = true;
                 } else {
