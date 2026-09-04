@@ -1157,11 +1157,21 @@ header {
 }
 
 .chat-refresh-btn {
-    width: 100%;
-    padding: 10px;
-    margin-top: 12px;
-    border-radius: 12px;
+    flex: 1;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
     cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 12px;
+}
+
+.chat-refresh-btn:hover {
+    background: #2563eb;
 }
 
 /* =========================================================
@@ -1180,17 +1190,10 @@ button,
 .radio-scroll-btn,
 .radio-play-btn,
 .news-scroll-btn,
-.chat-refresh-btn,
 .chat-room-header button,
 .music-scroll-btn {
     min-height: 48px;
     color: white;
-}
-
-/* Chat controls should use the default text color (not white) */
-.chat-refresh-btn,
-.chat-room-header .chat-toggle-msgs {
-    color: inherit;
 }
 
 /* =========================================================
