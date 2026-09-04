@@ -130,7 +130,7 @@ window.HANDI_MODULES = [
     icon: '<i class="fa-solid fa-bus"></i>',
     desc: "Bus times (Ireland)",
     tier: "premium",
-    defaultEnabled: 2,
+    defaultEnabled: 0,
     settingsConfig: { routeIds: "", stopIds: "" },
   },
   {
@@ -283,8 +283,8 @@ window.saveMMR = function (obj) {
 // Once the user is Premium those locks must be lifted or the modules stay
 // greyed out everywhere. State 2 entries are restored to the module's
 // registry default (so e.g. Task/Support come back on, others return to
-// off-but-selectable). Modules whose *default* is 2 (admin-disabled, e.g.
-// live_bus) or 3 (hidden, e.g. emergency_alert) are left untouched.
+// off-but-selectable). Modules whose *default* is 2 (admin-disabled) or 3
+// (hidden, e.g. emergency_alert) are left untouched.
 window.repairPremiumMMR = function () {
   try {
     if (window.PREMIUM_ACTIVE !== true) return;
