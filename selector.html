@@ -53,6 +53,9 @@
                 ) {
                     window.PREMIUM_ACTIVE = true;
                     window._premiumChecked = true;
+                    // Lift free-tier locks on premium modules (state 2) so
+                    // they are selectable now that the user is Premium.
+                    if (window.repairPremiumMMR) window.repairPremiumMMR();
                     return;
                 }
                 // Check Stripe subscription
@@ -70,6 +73,10 @@
                     }
                 }
                 window._premiumChecked = true;
+                // Lift free-tier locks on premium modules (state 2) so they
+                // are selectable now that the user is Premium.
+                if (window.PREMIUM_ACTIVE === true && window.repairPremiumMMR)
+                    window.repairPremiumMMR();
                 // Re-render now that premium status is known
                 if (typeof renderSelector === "function") renderSelector();
             })();

@@ -278,6 +278,35 @@ window.saveMMR = function (obj) {
   }
 };
 
+// repairPremiumMMR() -- Premium users only. While a user is on the free tier
+// the dashboard cleanup locks every premium module into state 2 (disabled).
+// Once the user is Premium those locks must be lifted or the modules stay
+// greyed out everywhere. State 2 entries are restored to the module's
+// registry default (so e.g. Task/Support come back on, others return to
+// off-but-selectable). Modules whose *default* is 2 (admin-disabled, e.g.
+// live_bus) or 3 (hidden, e.g. emergency_alert) are left untouched.
+window.repairPremiumMMR = function () {
+  try {
+    if (window.PREMIUM_ACTIVE !== true) return;
+    const mmr = window.getMMR();
+    let changed = false;
+    for (const m of window.HANDI_MODULES) {
+      if (
+        m.tier === "premium" &&
+        mmr[m.id] === window.MMR_DISABLED &&
+        m.defaultEnabled !== window.MMR_DISABLED &&
+        m.defaultEnabled !== window.MMR_HIDDEN
+      ) {
+        mmr[m.id] = m.defaultEnabled;
+        changed = true;
+      }
+    }
+    if (changed) window.saveMMR(mmr);
+  } catch (e) {
+    /* best-effort */
+  }
+};
+
 // resetMMR() -- resets the MMR to registry defaults (re-reads defaultEnabled)
 window.resetMMR = function () {
   const defaults = {};

@@ -56,6 +56,14 @@
                         }
                     }
                 }
+                // Premium users: lift the free-tier locks that pushed premium
+                // modules into state 2 (disabled) so their toggles un-grey.
+                if (
+                    window.PREMIUM_ACTIVE === true &&
+                    window.repairPremiumMMR
+                ) {
+                    window.repairPremiumMMR();
+                }
                 if (window.applySettingsToToggles)
                     window.applySettingsToToggles();
             })();

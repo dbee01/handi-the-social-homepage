@@ -890,6 +890,17 @@
 
                         let mmr = window.getMMR();
 
+                        // Premium users: lift the free-tier locks that pushed
+                        // premium modules into state 2 (disabled) — otherwise
+                        // they stay greyed out in Settings even after upgrade.
+                        if (
+                            window.PREMIUM_ACTIVE === true &&
+                            window.repairPremiumMMR
+                        ) {
+                            window.repairPremiumMMR();
+                            mmr = window.getMMR();
+                        }
+
                         if (window.PREMIUM_ACTIVE === false) {
                             let changed = false;
                             const premiumIds = window
