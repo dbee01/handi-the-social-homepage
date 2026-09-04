@@ -341,7 +341,7 @@ var LANG = {
         "<strong>✉️ Nuachtlitir</strong><br><br>• Taispeánann na míreanna is déanaí ó do fhotha roghnaithe nó ó nuachtlitir Handi.<br>• Roghnaigh fotha in <strong>Socruithe → Nuachtlitir</strong>.<br>• Úsáid <strong>‹ ›</strong> chun scrollú trí mhíreanna.<br>• Cliceáil ar aon cheannteideal chun an mhír iomlán a léamh.",
 
   h_sports:
-        "<strong>⚽ Spórt</strong><br><br>• Taispeánann cluichí peile beo an lae inniu agus na hodds.<br>• Roghnaigh na sraitheanna le leanúint in <strong>Socruithe → Spórt</strong>.<br>• Tapáil bosca odds chun suíomh an gheallghlacadóra a oscailt.<br>• Teastaíonn cumraíocht an fhreastalaí (APISPORTS_KEY).",
+        "<strong>⚽ Spórt</strong><br><br>• Taispeánann cluichí peile beo an lae inniu agus na hodds.<br>• Roghnaigh na sraitheanna le leanúint in <strong>Socruithe → Spórt</strong>.<br>• Tapáil bosca odds chun suíomh an gheallghlacadóra a oscailt.",
 
   h_modalTitle: "Cabhair an Mhodúil",
   h_gotIt: "Tuigim",

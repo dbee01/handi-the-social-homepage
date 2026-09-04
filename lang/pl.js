@@ -329,7 +329,7 @@ var LANG = {
         "<strong>✉️ Biuletyn</strong><br><br>• Pokazuje najnowsze pozycje z wybranego kanału lub biuletynu Handi.<br>• Wybierz kanał w <strong>Ustawienia → Biuletyn</strong>.<br>• Użyj <strong>‹ ›</strong>, aby przewijać pozycje.<br>• Kliknij dowolny nagłówek, aby przeczytać całą pozycję.",
 
   h_sports:
-        "<strong>⚽ Sport</strong><br><br>• Pokazuje dzisiejsze mecze piłki nożnej na żywo i kursy.<br>• Wybierz ligi do obserwowania w <strong>Ustawienia → Sport</strong>.<br>• Kliknij pole kursu, aby otworzyć witrynę bukmachera.<br>• Wymaga konfiguracji serwera (APISPORTS_KEY).",
+        "<strong>⚽ Sport</strong><br><br>• Pokazuje dzisiejsze mecze piłki nożnej na żywo i kursy.<br>• Wybierz ligi do obserwowania w <strong>Ustawienia → Sport</strong>.<br>• Kliknij pole kursu, aby otworzyć witrynę bukmachera.",
 
   h_modalTitle: "Pomoc modułu",
   h_gotIt: "Rozumiem",

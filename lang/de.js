@@ -334,7 +334,7 @@ var LANG = {
         "<strong>✉️ Newsletter</strong><br><br>• Zeigt die neuesten Einträge aus deinem gewählten Feed oder dem Handi-Newsletter.<br>• Wähle einen Feed in <strong>Einstellungen → Newsletter</strong>.<br>• Nutze <strong>‹ ›</strong> zum Durchblättern der Einträge.<br>• Klicke auf eine Überschrift, um den ganzen Eintrag zu lesen.",
 
   h_sports:
-        "<strong>⚽ Sport</strong><br><br>• Zeigt die heutigen Live-Fußballspiele und Quoten.<br>• Wähle in <strong>Einstellungen → Sport</strong>, welche Ligen du verfolgen willst.<br>• Tippe auf ein Quoten-Feld, um die Wetterseite zu öffnen.<br>• Erfordert eine Server-Konfiguration (APISPORTS_KEY).",
+        "<strong>⚽ Sport</strong><br><br>• Zeigt die heutigen Live-Fußballspiele und Quoten.<br>• Wähle in <strong>Einstellungen → Sport</strong>, welche Ligen du verfolgen willst.<br>• Tippe auf ein Quoten-Feld, um die Wetterseite zu öffnen.",
 
   h_modalTitle: "Modul-Hilfe",
   h_gotIt: "Verstanden",

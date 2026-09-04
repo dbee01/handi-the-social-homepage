@@ -328,7 +328,7 @@ var LANG = {
         "<strong>✉️ Boletim</strong><br><br>• Mostra os itens mais recentes do feed que escolheu ou do boletim Handi.<br>• Escolha um feed em <strong>Configurações → Boletim</strong>.<br>• Use <strong>‹ ›</strong> para percorrer os itens.<br>• Clique num título para ler o item completo.",
 
   h_sports:
-        "<strong>⚽ Desporto</strong><br><br>• Mostra os jogos de futebol ao vivo de hoje e as odds.<br>• Escolha que ligas seguir em <strong>Configurações → Desporto</strong>.<br>• Toque numa caixa de odds para abrir o site da casa de apostas.<br>• Requer configuração do servidor (APISPORTS_KEY).",
+        "<strong>⚽ Desporto</strong><br><br>• Mostra os jogos de futebol ao vivo de hoje e as odds.<br>• Escolha que ligas seguir em <strong>Configurações → Desporto</strong>.<br>• Toque numa caixa de odds para abrir o site da casa de apostas.",
 
   h_modalTitle: "Ajuda do módulo",
   h_gotIt: "Percebi",

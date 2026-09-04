@@ -328,7 +328,7 @@ var LANG = {
         "<strong>✉️ Cylchlythyr</strong><br><br>• Yn dangos yr eitemau diweddaraf o'ch porthiant neu gylchlythyr Handi.<br>• Dewiswch borthiant yn <strong>Gosodiadau → Cylchlythyr</strong>.<br>• Defnyddiwch <strong>‹ ›</strong> i sgrolio trwy eitemau.<br>• Cliciwch unrhyw bennawd i ddarllen yr eitem lawn.",
 
   h_sports:
-        "<strong>⚽ Chwaraeon</strong><br><br>• Yn dangos gemau pêl-droed byw heddiw a'r ods.<br>• Dewiswch pa gynghreiriau i'w dilyn yn <strong>Gosodiadau → Chwaraeon</strong>.<br>• Tapiwch flwch ods i agor safle'r bwci.<br>• Mae angen ffurfweddu'r gweinydd (APISPORTS_KEY).",
+        "<strong>⚽ Chwaraeon</strong><br><br>• Yn dangos gemau pêl-droed byw heddiw a'r ods.<br>• Dewiswch pa gynghreiriau i'w dilyn yn <strong>Gosodiadau → Chwaraeon</strong>.<br>• Tapiwch flwch ods i agor safle'r bwci.",
 
   h_modalTitle: "Cymorth Modiwl",
   h_gotIt: "Iawn",

@@ -440,7 +440,7 @@ var LANG = {
               "<strong>✉️ Newsletter</strong><br><br>• Shows the latest items from your chosen feed or the Handi newsletter.<br>• Pick a feed in <strong>Settings → Newsletter</strong>.<br>• Use <strong>‹ ›</strong> to scroll through items.<br>• Click any heading to read the full item.",
 
             h_sports:
-              "<strong>⚽ Sports</strong><br><br>• Shows today's live football fixtures and odds.<br>• Choose which leagues to follow in <strong>Settings → Sports</strong>.<br>• Tap an odds box to open the bookmaker's site.<br>• Requires the server to be configured (APISPORTS_KEY).",
+              "<strong>⚽ Sports</strong><br><br>• Shows today's live football fixtures and odds.<br>• Choose which leagues to follow in <strong>Settings → Sports</strong>.<br>• Tap an odds box to open the bookmaker's site.",
 
     h_modalTitle: "Module Help",
   h_gotIt: "Got it",

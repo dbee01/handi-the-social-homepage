@@ -329,7 +329,7 @@ var LANG = {
         "<strong>✉️ Nieuwsbrief</strong><br><br>• Toont de nieuwste items uit je gekozen feed of de Handi-nieuwsbrief.<br>• Kies een feed in <strong>Instellingen → Nieuwsbrief</strong>.<br>• Gebruik <strong>‹ ›</strong> om door items te bladeren.<br>• Klik op een kop om het volledige item te lezen.",
 
   h_sports:
-        "<strong>⚽ Sport</strong><br><br>• Toont de live voetbalwedstrijden van vandaag en de noteringen.<br>• Kies welke competities je wilt volgen in <strong>Instellingen → Sport</strong>.<br>• Tik op een notering om de site van de bookmaker te openen.<br>• Vereist serverconfiguratie (APISPORTS_KEY).",
+        "<strong>⚽ Sport</strong><br><br>• Toont de live voetbalwedstrijden van vandaag en de noteringen.<br>• Kies welke competities je wilt volgen in <strong>Instellingen → Sport</strong>.<br>• Tik op een notering om de site van de bookmaker te openen.",
 
   h_modalTitle: "Module-hulp",
   h_gotIt: "Begrepen",

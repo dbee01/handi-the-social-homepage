@@ -333,7 +333,7 @@ var LANG = {
         "<strong>✉️ Boletín</strong><br><br>• Muestra los últimos elementos de tu feed elegido o del boletín de Handi.<br>• Elige un feed en <strong>Ajustes → Boletín</strong>.<br>• Usa <strong>‹ ›</strong> para desplazarte por los elementos.<br>• Haz clic en cualquier título para leer el elemento completo.",
 
   h_sports:
-        "<strong>⚽ Deportes</strong><br><br>• Muestra los partidos de fútbol en directo de hoy y las cuotas.<br>• Elige qué ligas seguir en <strong>Ajustes → Deportes</strong>.<br>• Toca un recuadro de cuotas para abrir la casa de apuestas.<br>• Requiere que el servidor esté configurado (APISPORTS_KEY).",
+        "<strong>⚽ Deportes</strong><br><br>• Muestra los partidos de fútbol en directo de hoy y las cuotas.<br>• Elige qué ligas seguir en <strong>Ajustes → Deportes</strong>.<br>• Toca un recuadro de cuotas para abrir la casa de apuestas.",
 
   h_modalTitle: "Ayuda del módulo",
   h_gotIt: "Entendido",

@@ -328,7 +328,7 @@ var LANG = {
         "<strong>✉️ Newsletter</strong><br><br>• Mostra gli ultimi elementi del feed scelto o della newsletter Handi.<br>• Scegli un feed in <strong>Impostazioni → Newsletter</strong>.<br>• Usa <strong>‹ ›</strong> per scorrere gli elementi.<br>• Clicca su un titolo per leggere l'elemento completo.",
 
   h_sports:
-        "<strong>⚽ Sport</strong><br><br>• Mostra le partite di calcio in diretta di oggi e le quote.<br>• Scegli quali campionati seguire in <strong>Impostazioni → Sport</strong>.<br>• Tocca un riquadro quote per aprire il sito del bookmaker.<br>• Richiede la configurazione del server (APISPORTS_KEY).",
+        "<strong>⚽ Sport</strong><br><br>• Mostra le partite di calcio in diretta di oggi e le quote.<br>• Scegli quali campionati seguire in <strong>Impostazioni → Sport</strong>.<br>• Tocca un riquadro quote per aprire il sito del bookmaker.",
 
   h_modalTitle: "Aiuto modulo",
   h_gotIt: "Ho capito",
