@@ -16,6 +16,27 @@
 
         <title>HandiHomepage – Senior Dashboard</title>
         <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
+
+        <!-- Social graph (Open Graph / Twitter card) — the preview image is the
+             uploaded handi-pack logo when present, otherwise the Handi homepage
+             logo. The script before </head> fills in pack-specific values. -->
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Handi Homepage" />
+        <meta property="og:title" content="HandiHomepage – Senior Dashboard" />
+        <meta
+            property="og:description"
+            content="Your personal Handi homepage — your favourite news, radio, podcasts, weather and more."
+        />
+        <meta property="og:url" content="https://senior.handihomepage.com/" />
+        <meta
+            property="og:image"
+            content="https://handihomepage.com/wp-content/uploads/2026/05/cropped-handi-homepage-logo.png"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+            name="twitter:image"
+            content="https://handihomepage.com/wp-content/uploads/2026/05/cropped-handi-homepage-logo.png"
+        />
         <script src="/lang/loader.js"></script>
         <script src="/js/core/log.js"></script>
         <script src="/js/core/load.js"></script>
@@ -141,6 +162,30 @@
         <script src="/js/vendor/Sortable.min.js"></script>
         <script src="/js/vendor/rrule.min.js"></script>
         <script src="/js/core/module-registry.js"></script>
+
+        <script>
+            // Fill the social-graph (Open Graph) tags from the handi-pack: the
+            // uploaded logo (handiPackLogo) or the pack name/description. When
+            // no pack logo is set the static Handi homepage logo stays.
+            try {
+                function __ogSet(attr, name, value) {
+                    var el = document.querySelector('meta[' + attr + '="' + name + '"]');
+                    if (el) el.setAttribute("content", value);
+                }
+                var packName = localStorage.getItem("handiPackName");
+                var packLogo = localStorage.getItem("handiPackLogo");
+                var packDesc = localStorage.getItem("handiPackDescription");
+                if (packName)
+                    __ogSet("property", "og:title", packName + " – Handi Homepage");
+                if (packDesc)
+                    __ogSet("property", "og:description", packDesc);
+                if (packLogo && /^https?:\/\//i.test(packLogo)) {
+                    __ogSet("property", "og:image", packLogo);
+                    __ogSet("name", "twitter:image", packLogo);
+                }
+                __ogSet("property", "og:url", window.location.href);
+            } catch (e) {}
+        </script>
 
     </head>
     <body>
