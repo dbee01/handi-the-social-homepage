@@ -455,7 +455,7 @@
             </script>
 
             <div class="header">
-                <h2>Free Elements</h2>
+                <h2>Free Elements (share)</h2>
             </div>
 
             <!-- Weather Module (force enabled) -->
@@ -1056,7 +1056,7 @@
             <div class="module-header">
                 <div class="module-title">
                     <i class="fa-solid fa-bus"></i>
-                    <h3>Live Bus Tracker</h3>
+                    <h3>Live Irish Bus Tracker</h3>
                 </div>
                 <div class="toggle-switch">
                     <div class="toggle-slider"></div>
@@ -3595,7 +3595,11 @@
                 var h1 = document.querySelector("h1");
                 if (h1) h1.textContent = t("s_settings", "Settings");
                 var h2 = document.querySelector("h2");
-                if (h2) h2.textContent = t("s_freeElements", "Free Elements");
+                if (h2)
+                    h2.textContent = t(
+                        "s_freeElements",
+                        "Free Elements (share)",
+                    );
                 var rb = document.getElementById("resetBtn");
                 if (rb) rb.textContent = "⟳ " + t("s_resetAll", "Reset All");
                 var sb = document.getElementById("saveExitBtn");
