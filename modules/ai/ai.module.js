@@ -111,11 +111,9 @@ export default async function initAi(container) {
         ? t("d_llmLoaded", "Loaded")
         : '<i class="fa-solid fa-download"></i> ' + t("d_llmLoad", "Load")) +
       '</button>' +
-      // Trash / clear-chat button commented out for now (kept in the code
-      // so it's easy to re-enable).
-      // '<button id="llmClearBtn" class="llm-clear-btn" title="' +
-      // t("d_llmClear", "Clear chat") +
-      // '">🗑</button>' +
+      '<button id="llmClearBtn" class="llm-clear-btn" title="' +
+      t("d_llmClear", "Clear chat") +
+      '">🗑</button>' +
       "</div>" +
       (isFirstLoad && !engine
         ? '<div class="llm-first-note">' +
