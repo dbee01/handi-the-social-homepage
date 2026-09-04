@@ -32,6 +32,10 @@
             property="og:image"
             content="https://handihomepage.com/wp-content/uploads/2026/05/cropped-handi-homepage-logo.png"
         />
+        <meta
+            property="og:logo"
+            content="https://handihomepage.com/wp-content/uploads/2026/05/cropped-handi-homepage-logo.png"
+        />
         <meta name="twitter:card" content="summary_large_image" />
         <meta
             name="twitter:image"
@@ -182,6 +186,7 @@
                 if (packLogo && /^https?:\/\//i.test(packLogo)) {
                     __ogSet("property", "og:image", packLogo);
                     __ogSet("name", "twitter:image", packLogo);
+                    __ogSet("property", "og:logo", packLogo);
                 }
                 __ogSet("property", "og:url", window.location.href);
             } catch (e) {}
