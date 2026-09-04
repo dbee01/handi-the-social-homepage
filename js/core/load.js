@@ -156,6 +156,13 @@ document.addEventListener("click", function (e) {
     s.style.display = collapsed ? "" : "none";
   });
 
+  // The mastodon panel reserves vertical space (min-height: 650px) to avoid
+  // screen-jump while posts load; when collapsed that would leave a tall
+  // empty box, so drop the min-height while hidden and restore it on expand.
+  if (dashboardItem && dashboardItem.dataset.module === "mastodon") {
+    dashboardItem.style.minHeight = collapsed ? "" : "auto";
+  }
+
   // Keep the masonry grid in sync with the new panel height.
   requestAnimationFrame(function () {
     if (window.refreshDashboardLayout) window.refreshDashboardLayout();
