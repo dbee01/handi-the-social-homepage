@@ -53,6 +53,7 @@ live() {
       --exclude='.git' \
       --exclude='.env' \
       --exclude='package-lock.json' \
+      --exclude='log.txt' \
       --exclude='.gtfs-cache' \
       "$src" \
       "u247564401@82.29.191.118:${path}"
