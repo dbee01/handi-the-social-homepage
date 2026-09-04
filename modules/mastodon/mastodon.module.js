@@ -56,7 +56,6 @@ export default async function initMastodon(container) {
   const parentItem = container.closest(".dashboard-item");
   if (parentItem) {
     parentItem.dataset.module = "mastodon";
-    parentItem.style.minHeight = "unset";
   }
 
   const STORAGE_KEY = "handiMastodonServer";
