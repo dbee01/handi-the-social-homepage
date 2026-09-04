@@ -415,7 +415,7 @@ header {
 /* Mastodon: keep a steady panel height so moving between posts (some have
    images, some are text-only) does not make the dashboard jump. */
 .dashboard-item[data-module="mastodon"] {
-    min-height: 540px;
+    min-height: 650px;
 }
 
 .dashboard-item[data-module="gallery"] {
