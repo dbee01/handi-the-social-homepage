@@ -253,6 +253,14 @@ header {
     justify-content: center;
 }
 
+/* Pressed module-control buttons flash the theme's secondary colour. */
+.module-controls button:active {
+    background: var(--secondary, #f59e0b);
+    border-color: var(--secondary, #f59e0b);
+    color: #fff;
+    transform: scale(0.94);
+}
+
 /* =========================================================
    MODULE CONTENT LAYOUT
 ========================================================= */
@@ -1574,7 +1582,8 @@ button,
 
 .llm-clear-btn {
     background: none;
-    border: 1px solid #d1d5db;
+    border: 1px solid #dc2626;
+    color: #dc2626;
     padding: 6px 10px;
     border-radius: 8px;
     cursor: pointer;
@@ -1583,6 +1592,7 @@ button,
 
 .llm-clear-btn:hover {
     background: #fee2e2;
+    color: #b91c1c;
 }
 
 .llm-progress {
