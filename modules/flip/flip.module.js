@@ -355,14 +355,21 @@ export default async function initFlip(container) {
       "overflow:hidden;border:1px solid #e5e7eb;background:transparent;" +
       "color:inherit;scroll-snap-align:start;padding:16px;text-align:center;";
 
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.style.cssText =
+      "width:100%;height:var(--media-height);object-fit:" +
+      (item.image ? "contain" : "cover") +
+      ";display:block;border-radius:8px;";
+    img.src = item.image || "/images/noimage.svg";
     if (item.image) {
-      const img = document.createElement("img");
-      img.src = item.image;
-      img.loading = "lazy";
-      img.style.cssText =
-        "width:100%;height:var(--media-height);object-fit:contain;display:block;border-radius:8px;";
-      card.appendChild(img);
+      img.onerror = function () {
+        img.onerror = null;
+        img.src = "/images/noimage.svg";
+        img.style.objectFit = "cover";
+      };
     }
+    card.appendChild(img);
 
     const body = document.createElement("div");
     body.style.cssText =

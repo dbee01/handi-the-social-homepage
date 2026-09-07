@@ -272,9 +272,7 @@ export default async function initGallery(container) {
         view.innerHTML = "";
         return;
       }
-      const img = item.img
-        ? `<img class="gallery-slide-img" src="${item.img}" alt="" loading="lazy" onerror="this.style.display='none'">`
-        : "";
+      const img = `<img class="gallery-slide-img" src="${item.img || "/images/noimage.svg"}" alt="" loading="lazy"${item.img ? "" : ' style="width:100% !important;object-fit:cover !important;"'} onerror="this.onerror=null;this.src='/images/noimage.svg';this.style.setProperty('object-fit','cover','important');this.style.setProperty('width','100%','important');">`;
       const imgHtml = item.link
         ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" style="display:block;">${img}</a>`
         : img;
