@@ -1,7 +1,7 @@
 {
-  "name": "HandiHomepage Senior",
+  "name": "Handi Homepage",
   "short_name": "HandiHome",
-  "description": "Safe & simple dashboard for seniors",
+  "description": "Your portal to the WWW",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f6f8fc",
@@ -9,44 +9,44 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/gaeilge-72x72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/gaeilge-96x96.png",
       "sizes": "96x96",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/gaeilge-128x128.png",
       "sizes": "128x128",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/gaeilge-144x144.png",
       "sizes": "144x144",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/gaeilge-152x152.png",
       "sizes": "152x152",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/gaeilge-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/gaeilge-384x384.png",
       "sizes": "384x384",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/gaeilge-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -74,14 +74,26 @@
       "short_name": "Settings",
       "description": "Open settings",
       "url": "/settings.html",
-      "icons": [{ "src": "/images/favicon.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "/images/icons/gaeilge-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Dashboard",
       "short_name": "Home",
       "description": "Back to dashboard",
       "url": "/",
-      "icons": [{ "src": "/images/favicon.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "/images/icons/gaeilge-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
   ],
   "categories": ["productivity", "utilities", "health"],
