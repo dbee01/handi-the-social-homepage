@@ -289,6 +289,21 @@ app.get("/", (req, res) => {
     url: hasPack ? shareUrl : originUrl + "/",
   });
 
+  // JS-rendering crawlers must not be bounced to /selector.html or to a
+  // clean URL before they read the meta tags: flag them so the client-side
+  // redirects can skip themselves.
+  const ua = req.headers["user-agent"] || "";
+  const isCrawler =
+    /bot|crawl|spider|slurp|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegram|slackbot|discordbot|pinterest|embedly|quora|outbrain|vkshare|headless|python-requests|curl|wget/i.test(
+      ua,
+    );
+  if (isCrawler) {
+    html = html.replace(
+      "</head>",
+      "<script>window.HANDI_BOT=1;</script></head>",
+    );
+  }
+
   res.type("html").send(html);
 });
 

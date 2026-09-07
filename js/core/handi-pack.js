@@ -519,7 +519,11 @@
       try { localStorage.removeItem("handiPackModules"); } catch (e) {}
     }
 
-    window.location.replace(window.location.pathname || "/");
+    // Crawlers must keep the pack URL (their share preview comes from the
+    // server-rendered head), so only real browsers reload onto a clean URL.
+    if (!window.HANDI_BOT) {
+      window.location.replace(window.location.pathname || "/");
+    }
   } catch (e) {
     console.error("Handi Pack import failed:", e);
   }

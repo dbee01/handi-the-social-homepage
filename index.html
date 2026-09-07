@@ -997,6 +997,7 @@
 
             // First visit redirect
             (function () {
+                if (window.HANDI_BOT) return;
                 if (localStorage.getItem("handiPopupShown") === "true") return;
                 if (window.location.pathname.includes("/selector.html")) return;
                 localStorage.setItem("handiPopupShown", "true");
