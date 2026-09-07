@@ -1,4 +1,4 @@
-const CACHE = "ple-v23";
+const CACHE = "ple-v24";
 
 // Manual bump per deploy (you deploy from your working copy, not git). Always
 // raise CACHE before deploying so browsers pick up a changed service worker.
@@ -281,6 +281,39 @@ self.addEventListener("notificationclick", (e) => {
       }
     }),
   );
+});
+
+// Re-fetch and refresh every precached asset (network-first revalidation).
+async function refreshPrecache() {
+  try {
+    const cache = await caches.open(CACHE);
+    await Promise.all(
+      PRECACHE.map(async (path) => {
+        try {
+          const resp = await fetch(path, { cache: "reload" });
+          if (resp && resp.ok) await cache.put(path, resp);
+        } catch (_) {
+          /* offline / single asset failure — keep the old copy */
+        }
+      }),
+    );
+  } catch (_) {}
+}
+
+// Periodic maintenance: refresh the offline caches and look for a newer
+// service worker. Runs silently in the background.
+async function periodicMaintenance() {
+  await refreshPrecache();
+  try {
+    await self.registration.update();
+  } catch (_) {}
+}
+
+// Periodic Background Sync (installed Android PWAs only)
+self.addEventListener("periodicsync", (e) => {
+  if (e.tag === "content-update") {
+    e.waitUntil(periodicMaintenance());
+  }
 });
 
 // Listen for messages from the page

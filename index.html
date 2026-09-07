@@ -641,6 +641,26 @@
                     navigator.serviceWorker.ready.then(swPostBrand);
                 },
             );
+
+            // Periodic Background Sync — silently refresh offline caches and
+            // check for updates every ~6 hours. Only actually runs on installed
+            // PWAs whose browser supports it (Chrome/Edge Android); the call
+            // is a no-op elsewhere.
+            if (
+                navigator.serviceWorker &&
+                "periodicSync" in navigator.serviceWorker
+            ) {
+                navigator.serviceWorker.ready
+                    .then(function (reg) {
+                        if (!reg.periodicSync) return;
+                        return reg.periodicSync
+                            .register("content-update", {
+                                minInterval: 6 * 60 * 60 * 1000,
+                            })
+                            .catch(function () {});
+                    })
+                    .catch(function () {});
+            }
         </script>
 
         <!-- PWA manifest per active pack. The server already picks the
