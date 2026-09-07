@@ -340,8 +340,18 @@ app.get("/", (req, res) => {
   // keeps the default Handi manifest.
   const GAEILGE_PACK_ID =
     "399d4da865fb4bdb40133def9fc830af460764597854c9c5ede61b4d3a371a30";
+  // Recognise the Gaeilge pack by its signed id, its pack name, or its logo
+  // (unsigned/non-admin shares may only carry name + logo params).
+  const gaeilgeTitle = packTitleStr
+    ? /^handi-homepage as gaeilge/i.test(packTitleStr)
+    : false;
+  const gaeilgeLogo =
+    packLogo && /gaeilge[-.]/i.test(String(packLogo));
   const isGaeilge =
-    !!req.query.id && String(req.query.id).trim() === GAEILGE_PACK_ID;
+    (req.query.id &&
+      String(req.query.id).trim() === GAEILGE_PACK_ID) ||
+    gaeilgeTitle ||
+    !!gaeilgeLogo;
   if (isGaeilge) {
     html = setLinkHref(html, "manifest", "/manifests/gaeilge.manifest.json");
     html = setMetaContent(html, "name", "theme-color", "#00c1f2");

@@ -661,15 +661,37 @@
                     if (el) el.setAttribute("href", href);
                 }
 
-                function adjust() {
-                    var pid = null;
+                function isGaeilge() {
                     try {
-                        pid = localStorage.getItem("handiPackId");
-                    } catch (e) {}
+                        var pid = localStorage.getItem("handiPackId");
+                        var name = localStorage.getItem("handiPackName") || "";
+                        var logo = localStorage.getItem("handiPackLogo") || "";
+                        return (
+                            pid === GAEILGE_PACK_ID ||
+                            /^handi-homepage as gaeilge/i.test(name) ||
+                            /gaeilge[-.]/i.test(logo)
+                        );
+                    } catch (e) {
+                        return false;
+                    }
+                }
+                function hasPack() {
+                    try {
+                        return !!(
+                            localStorage.getItem("handiPackId") ||
+                            localStorage.getItem("handiPackName") ||
+                            localStorage.getItem("handiPackLogo")
+                        );
+                    } catch (e) {
+                        return false;
+                    }
+                }
+
+                function adjust() {
                     var link = document.querySelector('link[rel="manifest"]');
                     if (!link) return;
 
-                    if (pid === GAEILGE_PACK_ID) {
+                    if (isGaeilge()) {
                         link.setAttribute(
                             "href",
                             "/manifests/gaeilge.manifest.json",
@@ -684,13 +706,20 @@
                             "icon",
                             "/images/icons/gaeilge/gaeilge-32x32.png",
                         );
-                    } else if (pid) {
+                    } else if (hasPack()) {
                         // Another handi-pack: no installable app.
                         link.parentNode.removeChild(link);
                     }
                 }
 
                 adjust();
+                window.addEventListener("load", function () {
+                    adjust();
+                });
+                // The pack import writes storage asynchronously, so re-check
+                // briefly after load too.
+                setTimeout(adjust, 500);
+                setTimeout(adjust, 2000);
                 // Also react when the pack is imported while this tab is open.
                 window.addEventListener("storage", function (e) {
                     if (e.key === "handiPackId") adjust();
