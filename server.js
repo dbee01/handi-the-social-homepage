@@ -513,10 +513,45 @@ const INFOBIP_BASE_URL = process.env.INFOBIP_BASE_URL
 // server-rendered "what's on" pages its own site uses) and then enriches each
 // shown event with the official v3 API (price, time, venue, logo) using the
 // account's personal OAuth token. The token always stays server-side.
+
+// The simple .env loader at the top never overwrites a variable the hosting
+// panel already exports. A stale/invalid panel EVENTBRITE_* value would then
+// beat a corrected .env line, so for the Eventbrite keys the .env file wins.
+function eventbriteTokenFromEnvFile() {
+  try {
+    const envRaw = fs.readFileSync(path.join(__dirname, ".env"), "utf8");
+    const keys = [
+      "EVENTBRITE_PRIVATE_KEY",
+      "EVENTBRITE_PRIVATE_TOKEN",
+      "EVENT_PRIVATE_TOKEN",
+      "PERSONAL_OAUTH_TOKEN",
+      "EVENTBRITE_PUBLIC_TOKEN",
+    ];
+    for (const key of keys) {
+      const m = envRaw.match(new RegExp(`^\\s*${key}\\s*=\\s*(.*)$`, "m"));
+      if (!m || m[1] === undefined) continue;
+      let val = m[1].trim();
+      if (
+        (val.startsWith('"') && val.endsWith('"')) ||
+        (val.startsWith("'") && val.endsWith("'"))
+      ) {
+        val = val.slice(1, -1);
+      }
+      if (val) return val;
+    }
+  } catch (e) {
+    /* no .env — fall through to process env */
+  }
+  return "";
+}
+
+const EVENTBRITE_ENV_VALUE = eventbriteTokenFromEnvFile();
 const EVENTBRITE_TOKEN =
+  EVENTBRITE_ENV_VALUE ||
   process.env.EVENTBRITE_PRIVATE_KEY ||
   process.env.EVENTBRITE_PRIVATE_TOKEN ||
   process.env.EVENT_PRIVATE_TOKEN ||
+  process.env.PERSONAL_OAUTH_TOKEN ||
   process.env.EVENTBRITE_PUBLIC_TOKEN ||
   "";
 const EVENTBRITE_API = "https://www.eventbriteapi.com/v3";
@@ -1742,7 +1777,7 @@ app.get("/api/stream", async (req, res) => {
 // leaves the server. Pages and details are cached in memory so dashboard
 // refreshes don't hammer Eventbrite.
 
-// Event type keys used by the Settings dropdown -> Eventbrite browse topic
+const ebDetailDiagnostics = new Map(); // event id -> last error (debug aid)
 // slugs (all verified to exist, e.g. /d/ireland--cork/music/).
 const EVENTBRITE_TOPIC_SLUGS = {
   music: "music",
@@ -2022,6 +2057,15 @@ async function fetchEventbriteDetail(id) {
     const status = e.response && e.response.status;
     // 429/403/404 — don't cache for long; the caller falls back to list data.
     cacheSet(ebDetailCache, id, null, 4000);
+    ebDetailDiagnostics.set(id, {
+      status: status || null,
+      message: String((status ? "HTTP " + status : e.code) || e.message).slice(0, 160),
+      at: Date.now(),
+    });
+    if (ebDetailDiagnostics.size > 200) {
+      const first = ebDetailDiagnostics.keys().next().value;
+      ebDetailDiagnostics.delete(first);
+    }
     return null;
   }
 }
@@ -2176,6 +2220,23 @@ app.get("/api/events", async (req, res) => {
       fetchedAt: new Date().toISOString(),
       provider: "eventbrite",
     };
+    // Enrichment failures (e.g. bad token) — visible for debugging; the
+    // dashboard ignores them and simply shows the browse-list fields.
+    if (ebDetailDiagnostics.size) {
+      const tok = String(EVENTBRITE_TOKEN || "");
+      payload.enrichmentWarnings = Array.from(ebDetailDiagnostics.entries())
+        .slice(-5)
+        .map(([id, diag]) => ({ id, ...diag }));
+      payload.tokenHint = {
+        len: tok.length,
+        prefix: tok.slice(0, 4),
+        looksLikePlaceholder:
+          tok === "PERSONAL_OAUTH_TOKEN" ||
+          tok.includes("your_eventbrite") ||
+          /\s/.test(tok) ||
+          (tok.startsWith('"') && tok.endsWith('"')),
+      };
+    }
     cacheSet(ebBrowseCache, cacheKey, payload);
     res.json(payload);
   } catch (e) {
