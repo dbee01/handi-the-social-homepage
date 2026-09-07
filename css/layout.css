@@ -1210,6 +1210,26 @@ button,
     color: white;
 }
 
+/* General button hover: switch to the theme's tertiary colour */
+button:hover,
+.module-controls button:hover,
+.settings-link-btn:hover,
+.gallery-btn:hover,
+.player-controls button:hover,
+.music-controls button:hover,
+.cast-controls button:hover,
+.bus-refresh-btn:hover,
+.bus-switch-btn:hover,
+.calendar-refresh-btn:hover,
+.radio-scroll-btn:hover,
+.radio-play-btn:hover,
+.news-scroll-btn:hover,
+.chat-room-header button:hover,
+.music-scroll-btn:hover {
+    background: var(--tertiary, #64748b);
+    border-color: var(--tertiary, #64748b);
+}
+
 /* =========================================================
    TASK LAYOUT
 ========================================================= */
