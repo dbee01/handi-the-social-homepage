@@ -16,12 +16,24 @@
 
         <title>HandiHomepage – Senior Dashboard</title>
         <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="/images/favicon-32.png"
+        />
+        <meta
+            name="description"
+            content="Your personal Handi homepage — your favourite news, radio, podcasts, weather and more."
+        />
+        <link rel="canonical" href="https://senior.handihomepage.com/" />
 
         <!-- Social graph (Open Graph / Twitter card) — the preview image is the
              uploaded handi-pack logo when present, otherwise the Handi homepage
              logo. The script before </head> fills in pack-specific values. -->
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Handi Homepage" />
+        <meta property="og:locale" content="en_US" />
         <meta property="og:title" content="Handi Pack Builder" />
         <meta
             property="og:description"
@@ -32,11 +44,23 @@
             property="og:image"
             content="https://handihomepage.com/wp-content/uploads/2026/05/cropped-handi-homepage-logo.png"
         />
+        <meta property="og:image:width" content="293" />
+        <meta property="og:image:height" content="50" />
+        <meta property="og:image:alt" content="Handi Homepage logo" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta
             name="twitter:image"
             content="https://handihomepage.com/wp-content/uploads/2026/05/cropped-handi-homepage-logo.png"
         />
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebPage",
+                "name": "HandiHomepage – Senior Dashboard",
+                "description": "Your personal Handi homepage — your favourite news, radio, podcasts, weather and more.",
+                "url": "https://senior.handihomepage.com/"
+            }
+        </script>
         <script src="/lang/loader.js"></script>
         <script src="/js/core/log.js"></script>
         <script src="/js/core/load.js"></script>

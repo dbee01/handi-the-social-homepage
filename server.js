@@ -171,6 +171,48 @@ function fullRequestUrl(req) {
   return proto + "://" + host + req.originalUrl;
 }
 
+// Origin (scheme + host) of the current request.
+function requestOrigin(req) {
+  const proto =
+    String(req.headers["x-forwarded-proto"] || "")
+      .split(",")[0]
+      .trim() || req.protocol || "https";
+  const host = req.get("host") || "";
+  return proto + "://" + host;
+}
+
+const OG_DEFAULT_DESC =
+  "Your personal Handi homepage — your favourite news, radio, podcasts, weather and more.";
+
+// Swap the href= of the canonical <link> tag (kept as a single line in
+// index.html).
+function setCanonicalHref(html, url) {
+  const re = /<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/;
+  if (!re.test(html)) return html;
+  return html.replace(
+    re,
+    '<link rel="canonical" href="' + escapeHtmlAttr(url) + '" />',
+  );
+}
+
+// Rebuild the single application/ld+json block with the given fields.
+function setJsonLd(html, data) {
+  const re = /<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/;
+  if (!re.test(html)) return html;
+  const obj = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: data.name,
+    description: data.description,
+    url: data.url,
+  };
+  const block =
+    '<script type="application/ld+json">\n' +
+    JSON.stringify(obj, null, 2) +
+    "\n</script>";
+  return html.replace(re, block);
+}
+
 // index.html is static for the life of the process — read it once and reuse.
 let cachedIndexHtml = null;
 
@@ -213,7 +255,39 @@ app.get("/", (req, res) => {
     }
   }
   // og:url should point at the exact page being shared/crawled.
-  html = setMetaContent(html, "property", "og:url", fullRequestUrl(req));
+  const shareUrl = fullRequestUrl(req);
+  const originUrl = requestOrigin(req);
+  html = setMetaContent(html, "property", "og:url", shareUrl);
+
+  // Canonical: pack links are their own canonical URL; everything else
+  // canonicalises to the host root.
+  html = setCanonicalHref(html, hasPack ? shareUrl : originUrl + "/");
+
+  // og:image:alt — describe the pack when one is being shared.
+  const packTitleStr = packTitle ? String(packTitle).trim() : "";
+  html = setMetaContent(
+    html,
+    "property",
+    "og:image:alt",
+    packTitleStr ? packTitleStr : "Handi Homepage logo",
+  );
+
+  // Meta description (the snippet search engines show).
+  const descStr =
+    packDesc && String(packDesc).trim()
+      ? String(packDesc).trim()
+      : OG_DEFAULT_DESC;
+  html = setMetaContent(html, "name", "description", descStr);
+  html = setMetaContent(html, "property", "og:description", descStr);
+
+  // Structured data for rich results.
+  html = setJsonLd(html, {
+    name: packTitleStr
+      ? packTitleStr
+      : "HandiHomepage – Senior Dashboard",
+    description: descStr,
+    url: hasPack ? shareUrl : originUrl + "/",
+  });
 
   res.type("html").send(html);
 });
