@@ -1226,8 +1226,8 @@ button:hover,
 .news-scroll-btn:hover,
 .chat-room-header button:hover,
 .music-scroll-btn:hover {
-    background: var(--tertiary, #64748b);
-    border-color: var(--tertiary, #64748b);
+    background: var(--tertiary, #64748b) !important;
+    border-color: var(--tertiary, #64748b) !important;
 }
 
 /* =========================================================
