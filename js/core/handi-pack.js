@@ -149,6 +149,12 @@
       ensure("weather").location = v;
     }
 
+    // Events module (free): approximate location + event type. Values are
+    // written into settings.events (read by the dashboard tile). The module
+    // is auto-enabled further down when any of these params are present.
+    if ((v = qs.get("events-location"))) ensure("events").location = v;
+    if ((v = qs.get("events-type"))) ensure("events").type = v;
+
     if ((v = qs.get("news"))) {
       ensure("news").rssUrl = v;
       try { localStorage.setItem("handiNewsFeed", v); } catch (e) {}
@@ -394,6 +400,12 @@
     if (qs.get("emergency-contacts")) autoModules.push("emergency_alert");
     if (qs.get("sports")) autoModules.push("sports");
     if (qs.has("sports")) autoModules.push("sports");
+    if (
+      qs.get("events") ||
+      qs.get("events-location") ||
+      qs.get("events-type")
+    )
+      autoModules.push("events");
 
     if (elementsRaw || autoModules.length) {
       // Keep this list in sync with js/core/module-registry.js.
