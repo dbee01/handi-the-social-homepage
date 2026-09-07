@@ -1,4 +1,4 @@
-const CACHE = "ple-v21";
+const CACHE = "ple-v22";
 
 // Manual bump per deploy (you deploy from your working copy, not git). Always
 // raise CACHE before deploying so browsers pick up a changed service worker.
@@ -49,6 +49,7 @@ const PRECACHE = [
   "/images/favicon-32.png",
   "/images/noimage.svg",
   "/images/dashboard.jpg",
+  "/images/screenshot-wide.jpg",
   "/manifest.json",
   // Gaeilge pack assets — cached so an installed Gaeilge app works offline.
   "/manifests/gaeilge.manifest.json",

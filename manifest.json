@@ -2,6 +2,7 @@
   "name": "Handi Homepage",
   "short_name": "HandiHome",
   "description": "Your portal to the WWW",
+  "id": "/",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f6f8fc",
@@ -54,18 +55,11 @@
   ],
   "screenshots": [
     {
-      "src": "/images/dashboard.jpg",
+      "src": "/images/screenshot-wide.jpg",
       "sizes": "1280x720",
       "type": "image/jpeg",
       "form_factor": "wide",
       "label": "HandiHomepage Dashboard"
-    },
-    {
-      "src": "/images/dashboard.jpg",
-      "sizes": "750x1334",
-      "type": "image/jpeg",
-      "form_factor": "narrow",
-      "label": "Mobile View"
     }
   ],
   "shortcuts": [
