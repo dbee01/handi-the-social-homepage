@@ -643,6 +643,61 @@
             );
         </script>
 
+        <!-- PWA manifest per active pack. The server already picks the
+             manifest from the URL params, but the pack import then redirects
+             to a clean URL — so re-apply it here from the stored pack id.
+             Non-Gaeilge packs get NO manifest (no installable app). -->
+        <script>
+            (function () {
+                var GAEILGE_PACK_ID =
+                    "399d4da865fb4bdb40133def9fc830af460764597854c9c5ede61b4d3a371a30";
+
+                function setMeta(name, value) {
+                    var el = document.querySelector('meta[name="' + name + '"]');
+                    if (el) el.setAttribute("content", value);
+                }
+                function setLinkHref(rel, href) {
+                    var el = document.querySelector('link[rel="' + rel + '"]');
+                    if (el) el.setAttribute("href", href);
+                }
+
+                function adjust() {
+                    var pid = null;
+                    try {
+                        pid = localStorage.getItem("handiPackId");
+                    } catch (e) {}
+                    var link = document.querySelector('link[rel="manifest"]');
+                    if (!link) return;
+
+                    if (pid === GAEILGE_PACK_ID) {
+                        link.setAttribute(
+                            "href",
+                            "/manifests/gaeilge.manifest.json",
+                        );
+                        setMeta("theme-color", "#00c1f2");
+                        setMeta("apple-mobile-web-app-title", "Gaeilge");
+                        setLinkHref(
+                            "apple-touch-icon",
+                            "/images/icons/gaeilge/gaeilge-180x180.png",
+                        );
+                        setLinkHref(
+                            "icon",
+                            "/images/icons/gaeilge/gaeilge-32x32.png",
+                        );
+                    } else if (pid) {
+                        // Another handi-pack: no installable app.
+                        link.parentNode.removeChild(link);
+                    }
+                }
+
+                adjust();
+                // Also react when the pack is imported while this tab is open.
+                window.addEventListener("storage", function (e) {
+                    if (e.key === "handiPackId") adjust();
+                });
+            })();
+        </script>
+
         <!-- ========== MODULE INITIALISATION ========== -->
         <script type="module">
             import { startWeatherUpdates } from "./js/core/weather.js";
