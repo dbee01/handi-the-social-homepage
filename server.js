@@ -259,9 +259,9 @@ app.get("/", (req, res) => {
   const originUrl = requestOrigin(req);
   html = setMetaContent(html, "property", "og:url", shareUrl);
 
-  // Canonical: pack links are their own canonical URL; everything else
-  // canonicalises to the host root.
-  html = setCanonicalHref(html, hasPack ? shareUrl : originUrl + "/");
+  // Canonical is always the host root — pack links share the same app, so
+  // the search-engine identity stays on one URL regardless of query params.
+  html = setCanonicalHref(html, originUrl);
 
   // og:image:alt — describe the pack when one is being shared.
   const packTitleStr = packTitle ? String(packTitle).trim() : "";
@@ -286,7 +286,7 @@ app.get("/", (req, res) => {
       ? packTitleStr
       : "HandiHomepage – Senior Dashboard",
     description: descStr,
-    url: hasPack ? shareUrl : originUrl + "/",
+    url: originUrl,
   });
 
   // JS-rendering crawlers must not be bounced to /selector.html or to a
