@@ -113,6 +113,15 @@ window.HANDI_MODULES = [
     defaultEnabled: 0,
     settingsConfig: {},
   },
+  {
+    id: "events",
+    name: "Events",
+    icon: '<i class="fa-solid fa-calendar-days"></i>',
+    desc: "Festivals & what's on near you",
+    tier: "free",
+    defaultEnabled: 0,
+    settingsConfig: { location: "", type: "" },
+  },
 
   // ─── Premium modules ───────────────────────────────────────────────────
   {

@@ -80,6 +80,7 @@ var LANG = {
     flip: { name: "Flipboard", desc: "Curated news" },
     newsletter: { name: "Newsletter", desc: "Email digest" },
     sports: { name: "Sports", desc: "Live football" },
+    events: { name: "Events", desc: "What's on near you" },
   },
 
   // Dashboard component strings
@@ -364,6 +365,8 @@ var LANG = {
   s_defaultPageSelector: "— Default (page selector) —",
   s_refreshMinutes: "Refresh interval (minutes)",
   s_maxArticles: "Max articles",
+  s_events: "Events",
+  s_eventType: "Event type",
   s_socialMedia: "Social Media",
   s_mastodonServer: "Mastodon Server",
   s_trendingLimit: "Trending limit",

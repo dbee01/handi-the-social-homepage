@@ -505,6 +505,23 @@ const INFOBIP_BASE_URL = process.env.INFOBIP_BASE_URL
   ? `https://${process.env.INFOBIP_BASE_URL.replace(/^https?:\/\//, "")}`
   : "https://api.infobip.com";
 
+// -----------------------------------------------------------------------------
+// EVENTBRITE (Events module)
+// -----------------------------------------------------------------------------
+// Eventbrite retired the public /v3/events/search/ discovery endpoint, so the
+// module discovers event IDs from Eventbrite's public browse pages (the same
+// server-rendered "what's on" pages its own site uses) and then enriches each
+// shown event with the official v3 API (price, time, venue, logo) using the
+// account's personal OAuth token. The token always stays server-side.
+const EVENTBRITE_TOKEN =
+  process.env.EVENTBRITE_PRIVATE_TOKEN ||
+  process.env.EVENT_PRIVATE_TOKEN ||
+  process.env.EVENTBRITE_PUBLIC_TOKEN ||
+  "";
+const EVENTBRITE_API = "https://www.eventbriteapi.com/v3";
+const EVENTBRITE_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
+
 // Endpoint for WebRTC token generation (audio + video)
 app.post("/api/webrtc/token", async (req, res) => {
   const { identity, enableVideo = true } = req.body;
@@ -1710,6 +1727,460 @@ app.get("/api/stream", async (req, res) => {
       } catch (e) {}
     }
   });
+});
+
+// -----------------------------------------------------------------------------
+// EVENTBRITE EVENTS – /api/events
+// -----------------------------------------------------------------------------
+// Eventbrite retired the public /v3/events/search/ discovery endpoint, so the
+// module finds upcoming events by reading Eventbrite's own public browse pages
+// (the server-rendered "/d/..." "what's on" pages) and pulls the structured
+// JSON-LD event list out of them. Each event that will actually be shown is
+// then enriched with the official v3 events/{id} API (exact start time, venue,
+// logo and ticket price) using the account's personal OAuth token, which never
+// leaves the server. Pages and details are cached in memory so dashboard
+// refreshes don't hammer Eventbrite.
+
+// Event type keys used by the Settings dropdown -> Eventbrite browse topic
+// slugs (all verified to exist, e.g. /d/ireland--cork/music/).
+const EVENTBRITE_TOPIC_SLUGS = {
+  music: "music",
+  arts: "performing-arts",
+  film: "film",
+  food: "food-and-drink",
+  community: "community",
+  family: "family-education",
+  sports: "sports-fitness",
+  seasonal: "seasonal-holiday",
+  charity: "charity-causes",
+  travel: "travel-outdoor",
+};
+
+// Eventbrite's /d/ URLs spell out country names rather than using ISO codes.
+const EVENTBRITE_COUNTRY_SLUGS = {
+  IE: "ireland",
+  GB: "united-kingdom",
+  US: "united-states",
+  FR: "france",
+  DE: "germany",
+  ES: "spain",
+  IT: "italy",
+  NL: "netherlands",
+  BE: "belgium",
+  AT: "austria",
+  CH: "switzerland",
+  DK: "denmark",
+  SE: "sweden",
+  NO: "norway",
+  FI: "finland",
+  PL: "poland",
+  PT: "portugal",
+  AU: "australia",
+  NZ: "new-zealand",
+  CA: "canada",
+};
+
+const ebPageCache = new Map(); // page URL -> { html, at }
+const ebDetailCache = new Map(); // event id -> { data, at }  (data may be null)
+const ebBrowseCache = new Map(); // location|type -> { events, at }
+const ebPlaceCache = new Map(); // location text -> { place, at }
+const EB_PAGE_TTL = 20 * 60 * 1000;
+const EB_DETAIL_TTL = 6 * 60 * 60 * 1000;
+const EB_DETAIL_NEG_TTL = 5 * 60 * 1000;
+const EB_BROWSE_TTL = 10 * 60 * 1000;
+const EB_PLACE_TTL = 24 * 60 * 60 * 1000;
+
+function cacheGet(map, key, ttl) {
+  const hit = map.get(key);
+  if (hit && Date.now() - hit.at < ttl) return hit.value;
+  if (hit) map.delete(key);
+  return undefined;
+}
+function cacheSet(map, key, value, maxEntries) {
+  map.set(key, { value, at: Date.now() });
+  if (map.size > (maxEntries || 200)) {
+    const first = map.keys().next().value;
+    map.delete(first);
+  }
+}
+
+function slugify(str) {
+  return String(str || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+}
+
+// Turn a free-text location into the pieces Eventbrite's /d/ URLs need. The
+// city is canonicalised through Open-Meteo so "Cork city" -> Cork, "Gaillimh"
+// -> Galway etc., which makes the browse-page slug much more likely to exist.
+async function resolveEventbritePlace(text) {
+  const key = String(text || "").trim().toLowerCase();
+  if (!key) return null;
+  const cached = cacheGet(ebPlaceCache, key, EB_PLACE_TTL);
+  if (cached) return cached;
+  let place = null;
+  try {
+    const geo = await axios.get(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(key)}&count=1&language=en&format=json`,
+      { timeout: 8000 },
+    );
+    const result =
+      geo.data && Array.isArray(geo.data.results) ? geo.data.results[0] : null;
+    if (result && result.name) {
+      const countryCode = String(result.country_code || "IE").toUpperCase();
+      place = {
+        label: result.name,
+        countrySlug:
+          EVENTBRITE_COUNTRY_SLUGS[countryCode] ||
+          slugify(countryCode) ||
+          "ireland",
+        citySlug: slugify(result.name),
+      };
+    }
+  } catch (e) {
+    /* offline — fall back below */
+  }
+  if (!place) {
+    // Last resort: treat the text as the slug itself (e.g. "cork").
+    place = {
+      label: text,
+      countrySlug: "ireland",
+      citySlug: slugify(text),
+    };
+  }
+  cacheSet(ebPlaceCache, key, place);
+  return place;
+}
+
+// Robustly extract the window.__SERVER_DATA__ JSON blob (brace counting, so a
+// "};" inside a string can't truncate it).
+function extractServerData(html) {
+  const marker = "__SERVER_DATA__";
+  const start = html.indexOf(marker);
+  if (start < 0) return null;
+  const open = html.indexOf("{", start);
+  if (open < 0) return null;
+  let depth = 0;
+  let inStr = false;
+  let esc = false;
+  for (let i = open; i < html.length; i++) {
+    const ch = html[i];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (ch === "\\") esc = true;
+      else if (ch === '"') inStr = false;
+      continue;
+    }
+    if (ch === '"') {
+      inStr = true;
+      continue;
+    }
+    if (ch === "{") depth++;
+    else if (ch === "}") {
+      depth--;
+      if (depth === 0) return html.slice(open, i + 1);
+    }
+  }
+  return null;
+}
+
+function collectItemListEvents(root, out) {
+  out = out || [];
+  if (Array.isArray(root)) {
+    for (const child of root) collectItemListEvents(child, out);
+    return out;
+  }
+  if (root && typeof root === "object") {
+    if (root["@type"] === "ItemList" && Array.isArray(root.itemListElement)) {
+      for (const el of root.itemListElement) {
+        const item = el && el.item;
+        if (item && item["@type"] === "Event") out.push(item);
+      }
+    }
+    for (const k of Object.keys(root)) {
+      const v = root[k];
+      if (v && typeof v === "object") collectItemListEvents(v, out);
+    }
+  }
+  return out;
+}
+
+function eventIdFromUrl(url) {
+  const m = String(url || "").match(/(\d{8,})\b/);
+  return m ? m[1] : "";
+}
+
+function eventListFromJsonld(doc) {
+  const raw = collectItemListEvents(doc);
+  const seen = new Set();
+  const list = [];
+  for (const ev of raw) {
+    const id = eventIdFromUrl(ev.url);
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    const loc = ev.location || {};
+    const addr = loc.address || {};
+    list.push({
+      id,
+      name: ev.name || "",
+      url: ev.url || "",
+      image: ev.image || "",
+      description: ev.description || "",
+      startDate: ev.startDate || "",
+      endDate: ev.endDate || "",
+      venueName: loc.name || "",
+      venueCity: addr.addressLocality || "",
+    });
+  }
+  return list;
+}
+
+async function fetchEventbritePage(url) {
+  const cached = cacheGet(ebPageCache, url, EB_PAGE_TTL);
+  if (cached) return cached;
+  try {
+    const resp = await axios.get(url, {
+      timeout: 20000,
+      maxRedirects: 5,
+      headers: {
+        "User-Agent": EVENTBRITE_UA,
+        Accept: "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
+      },
+    });
+    if (resp.status !== 200 || typeof resp.data !== "string") return null;
+    cacheSet(ebPageCache, url, resp.data);
+    return resp.data;
+  } catch (e) {
+    console.warn(`⚠️ Eventbrite browse fetch failed (${url}): ${e.message}`);
+    return null;
+  }
+}
+
+// Try the possible /d/ URLs for a place + topic until one yields events.
+async function discoverEventbriteEvents(locationText, typeKey) {
+  const place = await resolveEventbritePlace(locationText);
+  const topic = EVENTBRITE_TOPIC_SLUGS[typeKey];
+  const candidates = [];
+  if (place && place.countrySlug && place.citySlug) {
+    const dashed = `${place.countrySlug}--${place.citySlug}`;
+    if (topic) candidates.push(`https://www.eventbrite.com/d/${dashed}/${topic}/`);
+    candidates.push(`https://www.eventbrite.com/d/${dashed}/events/`);
+    if (topic)
+      candidates.push(
+        `https://www.eventbrite.com/d/${place.countrySlug}/${place.citySlug}/${topic}/`,
+      );
+    candidates.push(
+      `https://www.eventbrite.com/d/${place.countrySlug}/events/?q=${encodeURIComponent(place.label || locationText)}`,
+    );
+  } else {
+    // Unknown place — default to the Cork/Ireland directory.
+    if (topic) candidates.push(`https://www.eventbrite.com/d/ireland--cork/${topic}/`);
+    candidates.push("https://www.eventbrite.com/d/ireland--cork/events/");
+  }
+  for (const url of candidates) {
+    const html = await fetchEventbritePage(url);
+    if (!html) continue;
+    try {
+      const blob = extractServerData(html);
+      if (!blob) continue;
+      const doc = JSON.parse(blob);
+      const events = eventListFromJsonld(doc);
+      if (events.length) return events;
+    } catch (e) {
+      /* try the next candidate */
+    }
+  }
+  return [];
+}
+
+// Official enrichment: price, exact start time, venue, high-res logo.
+async function fetchEventbriteDetail(id) {
+  if (!EVENTBRITE_TOKEN) return null;
+  const cached = cacheGet(ebDetailCache, id, EB_DETAIL_TTL);
+  if (cached !== undefined) return cached;
+  try {
+    const resp = await axios.get(
+      `${EVENTBRITE_API}/events/${id}/?expand=venue,logo,ticket_availability,ticket_classes`,
+      {
+        timeout: 12000,
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        headers: {
+          Authorization: `Bearer ${EVENTBRITE_TOKEN}`,
+          Accept: "application/json",
+        },
+      },
+    );
+    const data = resp.data;
+    cacheSet(ebDetailCache, id, data, 4000);
+    return data;
+  } catch (e) {
+    const status = e.response && e.response.status;
+    // 429/403/404 — don't cache for long; the caller falls back to list data.
+    cacheSet(ebDetailCache, id, null, 4000);
+    return null;
+  }
+}
+
+const CURRENCY_SYMBOLS = {
+  EUR: "€",
+  GBP: "£",
+  USD: "$",
+  CAD: "$",
+  AUD: "$",
+  NZD: "$",
+  CHF: "CHF ",
+  SEK: "SEK ",
+  NOK: "NOK ",
+  DKK: "kr ",
+  PLN: "zł",
+  CZK: "Kč",
+};
+
+function formatMoney(value, currency, prefix) {
+  const sym = CURRENCY_SYMBOLS[currency] || `${currency} `;
+  const v = Number(value);
+  const whole = Number.isFinite(v) && Math.round(v) === v;
+  return (prefix || "") + sym + (whole ? v.toFixed(0) : v.toFixed(2));
+}
+
+function eventbritePrice(detail) {
+  if (!detail) return "";
+  if (detail.is_free) return "Free";
+  const classes = Array.isArray(detail.ticket_classes)
+    ? detail.ticket_classes
+    : [];
+  let best = null; // { value, display, free }
+  for (const c of classes) {
+    if (c.on_sale_status === "SOLD_OUT" && c.free !== true) continue;
+    if (c.free) {
+      if (!best) best = { value: 0, free: true };
+      continue;
+    }
+    if (c.cost && c.cost.major_value != null) {
+      const v = parseFloat(c.cost.major_value);
+      if (Number.isFinite(v) && v >= 0) {
+        if (!best || best.value === 0 || (v > 0 && v < best.value))
+          best = { value: v, display: c.cost.display || "" };
+      }
+    }
+  }
+  if (best) {
+    if (best.free || best.value === 0) return "Free";
+    if (best.display) {
+      // "€5.00" -> "€5"; keep it clean for the elderly-optimised UI.
+      const m = best.display.match(/^(\D*)([\d.,]+)\s*([A-Z]{3})?$/);
+      if (m && m[2]) {
+        const num = parseFloat(m[2].replace(",", "."));
+        if (Number.isFinite(num)) {
+          const sym =
+            (m[1] && m[1].trim()) ||
+            CURRENCY_SYMBOLS[detail.currency] ||
+            "";
+          return "From " + sym + (Math.round(num) === num ? num.toFixed(0) : num.toFixed(2));
+        }
+      }
+      return "From " + best.display;
+    }
+    return "From " + formatMoney(best.value, detail.currency);
+  }
+  // Fall back to ticket_availability when there are no ticket classes.
+  const ta = detail.ticket_availability;
+  if (ta) {
+    const mp = ta.minimum_ticket_price;
+    if (mp && mp.major_value != null && parseFloat(mp.major_value) > 0) {
+      return "From " + formatMoney(parseFloat(mp.major_value), mp.currency);
+    }
+    if (ta.has_available_tickets) return "Free";
+  }
+  return "";
+}
+
+function mapEventbriteEvent(listItem, detail) {
+  const e = {
+    id: listItem.id,
+    name: listItem.name,
+    url: listItem.url,
+    image: "",
+    description: "",
+    start: {},
+    end: {},
+    venueName: listItem.venueName,
+    venueCity: listItem.venueCity,
+    price: "",
+    isFree: false,
+    currency: "",
+  };
+  if (detail) {
+    const logo =
+      detail.logo && detail.logo.original && detail.logo.original.url
+        ? detail.logo.original.url
+        : detail.logo && detail.logo.url
+          ? detail.logo.url
+          : "";
+    e.image = logo || listItem.image;
+    e.description = (detail.summary || detail.description?.text || "").replace(
+      /\s+/g,
+      " ",
+    );
+    e.start = detail.start || {};
+    e.end = detail.end || {};
+    if (detail.venue) {
+      e.venueName = detail.venue.name || e.venueName;
+      e.venueCity =
+        (detail.venue.address && detail.venue.address.city) || e.venueCity;
+    }
+    e.price = eventbritePrice(detail);
+    e.isFree = detail.is_free === true;
+    e.currency = detail.currency || "";
+  } else {
+    e.image = listItem.image;
+    e.description = String(listItem.description || "").replace(/\s+/g, " ");
+    e.start = { local: listItem.startDate || "" };
+    e.end = { local: listItem.endDate || "" };
+  }
+  return e;
+}
+
+app.get("/api/events", async (req, res) => {
+  const location = String(req.query.location || "").trim() || "cork";
+  const type = String(req.query.type || "").trim().toLowerCase();
+  const limit = Math.min(parseInt(req.query.limit, 10) || 12, 30);
+  const cacheKey = `${location.toLowerCase()}|${type}`;
+
+  const cached = cacheGet(ebBrowseCache, cacheKey, EB_BROWSE_TTL);
+  if (cached) return res.json(cached);
+
+  if (!EVENTBRITE_TOKEN) {
+    return res.status(503).json({
+      error: "not_configured",
+      message: "Eventbrite token not set in .env (EVENTBRITE_PRIVATE_TOKEN)",
+    });
+  }
+
+  try {
+    const listItems = await discoverEventbriteEvents(location, type);
+    const shown = listItems.slice(0, limit);
+    const details = await Promise.all(
+      shown.map((it) => fetchEventbriteDetail(it.id)),
+    );
+    const events = shown.map((it, i) => mapEventbriteEvent(it, details[i]));
+    const payload = {
+      events,
+      count: events.length,
+      location: { query: location, type },
+      fetchedAt: new Date().toISOString(),
+      provider: "eventbrite",
+    };
+    cacheSet(ebBrowseCache, cacheKey, payload);
+    res.json(payload);
+  } catch (e) {
+    console.error("❌ Eventbrite events error:", e.message);
+    if (!res.headersSent) res.status(502).json({ error: e.message });
+  }
 });
 
 // -----------------------------------------------------------------------------

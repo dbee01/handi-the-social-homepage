@@ -1054,6 +1054,47 @@
                     </div>
                 </div>
             </div>
+            <!-- Events Module (free) -->
+            <div class="module-card" data-module="events">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <h3>Events</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Location:</label
+                        ><input type="text" id="eventsLocation" placeholder="Cork"/>
+                        <small>Show events near this city or town, e.g. Cork.</small>
+                    </div>
+                    <button id="eventsDetectBtn" class="detect-location-btn">
+                        <i class="fa-solid fa-location-dot"></i> Detect My
+                        Location
+                    </button>
+                    <div id="eventsPreview" class="weather-preview"></div>
+                    <div class="config-field">
+                        <label>Event type:</label>
+                        <select id="eventsType">
+                            <option value="">All types</option>
+                            <option value="music">Festivals &amp; live music</option>
+                            <option value="arts">Arts &amp; theatre</option>
+                            <option value="food">Food &amp; drink</option>
+                            <option value="community">Community &amp; culture</option>
+                            <option value="family">Family &amp; education</option>
+                            <option value="sports">Sports &amp; fitness</option>
+                            <option value="film">Film &amp; media</option>
+                            <option value="seasonal">Seasonal &amp; holiday</option>
+                            <option value="charity">Charity &amp; causes</option>
+                            <option value="travel">Travel &amp; outdoor</option>
+                        </select>
+                        <small>Which kind of events to look for.</small>
+                    </div>
+                </div>
+            </div>
 
 
                         <!-- ============================================================ -->
@@ -2190,6 +2231,18 @@
                     }
                 }
 
+                // Load events settings
+                if (settings.events) {
+                    if (document.getElementById("eventsLocation")) {
+                        document.getElementById("eventsLocation").value =
+                            settings.events.location || "";
+                    }
+                    if (document.getElementById("eventsType")) {
+                        document.getElementById("eventsType").value =
+                            settings.events.type || "";
+                    }
+                }
+
                 // Load chat settings (incl. Handi Pack rooms)
                 if (settings.chat) {
                     if (
@@ -2320,6 +2373,12 @@
                 if (!settings.newsletter) settings.newsletter = {};
                 settings.newsletter.feedUrl =
                     document.getElementById("newsletterFeedUrl")?.value.trim() || "";
+
+                if (!settings.events) settings.events = {};
+                settings.events.location =
+                    document.getElementById("eventsLocation")?.value.trim() || "";
+                settings.events.type =
+                    document.getElementById("eventsType")?.value || "";
 
                 if (!settings.social) settings.social = {};
                 settings.social.instance =
@@ -2875,6 +2934,83 @@
                     },
                 );
             }
+
+            /** Auto-detect whether a data URL or URL points to a video or image. */
+            function detectEventsLocation() {
+                const input = document.getElementById("eventsLocation");
+                const preview = document.getElementById("eventsPreview");
+                if (!input) return;
+                const show = (msg) => {
+                    if (preview) {
+                        preview.style.display = "block";
+                        preview.innerHTML = msg;
+                    }
+                };
+                const fill = (city) => {
+                    if (city && input) input.value = city;
+                    show(city ? "<strong>" + city + "</strong> ✓" : "");
+                };
+                if (!navigator.geolocation) {
+                    alert("Geolocation not supported.");
+                    return;
+                }
+                show('<i class="fa-solid fa-spinner fa-spin"></i> Detecting...');
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        try {
+                            const url =
+                                "https://nominatim.openstreetmap.org/reverse?lat=" +
+                                position.coords.latitude +
+                                "&lon=" +
+                                position.coords.longitude +
+                                "&format=json";
+                            const resp = await fetch(url, {
+                                headers: { "User-Agent": "HandiHomepage/1.0" },
+                            });
+                            const data = await resp.json();
+                            fill(
+                                data.address?.city ||
+                                    data.address?.town ||
+                                    data.address?.village,
+                            );
+                        } catch (e) {
+                            show('<span class="error">Could not detect city.</span>');
+                        }
+                    },
+                    async (err) => {
+                        // No GPS/Wi-Fi fix — approximate via IP (weather does this too).
+                        if (err && (err.code === 2 || err.code === 3)) {
+                            try {
+                                const resp = await fetch("https://ipwho.is/", {
+                                    headers: { Accept: "application/json" },
+                                });
+                                const data = await resp.json();
+                                if (data.city) {
+                                    fill(data.city);
+                                    show(
+                                        "<strong>" +
+                                            data.city +
+                                            "</strong> ✓ <small>(approximate)</small>",
+                                    );
+                                    return;
+                                }
+                            } catch (e) {}
+                        }
+                        show(
+                            '<span class="error">Could not detect your location — type it instead.</span>',
+                        );
+                    },
+                    {
+                        enableHighAccuracy: false,
+                        timeout: 15000,
+                        maximumAge: 30000,
+                    },
+                );
+            }
+            (function () {
+                const btn = document.getElementById("eventsDetectBtn");
+                if (btn) btn.addEventListener("click", detectEventsLocation);
+            })();
 
             /** Auto-detect whether a data URL or URL points to a video or image. */
             function detectSupportMediaType(url) {
@@ -3892,6 +4028,7 @@
                     live_bus: "s_liveBusTracker",
                     emergency_alert: "s_locationShare",
                     calendar: "s_calendar",
+                    events: "s_events",
                 };
                 document
                     .querySelectorAll(".module-card")
@@ -3938,6 +4075,9 @@
                                 ) + ":";
                         if (txt === "RSS Feed:")
                             el.textContent = t("s_rssFeed", "RSS Feed") + ":";
+                        if (txt === "Event type:")
+                            el.textContent =
+                                t("s_eventType", "Event type") + ":";
                         if (txt === "Refresh interval (minutes):")
                             el.textContent =
                                 t(

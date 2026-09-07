@@ -75,6 +75,7 @@ var LANG = {
     flip: { name: "Flipboard", desc: "Nuacht coimeádta" },
     newsletter: { name: "Nuachtlitir", desc: "Achoimre ríomhphoist" },
     sports: { name: "Spórt", desc: "Peil bheo" },
+    events: { name: "Imeachtaí", desc: "Cad atá ar siúl in aice leat" },
   },
 
   d_loading: "Á lódáil...",
@@ -284,6 +285,8 @@ var LANG = {
   s_defaultPageSelector: "— Réamhshocrú —",
   s_refreshMinutes: "Eatramh athnuachana (nóiméid)",
   s_maxArticles: "Uasmhéid alt",
+  s_events: "Imeachtaí",
+  s_eventType: "Cineál imeachta",
   s_socialMedia: "Meáin Shóisialta",
   s_mastodonServer: "Freastalaí Mastodon",
   s_trendingLimit: "Teorainn treochta",
