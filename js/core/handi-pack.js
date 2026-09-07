@@ -503,14 +503,12 @@
     } catch (e) {}
 
     // ---------------------------------------------------------------------
-    // Reload on a clean URL so theme CSS + module bootstrap see the new state
-    // ---------------------------------------------------------------------
-    var adminVerified = await stampPackId(qs);
-
-    // An admin-signed pack grants premium access to ONLY the modules it
+    // Admin-signed pack grants: unlock premium access to ONLY the modules it
     // actually includes. Persist that grant list so settings / selector /
     // dashboard can keep every other premium module locked. A non-admin
     // (or unsigned) pack revokes any previous grant list.
+    // ---------------------------------------------------------------------
+    var adminVerified = await stampPackId(qs);
     if (adminVerified && grantedModules) {
       try {
         localStorage.setItem("handiPackModules", JSON.stringify(grantedModules));
@@ -519,11 +517,11 @@
       try { localStorage.removeItem("handiPackModules"); } catch (e) {}
     }
 
-    // Crawlers must keep the pack URL (their share preview comes from the
-    // server-rendered head), so only real browsers reload onto a clean URL.
-    if (!window.HANDI_BOT) {
-      window.location.replace(window.location.pathname || "/");
-    }
+    // NOTE: no reload / clean-URL redirect here. All pack state is written to
+    // localStorage synchronously above, and the theme + module bootstrap reads
+    // localStorage afterwards on this same page load — so a reload is not
+    // needed. Keeping the pack URL also lets the server keep serving the
+    // correct per-pack manifest / SEO tags on every load.
   } catch (e) {
     console.error("Handi Pack import failed:", e);
   }
