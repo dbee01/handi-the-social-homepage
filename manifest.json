@@ -3,51 +3,53 @@
   "short_name": "HandiHome",
   "description": "Your portal to the WWW",
   "id": "/",
+  "scope": "/",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["standalone"],
   "background_color": "#f6f8fc",
   "theme_color": "#0047cc",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/handi/handi-72x72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/handi/handi-96x96.png",
       "sizes": "96x96",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/handi/handi-128x128.png",
       "sizes": "128x128",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/handi/handi-144x144.png",
       "sizes": "144x144",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/handi/handi-152x152.png",
       "sizes": "152x152",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/handi/handi-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/handi/handi-384x384.png",
       "sizes": "384x384",
       "type": "image/png"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/images/icons/handi/handi-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -60,6 +62,13 @@
       "type": "image/jpeg",
       "form_factor": "wide",
       "label": "HandiHomepage Dashboard"
+    },
+    {
+      "src": "/images/screenshot-narrow.jpg",
+      "sizes": "750x1334",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Mobile view"
     }
   ],
   "shortcuts": [
@@ -68,14 +77,26 @@
       "short_name": "Settings",
       "description": "Open settings",
       "url": "/settings.html",
-      "icons": [{ "src": "/images/favicon.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "/images/icons/handi/handi-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Dashboard",
       "short_name": "Home",
       "description": "Back to dashboard",
       "url": "/",
-      "icons": [{ "src": "/images/favicon.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "/images/icons/handi/handi-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
   ],
   "categories": ["productivity", "utilities", "health"],

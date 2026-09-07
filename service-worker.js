@@ -1,4 +1,4 @@
-const CACHE = "ple-v22";
+const CACHE = "ple-v23";
 
 // Manual bump per deploy (you deploy from your working copy, not git). Always
 // raise CACHE before deploying so browsers pick up a changed service worker.
@@ -41,9 +41,6 @@ const PRECACHE = [
   "/js/vendor/Sortable.min.js",
   "/js/vendor/rrule.min.js",
   "/js/vendor/matrix-js-sdk.bundle.js",
-  "/js/vendor/transformers/transformers.js",
-  "/js/vendor/transformers/ort.bundle.min.mjs",
-  "/js/vendor/transformers/onnxruntime-web/ort-wasm-simd-threaded.wasm",
   "/images/favicon.png",
   "/images/favicon.ico",
   "/images/favicon-32.png",
