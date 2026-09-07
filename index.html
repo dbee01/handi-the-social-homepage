@@ -601,15 +601,45 @@
 
             navigator.serviceWorker?.addEventListener("message", (e) => {
                 if (e.data?.type === "update") {
-                    if (confirm("A new version is available. Reload now?")) {
-                        window.location.reload();
-                    }
+                    // Auto-reload so open tabs never keep running old code.
+                    window.location.reload();
                 }
             });
-            // Trigger update check when page loads
+
+            // Tell the service worker which icon/badge the current page brand
+            // uses (server picks it per pack: Gaeilge gets its cyan icons,
+            // everything else the default favicon). Notifications then match.
+            function swPostBrand(reg) {
+                var link =
+                    document.querySelector('link[rel="apple-touch-icon"]') ||
+                    document.querySelector('link[rel="icon"][type="image/png"]') ||
+                    document.querySelector('link[rel="icon"]');
+                var icon = link
+                    ? link.getAttribute("href")
+                    : "/images/favicon.png";
+                var active = reg && reg.active;
+                if (!active) return;
+                try {
+                    active.postMessage({
+                        type: "set-brand",
+                        icon: icon,
+                        badge: icon,
+                    });
+                } catch (err) {}
+            }
+
+            // Trigger update check + brand sync when the page loads
             navigator.serviceWorker?.ready.then((reg) => {
+                swPostBrand(reg);
                 reg.active?.postMessage("check-update");
             });
+            // Re-sync the brand when a new worker takes control
+            navigator.serviceWorker?.addEventListener(
+                "controllerchange",
+                function () {
+                    navigator.serviceWorker.ready.then(swPostBrand);
+                },
+            );
         </script>
 
         <!-- ========== MODULE INITIALISATION ========== -->
