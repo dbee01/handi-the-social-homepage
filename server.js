@@ -514,6 +514,7 @@ const INFOBIP_BASE_URL = process.env.INFOBIP_BASE_URL
 // shown event with the official v3 API (price, time, venue, logo) using the
 // account's personal OAuth token. The token always stays server-side.
 const EVENTBRITE_TOKEN =
+  process.env.EVENTBRITE_PRIVATE_KEY ||
   process.env.EVENTBRITE_PRIVATE_TOKEN ||
   process.env.EVENT_PRIVATE_TOKEN ||
   process.env.EVENTBRITE_PUBLIC_TOKEN ||
