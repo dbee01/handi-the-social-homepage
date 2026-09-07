@@ -1,4 +1,4 @@
-const CACHE = "ple-v24";
+const CACHE = "ple-v25";
 
 // Manual bump per deploy (you deploy from your working copy, not git). Always
 // raise CACHE before deploying so browsers pick up a changed service worker.
@@ -97,6 +97,123 @@ function storeBrand(icon, badge) {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Offline API queue (one-shot Background Sync). Failed /api/* requests are
+// stored (bounded) and replayed when connectivity returns.
+// -----------------------------------------------------------------------------
+const API_QUEUE_KEY = "/__api-queue__";
+const API_QUEUE_MAX = 50;
+const SKIP_HEADERS = [
+  "content-length",
+  "host",
+  "connection",
+  "accept-encoding",
+  "cookie",
+  "cookie2",
+  "referer",
+  "user-agent",
+];
+
+async function readApiQueue() {
+  try {
+    const cache = await caches.open(CACHE);
+    const resp = await cache.match(API_QUEUE_KEY);
+    if (!resp) return [];
+    const list = await resp.json();
+    return Array.isArray(list) ? list : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+async function writeApiQueue(list) {
+  const cache = await caches.open(CACHE);
+  await cache.put(
+    API_QUEUE_KEY,
+    new Response(JSON.stringify(list), {
+      headers: { "Content-Type": "application/json" },
+    }),
+  );
+}
+
+function serialisableHeaders(headers) {
+  const out = {};
+  headers.forEach((value, key) => {
+    const k = key.toLowerCase();
+    if (SKIP_HEADERS.indexOf(k) === -1) out[key] = value;
+  });
+  return out;
+}
+
+async function enqueueApiRequest(request) {
+  const list = await readApiQueue();
+  const entry = {
+    method: request.method,
+    url: request.url,
+    headers: serialisableHeaders(request.headers),
+  };
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    try {
+      entry.body = await request.clone().text();
+    } catch (_) {
+      entry.body = undefined;
+    }
+  }
+  list.push(entry);
+  if (list.length > API_QUEUE_MAX) {
+    list.splice(0, list.length - API_QUEUE_MAX);
+  }
+  await writeApiQueue(list);
+  notifyQueueCount();
+  try {
+    await self.registration.sync.register("flush-queue");
+  } catch (_) {
+    /* unsupported / not allowed — the queue still persists */
+  }
+}
+
+async function flushApiQueue() {
+  const list = await readApiQueue();
+  if (!list.length) return;
+  const remaining = [];
+  for (const entry of list) {
+    const init = { method: entry.method };
+    if (entry.headers && Object.keys(entry.headers).length) {
+      init.headers = entry.headers;
+    }
+    if (
+      entry.body !== undefined &&
+      entry.method !== "GET" &&
+      entry.method !== "HEAD"
+    ) {
+      init.body = entry.body;
+    }
+    try {
+      const resp = await fetch(entry.url, init);
+      if (resp && resp.ok) continue;
+      remaining.push(entry);
+    } catch (_) {
+      remaining.push(entry);
+    }
+  }
+  await writeApiQueue(remaining);
+  notifyQueueCount();
+}
+
+// Tell every open tab how many requests are still queued.
+async function notifyQueueCount() {
+  try {
+    const list = await readApiQueue();
+    const clients = await self.clients.matchAll({
+      type: "window",
+      includeUncontrolled: true,
+    });
+    clients.forEach((c) =>
+      c.postMessage({ type: "queue-count", count: list.length }),
+    );
+  } catch (_) {}
+}
+
 // Install — pre-cache all static assets
 self.addEventListener("install", (e) => {
   e.waitUntil(
@@ -127,12 +244,19 @@ self.addEventListener("activate", (e) => {
       })
       .then(({ hadPrevious }) => self.clients.claim().then(() => hadPrevious))
       .then((hadPrevious) => {
-        if (!hadPrevious) return;
-        return self.clients
-          .matchAll({ type: "window" })
-          .then((clients) =>
-            clients.forEach((c) => c.postMessage({ type: "update" })),
+        const jobs = [];
+        if (hadPrevious) {
+          jobs.push(
+            self.clients
+              .matchAll({ type: "window" })
+              .then((clients) =>
+                clients.forEach((c) => c.postMessage({ type: "update" })),
+              ),
           );
+        }
+        // Let open tabs know about any requests still waiting to be sent.
+        jobs.push(notifyQueueCount());
+        return Promise.all(jobs);
       }),
   );
 });
@@ -149,8 +273,28 @@ self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   if (e.request.url.startsWith("chrome-extension://")) return;
 
-  // Skip API calls — let them go to network
-  if (e.request.url.includes("/api/")) return;
+  // API calls — try the network; if it fails, queue the request so
+  // Background Sync can replay it when connectivity returns.
+  if (e.request.url.includes("/api/")) {
+    e.respondWith(
+      fetch(e.request)
+        .then((response) => {
+          // Success — opportunistically try to flush anything queued earlier.
+          if (response && response.ok) flushApiQueue();
+          return response;
+        })
+        .catch(() =>
+          enqueueApiRequest(e.request).then(
+            () =>
+              new Response(JSON.stringify({ queued: true }), {
+                status: 202,
+                headers: { "Content-Type": "application/json" },
+              }),
+          ),
+        ),
+    );
+    return;
+  }
 
   // Skip WebRTC / Infobip calls
   if (e.request.url.includes("rtc.cdn.infobip.com")) return;
@@ -316,10 +460,26 @@ self.addEventListener("periodicsync", (e) => {
   }
 });
 
+// One-shot Background Sync — replay queued /api requests on connectivity.
+self.addEventListener("sync", (e) => {
+  if (e.tag === "flush-queue") {
+    e.waitUntil(flushApiQueue());
+  }
+});
+
+// If the browser reports connectivity, try flushing immediately.
+self.addEventListener("online", () => {
+  flushApiQueue();
+});
+
 // Listen for messages from the page
 self.addEventListener("message", (e) => {
   if (e.data && e.data.type === "set-brand") {
     storeBrand(e.data.icon, e.data.badge);
+    return;
+  }
+  if (e.data && e.data.type === "get-queue-count") {
+    notifyQueueCount();
     return;
   }
   if (e.data === "check-update") scheduleUpdateCheck();

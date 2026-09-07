@@ -600,10 +600,47 @@
                 );
             }
 
+            var queuePill = null;
+            function showQueueCount(count) {
+                if (!queuePill) {
+                    queuePill = document.createElement("div");
+                    queuePill.id = "api-queue-pill";
+                    var s = queuePill.style;
+                    s.position = "fixed";
+                    s.left = "50%";
+                    s.transform = "translateX(-50%)";
+                    s.bottom = "76px";
+                    s.zIndex = "99999";
+                    s.background = "#b45309";
+                    s.color = "#ffffff";
+                    s.padding = "8px 16px";
+                    s.borderRadius = "999px";
+                    s.fontSize = "14px";
+                    s.boxShadow = "0 2px 10px rgba(0,0,0,0.25)";
+                    s.display = "none";
+                    s.maxWidth = "90vw";
+                    s.textAlign = "center";
+                    document.body.appendChild(queuePill);
+                }
+                if (count > 0) {
+                    queuePill.textContent =
+                        count +
+                        " update" +
+                        (count === 1 ? "" : "s") +
+                        " queued \u2014 will send when back online";
+                    queuePill.style.display = "block";
+                } else {
+                    queuePill.style.display = "none";
+                }
+            }
+
             navigator.serviceWorker?.addEventListener("message", (e) => {
                 if (e.data?.type === "update") {
                     // Auto-reload so open tabs never keep running old code.
                     window.location.reload();
+                }
+                if (e.data?.type === "queue-count") {
+                    showQueueCount(e.data.count);
                 }
             });
 
@@ -633,12 +670,16 @@
             navigator.serviceWorker?.ready.then((reg) => {
                 swPostBrand(reg);
                 reg.active?.postMessage("check-update");
+                reg.active?.postMessage({ type: "get-queue-count" });
             });
             // Re-sync the brand when a new worker takes control
             navigator.serviceWorker?.addEventListener(
                 "controllerchange",
                 function () {
-                    navigator.serviceWorker.ready.then(swPostBrand);
+                    navigator.serviceWorker.ready.then((reg) => {
+                        swPostBrand(reg);
+                        reg.active?.postMessage({ type: "get-queue-count" });
+                    });
                 },
             );
 
