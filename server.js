@@ -195,6 +195,36 @@ function setCanonicalHref(html, url) {
   );
 }
 
+// Rewrite the href= of specific <link> tags (used for per-pack PWA branding).
+// The tag must exist in the static HTML (any whitespace layout).
+const LINK_HREF_KINDS = {
+  manifest: {
+    re: /<link\s+rel="manifest"\s+href="[^"]*"\s*\/?>/, // eslint-disable-line no-useless-escape
+    tag: (u) => '<link rel="manifest" href="' + u + '" />',
+  },
+  "apple-touch-icon": {
+    re: /<link\s+rel="apple-touch-icon"\s+href="[^"]*"\s*\/?>/, // eslint-disable-line no-useless-escape
+    tag: (u) => '<link rel="apple-touch-icon" href="' + u + '" />',
+  },
+  "icon-x": {
+    re: /<link\s+rel="icon"\s+type="image\/x-icon"\s+href="[^"]*"\s*\/?>/, // eslint-disable-line no-useless-escape
+    tag: (u) =>
+      '<link rel="icon" type="image/x-icon" href="' + u + '" />',
+  },
+  "icon-png32": {
+    re: /<link\s+rel="icon"\s+type="image\/png"\s+sizes="32x32"\s+href="[^"]*"\s*\/?>/, // eslint-disable-line no-useless-escape
+    tag: (u) =>
+      '<link rel="icon" type="image/png" sizes="32x32" href="' +
+      u +
+      '" />',
+  },
+};
+function setLinkHref(html, kind, url) {
+  const def = LINK_HREF_KINDS[kind];
+  if (!def || !def.re.test(html)) return html;
+  return html.replace(def.re, def.tag(escapeHtmlAttr(url)));
+}
+
 // Rebuild the single application/ld+json block with the given fields.
 function setJsonLd(html, data) {
   const re = /<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/;
@@ -301,6 +331,46 @@ app.get("/", (req, res) => {
     html = html.replace(
       "</head>",
       "<script>window.HANDI_BOT=1;</script></head>",
+    );
+  }
+
+  // PWA manifest + install branding. The Gaeilge pack gets its own manifest
+  // so its installable app boots straight into the Gaeilge homepage. Every
+  // other handi-pack must NOT get an installable app, and the plain page
+  // keeps the default Handi manifest.
+  const GAEILGE_PACK_ID =
+    "399d4da865fb4bdb40133def9fc830af460764597854c9c5ede61b4d3a371a30";
+  const isGaeilge =
+    !!req.query.id && String(req.query.id).trim() === GAEILGE_PACK_ID;
+  if (isGaeilge) {
+    html = setLinkHref(html, "manifest", "/manifests/gaeilge.manifest.json");
+    html = setMetaContent(html, "name", "theme-color", "#00c1f2");
+    html = setMetaContent(
+      html,
+      "name",
+      "apple-mobile-web-app-title",
+      "Gaeilge",
+    );
+    html = setLinkHref(
+      html,
+      "apple-touch-icon",
+      "/images/icons/gaeilge/gaeilge-180x180.png",
+    );
+    html = setLinkHref(
+      html,
+      "icon-x",
+      "/images/icons/gaeilge/gaeilge-72x72.png",
+    );
+    html = setLinkHref(
+      html,
+      "icon-png32",
+      "/images/icons/gaeilge/gaeilge-32x32.png",
+    );
+  } else if (hasPack) {
+    // Other handi-packs: no installable app.
+    html = html.replace(
+      /<link\s+rel="manifest"\s+href="[^"]*"\s*\/?>/,
+      "",
     );
   }
 
