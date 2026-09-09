@@ -1173,21 +1173,10 @@ header {
 .chat-refresh-btn {
     flex: 1;
     width: 100%;
-    background: var(--secondary, #f59e0b);
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.2s;
-    margin-top: 12px;
 }
 
-.chat-refresh-btn:hover {
-    background: var(--tertiary, #64748b);
-}
+/* Width/height/colour/font of the refresh button come from the shared
+   .settings-link-btn class (secondary colour, pill radius, 48px minimum). */
 
 /* =========================================================
    STANDARDIZED BUTTON HEIGHT
