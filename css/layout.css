@@ -1179,16 +1179,15 @@ header {
 ========================================================= */
 /* News/Events show one item at a time and Flip/Newsletter scroll a rail of
    cards. Their ‹ › arrows were vertically centred on the changing content, so
-   they jumped whenever an item was taller/shorter. Pin them to the vertical
-   centre of the constant-height media area instead: a fixed Y for every item.
-   The parent rows are position:relative and the views/scrollers reserve side
-   margins (46px) so content never slides under the buttons. */
+   they jumped whenever an item was taller/shorter. Pin them near the top of
+   the carousel area (fixed Y for every item) instead. The parent rows are
+   position:relative and the views/scrollers reserve side margins (46px) so
+   content never slides under the buttons. */
 .news-carousel-btn,
 .flip-scroll-btn,
 .newsletter-scroll-btn {
     position: absolute;
-    top: calc(var(--media-height, 220px) / 2);
-    transform: translateY(-50%);
+    top: 6px;
     z-index: 5;
 }
 
