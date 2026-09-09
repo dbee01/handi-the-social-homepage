@@ -490,7 +490,8 @@ export default async function initNews(container) {
     var currentIndex = 0;
 
     var carousel = document.createElement("div");
-    carousel.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;";
+    carousel.style.cssText =
+      "display:flex;align-items:center;gap:8px;width:100%;position:relative;";
 
     var leftBtn = document.createElement("button");
     leftBtn.className = "news-carousel-btn";
@@ -502,7 +503,7 @@ export default async function initNews(container) {
 
     var view = document.createElement("div");
     view.className = "news-post-view";
-    view.style.cssText = "flex:1;min-width:0;";
+    view.style.cssText = "flex:1;min-width:0;margin:0 46px;";
 
     var rightBtn = document.createElement("button");
     rightBtn.className = "news-carousel-btn";

@@ -274,7 +274,8 @@ export default async function initEvents(container) {
     let currentIndex = 0;
 
     const carousel = document.createElement("div");
-    carousel.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;";
+    carousel.style.cssText =
+      "display:flex;align-items:center;gap:8px;width:100%;position:relative;";
 
     const leftBtn = document.createElement("button");
     leftBtn.className = "news-carousel-btn";
@@ -286,7 +287,7 @@ export default async function initEvents(container) {
 
     const view = document.createElement("div");
     view.className = "news-post-view";
-    view.style.cssText = "flex:1;min-width:0;";
+    view.style.cssText = "flex:1;min-width:0;margin:0 46px;";
 
     const rightBtn = document.createElement("button");
     rightBtn.className = "news-carousel-btn";

@@ -433,7 +433,8 @@ export default async function initFlip(container) {
   }
 
   const toolbar = document.createElement("div");
-  toolbar.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;";
+  toolbar.style.cssText =
+    "display:flex;align-items:center;gap:8px;width:100%;position:relative;";
 
   const leftBtn = document.createElement("button");
   leftBtn.className = "flip-scroll-btn";
@@ -450,7 +451,7 @@ export default async function initFlip(container) {
   scroller.className = "flip-scroller";
   scroller.style.cssText =
     "flex:1;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;" +
-    "padding:4px 2px;scrollbar-width:thin;";
+    "padding:4px 2px;scrollbar-width:thin;margin:0 46px;";
   items.forEach(function (item) {
     scroller.appendChild(makeCard(item));
   });
