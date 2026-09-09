@@ -1187,7 +1187,7 @@ header {
 .flip-scroll-btn,
 .newsletter-scroll-btn {
     position: absolute;
-    top: 6px;
+    top: 25rem;
     z-index: 5;
 }
 
