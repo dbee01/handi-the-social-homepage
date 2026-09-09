@@ -203,7 +203,8 @@ export default async function initEvents(container) {
           "&type=" +
           encodeURIComponent(type) +
           "&distance=" +
-          encodeURIComponent(distance),
+          encodeURIComponent(distance) +
+          "&limit=30",
       );
       const data = await resp.json().catch(() => ({}));
       if (!resp.ok) {
