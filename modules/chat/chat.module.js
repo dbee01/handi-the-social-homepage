@@ -322,10 +322,10 @@ export default async function initChat(container) {
       html += "</div></div>";
     }
     html +=
-      '</div></div><div style="display:flex;width:100%;gap:12px;margin-top:12px;">' +
-      '<button id="chatRefreshBtn" class="settings-link-btn chat-refresh-btn" style="width:100%;margin-top:0;">⟳ ' +
+      '</div></div><div style="display:flex;justify-content:center;margin-top:12px;">' +
+      '<button id="chatRefreshBtn" class="settings-link-btn">⟳ ' +
       t("d_refresh", "Refresh") +
-      "</button>";
+      "</button></div>";
 
     content.innerHTML = html;
 

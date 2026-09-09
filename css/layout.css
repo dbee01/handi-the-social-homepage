@@ -1170,13 +1170,9 @@ header {
     color: #64748b;
 }
 
-.chat-refresh-btn {
-    flex: 1;
-    width: 100%;
-}
-
-/* Width/height/colour/font of the refresh button come from the shared
-   .settings-link-btn class (secondary colour, pill radius, 48px minimum). */
+/* The chat Refresh button reuses the shared .settings-link-btn style
+   (same colour, font-size, radius and centred alignment as e.g. the Cast
+   module's "Load Podcasts" button), so no module-specific rules here. */
 
 /* =========================================================
    STANDARDIZED BUTTON HEIGHT
