@@ -19,6 +19,58 @@ function esc(s) {
   });
 }
 
+// Fallback card built from the ?handi-pack= URL itself, shown only when no
+// support content is configured: the pack's own logo (image), name (title),
+// description and homepage (link). Returns "" when there is no pack at all.
+function packFallbackHtml() {
+  let name = "";
+  let description = "";
+  let logo = "";
+  let homepage = "";
+  try {
+    const qs = new URLSearchParams(window.location.search);
+    name = qs.get("handi-pack") || "";
+    description = qs.get("description") || "";
+    logo = qs.get("logo") || "";
+    homepage = qs.get("homepage") || "";
+  } catch (e) {}
+  if (!name) {
+    // The import step may already have cleaned the URL — keep name/description
+    // from storage in that case (logo/homepage are only available from the URL).
+    try {
+      name = localStorage.getItem("handiPackName") || name;
+      description = localStorage.getItem("handiPackDescription") || description;
+    } catch (e) {}
+  }
+  name = String(name || "").trim();
+  description = String(description || "").trim();
+  if (!name) return ""; // not a handi-pack — stay empty
+
+  const parts = [];
+  if (logo) {
+    parts.push(
+      '<img class="support-media" src="' +
+        esc(logo) +
+        '" alt="' +
+        esc(name) +
+        '" loading="lazy" />',
+    );
+  }
+  parts.push("<h3>" + esc(name) + "</h3>");
+  if (description) {
+    parts.push('<p class="support-desc">' + esc(description) + "</p>");
+  }
+  if (homepage) {
+    parts.push(
+      '<a class="support-link" href="' +
+        esc(homepage) +
+        '" target="_blank" rel="noopener">' +
+        "Visit Homepage &rarr;</a>",
+    );
+  }
+  return parts.join("\n");
+}
+
 export default async function initSupport(container) {
   const pinBtn = container.querySelector(".pin-btn");
   container.innerHTML = "";
@@ -97,8 +149,8 @@ export default async function initSupport(container) {
     return;
   }
 
-  // 3. No content configured — leave the element empty. (Previously this
-  //    re-rendered the handi-pack name/description as a "welcome" block, but
-  //    that duplicated pack branding such as the Gaeilge homepage.)
-  content.innerHTML = "";
+  // 3. No support content configured — fall back to a card built from the
+  //    ?handi-pack= URL itself (logo/title/description/homepage link), or stay
+  //    empty when the visitor isn't on a pack.
+  content.innerHTML = packFallbackHtml();
 }
