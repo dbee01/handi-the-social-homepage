@@ -2093,6 +2093,20 @@ const CURRENCY_SYMBOLS = {
   CZK: "Kč",
 };
 
+// Straight-line (haversine) distance in km — module scope so the events
+// travel-distance filter can use it (the bus route has its own nested copy).
+function eventDistanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
 function formatMoney(value, currency, prefix) {
   const sym = CURRENCY_SYMBOLS[currency] || `${currency} `;
   const v = Number(value);
@@ -2283,7 +2297,7 @@ app.get("/api/events", async (req, res) => {
           if (!Number.isFinite(ev.venueLat) || !Number.isFinite(ev.venueLon))
             return true;
           return (
-            haversineKm(place.lat, place.lon, ev.venueLat, ev.venueLon) <=
+            eventDistanceKm(place.lat, place.lon, ev.venueLat, ev.venueLon) <=
             distance
           );
         });
