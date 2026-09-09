@@ -41,7 +41,8 @@
   "overrides": {
     "glob": "^13.0.6",
     "body-parser": "^2.3.0",
-    "brace-expansion": "^5.0.9"
+    "brace-expansion": "^5.0.9",
+    "qs": "6.16.0"
   },
   "optionalDependencies": {
     "gtfs": "^4.20.2"
