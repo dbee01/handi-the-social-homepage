@@ -1172,7 +1172,8 @@ header {
 
 .chat-refresh-btn {
     flex: 1;
-    background: #3b82f6;
+    width: 100%;
+    background: var(--secondary, #f59e0b);
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -1185,7 +1186,7 @@ header {
 }
 
 .chat-refresh-btn:hover {
-    background: #2563eb;
+    background: var(--tertiary, #64748b);
 }
 
 /* =========================================================

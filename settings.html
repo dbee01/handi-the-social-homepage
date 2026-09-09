@@ -268,6 +268,43 @@
                             display: inline;
                             margin-bottom: 0;
                         }
+                        /* Events type checkboxes — neutralise the generic
+                           .config-field input styling (padding/border/margin)
+                           that otherwise turns them into large boxes. */
+                        .config-field #eventsTypes {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+                            gap: 6px;
+                            max-height: 280px;
+                            overflow-y: auto;
+                            border: 1px solid #e5e7eb;
+                            border-radius: 8px;
+                            padding: 8px;
+                        }
+                        .config-field #eventsTypes label {
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            font-weight: 400;
+                            font-size: 0.95rem;
+                            margin: 0;
+                            padding: 6px 8px;
+                            border: 1px solid #e5e7eb;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            color: inherit;
+                        }
+                        .config-field #eventsTypes input[type="checkbox"] {
+                            width: auto;
+                            height: auto;
+                            min-width: unset;
+                            margin: 0;
+                            padding: 0;
+                            border: none;
+                            background: none;
+                            font-size: inherit;
+                            flex-shrink: 0;
+                        }
             .upload-btn {
                 background: #0047cc;
                 color: white;
@@ -1094,6 +1131,20 @@
                             <label style="display:flex;align-items:center;gap:8px;font-size:0.95rem;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;margin:0;"><input type="checkbox" name="eventsType" value="travel" style="width:auto;height:auto;flex-shrink:0;" /> Travel &amp; outdoor</label>
                         </div>
                         <small>Tick the kinds of events to show. Nothing ticked = all types.</small>
+                    </div>
+                    <div class="config-field">
+                        <label>Travel distance:</label>
+                        <div style="display:flex;flex-wrap:wrap;gap:4px 18px;">
+                            <input type="radio" name="eventsDistance" id="evDistAny" value="" checked />
+                            <label for="evDistAny" style="font-weight:normal;">Anywhere</label>
+                            <input type="radio" name="eventsDistance" id="evDist10" value="10" />
+                            <label for="evDist10" style="font-weight:normal;">Up to 10 km</label>
+                            <input type="radio" name="eventsDistance" id="evDist25" value="25" />
+                            <label for="evDist25" style="font-weight:normal;">Up to 25 km</label>
+                            <input type="radio" name="eventsDistance" id="evDist50" value="50" />
+                            <label for="evDist50" style="font-weight:normal;">Up to 50 km</label>
+                        </div>
+                        <small>Only show events within this distance of the location above.</small>
                     </div>
                 </div>
             </div>
@@ -2252,6 +2303,15 @@
                             cb.checked =
                                 savedEventsTypes.indexOf(cb.value) !== -1;
                         });
+                    var savedEventsDistance = String(
+                        settings.events.distance || "",
+                    );
+                    var distRadio = document.querySelector(
+                        'input[name="eventsDistance"][value="' +
+                            savedEventsDistance +
+                            '"]',
+                    );
+                    if (distRadio) distRadio.checked = true;
                 }
 
                 // Load chat settings (incl. Handi Pack rooms)
@@ -2393,6 +2453,12 @@
                 )
                     .map((cb) => cb.value)
                     .join(",");
+                const eventsDistRadio = document.querySelector(
+                    'input[name="eventsDistance"]:checked',
+                );
+                settings.events.distance = eventsDistRadio
+                    ? eventsDistRadio.value
+                    : "";
 
                 if (!settings.social) settings.social = {};
                 settings.social.instance =
@@ -4095,6 +4161,9 @@
                         if (txt === "Event types:")
                             el.textContent =
                                 t("s_eventTypes", "Event types") + ":";
+                        if (txt === "Travel distance:")
+                            el.textContent =
+                                t("s_travelDistance", "Travel distance") + ":";
                         if (txt === "Refresh interval (minutes):")
                             el.textContent =
                                 t(

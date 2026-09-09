@@ -288,6 +288,7 @@ var LANG = {
   s_events: "Imeachtaí",
   s_eventType: "Cineál imeachta",
   s_eventTypes: "Cineálacha imeachtaí",
+  s_travelDistance: "Fad taistil",
   s_socialMedia: "Meáin Shóisialta",
   s_mastodonServer: "Freastalaí Mastodon",
   s_trendingLimit: "Teorainn treochta",

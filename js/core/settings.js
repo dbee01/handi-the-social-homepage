@@ -30,7 +30,7 @@ const DEFAULT_SETTINGS = {
   sports: { leagueIds: "357" },
   newsletter: { feedUrl: "" },
   flip: { profileUrl: "", topicUrl: "" },
-  events: { location: "", type: "" },
+  events: { location: "", type: "", distance: "" },
   mastodon: { instanceUrl: "https://mastodon.ie", limit: 4 },
   live_bus: { routeIds: "", stopIds: "" },
   phone: { contacts: [], autoDialDelay: 10 },

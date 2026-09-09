@@ -368,6 +368,7 @@ var LANG = {
   s_events: "Events",
   s_eventType: "Event type",
   s_eventTypes: "Event types",
+  s_travelDistance: "Travel distance",
   s_socialMedia: "Social Media",
   s_mastodonServer: "Mastodon Server",
   s_trendingLimit: "Trending limit",

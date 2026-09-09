@@ -120,7 +120,7 @@ window.HANDI_MODULES = [
     desc: "Festivals & what's on near you",
     tier: "free",
     defaultEnabled: 0,
-    settingsConfig: { location: "", type: "" },
+    settingsConfig: { location: "", type: "", distance: "" },
   },
 
   // ─── Premium modules ───────────────────────────────────────────────────

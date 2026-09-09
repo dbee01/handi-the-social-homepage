@@ -1875,6 +1875,12 @@ async function resolveEventbritePlace(text) {
           slugify(countryCode) ||
           "ireland",
         citySlug: slugify(result.name),
+        lat: Number.isFinite(Number(result.latitude))
+          ? Number(result.latitude)
+          : null,
+        lon: Number.isFinite(Number(result.longitude))
+          ? Number(result.longitude)
+          : null,
       };
     }
   } catch (e) {
@@ -1970,6 +1976,8 @@ function eventListFromJsonld(doc) {
       endDate: ev.endDate || "",
       venueName: loc.name || "",
       venueCity: addr.addressLocality || "",
+      venueLat: loc.geo ? Number(loc.geo.latitude) : null,
+      venueLon: loc.geo ? Number(loc.geo.longitude) : null,
     });
   }
   return list;
@@ -2155,6 +2163,8 @@ function mapEventbriteEvent(listItem, detail) {
     end: {},
     venueName: listItem.venueName,
     venueCity: listItem.venueCity,
+    venueLat: listItem.venueLat ?? null,
+    venueLon: listItem.venueLon ?? null,
     price: "",
     isFree: false,
     currency: "",
@@ -2177,6 +2187,12 @@ function mapEventbriteEvent(listItem, detail) {
       e.venueName = detail.venue.name || e.venueName;
       e.venueCity =
         (detail.venue.address && detail.venue.address.city) || e.venueCity;
+      e.venueLat = Number.isFinite(Number(detail.venue.latitude))
+        ? Number(detail.venue.latitude)
+        : e.venueLat;
+      e.venueLon = Number.isFinite(Number(detail.venue.longitude))
+        ? Number(detail.venue.longitude)
+        : e.venueLon;
     }
     e.price = eventbritePrice(detail);
     e.isFree = detail.is_free === true;
@@ -2193,8 +2209,10 @@ function mapEventbriteEvent(listItem, detail) {
 app.get("/api/events", async (req, res) => {
   const location = String(req.query.location || "").trim() || "cork";
   const type = String(req.query.type || "").trim().toLowerCase();
+  const rawDistance = parseFloat(String(req.query.distance || "").trim());
+  const distance = Number.isFinite(rawDistance) && rawDistance > 0 ? rawDistance : null;
   const limit = Math.min(parseInt(req.query.limit, 10) || 12, 30);
-  const cacheKey = `${location.toLowerCase()}|${type}`;
+  const cacheKey = `${location.toLowerCase()}|${type}|${distance || ""}`;
 
   const cached = cacheGet(ebBrowseCache, cacheKey, EB_BROWSE_TTL);
   if (cached) return res.json(cached);
@@ -2242,15 +2260,40 @@ app.get("/api/events", async (req, res) => {
       );
     }
 
-    const shown = listItems.slice(0, limit);
+    // Fetch extra candidates when a travel-distance filter is set so there
+    // are enough events left after removing the ones outside the radius.
+    const candidateCount = distance
+      ? Math.min(listItems.length, 30)
+      : Math.min(listItems.length, limit);
+    const shown = listItems.slice(0, candidateCount);
     const details = await Promise.all(
       shown.map((it) => fetchEventbriteDetail(it.id)),
     );
-    const events = shown.map((it, i) => mapEventbriteEvent(it, details[i]));
+    let events = shown.map((it, i) => mapEventbriteEvent(it, details[i]));
+
+    if (distance) {
+      const place = await resolveEventbritePlace(location);
+      if (
+        place &&
+        Number.isFinite(place.lat) &&
+        Number.isFinite(place.lon)
+      ) {
+        events = events.filter((ev) => {
+          // Events without venue coordinates can't be measured — keep them.
+          if (!Number.isFinite(ev.venueLat) || !Number.isFinite(ev.venueLon))
+            return true;
+          return (
+            haversineKm(place.lat, place.lon, ev.venueLat, ev.venueLon) <=
+            distance
+          );
+        });
+      }
+    }
+    events = events.slice(0, limit);
     const payload = {
       events,
       count: events.length,
-      location: { query: location, type },
+      location: { query: location, type, distance: distance || null },
       fetchedAt: new Date().toISOString(),
       provider: "eventbrite",
     };

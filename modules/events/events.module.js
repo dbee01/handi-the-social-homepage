@@ -149,10 +149,12 @@ export default async function initEvents(container) {
 
   let location = "";
   let type = "";
+  let distance = "";
   try {
     const s = loadSettings();
     location = String((s.events && s.events.location) || "").trim();
     type = String((s.events && s.events.type) || "").trim();
+    distance = String((s.events && s.events.distance) || "").trim();
   } catch (e) {}
 
   let refreshIntervalId = null;
@@ -167,24 +169,25 @@ export default async function initEvents(container) {
   }
 
   if (!location) {
-    showEmpty(
-      "fa-solid fa-calendar-days",
-      t(
-        "d_eventsConfigure",
-        "Set your approximate location in Settings to see events near you.",
-      ),
-    );
-    const btn = document.createElement("button");
-    btn.className = "settings-link-btn";
-    btn.style.cssText =
-      "margin-top:10px;padding:10px 16px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;cursor:pointer;font-size:0.95rem;color:#334155;";
-    btn.innerHTML =
+    content.innerHTML =
+      '<div class="module-empty">' +
+      '<i class="fa-solid fa-calendar-days"></i><p>' +
+      escapeHtml(
+        t(
+          "d_eventsConfigure",
+          "Set your approximate location in Settings to see events near you.",
+        ),
+      ) +
+      "</p>" +
+      '<button id="eventsSettingsBtn" class="settings-link-btn">' +
       '<i class="fa-solid fa-gear"></i> ' +
-      escapeHtml(t("d_eventsOpenSettings", "Open Settings"));
-    btn.onclick = function () {
-      window.location.href = "settings.html?args=events";
-    };
-    content.appendChild(btn);
+      escapeHtml(t("d_eventsOpenSettings", "Open Settings")) +
+      "</button></div>";
+    const settingsBtn = content.querySelector("#eventsSettingsBtn");
+    if (settingsBtn)
+      settingsBtn.onclick = function () {
+        window.location.href = "settings.html?args=events";
+      };
     return function () {};
   }
 
@@ -198,7 +201,9 @@ export default async function initEvents(container) {
         "/api/events?location=" +
           encodeURIComponent(location) +
           "&type=" +
-          encodeURIComponent(type),
+          encodeURIComponent(type) +
+          "&distance=" +
+          encodeURIComponent(distance),
       );
       const data = await resp.json().catch(() => ({}));
       if (!resp.ok) {
@@ -250,6 +255,7 @@ export default async function initEvents(container) {
       "<small style=\"opacity:0.7;\">" +
       escapeHtml(location) +
       (type ? " · " + escapeHtml(typeLabel(type)) : "") +
+      (distance ? " · within " + escapeHtml(distance) + " km" : "") +
       "</small>" +
       '<button id="eventsChange" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;color:inherit;" title="' +
       escapeHtml(t("d_changeSource", "Change location or type")) +
