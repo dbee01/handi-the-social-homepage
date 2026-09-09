@@ -367,6 +367,7 @@ var LANG = {
   s_maxArticles: "Max articles",
   s_events: "Events",
   s_eventType: "Event type",
+  s_eventTypes: "Event types",
   s_socialMedia: "Social Media",
   s_mastodonServer: "Mastodon Server",
   s_trendingLimit: "Trending limit",

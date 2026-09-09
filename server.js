@@ -2207,7 +2207,41 @@ app.get("/api/events", async (req, res) => {
   }
 
   try {
-    const listItems = await discoverEventbriteEvents(location, type);
+    // Multi-select: type may be a comma list (e.g. "music,food"). Each known
+    // key is fetched from its own browse topic and the results are merged &
+    // de-duplicated. No/unknown keys fall back to the unfiltered browse page.
+    const typeKeys = String(type || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => EVENTBRITE_TOPIC_SLUGS[s]);
+
+    let listItems;
+    if (typeKeys.length <= 1) {
+      listItems = await discoverEventbriteEvents(
+        location,
+        typeKeys.length ? typeKeys[0] : "",
+      );
+    } else {
+      const lists = await Promise.all(
+        typeKeys.map((k) => discoverEventbriteEvents(location, k)),
+      );
+      const seen = new Set();
+      listItems = [];
+      for (const list of lists) {
+        for (const item of list) {
+          if (!seen.has(item.id)) {
+            seen.add(item.id);
+            listItems.push(item);
+          }
+        }
+      }
+      // Browse pages are date-ordered per topic; re-sort the merged set so
+      // the soonest events come first across categories.
+      listItems.sort((a, b) =>
+        String(a.startDate || "").localeCompare(String(b.startDate || "")),
+      );
+    }
+
     const shown = listItems.slice(0, limit);
     const details = await Promise.all(
       shown.map((it) => fetchEventbriteDetail(it.id)),

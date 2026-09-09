@@ -30,6 +30,18 @@ const TYPE_LABELS = {
   travel: "Travel & outdoor",
 };
 
+// "music,food" -> "Festivals & live music + Food & drink" (source bar).
+function typeLabel(type) {
+  return String(type || "")
+    .split(",")
+    .map(function (k) {
+      k = (k || "").trim();
+      return TYPE_LABELS[k] || k;
+    })
+    .filter(Boolean)
+    .join(" + ");
+}
+
 function escapeHtml(str) {
   if (!str) return "";
   return String(str).replace(/[&<>"']/g, function (m) {
@@ -237,7 +249,7 @@ export default async function initEvents(container) {
     sourceBar.innerHTML =
       "<small style=\"opacity:0.7;\">" +
       escapeHtml(location) +
-      (type ? " · " + escapeHtml(TYPE_LABELS[type] || type) : "") +
+      (type ? " · " + escapeHtml(typeLabel(type)) : "") +
       "</small>" +
       '<button id="eventsChange" style="background:none;border:none;cursor:pointer;font-size:0.85rem;opacity:0.6;color:inherit;" title="' +
       escapeHtml(t("d_changeSource", "Change location or type")) +

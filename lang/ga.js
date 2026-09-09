@@ -287,6 +287,7 @@ var LANG = {
   s_maxArticles: "Uasmhéid alt",
   s_events: "Imeachtaí",
   s_eventType: "Cineál imeachta",
+  s_eventTypes: "Cineálacha imeachtaí",
   s_socialMedia: "Meáin Shóisialta",
   s_mastodonServer: "Freastalaí Mastodon",
   s_trendingLimit: "Teorainn treochta",

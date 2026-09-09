@@ -1077,21 +1077,23 @@
                     </button>
                     <div id="eventsPreview" class="weather-preview"></div>
                     <div class="config-field">
-                        <label>Event type:</label>
-                        <select id="eventsType">
-                            <option value="">All types</option>
-                            <option value="music">Festivals &amp; live music</option>
-                            <option value="arts">Arts &amp; theatre</option>
-                            <option value="food">Food &amp; drink</option>
-                            <option value="community">Community &amp; culture</option>
-                            <option value="family">Family &amp; education</option>
-                            <option value="sports">Sports &amp; fitness</option>
-                            <option value="film">Film &amp; media</option>
-                            <option value="seasonal">Seasonal &amp; holiday</option>
-                            <option value="charity">Charity &amp; causes</option>
-                            <option value="travel">Travel &amp; outdoor</option>
-                        </select>
-                        <small>Which kind of events to look for.</small>
+                        <label>Event types:</label>
+                        <div
+                            id="eventsTypes"
+                            style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;max-height:280px;overflow-y:auto;border:1px solid #e5e7eb;border-radius:8px;padding:8px;"
+                        >
+                            <label style="display:flex;align-items:center;gap:8px;font-size:0.95rem;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;margin:0;"><input type="checkbox" name="eventsType" value="music" style="width:auto;height:auto;flex-shrink:0;" /> Festivals &amp; live music</label>
+                            <label style="display:flex;align-items:center;gap:8px;font-size:0.95rem;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;margin:0;"><input type="checkbox" name="eventsType" value="arts" style="width:auto;height:auto;flex-shrink:0;" /> Arts &amp; theatre</label>
+                            <label style="display:flex;align-items:center;gap:8px;font-size:0.95rem;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;margin:0;"><input type="checkbox" name="eventsType" value="food" style="width:auto;height:auto;flex-shrink:0;" /> Food &amp; drink</label>
+                            <label style="display:flex;align-items:center;gap:8px;font-size:0.95rem;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;margin:0;"><input type="checkbox" name="eventsType" value="community" style="width:auto;height:auto;flex-shrink:0;" /> Community &amp; culture</label>
+                            <label style="display:flex;align-items:center;gap:8px;font-size:0.95rem;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;margin:0;"><input type="checkbox" name="eventsType" value="family" style="width:auto;height:auto;flex-shrink:0;" /> Family &amp; education</label>
+                            <label style="display:flex;align-items:center;gap:8px;font-size:0.95rem;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;margin:0;"><input type="checkbox" name="eventsType" value="sports" style="width:auto;height:auto;flex-shrink:0;" /> Sports &amp; fitness</label>
+                            <label style="display:flex;align-items:center;gap:8px;font-size:0.95rem;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;margin:0;"><input type="checkbox" name="eventsType" value="film" style="width:auto;height:auto;flex-shrink:0;" /> Film &amp; media</label>
+                            <label style="display:flex;align-items:center;gap:8px;font-size:0.95rem;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;margin:0;"><input type="checkbox" name="eventsType" value="seasonal" style="width:auto;height:auto;flex-shrink:0;" /> Seasonal &amp; holiday</label>
+                            <label style="display:flex;align-items:center;gap:8px;font-size:0.95rem;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;margin:0;"><input type="checkbox" name="eventsType" value="charity" style="width:auto;height:auto;flex-shrink:0;" /> Charity &amp; causes</label>
+                            <label style="display:flex;align-items:center;gap:8px;font-size:0.95rem;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;margin:0;"><input type="checkbox" name="eventsType" value="travel" style="width:auto;height:auto;flex-shrink:0;" /> Travel &amp; outdoor</label>
+                        </div>
+                        <small>Tick the kinds of events to show. Nothing ticked = all types.</small>
                     </div>
                 </div>
             </div>
@@ -2237,10 +2239,19 @@
                         document.getElementById("eventsLocation").value =
                             settings.events.location || "";
                     }
-                    if (document.getElementById("eventsType")) {
-                        document.getElementById("eventsType").value =
-                            settings.events.type || "";
-                    }
+                    // Multi-select types (comma list) -> tick each checkbox.
+                    var savedEventsTypes = String(settings.events.type || "")
+                        .split(",")
+                        .map(function (s) {
+                            return s.trim();
+                        })
+                        .filter(Boolean);
+                    document
+                        .querySelectorAll('input[name="eventsType"]')
+                        .forEach(function (cb) {
+                            cb.checked =
+                                savedEventsTypes.indexOf(cb.value) !== -1;
+                        });
                 }
 
                 // Load chat settings (incl. Handi Pack rooms)
@@ -2377,8 +2388,11 @@
                 if (!settings.events) settings.events = {};
                 settings.events.location =
                     document.getElementById("eventsLocation")?.value.trim() || "";
-                settings.events.type =
-                    document.getElementById("eventsType")?.value || "";
+                settings.events.type = Array.from(
+                    document.querySelectorAll('input[name="eventsType"]:checked'),
+                )
+                    .map((cb) => cb.value)
+                    .join(",");
 
                 if (!settings.social) settings.social = {};
                 settings.social.instance =
@@ -4078,6 +4092,9 @@
                         if (txt === "Event type:")
                             el.textContent =
                                 t("s_eventType", "Event type") + ":";
+                        if (txt === "Event types:")
+                            el.textContent =
+                                t("s_eventTypes", "Event types") + ":";
                         if (txt === "Refresh interval (minutes):")
                             el.textContent =
                                 t(
