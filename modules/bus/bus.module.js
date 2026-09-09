@@ -138,9 +138,6 @@ export default async function initBus(container) {
       tabsHtml += "</div>";
     }
 
-    const depVisible = showingDeparture ? "" : "bus-direction-hidden";
-    const retVisible = showingDeparture ? "bus-direction-hidden" : "";
-
     content.innerHTML =
       `
       ${tabsHtml}
@@ -150,9 +147,7 @@ export default async function initBus(container) {
       r.route_short +
       `</span>
       </div>
-      <div class="bus-direction ` +
-      depVisible +
-      `" id="bus-direction-dep">
+      <div class="bus-direction" id="bus-direction-dep">
         <h4 class="bus-stop-label">📍 ` +
       t("d_departure", "Departure") +
       `</h4>
@@ -161,37 +156,7 @@ export default async function initBus(container) {
       `</div>
         <div class="bus-departures"></div>
       </div>
-      <div class="bus-direction ` +
-      retVisible +
-      `" id="bus-direction-ret">
-        <h4 class="bus-stop-label">📍 ` +
-      t("d_return", "Return") +
-      `</h4>
-        <div class="bus-stop-name">` +
-      escapeHtml(r.return_stop_name) +
-      `</div>
-        <div class="bus-returns"></div>
-      </div>
-      <div class="bus-switch-container"></div>
     `;
-
-    // Build switch button via DOM (bypasses innerHTML event issues)
-    const switchContainer = content.querySelector(".bus-switch-container");
-    if (switchContainer) {
-      const btn = document.createElement("button");
-      btn.className = "bus-switch-btn";
-      btn.innerHTML =
-        '<i class="fa-solid fa-arrow-right-arrow-left"></i>' +
-        t("d_changeDirection", "Change Direction");
-      btn.addEventListener("click", () => {
-        showingDeparture = !showingDeparture;
-        const depDiv = document.getElementById("bus-direction-dep");
-        const retDiv = document.getElementById("bus-direction-ret");
-        if (depDiv) depDiv.classList.toggle("bus-direction-hidden");
-        if (retDiv) retDiv.classList.toggle("bus-direction-hidden");
-      });
-      switchContainer.appendChild(btn);
-    }
 
     content.querySelectorAll(".bus-tab-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -278,11 +243,9 @@ export default async function initBus(container) {
     if (!route) return;
 
     try {
-      // Fetch both stops in one call
+      // Fetch the chosen (departure) stop — each bus row marks its own
+      // destination stop via the headsign, so no separate end stop is needed.
       const stopIds = [route.departure_stop_id];
-      if (route.return_stop_id !== route.departure_stop_id) {
-        stopIds.push(route.return_stop_id);
-      }
       const rtUrl = `/api/bus-realtime?route=${encodeURIComponent(route.route_short)}&stops=${encodeURIComponent(stopIds.join(","))}`;
       const rtRes = await fetch(rtUrl);
       const rtData = rtRes.ok ? await rtRes.json() : null;
@@ -292,14 +255,9 @@ export default async function initBus(container) {
         const depStop = rtData.stops.find(
           (s) => s.stop_id === route.departure_stop_id,
         );
-        const retStop = rtData.stops.find(
-          (s) => s.stop_id === route.return_stop_id,
-        );
         const depBuses = depStop?.buses || [];
-        const retBuses = retStop?.buses || [];
-        if (depBuses.length > 0 || retBuses.length > 0) {
+        if (depBuses.length > 0) {
           renderBusList(".bus-departures", depBuses);
-          renderBusList(".bus-returns", retBuses);
         } else {
           await fetchScheduledFallback(route, timeSpan);
         }
@@ -338,16 +296,12 @@ export default async function initBus(container) {
         }));
       };
 
-      const [depBuses, retBuses] = await Promise.all([
+      const [depBuses] = await Promise.all([
         fetchOne(route.departure_stop_id),
-        route.return_stop_id !== route.departure_stop_id
-          ? fetchOne(route.return_stop_id)
-          : Promise.resolve([]),
       ]);
 
       if (timeSpan) timeSpan.textContent = new Date().toLocaleTimeString();
       renderBusList(".bus-departures", depBuses);
-      renderBusList(".bus-returns", retBuses);
     } catch (e) {
       console.error("Scheduled fallback error:", e);
       if (timeSpan) timeSpan.textContent = t("d_error", "Error");
