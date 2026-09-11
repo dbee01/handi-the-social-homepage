@@ -46,6 +46,13 @@ function parseRadioInfo(doc) {
     firstTagText("itunes:subtitle") ||
     firstText("channel > description") ||
     "";
+  // Feed descriptions often carry HTML markup (and encoded tags) from the
+  // RSS source — strip it so only plain text is rendered.
+  description = description
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&lt;[^&]*&gt;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   var author = firstTagText("itunes:author") || "";
   var link = firstText("channel > link") || firstText("feed > link") || "";
   return {
@@ -427,7 +434,7 @@ export default async function initRadio(container) {
   headerActions.className = "radio-header-actions";
   const lockToggle = document.createElement("button");
   lockToggle.className = "radio-lock-toggle";
-  var saved = localStorage.getItem("radioLocked"),
+  var saved = window.handiNs.get("radioLocked"),
     regCfg =
       (window.HANDI_MODULE_BY_ID &&
         window.HANDI_MODULE_BY_ID("radio")?.settingsConfig?.soundLock) ??
@@ -455,7 +462,7 @@ export default async function initRadio(container) {
     var rs = loadSettings();
     storedFlag =
       (rs.radio && rs.radio.defaultCountry) ||
-      localStorage.getItem("handiRadioCountry") ||
+      window.handiNs.get("handiRadioCountry") ||
       "";
   } catch (e) {}
 
@@ -498,7 +505,7 @@ export default async function initRadio(container) {
   // `handiRadioPackFeed`); manually-entered stream URLs stay plain streams.
   var packFeedUrl = "";
   try {
-    packFeedUrl = localStorage.getItem("handiRadioPackFeed") || "";
+    packFeedUrl = window.handiNs.get("handiRadioPackFeed") || "";
   } catch (e) {}
   // A URL that clearly points at a media file, or one the server already told
   // us is a live stream (415 "not a feed"), is never re-probed — otherwise
@@ -513,7 +520,7 @@ export default async function initRadio(container) {
   var feedRejected = false;
   try {
     feedRejected =
-      localStorage.getItem("handiRadioPackFeedRejected") === streamUrl;
+      window.handiNs.get("handiRadioPackFeedRejected") === streamUrl;
   } catch (e) {}
   if (
     streamUrl &&
@@ -529,7 +536,7 @@ export default async function initRadio(container) {
       // Definitively a live stream rather than a feed — remember it so
       // subsequent page loads skip the probe.
       try {
-        localStorage.setItem("handiRadioPackFeedRejected", streamUrl);
+        window.handiNs.set("handiRadioPackFeedRejected", streamUrl);
       } catch (e) {}
     }
   }
@@ -698,7 +705,7 @@ export default async function initRadio(container) {
                 // Store country code instead of SVG
                 var cName = flagToCountry[selectedFlag] || "";
                 var nameToCode = { Ireland: "ie", "United Kingdom": "gb", France: "fr", Germany: "de", Spain: "es", Italy: "it", Netherlands: "nl", Poland: "pl", Portugal: "pt", Sweden: "se", Norway: "no", "United States": "us", Canada: "ca", Australia: "au", "New Zealand": "nz" };
-                try { localStorage.setItem("handiRadioCountry", nameToCode[cName] || ""); } catch (e) {}
+                try { window.handiNs.set("handiRadioCountry", nameToCode[cName] || ""); } catch (e) {}
         stopPlayback(true);
         renderStations();
         countryBtns.forEach(function (b) { b.classList.remove("active"); b.style.background = ""; });
@@ -779,7 +786,7 @@ export default async function initRadio(container) {
   window.addEventListener("globalMuteToggle", function (e) {
     applyGlobalMute(e.detail.muted);
   });
-  applyGlobalMute(localStorage.getItem("globalMute") === "true");
+  applyGlobalMute(window.handiNs.get("globalMute") === "true");
 
   function startFakeVisualiser(canvas) {
     if (!canvas) return null;
@@ -886,7 +893,7 @@ export default async function initRadio(container) {
       // rte.ie streams are IP/geo-blocked for many IPs — play them through
       // the server relay proxy; everything else plays directly.
       a.src = isProxiedHost(url) ? "/api/stream?url=" + encodeURIComponent(url) : url;
-      a.muted = localStorage.getItem("globalMute") === "true";
+      a.muted = window.handiNs.get("globalMute") === "true";
       currentAudio = a;
       var pp = a.play();
       if (pp === undefined) {
@@ -971,7 +978,7 @@ export default async function initRadio(container) {
   lockToggle.addEventListener("click", function (e) {
     e.stopPropagation();
     isLocked = !isLocked;
-    localStorage.setItem("radioLocked", isLocked);
+    window.handiNs.set("radioLocked", isLocked);
     updateLockIcon();
     applyLockState();
   });

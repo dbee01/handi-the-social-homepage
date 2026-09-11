@@ -1,6 +1,7 @@
 node_modules/
 .env
 .gtfs-cache/
+data/
 package-lock.json
 *.log
 log.txt

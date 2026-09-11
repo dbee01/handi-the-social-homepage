@@ -59,7 +59,7 @@ export default async function initNews(container) {
   const refreshMinutes = settings.news?.refreshInterval || 15;
   const maxArticles = settings.news?.maxArticles || 16;
   let refreshIntervalId = null;
-  let rssUrl = localStorage.getItem(STORAGE_KEY) || "";
+  let rssUrl = window.handiNs.get(STORAGE_KEY) || "";
   // Set by renderNews — re-renders the carousel view when a lazy-loaded
   // WordPress featured image arrives.
   var renderCurrentArticle = null;
@@ -67,7 +67,7 @@ export default async function initNews(container) {
   function saveFeed(url) {
     rssUrl = url;
     try {
-      localStorage.setItem(STORAGE_KEY, url);
+      window.handiNs.set(STORAGE_KEY, url);
     } catch (e) {}
   }
 
@@ -170,7 +170,7 @@ export default async function initNews(container) {
     return new Promise(function (resolve) {
       try {
         var cache = JSON.parse(
-          localStorage.getItem("handiNewsImageCache") || "{}",
+          window.handiNs.get("handiNewsImageCache") || "{}",
         );
         var hit = cache[link];
         if (hit && Date.now() - hit.at < 24 * 60 * 60 * 1000) {
@@ -186,10 +186,10 @@ export default async function initNews(container) {
           var url = (data && data.url) || "";
           try {
             var cache = JSON.parse(
-              localStorage.getItem("handiNewsImageCache") || "{}",
+              window.handiNs.get("handiNewsImageCache") || "{}",
             );
             cache[link] = { url: url, at: Date.now() };
-            localStorage.setItem("handiNewsImageCache", JSON.stringify(cache));
+            window.handiNs.set("handiNewsImageCache", JSON.stringify(cache));
           } catch (e) {}
           resolve(url);
         })

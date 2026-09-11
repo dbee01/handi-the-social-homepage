@@ -142,7 +142,7 @@ export default async function initSupport(container) {
       parts.push(
         '<a class="support-link" href="' +
           esc(cfg.linkUrl) +
-          '" target="_blank" rel="noopener">Learn More &rarr;</a>'
+          '" target="_blank" rel="noopener">Continue &rarr;</a>'
       );
     }
     content.innerHTML = parts.join("\n");

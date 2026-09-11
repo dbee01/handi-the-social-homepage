@@ -4,6 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Settings - Handi Homepage</title>
+        <script src="/js/core/ns.js"></script>
         <script src="/js/core/module-registry.js?v=26"></script>
         <script src="/lang/loader.js"></script>
             <script src="/js/core/log.js"></script>
@@ -1604,7 +1605,7 @@
 
             function loadSettings() {
                 try {
-                    const stored = localStorage.getItem(STORAGE_KEY);
+                    const stored = window.handiNs.get(STORAGE_KEY);
                     if (stored) {
                         const parsed = JSON.parse(stored);
                         // Merge with defaults so missing keys get proper values
@@ -1641,7 +1642,7 @@
             }
 
             function saveSettings(settings) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+                window.handiNs.set(STORAGE_KEY, JSON.stringify(settings));
             }
 
             // ============================================================
@@ -2052,17 +2053,24 @@
                         } else {
                             card.style.display = "";
                         }
-                        // Support is pinned ON for free users — immutable,
-                        // only premium users can toggle it off. Admin-built
-                        // packs are not pinned: support follows the pack grant.
-                        if (
-                            moduleId === "support" &&
-                            window.PREMIUM_ACTIVE !== true &&
-                            !window.HANDI_PACK_ADMIN
-                        ) {
+                        // Support's config content is permanently hidden from
+                        // Settings (only the card header / title stays visible).
+                        // It stays toggled ON (active, MMR = 1): the toggle is
+                        // enabled for premium users (they can turn it off) and
+                        // locked ON (disabled) for non-premium users.
+                        if (moduleId === "support") {
+                            var supCfg = card.querySelector(".module-config");
+                            if (supCfg) supCfg.style.display = "none";
                             toggle.classList.add("active");
-                            toggle.classList.add("mmr-disabled");
-                            card.classList.add("module-card-disabled");
+                            if (window.PREMIUM_ACTIVE === true) {
+                                toggle.classList.remove("mmr-disabled");
+                            } else {
+                                toggle.classList.add("mmr-disabled");
+                            }
+                            if (mmr[moduleId] !== 1) {
+                                mmr[moduleId] = 1;
+                                window.saveMMR(mmr);
+                            }
                         }
                         // Premium modules are locked for non-granted users —
                         // greyed out and not toggleable regardless of MMR
@@ -2100,7 +2108,7 @@
                     // Restore photos from separate storage
                     try {
                         const photos = JSON.parse(
-                            localStorage.getItem("handiContactPhotos") || "{}",
+                            window.handiNs.get("handiContactPhotos") || "{}",
                         );
                         phoneContacts.forEach((c, i) => {
                             if (photos[i]) c.photo = photos[i];
@@ -2500,7 +2508,7 @@
                     if (c.photo) photos[i] = c.photo;
                 });
                 try {
-                    localStorage.setItem(
+                    window.handiNs.set(
                         "handiContactPhotos",
                         JSON.stringify(photos),
                     );
@@ -2654,12 +2662,12 @@
                             try {
                                 const settings = collectSettings();
                                 const json = JSON.stringify(settings);
-                                localStorage.setItem("handiSettings", json);
+                                window.handiNs.set("handiSettings", json);
                                 if (settings.news?.rssUrl) {
-                                    localStorage.setItem("handiNewsFeed", settings.news.rssUrl);
+                                    window.handiNs.set("handiNewsFeed", settings.news.rssUrl);
                                 }
                                 if (settings.radio?.defaultCountry) {
-                                    localStorage.setItem("handiRadioCountry", settings.radio.defaultCountry);
+                                    window.handiNs.set("handiRadioCountry", settings.radio.defaultCountry);
                                 }
                             } catch (e) {
                     document.body.insertAdjacentHTML(
@@ -2683,6 +2691,7 @@
                     "premium_expiry",
                     "handiPackAdmin",
                     "handiPackModules",
+                    "handi_ns_salt",
                 ];
                 const saved = {};
                 for (const k of premiumKeys) {
@@ -2766,6 +2775,9 @@
                                 !isPremiumGranted(modId)
                             )
                                 return;
+                            // Support's config content is permanently hidden —
+                            // ignore clicks that would open it.
+                            if (modId === "support") return;
                             const config = card.querySelector(".module-config");
                             if (config) {
                                 const isOpen = config.style.display === "block";
@@ -2800,6 +2812,8 @@
                                 `.module-card[data-module="${target}"]`,
                             );
                             if (card) {
+                                // Support's config content is permanently hidden.
+                                if (target === "support") return;
                                 const config =
                                     card.querySelector(".module-config");
                                 if (config) config.style.display = "block";

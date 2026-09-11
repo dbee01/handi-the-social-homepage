@@ -68,14 +68,14 @@ export default async function initMastodon(container) {
 
   if (!instance) {
     try {
-      instance = localStorage.getItem(STORAGE_KEY) || "";
+      instance = window.handiNs.get(STORAGE_KEY) || "";
     } catch (e) {}
   }
 
   function saveServer(url) {
     instance = url;
     try {
-      localStorage.setItem(STORAGE_KEY, url);
+      window.handiNs.set(STORAGE_KEY, url);
     } catch (e) {}
   }
 

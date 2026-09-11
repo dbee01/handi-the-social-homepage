@@ -4,7 +4,7 @@
  * See the LICENSE file in the repository root for full details.
  */
 // js/core/storage.js
-const DB_NAME = 'pleie_storage_v2';
+const DB_NAME = window.handiNs.key("db");
 const DB_VERSION = 2;
 
 let db = null;

@@ -2,7 +2,7 @@
  * Copyright (c) 2026 Handi Homepage
  * Matrix Chat Module — uses matrix-js-sdk with password login
  */
-import { loadSettings } from "../../js/core/settings.js";
+import { loadSettings, saveSettings } from "../../js/core/settings.js";
 
 export default async function initChat(container) {
   if (!window.matrixcs) {
@@ -120,7 +120,7 @@ export default async function initChat(container) {
       settings.chat.accessToken = resp.access_token;
       settings.chat.userId = resp.user_id;
       settings.chat.deviceId = resp.device_id;
-      localStorage.setItem("handiSettings", JSON.stringify(settings));
+      saveSettings(settings);
       return true;
     } catch (err) {
       console.error("Matrix login failed:", err);

@@ -56,7 +56,7 @@ class WebRTCWidget {
     async initWebRTCClient() {
         try {
             // Get token from backend
-            const userId = USER_ACCESS.userId || localStorage.getItem('webrtc_user_id') || 'user_' + Date.now();
+            const userId = USER_ACCESS.userId || window.handiNs.get('webrtc_user_id') || 'user_' + Date.now();
             const response = await fetch('/api/webrtc/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -216,7 +216,7 @@ class WebRTCWidget {
     
     async loadContacts() {
         try {
-            const userId = USER_ACCESS.userId || localStorage.getItem('webrtc_user_id');
+            const userId = USER_ACCESS.userId || window.handiNs.get('webrtc_user_id');
             const response = await fetch(`/api/webrtc/contacts/${userId}`);
             const data = await response.json();
             

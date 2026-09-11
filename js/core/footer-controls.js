@@ -6,7 +6,7 @@
 // js/core/footer-controls.js
 (function () {
   // --- Global Mute State ---
-  let isMuted = localStorage.getItem("globalMute") === "true";
+  let isMuted = window.handiNs.get("globalMute") === "true";
 
   function updateMuteIcon() {
     const muteBtn = document.getElementById("footerMuteBtn");
@@ -22,7 +22,7 @@
 
   function toggleMute() {
     isMuted = !isMuted;
-    localStorage.setItem("globalMute", isMuted);
+    window.handiNs.set("globalMute", isMuted);
     updateMuteIcon();
     window.dispatchEvent(
       new CustomEvent("globalMuteToggle", { detail: { muted: isMuted } }),
@@ -41,20 +41,20 @@
   // --- Wake Lock ---
   let wakeLock = null;
   const wakeLockBtn = document.getElementById("footerWakeLockBtn");
-  let wakeLockActive = localStorage.getItem("wakeLockActive") === "true";
+  let wakeLockActive = window.handiNs.get("wakeLockActive") === "true";
 
   async function requestWakeLock() {
     if ("wakeLock" in navigator) {
       try {
         wakeLock = await navigator.wakeLock.request("screen");
         wakeLockActive = true;
-        localStorage.setItem("wakeLockActive", "true");
+        window.handiNs.set("wakeLockActive", "true");
         updateWakeLockIcon();
         document.addEventListener("visibilitychange", handleVisibilityChange);
       } catch (err) {
         console.warn("Wake lock error:", err);
         wakeLockActive = false;
-        localStorage.setItem("wakeLockActive", "false");
+        window.handiNs.set("wakeLockActive", "false");
         updateWakeLockIcon();
       }
     } else {
@@ -70,7 +70,7 @@
       wakeLock = null;
     }
     wakeLockActive = false;
-    localStorage.setItem("wakeLockActive", "false");
+    window.handiNs.set("wakeLockActive", "false");
     updateWakeLockIcon();
     document.removeEventListener("visibilitychange", handleVisibilityChange);
   }
@@ -136,7 +136,7 @@
     docsBtn.addEventListener("click", async () => {
       try {
         const settings = JSON.parse(
-          localStorage.getItem("handiSettings") || "{}",
+          window.handiNs.get("handiSettings") || "{}",
         );
         const contacts = settings.phone?.contacts || [];
         const caregiver = contacts.find((c) => c.caregiver) || contacts[0];
@@ -177,7 +177,7 @@
   const reorderBtn = document.getElementById("footerReorderBtn");
   if (reorderBtn) {
     reorderBtn.addEventListener("click", () => {
-      localStorage.removeItem("handiHomepageModulesSelected");
+      window.handiNs.remove("handiHomepageModulesSelected");
       location.reload();
     });
   }

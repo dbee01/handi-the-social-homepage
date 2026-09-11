@@ -53,7 +53,7 @@
 
   // Check if install banner has been dismissed
   const bannerDismissed =
-    localStorage.getItem("installBannerDismissed") === "true";
+    window.handiNs.get("installBannerDismissed") === "true";
 
   // =========================================================
   // PWA INSTALL BANNER
@@ -142,7 +142,7 @@
 
     closeBtn.onclick = function () {
       bannerDiv.remove();
-      localStorage.setItem("installBannerDismissed", "true");
+      window.handiNs.set("installBannerDismissed", "true");
     };
 
     btnGroup.appendChild(installBtn);

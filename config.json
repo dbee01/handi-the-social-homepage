@@ -1,7 +1,63 @@
 {
   "agencies": [
     {
-      "path": "https://www.transportforireland.ie/transitData/Data/GTFS_Realtime.zip",
+      "url": "https://www.transportforireland.ie/transitData/Data/GTFS_Bus_Eireann.zip",
+      "exclude": [
+        "shapes",
+        "areas",
+        "attributions",
+        "booking_rules",
+        "fare_attributes",
+        "fare_leg_rules",
+        "fare_media",
+        "fare_products",
+        "fare_rules",
+        "fare_transfer_rules",
+        "feed_info",
+        "frequencies",
+        "levels",
+        "location_group_stops",
+        "location_groups",
+        "locations",
+        "networks",
+        "pathways",
+        "rider_categories",
+        "route_networks",
+        "translations",
+        "calendar_attributes",
+        "directions"
+      ]
+    },
+    {
+      "url": "https://www.transportforireland.ie/transitData/Data/GTFS_Dublin_Bus.zip",
+      "exclude": [
+        "shapes",
+        "areas",
+        "attributions",
+        "booking_rules",
+        "fare_attributes",
+        "fare_leg_rules",
+        "fare_media",
+        "fare_products",
+        "fare_rules",
+        "fare_transfer_rules",
+        "feed_info",
+        "frequencies",
+        "levels",
+        "location_group_stops",
+        "location_groups",
+        "locations",
+        "networks",
+        "pathways",
+        "rider_categories",
+        "route_networks",
+        "translations",
+        "calendar_attributes",
+        "directions"
+      ]
+    },
+    {
+      "url": "https://www.transportforireland.ie/transitData/Data/GTFS_GoAhead.zip",
       "exclude": [
         "shapes",
         "areas",
@@ -31,8 +87,8 @@
   ],
   "downloadTimeout": 120000,
   "gtfsRealtimeExpirationSeconds": false,
-  "ignoreDuplicates": false,
+  "ignoreDuplicates": true,
   "ignoreErrors": true,
-  "sqlitePath": "/tmp/gtfs.sqlite",
+  "sqlitePath": "data/gtfs.sqlite",
   "verbose": true
 }

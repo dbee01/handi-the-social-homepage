@@ -249,7 +249,7 @@ window.MMR_HIDDEN = 3; // completely hidden — not shown in selector, dashboard
 // getMMR() -- reads the live MMR, seeding from registry defaults if absent
 window.getMMR = function () {
   try {
-    const raw = localStorage.getItem(MMR_KEY);
+    const raw = window.handiNs.get(MMR_KEY);
     const parsed = raw ? JSON.parse(raw) : null;
     if (parsed) {
       // Merge any new modules from the registry that aren't in the MMR yet
@@ -261,7 +261,7 @@ window.getMMR = function () {
         }
       }
       if (changed) {
-        localStorage.setItem(MMR_KEY, JSON.stringify(parsed));
+        window.handiNs.set(MMR_KEY, JSON.stringify(parsed));
       }
       return parsed;
     }
@@ -273,14 +273,14 @@ window.getMMR = function () {
   for (const m of window.HANDI_MODULES) {
     seed[m.id] = m.defaultEnabled;
   }
-  localStorage.setItem(MMR_KEY, JSON.stringify(seed));
+  window.handiNs.set(MMR_KEY, JSON.stringify(seed));
   return seed;
 };
 
 // saveMMR(obj) -- persists the full MMR to localStorage
 window.saveMMR = function (obj) {
   try {
-    localStorage.setItem(MMR_KEY, JSON.stringify(obj));
+    window.handiNs.set(MMR_KEY, JSON.stringify(obj));
     return true;
   } catch (e) {
     return false;
@@ -322,6 +322,6 @@ window.resetMMR = function () {
   for (const m of window.HANDI_MODULES) {
     defaults[m.id] = m.defaultEnabled;
   }
-  localStorage.setItem(MMR_KEY, JSON.stringify(defaults));
+  window.handiNs.set(MMR_KEY, JSON.stringify(defaults));
   return defaults;
 };

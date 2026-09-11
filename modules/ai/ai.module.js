@@ -23,13 +23,13 @@ const MODELS = [
 ];
 
 function loadHistory() {
-  try { return JSON.parse(localStorage.getItem(CHAT_STORAGE)) || []; }
+  try { return JSON.parse(window.handiNs.get(CHAT_STORAGE)) || []; }
   catch (e) { return []; }
 }
 
 function saveHistory(msgs) {
   const trimmed = msgs.slice(-100);
-  localStorage.setItem(CHAT_STORAGE, JSON.stringify(trimmed));
+  window.handiNs.set(CHAT_STORAGE, JSON.stringify(trimmed));
 }
 
 // True when the model files are already stored by the service worker — the

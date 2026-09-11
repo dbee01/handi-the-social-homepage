@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Load Site Pack — Handi Homepage</title>
     <link rel="stylesheet" href="/css/vendor/fa-7.2.0/css/all.min.css">
+    <script src="/js/core/ns.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -295,7 +296,7 @@ async function processZip(file) {
 
         // Theme: use file CSS, or generate from config colors
         if (themeCss) {
-            localStorage.setItem("handiCustomTheme", themeCss);
+            window.handiNs.set("handiCustomTheme", themeCss);
             addLog("Custom theme saved", "done");
         }
 
@@ -304,15 +305,15 @@ async function processZip(file) {
         if (configJson) {
             try {
                 const cfg = JSON.parse(configJson);
-                localStorage.setItem("handiCustomConfig", JSON.stringify(cfg));
+                window.handiNs.set("handiCustomConfig", JSON.stringify(cfg));
 
-                const settings = JSON.parse(localStorage.getItem("handiSettings") || "{}");
+                const settings = JSON.parse(window.handiNs.get("handiSettings") || "{}");
 
                 // Generate theme CSS from config colors if no theme.css file
                 if (!themeCss) {
                     const genCss = buildThemeCss(cfg);
                     if (genCss) {
-                        localStorage.setItem("handiCustomTheme", genCss);
+                        window.handiNs.set("handiCustomTheme", genCss);
                         addLog("Theme generated from config colors", "done");
                     }
                 }
@@ -326,7 +327,7 @@ async function processZip(file) {
                         fr.onload = function() { resolve(fr.result); };
                         fr.readAsDataURL(imageByPath[bgPath]);
                     });
-                    localStorage.setItem("handiBgDataUrl", bgDataUrl);
+                    window.handiNs.set("handiBgDataUrl", bgDataUrl);
                     addLog("Background image saved for homepage", "done");
                 }
 
@@ -335,7 +336,7 @@ async function processZip(file) {
                 // against the stylesheet where var() is *used* (site-pack.css at /css/),
                 // causing 404s (e.g. img/foo.png → /css/img/foo.png).
                 if (bgDataUrl) {
-                    var storedCss = localStorage.getItem("handiCustomTheme");
+                    var storedCss = window.handiNs.get("handiCustomTheme");
                     if (storedCss) {
                         // Remove any --bg-image declaration
                         storedCss = storedCss.replace(/--bg-image\s*:\s*[^;]+;?\s*/g, "");
@@ -346,20 +347,20 @@ async function processZip(file) {
                             var bgRe = new RegExp("(background(?:-image)?)\\s*:\\s*url\\([\"']?" + escapedPath + "[\"']?\\)\\s*(!important)?\\s*;?", "gi");
                             storedCss = storedCss.replace(bgRe, "");
                         }
-                        localStorage.setItem("handiCustomTheme", storedCss);
+                        window.handiNs.set("handiCustomTheme", storedCss);
                     }
                 }
 
                 // Enable modules from elements list (write to MMR, not settings.enabledModules)
                 if (cfg.elements && Array.isArray(cfg.elements)) {
-                    var mmr = JSON.parse(localStorage.getItem("handiMasterModules") || "{}");
+                    var mmr = JSON.parse(window.handiNs.get("handiMasterModules") || "{}");
                     // Map config names to MMR module IDs
                     var idMap = { bus: "live_bus", emergency: "emergency_alert" };
                     cfg.elements.forEach(function(el) {
                         var key = idMap[el] || el;
                         mmr[key] = 1;
                     });
-                    localStorage.setItem("handiMasterModules", JSON.stringify(mmr));
+                    window.handiNs.set("handiMasterModules", JSON.stringify(mmr));
                     addLog("Enabled modules: " + cfg.elements.join(", "), "done");
                 }
 
@@ -385,7 +386,7 @@ async function processZip(file) {
                     if (rssUrl) {
                         settings.news = settings.news || {};
                         settings.news.rssUrl = rssUrl;
-                        localStorage.setItem("handiNewsFeed", rssUrl);
+                        window.handiNs.set("handiNewsFeed", rssUrl);
                         addLog("News RSS: " + rssUrl, "done");
                     }
                 }
@@ -399,7 +400,7 @@ async function processZip(file) {
                     }
                     if (cfg.radio.defaultCountry) {
                         settings.radio.defaultCountry = cfg.radio.defaultCountry;
-                        localStorage.setItem("handiRadioCountry", cfg.radio.defaultCountry);
+                        window.handiNs.set("handiRadioCountry", cfg.radio.defaultCountry);
                         addLog("Radio country: " + cfg.radio.defaultCountry, "done");
                     }
                 }
@@ -504,7 +505,7 @@ async function processZip(file) {
                     addLog("Phone contacts: " + cfg.phone.contacts.length, "done");
                 }
 
-                localStorage.setItem("handiSettings", JSON.stringify(settings));
+                window.handiNs.set("handiSettings", JSON.stringify(settings));
                 addLog("Config merged into site-pack settings", "done");
             } catch (e) {
                 addLog("Config parse failed: " + e.message, "skip");
@@ -514,17 +515,17 @@ async function processZip(file) {
         // Separate phone/contacts.json (overrides config contacts if present)
         if (contactsJson || Object.keys(contactPhotos).length) {
             try {
-                const settings = JSON.parse(localStorage.getItem("handiSettings") || "{}");
+                const settings = JSON.parse(window.handiNs.get("handiSettings") || "{}");
                 settings.phone = settings.phone || {};
                 if (contactsJson) {
                     settings.phone.contacts = JSON.parse(contactsJson);
                     addLog("Loaded " + settings.phone.contacts.length + " contacts from phone/", "done");
                 }
                 if (Object.keys(contactPhotos).length) {
-                    localStorage.setItem("handiContactPhotos", JSON.stringify(contactPhotos));
+                    window.handiNs.set("handiContactPhotos", JSON.stringify(contactPhotos));
                     addLog("Loaded " + Object.keys(contactPhotos).length + " contact photos", "done");
                 }
-                localStorage.setItem("handiSettings", JSON.stringify(settings));
+                window.handiNs.set("handiSettings", JSON.stringify(settings));
             } catch (e) {
                 addLog("Contacts failed: " + e.message, "skip");
             }

@@ -55,7 +55,7 @@ export default async function initEmergency(container) {
   headerActions.className = "emergency-header-actions";
   var lockToggle = document.createElement("button");
   lockToggle.className = "emergency-lock-toggle";
-  var saved = localStorage.getItem("emergencyLocked"),
+  var saved = window.handiNs.get("emergencyLocked"),
     isLocked = saved !== null ? saved === "true" : true;
   function updateLockIcon() {
     lockToggle.innerHTML = isLocked
@@ -66,7 +66,7 @@ export default async function initEmergency(container) {
   lockToggle.addEventListener("click", function (e) {
     e.stopPropagation();
     isLocked = !isLocked;
-    localStorage.setItem("emergencyLocked", isLocked);
+    window.handiNs.set("emergencyLocked", isLocked);
     updateLockIcon();
     var btn = content.querySelector("#emergencyTriggerBtn");
     if (btn) applyLockState(btn);

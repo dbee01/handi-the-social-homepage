@@ -48,7 +48,7 @@ const DEFAULT_SETTINGS = {
 };
 
 export function loadSettings() {
-  const saved = localStorage.getItem("handiSettings");
+  const saved = window.handiNs.get("handiSettings");
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
@@ -62,7 +62,7 @@ export function loadSettings() {
 }
 
 export function saveSettings(settings) {
-  localStorage.setItem("handiSettings", JSON.stringify(settings));
+  window.handiNs.set("handiSettings", JSON.stringify(settings));
   window.dispatchEvent(
     new CustomEvent("settingsChanged", { detail: settings }),
   );

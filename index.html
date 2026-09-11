@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
     <head>
+        <script src="/js/core/ns.js"></script>
         <script src="/js/core/handi-pack.js"></script>
         <meta charset="UTF-8" />
         <meta
@@ -81,7 +82,7 @@
         </style>
         <script>
             try {
-                var _t = localStorage.getItem("handiTheme") || "senior";
+                var _t = window.handiNs.get("handiTheme") || "senior";
                 document.documentElement.setAttribute("data-theme", _t);
             } catch (e) {}
         </script>
@@ -91,8 +92,8 @@
             // Load theme CSS based on saved preference
             (function () {
                 try {
-                    var theme = localStorage.getItem("handiTheme") || "senior";
-                    var customCss = localStorage.getItem("handiCustomTheme");
+                    var theme = window.handiNs.get("handiTheme") || "senior";
+                    var customCss = window.handiNs.get("handiCustomTheme");
 
                     // If a custom dashboard pack theme exists, use site-pack.css which respects CSS variables
                     var cssUrl;
@@ -115,7 +116,7 @@
                     document.head.appendChild(link);
 
                     // Apply background image data URL from pack upload
-                    var bgUrl = localStorage.getItem("handiBgDataUrl");
+                    var bgUrl = window.handiNs.get("handiBgDataUrl");
 
                     // Inject custom :root variable overrides
                     if (customCss) {
@@ -1242,12 +1243,12 @@
 
                 btn.addEventListener("click", function () {
                     var current =
-                        localStorage.getItem("handiTheme") || "senior";
+                        window.handiNs.get("handiTheme") || "senior";
                     var idx = order.indexOf(current);
                     var next = order[(idx + 1) % order.length];
 
                     link.href = urls[next];
-                    localStorage.setItem("handiTheme", next);
+                    window.handiNs.set("handiTheme", next);
 
                     window.logEvent(2, "theme_change", {
                         from: current,
@@ -1294,8 +1295,8 @@
                     setTimeout(function () {
                         var loadTime = ((Date.now() - start) / 1000).toFixed(2);
                         var theme =
-                            localStorage.getItem("handiTheme") || "senior";
-                        var lang = localStorage.getItem("handiLang") || "en";
+                            window.handiNs.get("handiTheme") || "senior";
+                        var lang = window.handiNs.get("handiLang") || "en";
                         window.logEvent(1, "page_load", {
                             loadTimeSec: loadTime,
                             theme: theme,

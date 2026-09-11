@@ -86,7 +86,7 @@ export default async function initMusic(container) {
   headerActions.className = "music-header-actions";
   const lockToggle = document.createElement("button");
   lockToggle.className = "music-lock-toggle";
-  var saved = localStorage.getItem("musicLocked"),
+  var saved = window.handiNs.get("musicLocked"),
     regCfg =
       (window.HANDI_MODULE_BY_ID &&
         window.HANDI_MODULE_BY_ID("music")?.settingsConfig?.soundLock) ??
@@ -278,7 +278,7 @@ export default async function initMusic(container) {
 	  window.addEventListener("globalMuteToggle", function (e) {
 	    applyGlobalMute(e.detail.muted);
 	  });
-	  applyGlobalMute(localStorage.getItem("globalMute") === "true");
+	  applyGlobalMute(window.handiNs.get("globalMute") === "true");
 
   content.innerHTML =
     '<div class="music-now-playing"><canvas id="music-synth" class="music-synth"></canvas><div id="music-status" class="music-status"><span id="music-track-title">—</span><span class="music-state-text">' +
@@ -480,7 +480,7 @@ export default async function initMusic(container) {
           ? "metadata"
           : "auto";
       audio.volume = 1.0;
-      audio.muted = localStorage.getItem("globalMute") === "true";
+      audio.muted = window.handiNs.get("globalMute") === "true";
       audio.src = track.url;
       (document.body || document.documentElement).appendChild(audio);
       window.__handiMusicAudio = audio;
@@ -756,7 +756,7 @@ export default async function initMusic(container) {
   lockToggle.addEventListener("click", function (e) {
     e.stopPropagation();
     isLocked = !isLocked;
-    localStorage.setItem("musicLocked", isLocked);
+    window.handiNs.set("musicLocked", isLocked);
     updateLockIcon();
     applyLockState();
   });

@@ -11,14 +11,14 @@ const LABEL_COLORS = ["#ef4444", "#f59e0b", "#22c55e", "#3b82f6", "#8b5cf6", "#e
 
 function loadTasks() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    return JSON.parse(window.handiNs.get(STORAGE_KEY)) || [];
   } catch (e) {
     return [];
   }
 }
 
 function saveTasks(tasks) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  window.handiNs.set(STORAGE_KEY, JSON.stringify(tasks));
 }
 
 function beep() {

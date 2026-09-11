@@ -43,7 +43,7 @@
     // ---------------------------------------------------------------------
     function readJson(key) {
       try {
-        return JSON.parse(localStorage.getItem(key) || "{}");
+        return JSON.parse(window.handiNs.get(key) || "{}");
       } catch (e) {
         return {};
       }
@@ -51,7 +51,7 @@
 
     function writeJson(key, value) {
       try {
-        localStorage.setItem(key, JSON.stringify(value));
+        window.handiNs.set(key, JSON.stringify(value));
       } catch (e) {}
     }
 
@@ -140,7 +140,7 @@
       ];
       if (langCodes.indexOf(v) !== -1) {
         try {
-          localStorage.setItem("handiLang", v);
+          window.handiNs.set("handiLang", v);
         } catch (e) {}
       }
     }
@@ -157,7 +157,7 @@
 
     if ((v = qs.get("news"))) {
       ensure("news").rssUrl = v;
-      try { localStorage.setItem("handiNewsFeed", v); } catch (e) {}
+      try { window.handiNs.set("handiNewsFeed", v); } catch (e) {}
     }
 
     // Flipboard: accept both the original flipboard-* names and the shorter
@@ -269,7 +269,7 @@
       }
       ensure("radio").streamUrl = radioUrl;
       if (radioName) ensure("radio").streamName = radioName;
-      try { localStorage.setItem("handiRadioPackFeed", radioUrl); } catch (e) {}
+      try { window.handiNs.set("handiRadioPackFeed", radioUrl); } catch (e) {}
     }
 
     // Alternative: separate radio-url / radio-name parameters. The URL may
@@ -278,7 +278,7 @@
     if ((v = qs.get("radio-url"))) {
       v = v.replace(/^:\s*/, "").trim();
       ensure("radio").streamUrl = v;
-      try { localStorage.setItem("handiRadioPackFeed", v); } catch (e) {}
+      try { window.handiNs.set("handiRadioPackFeed", v); } catch (e) {}
     }
     if ((v = qs.get("radio-name"))) {
       ensure("radio").streamName = v;
@@ -493,12 +493,12 @@
       if (textFont) css += "  --text-font: " + textFont + ";\n";
       if (headerFont) css += "  --header-font: " + headerFont + ";\n";
       css += "}\n";
-      try { localStorage.setItem("handiCustomTheme", css); } catch (e) {}
+      try { window.handiNs.set("handiCustomTheme", css); } catch (e) {}
     }
 
     var bgImage = qs.get("background-image");
     if (bgImage) {
-      try { localStorage.setItem("handiBgDataUrl", bgImage); } catch (e) {}
+      try { window.handiNs.set("handiBgDataUrl", bgImage); } catch (e) {}
     }
 
     // ---------------------------------------------------------------------

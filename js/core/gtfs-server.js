@@ -11,7 +11,6 @@
 const path = require("path");
 const fs = require("fs");
 const https = require("https");
-const AdmZip = require("adm-zip");
 
 const REALTIME_URL = "https://api.nationaltransport.ie/gtfsr/v2/TripUpdates";
 const API_KEY = process.env.BUS_API_KEY || "";
@@ -20,6 +19,7 @@ let gtfsLib = null;
 let db = null;
 let importReady = false;
 let importPromise = null;
+let refreshPromise = null; // in-flight background refresh (stale-while-revalidate)
 let gtfsMissingLogged = false;
 
 // Load config
@@ -29,93 +29,62 @@ try {
   config = JSON.parse(fs.readFileSync(configPath, "utf8"));
 } catch (e) {
   console.error("Failed to load config.json:", e.message);
-  config = { sqlitePath: "/tmp/gtfs.sqlite" };
+  config = {};
 }
 
-// Download a file over HTTPS
-function downloadFile(url, destPath) {
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(destPath);
-    https
-      .get(url, (res) => {
-        if (
-          res.statusCode >= 300 &&
-          res.statusCode < 400 &&
-          res.headers.location
-        ) {
-          file.close();
-          fs.unlinkSync(destPath);
-          return downloadFile(res.headers.location, destPath)
-            .then(resolve)
-            .catch(reject);
-        }
-        if (res.statusCode !== 200) {
-          file.close();
-          fs.unlinkSync(destPath);
-          return reject(new Error(`HTTP ${res.statusCode}`));
-        }
-        res.pipe(file);
-        file.on("finish", () => {
-          file.close();
-          resolve();
-        });
-      })
-      .on("error", (e) => {
-        file.close();
-        fs.unlinkSync(destPath);
-        reject(e);
-      });
-  });
-}
+// Persistent GTFS database location. Defaults to <repo>/data/gtfs.sqlite so the
+// imported static timetable survives process restarts and rsync deploys (the
+// deploy excludes only node_modules/.env/.gtfs-cache, leaving data/ intact).
+// Override with GTFS_DB_PATH for custom/testing locations.
+const GTFS_DB_PATH =
+  process.env.GTFS_DB_PATH ||
+  path.join(__dirname, "..", "..", "data", "gtfs.sqlite");
+// Temporary path an import writes to BEFORE it is atomically swapped over the
+// live DB. This ensures a background refresh never mutates the file that
+// active requests are reading from.
+const GTFS_TMP_PATH = GTFS_DB_PATH + ".tmp";
+// How long (ms) an on-disk import is considered fresh before re-downloading.
+// Default 24h. Set GTFS_TTL_MS=0 to force a refresh on every start.
+const GTFS_TTL_MS = process.env.GTFS_TTL_MS
+  ? parseInt(process.env.GTFS_TTL_MS, 10)
+  : 24 * 60 * 60 * 1000;
+// Sidecar marker recording the last successful import time (sqlite has no
+// reliable mtime we control — the file may be touched by open/query).
+const GTFS_MARKER = GTFS_DB_PATH + ".meta.json";
 
-// Pre-download and unzip a remote GTFS zip to /tmp/gtfs_extracted
-async function prepareGtfsSource() {
-  const agency = config.agencies?.[0];
-  if (!agency || !agency.path) return;
-  const src = agency.path;
+config.sqlitePath = GTFS_DB_PATH;
 
-  // If it's a local directory, use directly
-  if (!src.startsWith("http")) return;
-
-  const extractDir = "/tmp/gtfs_extracted";
-  const zipPath = "/tmp/gtfs_download.zip";
-
-  // Check if already extracted recently (within 24h)
-  if (fs.existsSync(extractDir)) {
-    try {
-      const stat = fs.statSync(extractDir);
-      if (Date.now() - stat.mtimeMs < 86400000) {
-        agency.path = extractDir;
-        return;
-      }
-    } catch (e) {
-      /* re-extract */
-    }
-  }
-
-  console.log(`[GTFS] Downloading ${src}...`);
+function markImportFresh() {
   try {
-    await downloadFile(src, zipPath);
-    console.log(`[GTFS] Unzipping...`);
-    if (fs.existsSync(extractDir)) {
-      fs.rmSync(extractDir, { recursive: true, force: true });
-    }
-    const zip = new AdmZip(zipPath);
-    zip.extractAllTo(extractDir, true);
-    fs.unlinkSync(zipPath);
-    // Point config to extracted dir
-    agency.path = extractDir;
-    console.log(`[GTFS] Extracted to ${extractDir}`);
+    fs.mkdirSync(path.dirname(GTFS_DB_PATH), { recursive: true });
+    fs.writeFileSync(
+      GTFS_MARKER,
+      JSON.stringify({ importedAt: Date.now(), sqlitePath: GTFS_DB_PATH }),
+    );
   } catch (e) {
-    console.error(`[GTFS] Download/unzip error: ${e.message}`);
-    // Clean up
-    try {
-      if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
-    } catch (_) {}
+    /* non-fatal */
   }
 }
 
-// Import GTFS static data
+// Returns true if a previously-imported DB is present and still within TTL.
+function isCachedFresh() {
+  try {
+    if (!fs.existsSync(GTFS_DB_PATH)) return false;
+    if (!fs.existsSync(GTFS_MARKER)) return false;
+    const meta = JSON.parse(fs.readFileSync(GTFS_MARKER, "utf8"));
+    if (!meta.importedAt) return false;
+    if (GTFS_TTL_MS === 0) return false;
+    return Date.now() - meta.importedAt < GTFS_TTL_MS;
+  } catch (e) {
+    return false;
+  }
+}
+
+// Import GTFS static data.
+// The config now lists three static-zip URLs under `agencies[].url`, which
+// node-gtfs's importGtfs() downloads and imports natively (one agency each for
+// Bus Éireann, Dublin Bus, and Go-Ahead).
+//
 async function doImport() {
   // Prevent double import
   if (importPromise) return importPromise;
@@ -123,29 +92,46 @@ async function doImport() {
   importPromise = (async () => {
     try {
       const hostname = require("os").hostname();
-      // Skip download/import on local dev or when explicitly disabled
+      // Skip download/import only when explicitly disabled via env var, or on
+      // a plain localhost dev loop. Previously this also matched developer
+      // machine hostnames ("daz-*", "*pav*"), which silently disabled bus
+      // routes on those hosts — removed so production/dev hosts that share
+      // the machine name still load GTFS data.
       if (
         process.env.SKIP_GTFS_DOWNLOAD === "true" ||
-        hostname === "localhost" ||
-        hostname.startsWith("daz-") ||
-        hostname.includes("pav")
+        hostname === "localhost"
       ) {
         console.log("[GTFS] Dev mode — skipping GTFS download/import");
         importReady = true;
         return;
       }
-      await prepareGtfsSource();
-      const lib = await ensureLib();
-      await lib.importGtfs(config);
-      if (db) {
+
+      // Reuse a fresh on-disk import instead of re-downloading the zips on
+      // every start (the static feed is updated only ~daily and the full
+      // import takes minutes). If the cached DB is still within TTL AND still
+      // contains routes, open it directly and skip the expensive download +
+      // import.
+      if (isCachedFresh()) {
         try {
-          gtfsLib.closeDb(db);
+          const lib = await ensureLib();
+          db = lib.openDb(config);
+          const routeCount = lib.getRoutes({}, [], [], { limit: 1 }).length;
+          if (routeCount > 0) {
+            console.log(
+              `[GTFS] Using cached static data (${GTFS_DB_PATH}, imported within TTL)`,
+            );
+            importReady = true;
+            return;
+          }
+          // Cached DB is empty/corrupt — fall through to a fresh import.
+          console.warn("[GTFS] Cached DB has no routes; re-importing");
         } catch (e) {
-          /* ignore */
+          console.warn("[GTFS] Cached DB unusable; re-importing:", e.message);
+          db = null;
         }
-        db = null;
       }
-      console.log("[GTFS] Static data imported successfully");
+
+      await doFreshImport();
       importReady = true;
     } catch (e) {
       console.error("[GTFS] Import error:", e.message);
@@ -153,6 +139,69 @@ async function doImport() {
     }
   })();
   return importPromise;
+}
+
+// Close any connection handle we're holding. node-gtfs keeps its own cache of
+// open connections keyed by sqlite path, so we also drop that handle before we
+// rewrite/replace the underlying file.
+function closeHeldDb() {
+  try {
+    if (gtfsLib && db) gtfsLib.closeDb(db);
+  } catch (e) {
+    /* ignore */
+  }
+  db = null;
+}
+
+// Download + import the static zips into a TEMP sqlite file, then atomically
+// rename it over the live path. This keeps active readers (an already-open db
+// handle on the live file) consistent while the refresh is in progress, then
+// swaps in the complete new dataset in a single operation.
+async function doFreshImport() {
+  const lib = await ensureLib();
+  fs.mkdirSync(path.dirname(GTFS_TMP_PATH), { recursive: true });
+
+  // Write to the temporary path so the live DB is never mutated mid-read.
+  const tmpConfig = Object.assign({}, config, { sqlitePath: GTFS_TMP_PATH });
+  await lib.importGtfs(tmpConfig);
+
+  // Drop any handle to the tmp file, then swap it into place.
+  try {
+    const tmpDb = lib.openDb(tmpConfig);
+    lib.closeDb(tmpDb);
+  } catch (e) {
+    /* ignore */
+  }
+  if (fs.existsSync(GTFS_DB_PATH)) fs.rmSync(GTFS_DB_PATH, { force: true });
+  fs.renameSync(GTFS_TMP_PATH, GTFS_DB_PATH);
+  // Reset our live handle so the next query re-opens the freshly-swapped file.
+  closeHeldDb();
+  markImportFresh();
+  console.log("[GTFS] Static data imported successfully");
+}
+
+// Stale-while-revalidate: if the on-disk data is serving fine but its freshness
+// marker has lapsed, kick off a background refresh WITHOUT blocking the caller.
+// Returns true if a refresh was started.
+function maybeStartBackgroundRefresh() {
+  if (refreshPromise) return false; // already refreshing
+  if (process.env.SKIP_GTFS_DOWNLOAD === "true") return false;
+  if (isCachedFresh()) return false; // still fresh
+
+  refreshPromise = (async () => {
+    try {
+      console.log(
+        "[GTFS] Background refresh started (cache expired, serving stale data meanwhile)",
+      );
+      await doFreshImport();
+      console.log("[GTFS] Background refresh complete");
+    } catch (e) {
+      console.error("[GTFS] Background refresh failed:", e.message);
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+  return true;
 }
 
 async function ensureLib() {
@@ -176,7 +225,12 @@ async function ensureLib() {
 }
 
 async function waitForImport() {
-  if (importReady) return;
+  if (importReady) {
+    // Serve from cache immediately; opportunistically refresh in the
+    // background if the data has gone stale.
+    maybeStartBackgroundRefresh();
+    return;
+  }
   if (importPromise) await importPromise;
 }
 

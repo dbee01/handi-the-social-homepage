@@ -153,7 +153,7 @@ export default async function initCast(container) {
   headerActions.className = "music-header-actions";
   const lockToggle = document.createElement("button");
   lockToggle.className = "music-lock-toggle";
-  var saved = localStorage.getItem("castLocked"),
+  var saved = window.handiNs.get("castLocked"),
     regCfg =
       (window.HANDI_MODULE_BY_ID &&
         window.HANDI_MODULE_BY_ID("cast")?.settingsConfig?.soundLock) ??
@@ -291,7 +291,7 @@ export default async function initCast(container) {
   window.addEventListener("globalMuteToggle", function (e) {
     applyGlobalMute(e.detail.muted);
   });
-  applyGlobalMute(localStorage.getItem("globalMute") === "true");
+  applyGlobalMute(window.handiNs.get("globalMute") === "true");
 
   // Podcast info card (title, thumbnail, description, …) above the player.
   var infoHtml = "";
@@ -551,7 +551,7 @@ export default async function initCast(container) {
       var audio = document.createElement("audio");
       audio.src = track.url;
       audio.volume = 1.0;
-      audio.muted = localStorage.getItem("globalMute") === "true";
+      audio.muted = window.handiNs.get("globalMute") === "true";
       currentAudio = audio;
       audio.addEventListener("error", function (e) {
         var err = currentAudio.error,
@@ -754,7 +754,7 @@ export default async function initCast(container) {
   lockToggle.addEventListener("click", function (e) {
     e.stopPropagation();
     isLocked = !isLocked;
-    localStorage.setItem("castLocked", isLocked);
+    window.handiNs.set("castLocked", isLocked);
     updateLockIcon();
     applyLockState();
   });

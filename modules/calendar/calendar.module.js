@@ -5,7 +5,7 @@
  */
 
 // modules/calendar/calendar.module.js
-import { loadSettings } from "../../js/core/settings.js";
+import { loadSettings, saveSettings } from "../../js/core/settings.js";
 
 export default async function initCalendar(container) {
   var t =
@@ -45,12 +45,12 @@ export default async function initCalendar(container) {
 
   // Load alerts toggle state (default: ON)
   try {
-    var savedAlerts = localStorage.getItem("calendarAlerts");
+    var savedAlerts = window.handiNs.get("calendarAlerts");
     alertsEnabled = savedAlerts !== null ? savedAlerts === "true" : true;
   } catch (e) {}
 
   function saveAlertsState() {
-    try { localStorage.setItem("calendarAlerts", alertsEnabled ? "true" : "false"); } catch (e) {}
+    try { window.handiNs.set("calendarAlerts", alertsEnabled ? "true" : "false"); } catch (e) {}
   }
 
   let refreshIntervalId = null;
@@ -542,7 +542,7 @@ export default async function initCalendar(container) {
           var settings = loadSettings();
           if (!settings.calendar) settings.calendar = {};
           settings.calendar.url = val;
-          localStorage.setItem("handiSettings", JSON.stringify(settings));
+          saveSettings(settings);
           calendarUrl = val;
           await initCalendar(container);
           if (window.refreshDashboardLayout) window.refreshDashboardLayout();
@@ -715,7 +715,7 @@ export default async function initCalendar(container) {
       changeUrlBtn.addEventListener("click", function () {
         var settings = loadSettings();
         if (settings.calendar) settings.calendar.url = "";
-        localStorage.setItem("handiSettings", JSON.stringify(settings));
+        saveSettings(settings);
         calendarUrl = "";
         initCalendar(container);
       });

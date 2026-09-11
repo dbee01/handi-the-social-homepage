@@ -8,7 +8,7 @@
 (function () {
   var lang = "en";
   try {
-    lang = localStorage.getItem("handiLang") || "en";
+    lang = window.handiNs.get("handiLang") || "en";
   } catch (e) {}
 
   // Synchronous load so LANG is available before modules init
@@ -18,7 +18,7 @@
   window.handiLang = lang;
   window.setHandiLang = function (code) {
     try {
-      localStorage.setItem("handiLang", code);
+      window.handiNs.set("handiLang", code);
     } catch (e) {}
     window.logEvent && window.logEvent(2, "language_change", { lang: code });
     location.reload();

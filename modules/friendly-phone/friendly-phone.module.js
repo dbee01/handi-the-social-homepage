@@ -39,7 +39,7 @@ export default async function initPhone(container) {
   // Restore photos from separate storage
   try {
     const photos = JSON.parse(
-      localStorage.getItem("handiContactPhotos") || "{}",
+      window.handiNs.get("handiContactPhotos") || "{}",
     );
     contacts.forEach((c, i) => {
       if (photos[i]) c.photo = photos[i];
