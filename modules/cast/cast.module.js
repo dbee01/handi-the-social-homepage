@@ -35,6 +35,24 @@ function hostnameOf(url) {
   }
 }
 
+// Podcast feeds embed HTML (often <p>…</p>, sometimes empty) in their titles and
+// descriptions. Strip the tags and collapse whitespace, then resolve any
+// leftover entities, so the UI shows clean text instead of literal markup.
+function stripHtml(html) {
+  return (html || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function decodeEntities(str) {
+  if (!str) return "";
+  const d = document.createElement("div");
+  d.innerHTML = str;
+  return (d.textContent || d.innerText || "").trim();
+}
+
+function cleanText(str) {
+  return decodeEntities(stripHtml(str));
+}
+
 // Pull channel-level podcast metadata (title, thumbnail, description,
 // author, website link) out of an iTunes-compatible RSS feed.
 function parseCastInfo(doc) {
@@ -59,10 +77,10 @@ function parseCastInfo(doc) {
   var author = firstTagText("itunes:author") || "";
   var link = firstText("channel > link") || firstText("feed > link") || "";
   return {
-    title: title,
+    title: cleanText(title),
     image: image,
-    description: description,
-    author: author,
+    description: cleanText(description),
+    author: cleanText(author),
     link: link,
   };
 }
@@ -84,10 +102,9 @@ async function fetchCastFeed(url) {
       const audioUrl = (enclosures[0].getAttribute("url") || "").trim();
       if (!audioUrl) continue;
       const titles = items[i].getElementsByTagName("title");
+      const epTitle = titles.length ? cleanText(titles[0].textContent) : "";
       out.push({
-        name: titles.length
-          ? (titles[0].textContent || "").trim()
-          : "Episode " + (i + 1),
+        name: epTitle || "Episode " + (i + 1),
         url: audioUrl,
         isStream: false,
         isEpisode: true,
