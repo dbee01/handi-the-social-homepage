@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.handihomepage.cork",
+      "sha256_cert_fingerprints": [
+        "20:3E:C2:43:7E:CB:19:1E:78:4A:F5:16:84:F0:F3:7F:67:35:E5:68:84:41:45:EC:F6:5D:4C:A3:7A:09:8B:F9"
+      ]
+    }
+  }
+]

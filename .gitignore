@@ -8,3 +8,5 @@ log.txt
 # Offline AI model files — fetched locally via scripts/fetch-ai-assets.sh
 # (not committed: ~130MB ONNX model; runtime/wasm in js/vendor stays in git)
 models/
+twa/*.keystore
+pwa/*.keystore

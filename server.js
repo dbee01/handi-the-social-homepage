@@ -118,12 +118,22 @@ const staticPath = fs.existsSync(publicPath) ? publicPath : __dirname;
 app.use("/log.txt", (req, res) => res.status(404).send());
 app.use("/.env", (req, res) => res.status(404).send());
 app.use("/.env.example", (req, res) => res.status(404).send());
+// Never serve the private TWA signing key (or TWA project) from the app host.
+app.use("/pwa", (req, res) => res.status(404).send());
 
 // Always revalidate the service worker so cache/version changes are picked up
 // promptly (browsers may otherwise serve a stale service-worker.js for 24h).
 app.get("/service-worker.js", (req, res) => {
   res.set("Cache-Control", "no-cache, no-store, must-revalidate");
   res.sendFile(path.join(staticPath, "service-worker.js"));
+});
+
+// Digital Asset Links for the Cork TWA (Bubblewrap/PWABuilder Android app).
+// Served explicitly because express.static ignores dotfiles by default.
+app.get("/.well-known/assetlinks.json", (req, res) => {
+  const file = path.join(staticPath, ".well-known", "assetlinks.json");
+  if (!fs.existsSync(file)) return res.status(404).json([]);
+  res.type("application/json").sendFile(file);
 });
 
 // index:false — let the app.get("/") route below handle / so it can inject
@@ -352,6 +362,18 @@ app.get("/", (req, res) => {
       String(req.query.id).trim() === GAEILGE_PACK_ID) ||
     gaeilgeTitle ||
     !!gaeilgeLogo;
+
+  // The Cork pack gets its own manifest too.
+  const CORK_PACK_ID =
+    "dc3ff1ad0f8f0d7717262d1497ddc2d76ce78f8d53a0e0c00c9367b1de17a2fe";
+  const corkTitle = packTitleStr
+    ? /^cork homepage/i.test(packTitleStr)
+    : false;
+  const corkLogo = packLogo && /cork[-.]/i.test(String(packLogo));
+  const isCork =
+    (req.query.id && String(req.query.id).trim() === CORK_PACK_ID) ||
+    corkTitle ||
+    !!corkLogo;
   if (isGaeilge) {
     html = setLinkHref(html, "manifest", "/manifests/gaeilge.manifest.json");
     html = setMetaContent(html, "name", "theme-color", "#00c1f2");
@@ -375,6 +397,30 @@ app.get("/", (req, res) => {
       html,
       "icon-png32",
       "/images/icons/gaeilge/gaeilge-32x32.png",
+    );
+  } else if (isCork) {
+    html = setLinkHref(html, "manifest", "/manifests/cork.manifest.json");
+    html = setMetaContent(html, "name", "theme-color", "#D30000");
+    html = setMetaContent(
+      html,
+      "name",
+      "apple-mobile-web-app-title",
+      "Cork",
+    );
+    html = setLinkHref(
+      html,
+      "apple-touch-icon",
+      "/images/icons/cork/cork-180x180.png",
+    );
+    html = setLinkHref(
+      html,
+      "icon-x",
+      "/images/icons/cork/cork-72x72.png",
+    );
+    html = setLinkHref(
+      html,
+      "icon-png32",
+      "/images/icons/cork/cork-32x32.png",
     );
   } else if (hasPack) {
     // Other handi-packs: no installable app.

@@ -715,6 +715,8 @@
             (function () {
                 var GAEILGE_PACK_ID =
                     "399d4da865fb4bdb40133def9fc830af460764597854c9c5ede61b4d3a371a30";
+                var CORK_PACK_ID =
+                    "dc3ff1ad0f8f0d7717262d1497ddc2d76ce78f8d53a0e0c00c9367b1de17a2fe";
 
                 function setMeta(name, value) {
                     var el = document.querySelector('meta[name="' + name + '"]');
@@ -734,6 +736,20 @@
                             pid === GAEILGE_PACK_ID ||
                             /^handi-homepage as gaeilge/i.test(name) ||
                             /gaeilge[-.]/i.test(logo)
+                        );
+                    } catch (e) {
+                        return false;
+                    }
+                }
+                function isCork() {
+                    try {
+                        var pid = localStorage.getItem("handiPackId");
+                        var name = localStorage.getItem("handiPackName") || "";
+                        var logo = localStorage.getItem("handiPackLogo") || "";
+                        return (
+                            pid === CORK_PACK_ID ||
+                            /^cork homepage/i.test(name) ||
+                            /cork[-.]/i.test(logo)
                         );
                     } catch (e) {
                         return false;
@@ -769,6 +785,21 @@
                         setLinkHref(
                             "icon",
                             "/images/icons/gaeilge/gaeilge-32x32.png",
+                        );
+                    } else if (isCork()) {
+                        link.setAttribute(
+                            "href",
+                            "/manifests/cork.manifest.json",
+                        );
+                        setMeta("theme-color", "#D30000");
+                        setMeta("apple-mobile-web-app-title", "Cork");
+                        setLinkHref(
+                            "apple-touch-icon",
+                            "/images/icons/cork/cork-180x180.png",
+                        );
+                        setLinkHref(
+                            "icon",
+                            "/images/icons/cork/cork-32x32.png",
                         );
                     } else if (hasPack()) {
                         // Another handi-pack: no installable app.
