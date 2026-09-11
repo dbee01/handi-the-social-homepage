@@ -156,10 +156,12 @@ document.addEventListener("click", function (e) {
     s.style.display = collapsed ? "" : "none";
   });
 
-  // The mastodon panel reserves vertical space (min-height: 650px) to avoid
-  // screen-jump while posts load; when collapsed that would leave a tall
-  // empty box, so drop the min-height while hidden and restore it on expand.
-  if (dashboardItem && dashboardItem.dataset.module === "mastodon") {
+  // Carousel panels (mastodon/news/events/flip/newsletter) reserve vertical
+  // space (min-height) to avoid a screen-jump when items of different heights
+  // are shown; when collapsed that would leave a tall empty box, so drop the
+  // min-height while hidden and restore it on expand.
+  var steadyModules = ["mastodon", "news", "events", "flip", "newsletter"];
+  if (dashboardItem && steadyModules.indexOf(dashboardItem.dataset.module) !== -1) {
     dashboardItem.style.minHeight = collapsed ? "" : "auto";
   }
 

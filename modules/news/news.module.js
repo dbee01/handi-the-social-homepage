@@ -51,6 +51,9 @@ export default async function initNews(container) {
   content.className = "news-content";
   container.appendChild(content);
 
+  const parentItem = container.closest(".dashboard-item");
+  if (parentItem) parentItem.dataset.module = "news";
+
   const STORAGE_KEY = "handiNewsFeed";
   const settings = loadSettings();
   const refreshMinutes = settings.news?.refreshInterval || 15;

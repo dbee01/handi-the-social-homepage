@@ -234,6 +234,7 @@ var LANG = {
 
         // Newsletter
         d_newsletterEmpty: "Nie znaleziono elementów biuletynu.",
+        d_newsletterLoad: "Załaduj newsletter",
 
         // Sports
         d_sportsNoKey: "Sport na żywo nie jest skonfigurowany na serwerze.",

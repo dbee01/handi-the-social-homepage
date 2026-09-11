@@ -703,6 +703,7 @@ export default async function initRadio(container) {
         renderStations();
         countryBtns.forEach(function (b) { b.classList.remove("active"); b.style.background = ""; });
         this.classList.add("active");
+        if (window.refreshDashboardLayout) window.refreshDashboardLayout();
       });
     });
 

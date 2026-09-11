@@ -233,6 +233,7 @@ var LANG = {
 
         // Newsletter
         d_newsletterEmpty: "Nessun elemento della newsletter trovato.",
+        d_newsletterLoad: "Carica newsletter",
 
         // Sports
         d_sportsNoKey: "Lo sport dal vivo non è configurato sul server.",

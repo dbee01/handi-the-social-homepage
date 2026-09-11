@@ -536,7 +536,7 @@ export default async function initCalendar(container) {
       var urlInput = content.querySelector("#calendarUrlInput");
       var saveBtn = content.querySelector("#calendarSaveBtn");
       if (saveBtn && urlInput) {
-        saveBtn.onclick = function () {
+        saveBtn.onclick = async function () {
           var val = urlInput.value.trim();
           if (!val) return;
           var settings = loadSettings();
@@ -544,7 +544,8 @@ export default async function initCalendar(container) {
           settings.calendar.url = val;
           localStorage.setItem("handiSettings", JSON.stringify(settings));
           calendarUrl = val;
-          initCalendar(container);
+          await initCalendar(container);
+          if (window.refreshDashboardLayout) window.refreshDashboardLayout();
         };
       }
       return;

@@ -1,5 +1,5 @@
 {
-  "name": "Handi Homepage",
+  "name": "handi-homepage",
   "version": "1.0.0",
   "description": "DEMO: https://senior.handihomepage.com",
   "main": "server.js",
@@ -15,7 +15,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "GPL-3.0-only",
   "bugs": {
     "url": "https://codeberg.org/handi/ple/issues"
   },

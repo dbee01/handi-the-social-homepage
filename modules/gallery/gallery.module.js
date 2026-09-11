@@ -176,7 +176,6 @@ export default async function initGallery(container) {
   const parentItem = container.closest(".dashboard-item");
   if (parentItem) {
     parentItem.dataset.module = "gallery";
-    parentItem.style.minHeight = "unset";
   }
 
   let images = [];
@@ -218,7 +217,8 @@ export default async function initGallery(container) {
       onFiles: async function (newImages) {
         if (await saveUploadedImages([...images, ...newImages], loadOpts)) {
           container.innerHTML = "";
-          initGallery(container);
+          await initGallery(container);
+          if (window.refreshDashboardLayout) window.refreshDashboardLayout();
         }
       },
     };
@@ -242,7 +242,7 @@ export default async function initGallery(container) {
     let currentIndex = 0;
 
     const carousel = document.createElement("div");
-    carousel.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;";
+    carousel.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;position:relative;";
 
     const leftBtn = document.createElement("button");
     leftBtn.className = "gallery-scroll-btn";
@@ -254,7 +254,7 @@ export default async function initGallery(container) {
 
     const view = document.createElement("div");
     view.className = "gallery-post-view";
-    view.style.cssText = "flex:1;min-width:0;";
+    view.style.cssText = "flex:1;min-width:0;margin:0 46px;";
 
     const rightBtn = document.createElement("button");
     rightBtn.className = "gallery-scroll-btn";

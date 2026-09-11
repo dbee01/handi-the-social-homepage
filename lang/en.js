@@ -299,6 +299,7 @@ var LANG = {
                 // Newsletter
                 d_newsletterEmpty: "No newsletter items found.",
                 d_newsletterConfigure: "Add a newsletter feed URL in Settings.",
+                d_newsletterLoad: "Load Newsletter",
 
                 // Sports
                 d_sportsNoKey: "Live sports is not configured on the server.",

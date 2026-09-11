@@ -213,7 +213,8 @@ export default async function initMusic(container) {
             } catch (e) {}
             if (await saveUploadedFiles([...existing, ...files], loadOpts)) {
               container.innerHTML = "";
-              initMusic(container);
+              await initMusic(container);
+              if (window.refreshDashboardLayout) window.refreshDashboardLayout();
             }
           },
           onError: function (msg) {
@@ -784,7 +785,8 @@ export default async function initMusic(container) {
           } catch (e) {}
           if (await saveUploadedFiles([...existing, ...files], loadOpts)) {
             container.innerHTML = "";
-            initMusic(container);
+            await initMusic(container);
+            if (window.refreshDashboardLayout) window.refreshDashboardLayout();
           }
         },
         onError: function (msg) {

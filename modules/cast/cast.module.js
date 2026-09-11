@@ -267,7 +267,8 @@ export default async function initCast(container) {
           onFiles: async function (files) {
             if (await saveUploadedFiles(files, loadOpts)) {
               container.innerHTML = "";
-              initCast(container);
+              await initCast(container);
+              if (window.refreshDashboardLayout) window.refreshDashboardLayout();
             }
           },
           onError: function (msg) {
@@ -787,7 +788,8 @@ export default async function initCast(container) {
         onFiles: async function (files) {
           if (await saveUploadedFiles(files, loadOpts)) {
             container.innerHTML = "";
-            initCast(container);
+            await initCast(container);
+            if (window.refreshDashboardLayout) window.refreshDashboardLayout();
           }
         },
         onError: function (msg) {

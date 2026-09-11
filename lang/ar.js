@@ -232,6 +232,7 @@ var LANG = {
 
         // Newsletter
         d_newsletterEmpty: "لا توجد عناصر في النشرة الإخبارية.",
+        d_newsletterLoad: "تحميل النشرة الإخبارية",
 
         // Sports
         d_sportsNoKey: "الرياضة المباشرة غير مهيأة على الخادم.",

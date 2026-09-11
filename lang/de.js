@@ -239,6 +239,7 @@ var LANG = {
 
         // Newsletter
         d_newsletterEmpty: "Keine Newsletter-Einträge gefunden.",
+        d_newsletterLoad: "Newsletter laden",
 
         // Sports
         d_sportsNoKey: "Live-Sport ist auf dem Server nicht konfiguriert.",

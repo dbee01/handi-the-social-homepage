@@ -302,7 +302,7 @@ export default async function initMastodon(container) {
       var currentIndex = 0;
 
       var carousel = document.createElement("div");
-      carousel.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;";
+      carousel.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;position:relative;";
 
       var leftBtn = document.createElement("button");
       leftBtn.className = "mastodon-scroll-btn";
@@ -314,7 +314,7 @@ export default async function initMastodon(container) {
 
       var postView = document.createElement("div");
       postView.className = "mastodon-post-view";
-      postView.style.cssText = "flex:1;min-width:0;";
+      postView.style.cssText = "flex:1;min-width:0;margin:0 46px;";
 
       var rightBtn = document.createElement("button");
       rightBtn.className = "mastodon-scroll-btn";

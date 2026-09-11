@@ -238,6 +238,7 @@ var LANG = {
 
         // Newsletter
         d_newsletterEmpty: "No se encontraron elementos del boletín.",
+        d_newsletterLoad: "Cargar boletín",
 
         // Sports
         d_sportsNoKey: "El deporte en vivo no está configurado en el servidor.",

@@ -174,9 +174,19 @@ export default async function initNewsletter(container) {
 
   if (!feedUrl) {
     content.innerHTML =
-      '<div class="module-empty"><i class="fa-solid fa-envelope-open-text"></i><p>' +
+      '<div class="module-empty">' +
+      '<i class="fa-solid fa-envelope-open-text"></i><p>' +
       t("d_newsletterConfigure", "Add a newsletter feed URL in Settings.") +
-      "</p></div>";
+      "</p>" +
+      '<button id="newsletterSettingsBtn" class="settings-link-btn">' +
+      '<i class="fa-solid fa-envelope-open-text"></i> ' +
+      t("d_newsletterLoad", "Load Newsletter") +
+      "</button></div>";
+    const settingsBtn = content.querySelector("#newsletterSettingsBtn");
+    if (settingsBtn)
+      settingsBtn.onclick = function () {
+        window.location.href = "settings.html?args=newsletter";
+      };
     return function () {};
   }
 

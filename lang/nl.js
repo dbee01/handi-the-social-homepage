@@ -234,6 +234,7 @@ var LANG = {
 
         // Newsletter
         d_newsletterEmpty: "Geen nieuwsbriefitems gevonden.",
+        d_newsletterLoad: "Nieuwsbrief laden",
 
         // Sports
         d_sportsNoKey: "Live sport is niet geconfigureerd op de server.",

@@ -867,6 +867,15 @@
 
             initLayout();
 
+            // Full-page reflow once every module and the layout are in place.
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    if (window.refreshDashboardLayout) {
+                        window.refreshDashboardLayout();
+                    }
+                });
+            });
+
             // Search functionality
             const searchInput = document.getElementById("searchInput");
             const searchEngine = document.getElementById("searchEngine");

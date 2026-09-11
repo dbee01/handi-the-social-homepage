@@ -233,6 +233,7 @@ var LANG = {
 
         // Newsletter
         d_newsletterEmpty: "Dim eitemau cylchlythyr wedi'u canfod.",
+        d_newsletterLoad: "Llwytho cylchlythyr",
 
         // Sports
         d_sportsNoKey: "Nid yw chwaraeon byw wedi'i ffurfweddu ar y gweinydd.",

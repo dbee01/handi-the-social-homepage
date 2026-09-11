@@ -420,15 +420,40 @@ header {
     object-fit: cover;
 }
 
-/* Mastodon: keep a steady panel height so moving between posts (some have
-   images, some are text-only) does not make the dashboard jump. */
-.dashboard-item[data-module="mastodon"] {
-    min-height: 650px;
+/* ── STEADY CAROUSEL PANEL HEIGHT ─────────────────────────────
+   News / Events / Gallery / Mastodon show one item at a time and Flip /
+   Newsletter scroll a rail of cards. Each item can be taller or shorter, which
+   makes the page (and flip/newsletter's horizontal) scrollbar jump as the
+   element's height changes. Pin the scroll area a fixed distance from the
+   top by giving these panels a steady min-height, scaled per breakpoint
+   (number of columns), so the scrollbar thumb does not move between items.
+
+   The value is media height + a fixed text allowance, so it shrinks
+   automatically on small screens where media is scaled down too. */
+:root { --carousel-text-allowance: 370px; --carousel-arrow-top: 130px; }
+
+.dashboard-item[data-module="mastodon"],
+.dashboard-item[data-module="news"],
+.dashboard-item[data-module="events"],
+.dashboard-item[data-module="flip"],
+.dashboard-item[data-module="newsletter"] {
+    min-height: calc(var(--media-height) + var(--carousel-text-allowance));
 }
 
+/* 2 columns: wider panel wraps text onto fewer lines, so shrink the allowance. */
+@media (max-width: 1150px) {
+    :root { --carousel-text-allowance: 320px; --carousel-arrow-top: 120px; }
+}
+
+/* 1 column: full-width panel, shortest body text. */
+@media (max-width: 900px) {
+    :root { --carousel-text-allowance: 270px; --carousel-arrow-top: 100px; }
+}
+
+/* Gallery keeps a lightbox and uses a flexible column layout, but still
+   reserves steady space for its image + caption + upload button. */
 .dashboard-item[data-module="gallery"] {
-    min-height: unset;
-    height: auto;
+    min-height: calc(var(--media-height) + var(--carousel-text-allowance));
     display: flex;
     flex-direction: column;
 }
@@ -1179,28 +1204,40 @@ header {
 ========================================================= */
 /* News/Events show one item at a time and Flip/Newsletter scroll a rail of
    cards. Their ‹ › arrows were vertically centred on the changing content, so
-   they jumped whenever an item was taller/shorter. Pin them near the top of
-   the carousel area (fixed Y for every item) instead. The parent rows are
-   position:relative and the views/scrollers reserve side margins (46px) so
-   content never slides under the buttons. */
+   they jumped whenever an item was taller/shorter. Pin them at a fixed distance
+   from the top (scaled per breakpoint / number of columns) so the scrollbar
+   controls never move between items. The parent rows are position:relative and
+   the views/scrollers reserve side margins (46px) so content never slides
+   under the buttons. */
 .news-carousel-btn,
+.mastodon-scroll-btn,
+.gallery-scroll-btn,
 .flip-scroll-btn,
 .newsletter-scroll-btn {
     position: absolute;
-    top: 25rem;
+    top: var(--carousel-arrow-top);
     z-index: 5;
 }
 
 .news-carousel-btn:first-child,
+.mastodon-scroll-btn:first-child,
+.gallery-scroll-btn:first-child,
 .flip-scroll-btn:first-child,
 .newsletter-scroll-btn:first-child {
     left: 2px;
 }
 
 .news-carousel-btn:last-child,
+.mastodon-scroll-btn:last-child,
+.gallery-scroll-btn:last-child,
 .flip-scroll-btn:last-child,
 .newsletter-scroll-btn:last-child {
     right: 2px;
+}
+
+/* Narrow/shorter media: keep the arrows in step with the scaled image height. */
+@media (max-width: 600px) {
+    :root { --carousel-arrow-top: 70px; }
 }
 
 /* =========================================================

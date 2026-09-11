@@ -246,6 +246,7 @@ var LANG = {
 
         // Newsletter
         d_newsletterEmpty: "Ní bhfuarthas aon mhír nuachtlitreach.",
+        d_newsletterLoad: "Luchtaigh nuachtlitir",
 
         // Sports
         d_sportsNoKey: "Níl spórt beo cumraithe ar an bhfreastalaí.",
