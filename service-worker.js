@@ -1,4 +1,4 @@
-const CACHE = "ple-v28";
+const CACHE = "ple-v29";
 
 // Manual bump per deploy (you deploy from your working copy, not git). Always
 // raise CACHE before deploying so browsers pick up a changed service worker.
@@ -57,6 +57,17 @@ const PRECACHE = [
   "/images/icons/gaeilge/gaeilge-192x192.png",
   "/images/icons/gaeilge/gaeilge-384x384.png",
   "/images/icons/gaeilge/gaeilge-512x512.png",
+  // Cork pack assets — cached so an installed Cork app works offline.
+  "/manifests/cork.manifest.json",
+  "/images/icons/cork/cork-32x32.png",
+  "/images/icons/cork/cork-72x72.png",
+  "/images/icons/cork/cork-96x96.png",
+  "/images/icons/cork/cork-180x180.png",
+  "/images/icons/cork/cork-192x192.png",
+  "/images/icons/cork/cork-384x384.png",
+  "/images/icons/cork/cork-512x512.png",
+  "/images/icons/cork/cork-maskable-192x192.png",
+  "/images/icons/cork/cork-maskable-512x512.png",
 ];
 
 // Brand used for notifications until the page tells us which brand is active.

@@ -1,0 +1,129 @@
+{
+  "name": "Handi-homepage for Cork",
+  "short_name": "Cork",
+  "description": "A handi-homepage for residents and visitor to Cork, Ireland. Cork news, Cork chat, what's on in Cork, music and lots more.",
+  "id": "/cork",
+  "scope": "/",
+  "start_url": "https://senior.handihomepage.com/?handi-pack=Cork+Homepage&description=A+handi-homepage+for+residents+and+visitor+to+Cork%2C+Ireland.+Cork+news%2C+Cork+chat%2C+what%27s+on+in+Cork%2C+music+and+lots+more.&lang=en&colors=%23d30000%7C%230f0f10%7C%23d9e1ed%7C%2310223f%7C%23f3f8ff&font=Poppins%2C+system-ui%2C+sans-serif%7CInter%2C+system-ui%2C+sans-serif&background-image=https%3A%2F%2Fhandihomepage.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fcork-white-pwa.png&logo=https%3A%2F%2Fhandihomepage.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fcork-white-pwa.png&homepage=https%3A%2F%2Fhandihomepage.com%2F&weather-location=cork+city&radio=Corks+96+FM%3A+https%3A%2F%2Fonic.cork.live.stream.broadcasting.news%2Fstream-96fm&flip=https%3A%2F%2Fflipboard.com%2Ftopic%2Fcorkcity.rss&matrix-server=https%3A%2F%2Fmatrix.org&chat-rooms=%23corkchat%3Amatrix.org&support-image=https%3A%2F%2Fhandihomepage.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fcork-white-pwa.png&support-image-title=Welcome+to+the+Cork+Handi-homepage&support-description=A+handi-homepage+for+residents+and+visitor+to+Cork%2C+Ireland.+Cork+news%2C+Cork+chat%2C+what%27s+on+in+Cork%2C+music+and+lots+more.+Support+the+development+of+this+project+by+buying+me+a+coffee%3A+%28link+below%29&support-link-url=https%3A%2F%2Fbuymeacoffee.com%2Fdazrunner&support=1&cast=https%3A%2F%2Ffeeds.fastcast.ai%2Ffort-smith-daily-news-now.xml&events-location=Cork+City&events=1&elements=bus%2Ccast%2Cchat%2Cevents%2Cflip%2Cmusic%2Cradio%2Csocial%2Csupport&id=dc3ff1ad0f8f0d7717262d1497ddc2d76ce78f8d53a0e0c00c9367b1de17a2fe",
+  "display": "standalone",
+  "display_override": [
+    "standalone"
+  ],
+  "background_color": "#ffffff",
+  "theme_color": "#D30000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/icons/cork/cork-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/icons/cork/cork-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/screenshot-wide.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Handi-homepage for Cork, Ireland"
+    },
+    {
+      "src": "/images/screenshot-narrow.jpg",
+      "sizes": "750x1334",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Cork Homepage"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Settings",
+      "short_name": "Settings",
+      "description": "Open settings",
+      "url": "/settings.html",
+      "icons": [
+        {
+          "src": "/images/icons/cork/cork-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Home",
+      "description": "Open your Cork homepage",
+      "url": "https://senior.handihomepage.com/?handi-pack=Cork+Homepage&description=A+handi-homepage+for+residents+and+visitor+to+Cork%2C+Ireland.+Cork+news%2C+Cork+chat%2C+what%27s+on+in+Cork%2C+music+and+lots+more.&lang=en&colors=%23d30000%7C%230f0f10%7C%23d9e1ed%7C%2310223f%7C%23f3f8ff&font=Poppins%2C+system-ui%2C+sans-serif%7CInter%2C+system-ui%2C+sans-serif&background-image=https%3A%2F%2Fhandihomepage.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fcork-white-pwa.png&logo=https%3A%2F%2Fhandihomepage.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fcork-white-pwa.png&homepage=https%3A%2F%2Fhandihomepage.com%2F&weather-location=cork+city&radio=Corks+96+FM%3A+https%3A%2F%2Fonic.cork.live.stream.broadcasting.news%2Fstream-96fm&flip=https%3A%2F%2Fflipboard.com%2Ftopic%2Fcorkcity.rss&matrix-server=https%3A%2F%2Fmatrix.org&chat-rooms=%23corkchat%3Amatrix.org&support-image=https%3A%2F%2Fhandihomepage.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fcork-white-pwa.png&support-image-title=Welcome+to+the+Cork+Handi-homepage&support-description=A+handi-homepage+for+residents+and+visitor+to+Cork%2C+Ireland.+Cork+news%2C+Cork+chat%2C+what%27s+on+in+Cork%2C+music+and+lots+more.+Support+the+development+of+this+project+by+buying+me+a+coffee%3A+%28link+below%29&support-link-url=https%3A%2F%2Fbuymeacoffee.com%2Fdazrunner&support=1&cast=https%3A%2F%2Ffeeds.fastcast.ai%2Ffort-smith-daily-news-now.xml&events-location=Cork+City&events=1&elements=bus%2Ccast%2Cchat%2Cevents%2Cflip%2Cmusic%2Cradio%2Csocial%2Csupport&id=dc3ff1ad0f8f0d7717262d1497ddc2d76ce78f8d53a0e0c00c9367b1de17a2fe",
+      "icons": [
+        {
+          "src": "/images/icons/cork/cork-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    "Travel & Local",
+    "Social",
+    "News"
+  ],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false
+}
