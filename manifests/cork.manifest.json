@@ -1,0 +1,129 @@
+{
+  "name": "Handi-homepage as Gaeilge",
+  "short_name": "Gaeilge",
+  "description": "Leathanach baile pobail ar líne nua do chainteoirí Gaeilge agus d'fhoghlaimeoirí Gaeilge. Bí cinnte go gceanglaíonn tú leis an gcainéal comhrá. Cumraigh do leathanach baile cibé slí is mian leat...",
+  "id": "/gaeilge",
+  "scope": "/",
+  "start_url": "https://senior.handihomepage.com/?handi-pack=Handi-homepage%20as%20Gaeilge%20%C3%B3%20Handi%20Homepage&description=Leathanach%20baile%20pobail%20ar%20l%C3%ADne%20nua%20do%20chainteoir%C3%AD%20Gaeilge%20agus%20d%27fhoghlaimeoir%C3%AD%20Gaeilge.%20B%C3%AD%20cinnte%20go%20gceangla%C3%ADonn%20t%C3%BA%20leis%20an%20gcain%C3%A9al%20comhr%C3%A1.%20Cumraigh%20do%20leathanach%20baile%20cib%C3%A9%20sl%C3%AD%20is%20mian%20leat...&lang=ga&colors=%230190cf%7C%2300c1f2%7C%2300aaf5%7C%2310223f%7C%23ffffff&text-font=Poppins%2C%20system-ui%2C%20sans-serif&header-font=MeathFLF%2C%20system-ui%2C%20sans-serif&background-image=https%3A%2F%2Fhandihomepage.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fgaeilge.webp&logo=https%3A%2F%2Fhandihomepage.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fgaeilge-icon.webp&homepage=https%3A%2F%2Fhandihomepage.com%2F&weather-location=cork%20city&news=https%3A%2F%2Fwww.rte.ie%2Ffeeds%2Frss%2F%3Findex%3D%2Fgaeilge&social-server=mastodon.ie&social-profile=&social-hashtag=%23gaeilge&matrix-server=https%3A%2F%2Fmatrix.org&chat-rooms=%23gaeilgeoir%3Amatrix.org&support-image=https%3A%2F%2Fhandihomepage.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fgaeilge.webp&support-image-title=c%C3%A9ad%20m%C3%ADle%20f%C3%A1ilte&support-description=Tacaigh%20len%C3%A1r%20dtionscadal%20agus%20faigh%20rochtain%20ar%20fhothracha%20bus%20i%20bhf%C3%ADor-ama%2C%20glaochanna%20f%C3%B3n%20agus%20f%C3%ADse%C3%A1in%20saora%2C%20agus%20do%20liosta%20tascanna%20pr%C3%ADobh%C3%A1ideach%20f%C3%A9in.%20D%C3%A9an%20iarracht%20%C3%A1r%20dtriail%207%20l%C3%A1%20saor%20in%20aisce.%5BSupport%20us.%20Try%20our%207%20day%20free%20trial%20for%20tons%20of%20new%20feattures...%5D&radio-name=Radio%20R%C3%AD-R%C3%A1&radio-url=https%3A%2F%2Fuksoutha.streaming.broadcast.radio%2Fri-ra&support-link-url=https%3A%2F%2Fbuy.stripe.com%2F14AbJ05WbgWM73pbIfdUY00&gallery=&podcasts=https%3A%2F%2Fanchor.fm%2Fs%2Fdff7a758%2Fpodcast%2Frss&elements=gallery%2Cmusic%2Cnews%2Cchat%2Csocial%2Csupport&id=399d4da865fb4bdb40133def9fc830af460764597854c9c5ede61b4d3a371a30",
+  "display": "standalone",
+  "display_override": [
+    "standalone"
+  ],
+  "background_color": "#ffffff",
+  "theme_color": "#00c1f2",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/icons/cork/cork-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/cork/cork-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/icons/cork/cork-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/screenshot-wide.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Handi-homepage as Gaeilge – leathanach baile"
+    },
+    {
+      "src": "/images/screenshot-narrow.jpg",
+      "sizes": "750x1334",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Leagan soghluaiste"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Settings",
+      "short_name": "Settings",
+      "description": "Open settings",
+      "url": "/settings.html",
+      "icons": [
+        {
+          "src": "/images/icons/cork/cork-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Home",
+      "description": "Open your Gaeilge homepage",
+      "url": "https://senior.handihomepage.com/?handi-pack=Handi-homepage%20as%20Gaeilge%20%C3%B3%20Handi%20Homepage&description=Leathanach%20baile%20pobail%20ar%20l%C3%ADne%20nua%20do%20chainteoir%C3%AD%20Gaeilge%20agus%20d%27fhoghlaimeoir%C3%AD%20Gaeilge.%20B%C3%AD%20cinnte%20go%20gceangla%C3%ADonn%20t%C3%BA%20leis%20an%20gcain%C3%A9al%20comhr%C3%A1.%20Cumraigh%20do%20leathanach%20baile%20cib%C3%A9%20sl%C3%AD%20is%20mian%20leat...&lang=ga&colors=%230190cf%7C%2300c1f2%7C%2300aaf5%7C%2310223f%7C%23ffffff&text-font=Poppins%2C%20system-ui%2C%20sans-serif&header-font=MeathFLF%2C%20system-ui%2C%20sans-serif&background-image=https%3A%2F%2Fhandihomepage.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fgaeilge.webp&logo=https%3A%2F%2Fhandihomepage.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fgaeilge-icon.webp&homepage=https%3A%2F%2Fhandihomepage.com%2F&weather-location=cork%20city&news=https%3A%2F%2Fwww.rte.ie%2Ffeeds%2Frss%2F%3Findex%3D%2Fgaeilge&social-server=mastodon.ie&social-profile=&social-hashtag=%23gaeilge&matrix-server=https%3A%2F%2Fmatrix.org&chat-rooms=%23gaeilgeoir%3Amatrix.org&support-image=https%3A%2F%2Fhandihomepage.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fgaeilge.webp&support-image-title=c%C3%A9ad%20m%C3%ADle%20f%C3%A1ilte&support-description=Tacaigh%20len%C3%A1r%20dtionscadal%20agus%20faigh%20rochtain%20ar%20fhothracha%20bus%20i%20bhf%C3%ADor-ama%2C%20glaochanna%20f%C3%B3n%20agus%20f%C3%ADse%C3%A1in%20saora%2C%20agus%20do%20liosta%20tascanna%20pr%C3%ADobh%C3%A1ideach%20f%C3%A9in.%20D%C3%A9an%20iarracht%20%C3%A1r%20dtriail%207%20l%C3%A1%20saor%20in%20aisce.%5BSupport%20us.%20Try%20our%207%20day%20free%20trial%20for%20tons%20of%20new%20feattures...%5D&radio-name=Radio%20R%C3%AD-R%C3%A1&radio-url=https%3A%2F%2Fuksoutha.streaming.broadcast.radio%2Fri-ra&support-link-url=https%3A%2F%2Fbuy.stripe.com%2F14AbJ05WbgWM73pbIfdUY00&gallery=&podcasts=https%3A%2F%2Fanchor.fm%2Fs%2Fdff7a758%2Fpodcast%2Frss&elements=gallery%2Cmusic%2Cnews%2Cchat%2Csocial%2Csupport&id=399d4da865fb4bdb40133def9fc830af460764597854c9c5ede61b4d3a371a30",
+      "icons": [
+        {
+          "src": "/images/icons/cork/cork-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    "education",
+    "news",
+    "social"
+  ],
+  "lang": "ga",
+  "dir": "ltr",
+  "prefer_related_applications": false
+}
