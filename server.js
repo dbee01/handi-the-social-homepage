@@ -132,8 +132,11 @@ app.get("/service-worker.js", (req, res) => {
 // Served explicitly because express.static ignores dotfiles by default.
 app.get("/.well-known/assetlinks.json", (req, res) => {
   const file = path.join(staticPath, ".well-known", "assetlinks.json");
-  if (!fs.existsSync(file)) return res.status(404).json([]);
-  res.type("application/json").sendFile(file);
+  try {
+    res.type("application/json").send(fs.readFileSync(file, "utf8"));
+  } catch (e) {
+    res.status(404).json([]);
+  }
 });
 
 // index:false — let the app.get("/") route below handle / so it can inject
