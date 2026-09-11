@@ -430,7 +430,7 @@ header {
 
    The value is media height + a fixed text allowance, so it shrinks
    automatically on small screens where media is scaled down too. */
-:root { --carousel-text-allowance: 370px; --carousel-arrow-top: 130px; }
+:root { --carousel-text-allowance: 370px; --carousel-arrow-top: 319px; }
 
 .dashboard-item[data-module="mastodon"],
 .dashboard-item[data-module="news"],
@@ -442,12 +442,12 @@ header {
 
 /* 2 columns: wider panel wraps text onto fewer lines, so shrink the allowance. */
 @media (max-width: 1150px) {
-    :root { --carousel-text-allowance: 320px; --carousel-arrow-top: 120px; }
+    :root { --carousel-text-allowance: 320px; --carousel-arrow-top: 302px; }
 }
 
 /* 1 column: full-width panel, shortest body text. */
 @media (max-width: 900px) {
-    :root { --carousel-text-allowance: 270px; --carousel-arrow-top: 100px; }
+    :root { --carousel-text-allowance: 270px; --carousel-arrow-top: 342px; }
 }
 
 /* Gallery keeps a lightbox and uses a flexible column layout, but still
@@ -1237,7 +1237,7 @@ header {
 
 /* Narrow/shorter media: keep the arrows in step with the scaled image height. */
 @media (max-width: 600px) {
-    :root { --carousel-arrow-top: 70px; }
+    :root { --carousel-arrow-top: 252px; }
 }
 
 /* =========================================================
