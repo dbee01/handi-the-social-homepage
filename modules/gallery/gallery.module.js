@@ -156,9 +156,17 @@ export default async function initGallery(container) {
       return e || k;
     };
 
-  const pinBtn = container.querySelector(".pin-btn");
+  const parentItem = container.closest(".dashboard-item");
+  // Standard shape: .module-content = [.panel-title, .gallery-content]. Module
+  // controls (pin/info) live directly under .dashboard-item (module-buttons.js),
+  // so make sure none are left inside .module-content.
+  if (parentItem) {
+    parentItem.dataset.module = "gallery";
+    const strayControls = container.querySelector(".module-controls");
+    if (strayControls) parentItem.appendChild(strayControls);
+  }
+
   container.innerHTML = "";
-  if (pinBtn) container.appendChild(pinBtn);
 
   const title = document.createElement("div");
   title.className = "panel-title";
@@ -172,11 +180,6 @@ export default async function initGallery(container) {
   const content = document.createElement("div");
   content.className = "gallery-content";
   container.appendChild(content);
-
-  const parentItem = container.closest(".dashboard-item");
-  if (parentItem) {
-    parentItem.dataset.module = "gallery";
-  }
 
   let images = [];
   try {

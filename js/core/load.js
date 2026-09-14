@@ -122,98 +122,46 @@ window.triggerLoad = function (opts) {
   input.click();
 };
 
-// Clicking a panel title collapses/expands everything below it in that
-// panel. Works for all modules: those where .panel-title is a direct
-// sibling of the content, and those (music/cast/radio/emergency) where the
-// title lives inside a *-header-row wrapper.
-// Collapse state is persisted to the Collapsible Module Record (CMR) in
-// localStorage (keyed by the dashboard item id) and re-applied on page load.
+// Collapse / expand a dashboard panel from its title, persisted in the
+// Collapsible Module Record (CMR).
 
-// Resolve the CMR key for a dashboard item: prefer its element id (which
-// matches the module registry ids, e.g. "social", "llm"), falling back to
-// data-module (e.g. "mastodon") when the id is absent.
+// CMR key for a dashboard item = its element id (e.g. "flip").
 function cmrKeyFor(item) {
   return item && (item.id || item.dataset.module || null);
 }
 
-// Modules that reserve a steady min-height (image + text) via a CSS
-// `[data-module=...]` rule. When collapsed their body is hidden, so that
-// reserved height must be released dynamically on the element (and restored
-// on expand) — a static CSS override is not enough because the base value is
-// breakpoint-dependent.
-function reservesMinHeight(item) {
-  if (!item) return false;
-  var mod = item.dataset.module || item.id;
-  return (
-    mod === "mastodon" ||
-    mod === "social" ||
-    mod === "news" ||
-    mod === "events" ||
-    mod === "flip" ||
-    mod === "newsletter" ||
-    mod === "gallery"
-  );
-}
-
-// Apply a single module's saved collapse state (true = collapsed).
+// CMR collapse: set .module-content to height:auto and its 2nd child
+// (e.g. .flip-content) to height:0; display:none, then reload Packery.
+// Expand clears both.
 function applyModuleCollapse(item, collapsed) {
-  var title = item.querySelector(".panel-title");
-  if (!title) return;
-  // The header is the title itself, or the header-row that wraps it.
-  var header = title;
-  var parent = title.parentElement;
-  if (parent && /-header-row$/.test(parent.className || "")) {
-    header = parent;
-  }
-  // The module body is the second child of .module-content (e.g. .flip-content,
-  // .gallery-content, .news-content, .music-content) — the element after the
-  // title/header. On collapse set it to height:0; display:none and clear both
-  // on expand.
-  var content = item.querySelector(".module-content") || header.parentElement;
-  if (content) {
-    var body = content.children[1];
-    // Defensive fallback: if the second child is (or wraps) the header, e.g. a
-    // module that prepended a node, collapse every non-header child instead.
-    var targets =
-      body && body !== header && !body.contains(header)
-        ? [body]
-        : Array.prototype.filter.call(content.children, function (c) {
-            return c !== header && !c.contains(header);
-          });
-    targets.forEach(function (b) {
-      b.style.height = collapsed ? "0" : "";
-      b.style.display = collapsed ? "none" : "";
-    });
-  }
-  // Mark the panel so CSS/layout can target the collapsed state.
-  item.classList.toggle("is-collapsed", collapsed);
-  // Dynamically release/restore the reserved min-height on this element.
-  if (reservesMinHeight(item)) {
-    if (collapsed) {
-      item.style.minHeight = "0";
-      item.style.height = "auto";
-    } else {
-      item.style.minHeight = "";
-      item.style.height = "";
+  var content = item.querySelector(".module-content");
+  if (!content) return;
+  var body = content.children[1];
+  if (collapsed) {
+    content.style.height = "auto";
+    if (body) {
+      body.style.height = "0";
+      body.style.display = "none";
+    }
+  } else {
+    content.style.height = "";
+    if (body) {
+      body.style.height = "";
+      body.style.display = "";
     }
   }
+  if (window.refreshDashboardLayout) window.refreshDashboardLayout();
 }
 
-// Apply saved CMR state across all dashboard items. Re-entrant and cheap:
-// only sets inline display on collapsed modules, so it can be re-run every
-// time the grid re-layouts (matching modules that re-render asynchronously).
+// Apply saved CMR state on load.
 function applyCMRState() {
   if (!window.handiNs || !window.getCMR) return;
   var cmr = window.getCMR();
   document.querySelectorAll(".dashboard-item").forEach(function (item) {
     var key = cmrKeyFor(item);
-    if (!key) return;
-    applyModuleCollapse(item, cmr[key] === 1);
+    if (key && cmr[key] === 1) applyModuleCollapse(item, true);
   });
 }
-
-// Expose so layout.js can re-assert collapse state on every Packery re-layout.
-window.applyCMRState = applyCMRState;
 
 document.addEventListener("click", function (e) {
   var title = e.target.closest(".panel-title");
@@ -221,40 +169,28 @@ document.addEventListener("click", function (e) {
   // The support panel is fixed/un-collapsible: leave it alone.
   var dashboardItem = title.closest(".dashboard-item");
   if (dashboardItem && dashboardItem.dataset.module === "support") return;
-  // Ignore clicks on interactive controls inside the title (help button,
-  // lock toggle, etc.) so they keep their own behaviour.
+  // Ignore clicks on interactive controls inside the title (help button, etc.).
   if (e.target.closest("button, a, input, select, textarea")) return;
 
-  // Determine the current collapsed state from the live class marker.
-  var nowCollapsed = !dashboardItem.classList.contains("is-collapsed");
+  var content = dashboardItem.querySelector(".module-content");
+  var body = content ? content.children[1] : null;
+  var collapsed = body ? body.style.display === "none" : false;
+  var nowCollapsed = !collapsed;
 
-  // Apply display + class + height release together in one place, then persist.
   applyModuleCollapse(dashboardItem, nowCollapsed);
+
+  // Persist the new state to the CMR (1 = collapsed, 0 = expanded).
   var key = cmrKeyFor(dashboardItem);
   if (key && window.setModuleCollapsed) {
     window.setModuleCollapsed(key, nowCollapsed);
   }
-
-  // Keep the masonry grid in sync with the new panel height.
-  requestAnimationFrame(function () {
-    if (window.refreshDashboardLayout) window.refreshDashboardLayout();
-  });
 });
 
-// Apply saved collapse state once the dashboard items exist. Runs on
-// DOMContentLoaded and again on window load / pageshow for modules that render
-// late (or when the page is restored from the back/forward cache after
-// navigating away to Settings and returning).
-function applyCMRAndReflow() {
-  applyCMRState();
-  requestAnimationFrame(function () {
-    if (window.refreshDashboardLayout) window.refreshDashboardLayout();
-  });
-}
+// Apply saved collapse state once dashboard items exist.
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", applyCMRAndReflow);
+  document.addEventListener("DOMContentLoaded", applyCMRState);
 } else {
-  applyCMRAndReflow();
+  applyCMRState();
 }
-window.addEventListener("load", applyCMRAndReflow);
-window.addEventListener("pageshow", applyCMRAndReflow);
+window.addEventListener("load", applyCMRState);
+window.addEventListener("pageshow", applyCMRState);

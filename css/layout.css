@@ -453,7 +453,7 @@ header {
 /* Gallery keeps a lightbox and uses a flexible column layout, but still
    reserves steady space for its image + caption + upload button. */
 .dashboard-item[data-module="gallery"] {
-    min-height: calc(var(--media-height) + var(--carousel-text-allowance));
+    /* min-height: calc(var(--media-height) + var(--carousel-text-allowance)); */
     display: flex;
     flex-direction: column;
 }

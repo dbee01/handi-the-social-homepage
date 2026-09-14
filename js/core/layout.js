@@ -9,12 +9,6 @@ let sortableInstance = null;
 
 function refreshLayout() {
     if (typeof window === 'undefined') return;
-    // Re-assert any persisted collapse state before laying out, so modules
-    // that re-rendered (e.g. after an async fetch) stay collapsed/expanded as
-    // the user left them.
-    if (window.applyCMRState) {
-        try { window.applyCMRState(); } catch (e) {}
-    }
     if (window.packeryInstance) {
         window.packeryInstance.reloadItems();
         window.packeryInstance.layout();
