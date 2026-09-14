@@ -325,3 +325,72 @@ window.resetMMR = function () {
   window.handiNs.set(MMR_KEY, JSON.stringify(defaults));
   return defaults;
 };
+
+// =============================================================================
+// Collapsible Module Record (CMR)
+// =============================================================================
+// The CMR records, per module, whether its body is collapsed (1) or expanded
+// (0). It lives in localStorage (via handiNs) under the key "handiCMR", exactly
+// like the MMR. On the dashboard, the panel title doubles as the toggle: clicking
+// it collapses/expands the module body and persists the new state here. On page
+// load index.html reads the CMR and applies the stored collapsed/expanded state.
+//
+//   0 = expanded (full)   — default
+//   1 = collapsed (hidden body)
+
+const CMR_KEY = "handiCMR";
+
+window.CMR_EXPANDED = 0;
+window.CMR_COLLAPSED = 1;
+
+// getCMR() -- reads the live CMR, seeding missing modules to expanded (0)
+window.getCMR = function () {
+  try {
+    const raw = window.handiNs.get(CMR_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (parsed) {
+      let changed = false;
+      for (const m of window.HANDI_MODULES) {
+        if (!(m.id in parsed)) {
+          parsed[m.id] = window.CMR_EXPANDED;
+          changed = true;
+        }
+      }
+      if (changed) {
+        window.handiNs.set(CMR_KEY, JSON.stringify(parsed));
+      }
+      return parsed;
+    }
+  } catch (e) {
+    /* fall through */
+  }
+  const seed = {};
+  for (const m of window.HANDI_MODULES) {
+    seed[m.id] = window.CMR_EXPANDED;
+  }
+  window.handiNs.set(CMR_KEY, JSON.stringify(seed));
+  return seed;
+};
+
+// saveCMR(obj) -- persists the full CMR
+window.saveCMR = function (obj) {
+  try {
+    window.handiNs.set(CMR_KEY, JSON.stringify(obj));
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+// setModuleCollapsed(id, collapsed) -- flip one module's state and persist
+window.setModuleCollapsed = function (id, collapsed) {
+  const cmr = window.getCMR();
+  cmr[id] = collapsed ? window.CMR_COLLAPSED : window.CMR_EXPANDED;
+  window.saveCMR(cmr);
+  return cmr;
+};
+
+// isModuleCollapsed(id) -- true if the module body should be hidden
+window.isModuleCollapsed = function (id) {
+  return window.getCMR()[id] === window.CMR_COLLAPSED;
+};

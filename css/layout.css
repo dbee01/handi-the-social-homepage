@@ -437,7 +437,7 @@ header {
 .dashboard-item[data-module="events"],
 .dashboard-item[data-module="flip"],
 .dashboard-item[data-module="newsletter"] {
-    min-height: calc(var(--media-height) + var(--carousel-text-allowance));
+    /* min-height: calc(var(--media-height) + var(--carousel-text-allowance)); */
 }
 
 /* 2 columns: wider panel wraps text onto fewer lines, so shrink the allowance. */
