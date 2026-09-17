@@ -60,6 +60,7 @@ live() {
       --exclude='log.txt' \
       --exclude='.gtfs-cache' \
       --exclude='data' \
+      --exclude='pwa' \
       "$src" \
       "u247564401@82.29.191.118:${path}"
     ssh -p 65002 u247564401@82.29.191.118 "pkill -f 'lsnode:.*${site}' 2>/dev/null; sleep 3; echo Restarted
