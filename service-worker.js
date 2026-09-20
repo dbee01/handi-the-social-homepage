@@ -1,4 +1,4 @@
-const CACHE = "ple-v37";
+const CACHE = "ple-v38";
 
 // Manual bump per deploy (you deploy from your working copy, not git). Always
 // raise CACHE before deploying so browsers pick up a changed service worker.
@@ -13,7 +13,6 @@ const PRECACHE = [
   "/settings.html",
   "/selector.html",
   "/app.js",
-  "/css/base.css",
   "/css/layout.css",
   "/css/theme.css",
   "/css/elderly.css",
