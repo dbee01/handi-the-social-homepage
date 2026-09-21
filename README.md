@@ -1,22 +1,16 @@
-![Handi Homepage dashboard](images/handi-cork-ss.png)
-
 # Handi Homepage
 
-**Your safe home on the web.**
+**Your Safe First Page of the Web**
 
-**[handihomepage.com](https://handihomepage.com)** · [Codeberg repository](https://codeberg.org/handi/ple) · [Issue tracker](https://codeberg.org/handi/ple/issues)
+![Handi Homepage dashboard](images/handi-cork-ss.png)
 
 ---
 
 ## Intro
 
-Built for novice, elderly and enthusiast web users alike, Handi Homepage is a free, open-source browser homepage that puts a photo gallery, music player, radio streaming and much more right on your start page.
+Introducing a whole new way of surfing the Web. The Handi Homepage is simply a Social Homepage that keeps your data where it belongs. In your browser and your browser only. Create, config and share your own Handi-homepage with your family & friends.
 
-It replaces your browser's new-tab page with a private, personal dashboard. Drag a few modules onto the page, arrange them however you like, and everything — your photos, music, feeds, chat rooms, even your bus times — is stored locally in your browser. There is no account, no tracking, and **your personal data never leaves your device**.
-
-Handi Homepage is deliberately gentle on beginners and older users (a high-contrast senior theme, large hit targets, plain language and per-module help) without being a toy for power users: a Packery masonry layout, five themes, per-module lock buttons and a shareable *handi-pack* config you can send to someone else.
-
-Make Handi Homepage your homepage today.
+Your data stays in your browser (local storage). Featuring zero trackers. Zero cookies. Zero surveillance. Say NO to surveillence capitalism and reclaim your data sovereignty all in one go.
 
 ## Video
 
@@ -24,25 +18,54 @@ Make Handi Homepage your homepage today.
 
 <video src="https://handihomepage.com/wp-content/uploads/2026/07/handi_WEB.mp4" controls poster="images/handi-cork-ss.png" style="max-width:100%;width:720px;"></video>
 
-## Screenshots
+## How does it work?
 
-| Desktop | Mobile |
-|---|---|
-| ![Handi Homepage dashboard](images/handi-cork-ss.png) | ![Handi Homepage on a phone](images/screenshot-narrow.jpg) |
+Your data is divided into two types: public vs private. 
 
----
+### Public Data:
+
+Public data is built and stored client-side using our [handi-builder](https://handihomepage.com/handi-builder/) web tool. Choose your news feeds, local music tracks, podcasts, social media #hashtags or @users to follow on Mastodon etc. 
+
+All this public data is stored in (and decorated from) a super-long link you create and share among friends, family and your community. So they can see what you see. Your link is private but can be shared by you on social media and your website - if you choose.
+
+### Private Data:
+
+For users who choose to enter their own data eg. for the Task List, Live Bus Routes, Local AI, approximate location (for weather) etc. This data is stored in your browser memory only. It does not reach our server.
+
+In fact, you have to configure your Handi-homepage on each of your devices. There's no login. No registration. No tracking. You cannot sync your devices since we know absolutely nothing about you or your data.
+
+## What makes Handi-homepage a *social* homepage?
+
+The Handi-homepage is part feedreader, part social platform, part homepage. The homepage integrates with the Matrix chat servers so you can chat in totally privacy. 
+
+It also integrates with the Mastodon social network where you can follow by content by #hashtag or #account. This means you can share info with others in your community or group. Even if they are not members of the Mastodon social network.
+
+## The techie bit
+
+Built on nodejs. We provide a layer of anonymity between you and the apparatus of surveillence captialism. By routing your feeds through at least one endpoint on our server, and keeping your data on your system only. 
+
+We help you maintain your anonymity and privacy online. Our [handi-builder](https://handihomepage.com/handi-builder/) tool helps you build your own link / Handi-homepage. This tool functions client-side, so we cannot see what your Handi-homepage contains.
+
+## Privacy Policy & Mission
+
+Our goal is to help reclaim international tech sovereignty for countries and individuals. Our Tech. Our Data. Our Freedom.
+
+For further info about our data privacy policy and our project mission. Check out our [Privacy Page](https://handihomepage.com/privacy/)
 
 ## Features
+
+The interface contains *elements* on-screen for each module eg. a local AI element, a chat element, a live bus element etc. You pin elements and add or remove them using the '+' setting button in the footer of the page.
 
 ### Dashboard
 - Drag-and-drop layout (Packery masonry grid)
 - Pin modules to the top
-- Light / dark theme toggle
-- Additional themes: senior (high-contrast, elderly-friendly), student, techie, woman
+- Light / dark themes toggle
+- Additional themes: senior (high-contrast, elderly-friendly), student, techie, women
 - Module lock buttons to prevent accidental changes
 - Per-module info popups and settings
 - Handi-pack support — deploy a branded dashboard from a shareable config URL
 - Subscription-based premium modules (Stripe)
+- Download and install as a PWA (installable webpage)
 
 ### Free modules
 
