@@ -162,12 +162,15 @@ Copy `.env.example` to `.env`. The `.env` file is gitignored — never commit re
 |---|---|---|
 | `PORT` | — | Server port (default `8080`) |
 | `BUS_API_KEY` | Bus | NTA GTFS-RT API key |
+| `APISPORTS_KEY` | Sports | API-Sports key (fixtures, scores, odds) |
 | `INFOBIP_API_KEY` | Phone / Location | Infobip SMS/RTC API key |
 | `INFOBIP_BASE_URL` | Phone / Location | Infobip API host |
 | `STRIPE_SECRET_KEY` | Premium | Stripe secret key |
 | `VITE_MATRIX_PASS` | Chat (dev) | Matrix password (Vite-only) |
 | `EVENTBRITE_PRIVATE_TOKEN` | Events | Eventbrite private OAuth token |
 | `EVENTBRITE_PUBLIC_TOKEN` | Events | Eventbrite public token |
+| `EVENTBRITE_CLIENT_SECRET` | Events | Eventbrite OAuth client secret |
+| `EVENTBRITE_API_KEY` | Events | Eventbrite app API key |
 | `LOG_USERNAME` / `LOG_PASSWORD` | Logging | HTTP auth for the log endpoint |
 | `LOG_LEVEL` / `LOG_MAX_BYTES` / `LOG_KEEP_BYTES` | Logging | Client event logging controls |
 | `PROXY_USERNAME_*` / `PROXY_PASSWORD_*` | News feeds | Feed-relay proxy credentials |
