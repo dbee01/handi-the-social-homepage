@@ -1,4 +1,4 @@
-const CACHE = "ple-v32";
+const CACHE = "ple-v38";
 
 // Manual bump per deploy (you deploy from your working copy, not git). Always
 // raise CACHE before deploying so browsers pick up a changed service worker.
@@ -13,7 +13,6 @@ const PRECACHE = [
   "/settings.html",
   "/selector.html",
   "/app.js",
-  "/css/base.css",
   "/css/layout.css",
   "/css/theme.css",
   "/css/elderly.css",
@@ -68,6 +67,8 @@ const PRECACHE = [
   "/images/icons/cork/cork-512x512.png",
   "/images/icons/cork/cork-maskable-192x192.png",
   "/images/icons/cork/cork-maskable-512x512.png",
+  "/images/icons/cork/cork-letters-512x512.png",
+  "/images/icons/cork/handi-cork-ss.png",
 ];
 
 // Brand used for notifications until the page tells us which brand is active.

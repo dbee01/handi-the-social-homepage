@@ -72,9 +72,22 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/images/icons/cork/cork-letters-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "screenshots": [
+    {
+      "src": "/images/icons/cork/handi-cork-ss.png",
+      "sizes": "1024x500",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Handi-homepage for Cork, Ireland"
+    },
     {
       "src": "/images/screenshot-wide.jpg",
       "sizes": "1280x720",

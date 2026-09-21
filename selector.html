@@ -735,7 +735,31 @@
             @media (max-width: 700px) {
         </style>
 
-    </head>
+    <style>
+/* =========================================================
+   iOS SAFARI
+   Prevents text autosizing and focus-zoom (tapping a form
+   field under 16px zooms the whole page) and guards against
+   horizontal overflow, which makes Safari scale out to fit
+   the content and then snap back in.
+========================================================= */
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    overflow-x: hidden;
+    overflow-x: clip;
+}
+
+@media (max-width: 900px) {
+    input,
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+}
+</style>
+</head>
     <body>
         <script src="/lang/loader.js"></script>
             <script src="/js/core/log.js"></script>

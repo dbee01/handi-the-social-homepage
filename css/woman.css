@@ -48,7 +48,7 @@ body::before {
     content: "";
     position: fixed;
     top: -100px;
-    right: -100px;
+    right: 0;
     width: 380px;
     height: 380px;
     border-radius: 50%;

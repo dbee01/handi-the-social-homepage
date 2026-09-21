@@ -1172,6 +1172,14 @@ header {
     border-radius: 12px;
 }
 
+/* Per-room message toggle (▲/▼): primary-coloured glyph on a transparent
+   background, so it doesn't show the default grey button chrome. */
+.chat-toggle-msgs {
+    background: none;
+    border: none;
+    color: var(--primary, #0047cc);
+}
+
 .chat-room-messages {
     padding: 16px;
     max-height: 300px;
@@ -1383,6 +1391,7 @@ button:hover,
 .task-add-subtask {
     background: none;
     border: 1px dashed #cbd5e1;
+    color: var(--text, inherit);
     opacity: 0.7;
     padding: 6px 12px;
     border-radius: 8px;
@@ -2374,4 +2383,27 @@ footer {
     background: none;
     border: none;
     cursor: pointer;
+}
+
+/* =========================================================
+   iOS SAFARI
+   Prevents text autosizing and focus-zoom (tapping a form
+   field under 16px zooms the whole page) and guards against
+   horizontal overflow, which makes Safari scale out to fit
+   the content and then snap back in.
+========================================================= */
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    overflow-x: hidden;
+    overflow-x: clip;
+}
+
+@media (max-width: 900px) {
+    input,
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
 }
