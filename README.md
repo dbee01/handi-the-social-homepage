@@ -1,12 +1,34 @@
-![Handi Homepage on desktop, tablet and phone](http://handihomepage.com/wp-content/uploads/2026/05/3deviceWebsiteMockup.jpg)
+![Handi Homepage dashboard](images/handi-cork-ss.png)
 
 # Handi Homepage
 
 **Your safe home on the web.**
 
-> Built for novice, elderly and enthusiast web users alike, Handi Homepage is a free, open-source browser homepage that puts a photo gallery, music player, radio streaming and much more right on your start page. Your personal data never leaves your device. Make Handi Homepage your homepage today.
-
 **[handihomepage.com](https://handihomepage.com)** · [Codeberg repository](https://codeberg.org/handi/ple) · [Issue tracker](https://codeberg.org/handi/ple/issues)
+
+---
+
+## Intro
+
+Built for novice, elderly and enthusiast web users alike, Handi Homepage is a free, open-source browser homepage that puts a photo gallery, music player, radio streaming and much more right on your start page.
+
+It replaces your browser's new-tab page with a private, personal dashboard. Drag a few modules onto the page, arrange them however you like, and everything — your photos, music, feeds, chat rooms, even your bus times — is stored locally in your browser. There is no account, no tracking, and **your personal data never leaves your device**.
+
+Handi Homepage is deliberately gentle on beginners and older users (a high-contrast senior theme, large hit targets, plain language and per-module help) without being a toy for power users: a Packery masonry layout, five themes, per-module lock buttons and a shareable *handi-pack* config you can send to someone else.
+
+Make Handi Homepage your homepage today.
+
+## Video
+
+▶️ **[Watch the Handi Homepage demo](https://handihomepage.com/wp-content/uploads/2026/07/handi_WEB.mp4)**
+
+<video src="https://handihomepage.com/wp-content/uploads/2026/07/handi_WEB.mp4" controls poster="images/handi-cork-ss.png" style="max-width:100%;width:720px;"></video>
+
+## Screenshots
+
+| Desktop | Mobile |
+|---|---|
+| ![Handi Homepage dashboard](images/handi-cork-ss.png) | ![Handi Homepage on a phone](images/screenshot-narrow.jpg) |
 
 ---
 
@@ -22,9 +44,7 @@
 - Handi-pack support — deploy a branded dashboard from a shareable config URL
 - Subscription-based premium modules (Stripe)
 
-### Modules
-
-**Free**
+### Free modules
 
 | Module | Description |
 |---|---|
@@ -35,12 +55,12 @@
 | 🐘 Social | Mastodon feed (profile, hashtag or local timeline) |
 | 📚 Flip | Flipboard profile/topic feeds |
 | ✉️ Newsletter | Newsletter RSS feed as a card scroller |
-| 📻 Cast | Podcast player |
+| 🎙️ Cast | Podcast player |
 | 💬 Chat | Matrix messaging |
 | ⚽ Sports | Live football scores and key events |
 | 🎪 Events | Festivals and things to do near you (Eventbrite) |
 
-**Premium**
+### Premium modules
 
 | Module | Description |
 |---|---|
@@ -51,6 +71,8 @@
 | 🧠 LLM | Private AI chat (client-side model) |
 | ❤️ Support | Support link/card |
 | 📍 Location | SMS emergency location sharing |
+
+Premium modules are unlocked with a subscription (Stripe).
 
 ---
 
@@ -129,60 +151,54 @@ Copy `.env.example` to `.env`. The `.env` file is gitignored — never commit re
 
 ---
 
-## Project Structure
+## File Index
 
 ```
 ple/
-├── server.js                 # Express API server + static hosting
-├── app.js                    # App entry
-├── vite.config.js            # Vite dev proxy
+├── server.js                  # Express API server + static hosting
+├── app.js                     # App entry
+├── vite.config.js             # Vite dev server + /api proxy
 ├── package.json
-├── .env.example              # Environment template (never commit .env)
-├── index.html                # Dashboard
-├── settings.html             # Settings page
-├── selector.html             # Dashboard module selector
-├── upload.html               # Upload helper
-├── subscription-success.html # Stripe checkout success page
-├── manifest.json             # Web app manifest
-├── service-worker.js         # PWA service worker
+├── .env.example               # Environment template (never commit .env)
+├── index.html                 # Dashboard
+├── settings.html              # Settings page
+├── selector.html              # Module selector
+├── upload.html                # Upload helper
+├── subscription-success.html  # Stripe checkout success page
+├── manifest.json              # Web app manifest
+├── service-worker.js          # PWA service worker
+├── .well-known/               # assetlinks.json (Android TWA verification)
+├── .zed/                      # Editor settings
 ├── css/
-│   ├── base.css              # Variables, reset
-│   ├── layout.css            # Grid, responsive, module layouts
-│   ├── main.css              # Entry stylesheet
-│   ├── theme.css             # Dark theme
-│   ├── elderly.css           # High-contrast senior theme
-│   ├── student.css           # Student theme
-│   ├── techie.css            # Techie theme
-│   ├── woman.css             # Woman theme
-│   ├── settings.css          # Settings page styles
-│   ├── site-pack.css         # Handi-pack styling
-│   ├── webrtc-widget.css     # Calls widget
-│   └── vendor/               # Font Awesome
+│   ├── main.css               # Entry stylesheet
+│   ├── layout.css             # Grid, responsive, module layouts
+│   ├── theme.css              # Dark theme
+│   ├── elderly.css            # High-contrast senior theme
+│   ├── student.css            # Student theme
+│   ├── techie.css             # Techie theme
+│   ├── woman.css              # Woman theme
+│   ├── settings.css           # Settings page styles
+│   ├── site-pack.css          # Handi-pack styling
+│   ├── webrtc-widget.css      # Calls widget
+│   ├── fonts/                 # Self-hosted webfonts
+│   └── vendor/                # Font Awesome
 ├── js/
-│   ├── settings-app.js       # Settings page entry
-│   ├── core/                 # Shared modules
-│   │   ├── layout.js         # Packery layout + refreshDashboardLayout
-│   │   ├── module-registry.js# Module definitions & MMR
-│   │   ├── module-buttons.js # Lock / pin / info controls
-│   │   ├── settings.js       # Settings load/save
-│   │   ├── storage.js        # IndexedDB helpers
-│   │   ├── load.js           # triggerLoad file-picker helper
-│   │   ├── handi-pack.js     # Branded pack import
-│   │   ├── weather.js        # Header weather
-│   │   ├── theme-switcher.js # Theme switching
-│   │   └── …                 # and more shared helpers
-│   └── vendor/               # Packery, Sortable, matrix-js-sdk, etc.
-├── lang/                     # UI translations (en, ga, de, fr, es, …)
-├── manifests/                # Extra manifests (e.g. Gaeilge)
-├── modules/                  # One folder per dashboard module
-│   ├── gallery/ music/ cast/ radio/ news/ social (mastodon)/
-│   ├── flip/ newsletter/ sports/ events/ chat/ calendar/ task/
-│   ├── friendly-phone/ bus/ ai/ support/ emergency/ weather/ ui/
-│   └── …                     # each containing <name>.module.js
-├── images/                   # Icons, logos, default assets
-├── scripts/                  # Build/utility scripts
-├── snippets/                 # Reusable code snippets
-└── proto/                    # Protobuf definitions / GTFS-RT
+│   ├── settings-app.js        # Settings page entry
+│   ├── core/                  # Shared helpers (layout, module-registry,
+│   │                          #   module-buttons, settings, storage, handi-pack,
+│   │                          #   weather, theme-switcher, …)
+│   └── vendor/                # Packery, Sortable, matrix-js-sdk, …
+├── modules/                   # One folder per dashboard module
+│   ├── gallery/  music/  cast/  radio/  news/  mastodon/  flip/  newsletter/
+│   ├── sports/   events/  chat/                        # free modules
+│   ├── friendly-phone/  bus/  calendar/  task/  ai/  support/  emergency/
+│   └── weather/  ui/                                   # premium + shared UI
+├── lang/                      # UI translations (en, ga, de, fr, es, it, nl, …)
+├── manifests/                 # Extra web app manifests (cork, gaeilge)
+├── images/                    # Icons, logos and screenshots
+├── scripts/                   # Build/utility scripts
+├── snippets/                  # Reusable HTML/CSS snippets
+└── proto/                     # GTFS-Realtime protobuf definitions
 ```
 
 ---
