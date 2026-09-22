@@ -21,7 +21,7 @@
   },
   "homepage": "https://codeberg/handi/ple#readme",
   "dependencies": {
-    "adm-zip": "^0.6.0",
+    "adm-zip": "^0.6.1",
     "axios": "^1.19.0",
     "cors": "^2.8.6",
     "csv-parser": "^3.2.1",
