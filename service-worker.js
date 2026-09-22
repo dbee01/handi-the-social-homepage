@@ -1,4 +1,4 @@
-const CACHE = "ple-v38";
+const CACHE = "ple-v39";
 
 // Manual bump per deploy (you deploy from your working copy, not git). Always
 // raise CACHE before deploying so browsers pick up a changed service worker.
