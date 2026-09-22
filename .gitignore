@@ -10,4 +10,9 @@ log.txt
 # (not committed: ~130MB ONNX model; runtime/wasm in js/vendor stays in git)
 models/
 twa/*.keystore
-pwa/*.keystore
+
+# TWA build artifacts (keystore, APK/AAB) — deployed via rsync only
+pwa/
+
+# Zed editor local settings
+.zed/

@@ -1,6 +1,6 @@
 # Handi Homepage
 
-**Your Safe First Page of the Web**
+**the World Wide Web - without the noise**
 
 ![Handi Homepage dashboard](images/handi-cork-ss.png)
 
@@ -8,9 +8,9 @@
 
 ## Intro
 
-Introducing a whole new way of surfing the Web. The Handi Homepage is simply a Social Homepage that keeps your data where it belongs. In your browser and your browser only. Create, config and share your own Handi-homepage with your family & friends.
+Introducing a whole new way of consuming content on the Web. The Handi Homepage is simply a *Social Homepage* that keeps your data where it belongs. In your browser - and in your browser *only*. Create, configure and share your own Handi-homepage with the people who matter to you most.
 
-Your data stays in your browser (local storage). Featuring zero trackers. Zero cookies. Zero surveillance. Say NO to surveillence capitalism and reclaim your data sovereignty all in one go.
+All of your private data stays in your browser (local storage). Featuring zero trackers. Zero cookies. Zero surveillance. Say NO to surveillence capitalism and reclaim your data sovereignty all in one go.
 
 ## Video
 
@@ -67,6 +67,16 @@ The interface contains *elements* on-screen for each module eg. a local AI eleme
 - Subscription-based premium modules (Stripe)
 - Download and install as a PWA (installable webpage)
 
+## Examples of handi-homepages
+
+**Cork PWA:** a link to an Android PWA (a webpage you install) for Cork, Ireland
+
+[Cork PWA - Android ](https://handihomepage.com/pwa/app-release-signed.apk)
+
+**Cork Handi-homepage:** webpage equivalent for Cork city
+
+[Cork Handi-Hompage](https://senior.handihomepage.com/?handi-pack=Cork+City+Handi-homepage&description=News%2C+views%2C+chat%2C+music%2C+podcasts+and+buses+etc.+Everything+you+need+to+know+and+do+in+Cork+city.+A+Handi-homepage+for+both+visitors+and+residents+of+Cork+city%2C+Ireland.+Welcome+to+the+Rebel+city%21&lang=en&colors=%23d30000%7C%230f0f10%7C%23f4f7fb%7C%2310223f%7C%23f3f8ff&font=Poppins%2C+system-ui%2C+sans-serif%7CInter%2C+system-ui%2C+sans-serif&background-image=https%3A%2F%2Fsenior.handihomepage.com%2Fimages%2Ficons%2Fcork%2Fcork-mark.png&logo=https%3A%2F%2Fsenior.handihomepage.com%2Fimages%2Ficons%2Fcork%2Fcork-mark.png&homepage=https%3A%2F%2Fhandihomepage.com%2F&weather-location=cork+city&radio=96+FM%3A+https%3A%2F%2Fonic.cork.live.stream.broadcasting.news%2Fstream-96fm&flip=https%3A%2F%2Fflipboard.com%2Ftopic%2Fcorkcity.rss&social-server=mastodon.ie&social-hashtag=%23corkcity&matrix-server=https%3A%2F%2Fmatrix.org&chat-rooms=%23corkchat%3Amatrix.org&support-image=https%3A%2F%2Fsenior.handihomepage.com%2Fimages%2Ficons%2Fcork%2Fcork-maskable-192x192.png&support-image-title=Welcome+to+the+Cork+Handi-homepage&support-description=This+is+your+homepage+for+Cork+events%2C+news%2C+buses+and+radio+etc.+Built+with+your+privacy+in+mind.+Our+mission+is+to+keep+you+%28and+your+data%29+safe+on+the+Web.+We+are+proud+to+be+supported+by+our+users.+Click+on+the+link+below+if+you%27d+like+to+buy+me+a+pint..%3F&support-link-url=https%3A%2F%2Fbuymeacoffee.com%2Fdazrunner&support=1&cast=https%3A%2F%2Frss.podplaystudio.com%2F2850.xml&elements=bus%2Ccalendar%2Ccast%2Cchat%2Cflip%2Cmusic%2Cradio%2Csocial%2Csupport%2Ctask&id=79de272e99cdebf40d822118e3feb72c3094abe3e4591ccb1b60a7536c6e5d51)
+
 ### Free modules
 
 | Module | Description |
@@ -99,6 +109,60 @@ Premium modules are unlocked with a subscription (Stripe).
 
 ---
 
+## Let's look at a handi-homepage link
+
+Built with the handi-admin tool on your system (client-side). Your handi-homepage link can be up to 600+ chars long and contains all the info needed to decorate (build) your personal homepage. 
+
+You can share your link on social media, your website, email etc. Get [started]](https://handihomepage.com/handi-builder/) today by building your own handi-homepage.
+
+### Handi-link format
+
+```
+paramter            | value
+https://senior.handihomepage.com/
+
+handi-pack           Cork City Handi-homepage
+description          News, views, chat, music, podcasts and buses etc. Everything you need to
+                     know and do in Cork city. A Handi-homepage for both visitors and
+                     residents of Cork city, Ireland. Welcome to the Rebel city!
+lang                 en
+
+colors               #d30000 | #0f0f10 | #f4f7fb | #10223f | #f3f8ff
+                       primary | secondary | tertiary | text | background
+font                 Poppins, system-ui, sans-serif | Inter, system-ui, sans-serif
+                       text font | header font
+
+background-image     https://senior.handihomepage.com/images/icons/cork/cork-mark.png
+logo                 https://senior.handihomepage.com/images/icons/cork/cork-mark.png
+homepage             https://handihomepage.com/
+
+weather-location     cork city
+radio                96 FM: https://onic.cork.live.stream.broadcasting.news/stream-96fm
+flip                 https://flipboard.com/topic/corkcity.rss
+
+social-server        mastodon.ie
+social-hashtag       #corkcity
+matrix-server        https://matrix.org
+chat-rooms           #corkchat:matrix.org
+
+support-image        https://senior.handihomepage.com/images/icons/cork/cork-maskable-192x192.png
+support-image-title  Welcome to the Cork Handi-homepage
+support-description  This is your homepage for Cork events, news, buses and radio etc. Built
+                     with your privacy in mind. Our mission is to keep you (and your data)
+                     safe on the Web. We are proud to be supported by our users. Click on the
+                     link below if you'd like to buy me a pint..?
+support-link-url     https://buymeacoffee.com/dazrunner
+support              1
+
+cast                 https://rss.podplaystudio.com/2850.xml
+elements             bus, calendar, cast, chat, flip, music, radio, social, support, task
+
+id                   79de272e99cdebf40d822118e3feb72c3094abe3e4591ccb1b60a7536c6e5d51
+                       (admin-signed pack signature)
+```
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -109,7 +173,7 @@ Premium modules are unlocked with a subscription (Stripe).
 | **Storage** | IndexedDB (client-side) |
 | **Chat** | Matrix via `matrix-js-sdk` |
 | **Calls** | Infobip RTC (WebRTC) |
-| **SMS** | Infobip API |
+| **Location** | Infobip API |
 | **Bus data** | NTA GTFS-RT (protobuf) |
 | **Events** | Eventbrite API |
 | **Payments** | Stripe subscriptions |
