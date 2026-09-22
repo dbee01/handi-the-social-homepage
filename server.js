@@ -454,21 +454,6 @@ app.get("/", (req, res) => {
     );
   }
 
-  // Runtime client config. The app is served statically (no Vite build), so
-  // `import.meta.env` is undefined in the browser — hand the client the few env
-  // values it needs here instead. These end up in the page source, so treat
-  // them as public.
-  const clientEnv = {
-    VITE_MATRIX_USER: process.env.VITE_MATRIX_USER || "",
-    VITE_MATRIX_PASS: process.env.VITE_MATRIX_PASS || "",
-  };
-  html = html.replace(
-    "</head>",
-    "<script>window.__CLIENT_ENV__=" +
-      JSON.stringify(clientEnv).replace(/</g, "\\u003c") +
-      ";</script></head>",
-  );
-
   res.type("html").send(html);
 });
 

@@ -77,7 +77,7 @@ The interface contains *elements* on-screen for each module eg. a local AI eleme
 
 [Cork Handi-Homepage](https://senior.handihomepage.com/?handi-pack=Cork+City+Handi-homepage&description=News%2C+views%2C+chat%2C+music%2C+podcasts+and+buses+etc.+Everything+you+need+to+know+and+do+in+Cork+city.+A+Handi-homepage+for+both+visitors+and+residents+of+Cork+city%2C+Ireland.+Welcome+to+the+Rebel+city%21&lang=en&colors=%23d30000%7C%230f0f10%7C%23f4f7fb%7C%2310223f%7C%23f3f8ff&font=Poppins%2C+system-ui%2C+sans-serif%7CInter%2C+system-ui%2C+sans-serif&background-image=https%3A%2F%2Fsenior.handihomepage.com%2Fimages%2Ficons%2Fcork%2Fcork-mark.png&logo=https%3A%2F%2Fsenior.handihomepage.com%2Fimages%2Ficons%2Fcork%2Fcork-mark.png&homepage=https%3A%2F%2Fhandihomepage.com%2F&weather-location=cork+city&radio=96+FM%3A+https%3A%2F%2Fonic.cork.live.stream.broadcasting.news%2Fstream-96fm&flip=https%3A%2F%2Fflipboard.com%2Ftopic%2Fcorkcity.rss&social-server=mastodon.ie&social-hashtag=%23corkcity&matrix-server=https%3A%2F%2Fmatrix.org&chat-rooms=%23corkchat%3Amatrix.org&support-image=https%3A%2F%2Fsenior.handihomepage.com%2Fimages%2Ficons%2Fcork%2Fcork-maskable-192x192.png&support-image-title=Welcome+to+the+Cork+Handi-homepage&support-description=This+is+your+homepage+for+Cork+events%2C+news%2C+buses+and+radio+etc.+Built+with+your+privacy+in+mind.+Our+mission+is+to+keep+you+%28and+your+data%29+safe+on+the+Web.+We+are+proud+to+be+supported+by+our+users.+Click+on+the+link+below+if+you%27d+like+to+buy+me+a+pint..%3F&support-link-url=https%3A%2F%2Fbuymeacoffee.com%2Fdazrunner&support=1&cast=https%3A%2F%2Frss.podplaystudio.com%2F2850.xml&elements=bus%2Ccalendar%2Ccast%2Cchat%2Cflip%2Cmusic%2Cradio%2Csocial%2Csupport%2Ctask&id=79de272e99cdebf40d822118e3feb72c3094abe3e4591ccb1b60a7536c6e5d51)
 
-### Free modules
+## Free modules
 
 | Module | Description |
 |---|---|
@@ -93,7 +93,7 @@ The interface contains *elements* on-screen for each module eg. a local AI eleme
 | ⚽ Sports | Live football scores and key events |
 | 🎪 Events | Festivals and things to do near you (Eventbrite) |
 
-### Premium modules
+## Premium modules
 
 | Module | Description |
 |---|---|
@@ -230,7 +230,6 @@ Copy `.env.example` to `.env`. The `.env` file is gitignored — never commit re
 | `INFOBIP_API_KEY` | Phone / Location | Infobip SMS/RTC API key |
 | `INFOBIP_BASE_URL` | Phone / Location | Infobip API host |
 | `STRIPE_SECRET_KEY` | Premium | Stripe secret key |
-| `VITE_MATRIX_PASS` | Chat (dev) | Matrix password (Vite-only) |
 | `EVENTBRITE_PRIVATE_TOKEN` | Events | Eventbrite private OAuth token |
 | `EVENTBRITE_PUBLIC_TOKEN` | Events | Eventbrite public token |
 | `EVENTBRITE_CLIENT_SECRET` | Events | Eventbrite OAuth client secret |
