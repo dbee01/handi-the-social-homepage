@@ -15,17 +15,18 @@ const https = require("https");
 const gtfsrt = require("./proto/gtfs-rt.js");
 const gtfsServer = require("./js/core/gtfs-server.js");
 
-// Simple .env loader (avoids dotenv compatibility issues)
-try {
-  const envPath = path.join(__dirname, ".env");
-  if (fs.existsSync(envPath)) {
+// Simple .env loader (avoids dotenv compatibility issues).
+// A key already present in the real environment (or set by an earlier file)
+// always wins, so host-injected variables stay authoritative.
+function loadEnvFile(envPath) {
+  try {
     const envContent = fs.readFileSync(envPath, "utf8");
     for (const line of envContent.split("\n")) {
       const trimmed = line.trim();
       if (!trimmed || trimmed.startsWith("#")) continue;
       const eqIdx = trimmed.indexOf("=");
       if (eqIdx < 1) continue;
-      let key = trimmed.substring(0, eqIdx).trim();
+      const key = trimmed.substring(0, eqIdx).trim();
       let val = trimmed.substring(eqIdx + 1).trim();
       // Strip surrounding quotes
       if (
@@ -38,10 +39,30 @@ try {
         process.env[key] = val;
       }
     }
-    console.log("   → Loaded .env file");
+    return true;
+  } catch (e) {
+    console.warn(`   ⚠️ Could not load ${envPath}:`, e.message);
+    return false;
   }
-} catch (e) {
-  console.warn("   ⚠️ Could not load .env:", e.message);
+}
+
+// Candidate env files, highest priority first:
+//   1. HANDI_ENV_FILE — explicit override path.
+//   2. .env next to server.js (the repo / deploy copy).
+//   3. A STABLE file above the versioned app dir. The live layout is
+//      hbuilds/versions/<uuid>/nodejs, so this resolves to hbuilds/.env and
+//      survives the `hbuilds/current` symlink swaps that replace the app dir
+//      (and with it the repo .env). No-op on a plain checkout locally.
+const ENV_FILES = [];
+if (process.env.HANDI_ENV_FILE) ENV_FILES.push(process.env.HANDI_ENV_FILE);
+ENV_FILES.push(path.join(__dirname, ".env"));
+if (path.basename(path.resolve(__dirname, "..", "..")) === "versions") {
+  ENV_FILES.push(path.join(path.resolve(__dirname, "..", "..", ".."), ".env"));
+}
+for (const envPath of ENV_FILES) {
+  if (fs.existsSync(envPath) && loadEnvFile(envPath)) {
+    console.log(`   → Loaded .env file: ${envPath}`);
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -432,6 +453,21 @@ app.get("/", (req, res) => {
       "",
     );
   }
+
+  // Runtime client config. The app is served statically (no Vite build), so
+  // `import.meta.env` is undefined in the browser — hand the client the few env
+  // values it needs here instead. These end up in the page source, so treat
+  // them as public.
+  const clientEnv = {
+    VITE_MATRIX_USER: process.env.VITE_MATRIX_USER || "",
+    VITE_MATRIX_PASS: process.env.VITE_MATRIX_PASS || "",
+  };
+  html = html.replace(
+    "</head>",
+    "<script>window.__CLIENT_ENV__=" +
+      JSON.stringify(clientEnv).replace(/</g, "\\u003c") +
+      ";</script></head>",
+  );
 
   res.type("html").send(html);
 });

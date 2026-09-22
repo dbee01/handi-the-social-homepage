@@ -58,9 +58,16 @@ export default async function initChat(container) {
         ];
   let refreshSeconds = settings.chat?.refreshInterval || 30;
   let homeserver = settings.chat?.homeserver || "https://matrix.org";
-  let username = settings.chat?.username;
+  let username =
+    settings.chat?.username ||
+    (typeof window !== "undefined" &&
+      window.__CLIENT_ENV__?.VITE_MATRIX_USER) ||
+    (typeof import.meta !== "undefined" && import.meta.env?.VITE_MATRIX_USER) ||
+    "handibot";
   let password =
     settings.chat?.password ||
+    (typeof window !== "undefined" &&
+      window.__CLIENT_ENV__?.VITE_MATRIX_PASS) ||
     (typeof import.meta !== "undefined" && import.meta.env?.VITE_MATRIX_PASS) ||
     "";
 
