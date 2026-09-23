@@ -38,7 +38,7 @@ In fact, you have to configure your Handi-homepage on each of your devices. Ther
 
 The Handi-homepage is part feedreader, part social platform, part homepage. The homepage integrates with the Matrix chat servers so you can chat in totally privacy. 
 
-It also integrates with the Mastodon social network where you can follow by content by #hashtag or #account. This means you can share info with others in your community or group. Even if they are not members of the Mastodon social network.
+And also integrates with the Mastodon social network where you can follow content by #hashtag or @account. This means you can share info with others in your community or group. Even if they are not members of the Mastodon social network. 
 
 ## The techie bit
 
@@ -51,6 +51,16 @@ We help you maintain your anonymity and privacy online. Our [handi-builder](http
 Our goal is to help reclaim international tech sovereignty for countries and individuals. Our Tech. Our Data. Our Freedom.
 
 For further info about our data privacy policy and our project mission. Check out our [Privacy Page](https://handihomepage.com/privacy/)
+
+## Examples of handi-homepages
+
+**Cork PWA:** a link to an Android PWA (a webpage you install) for Cork, Ireland
+
+[Cork PWA - Android ](https://handihomepage.com/pwa/app-release-signed.apk)
+
+**Cork Handi-homepage:** webpage equivalent for Cork city
+
+[Cork Handi-Homepage](https://senior.handihomepage.com/?handi-pack=Cork+City+Handi-homepage&description=News%2C+views%2C+chat%2C+music%2C+podcasts+and+buses+etc.+Everything+you+need+to+know+and+do+in+Cork+city.+A+Handi-homepage+for+both+visitors+and+residents+of+Cork+city%2C+Ireland.+Welcome+to+the+Rebel+city%21&lang=en&colors=%23d30000%7C%230f0f10%7C%23f4f7fb%7C%2310223f%7C%23f3f8ff&font=Poppins%2C+system-ui%2C+sans-serif%7CInter%2C+system-ui%2C+sans-serif&background-image=https%3A%2F%2Fsenior.handihomepage.com%2Fimages%2Ficons%2Fcork%2Fcork-mark.png&logo=https%3A%2F%2Fsenior.handihomepage.com%2Fimages%2Ficons%2Fcork%2Fcork-mark.png&homepage=https%3A%2F%2Fhandihomepage.com%2F&weather-location=cork+city&radio=96+FM%3A+https%3A%2F%2Fonic.cork.live.stream.broadcasting.news%2Fstream-96fm&flip=https%3A%2F%2Fflipboard.com%2Ftopic%2Fcorkcity.rss&social-server=mastodon.ie&social-hashtag=%23corkcity&matrix-server=https%3A%2F%2Fmatrix.org&chat-rooms=%23corkchat%3Amatrix.org&support-image=https%3A%2F%2Fsenior.handihomepage.com%2Fimages%2Ficons%2Fcork%2Fcork-maskable-192x192.png&support-image-title=Welcome+to+the+Cork+Handi-homepage&support-description=This+is+your+homepage+for+Cork+events%2C+news%2C+buses+and+radio+etc.+Built+with+your+privacy+in+mind.+Our+mission+is+to+keep+you+%28and+your+data%29+safe+on+the+Web.+We+are+proud+to+be+supported+by+our+users.+Click+on+the+link+below+if+you%27d+like+to+buy+me+a+pint..%3F&support-link-url=https%3A%2F%2Fbuymeacoffee.com%2Fdazrunner&support=1&cast=https%3A%2F%2Frss.podplaystudio.com%2F2850.xml&elements=bus%2Ccalendar%2Ccast%2Cchat%2Cflip%2Cmusic%2Cradio%2Csocial%2Csupport%2Ctask&id=79de272e99cdebf40d822118e3feb72c3094abe3e4591ccb1b60a7536c6e5d51)
 
 ## Features
 
@@ -67,45 +77,35 @@ The interface contains *elements* on-screen for each module eg. a local AI eleme
 - Subscription-based premium modules (Stripe)
 - Download and install as a PWA (installable webpage)
 
-## Examples of handi-homepages
-
-**Cork PWA:** a link to an Android PWA (a webpage you install) for Cork, Ireland
-
-[Cork PWA - Android ](https://handihomepage.com/pwa/app-release-signed.apk)
-
-**Cork Handi-homepage:** webpage equivalent for Cork city
-
-[Cork Handi-Homepage](https://senior.handihomepage.com/?handi-pack=Cork+City+Handi-homepage&description=News%2C+views%2C+chat%2C+music%2C+podcasts+and+buses+etc.+Everything+you+need+to+know+and+do+in+Cork+city.+A+Handi-homepage+for+both+visitors+and+residents+of+Cork+city%2C+Ireland.+Welcome+to+the+Rebel+city%21&lang=en&colors=%23d30000%7C%230f0f10%7C%23f4f7fb%7C%2310223f%7C%23f3f8ff&font=Poppins%2C+system-ui%2C+sans-serif%7CInter%2C+system-ui%2C+sans-serif&background-image=https%3A%2F%2Fsenior.handihomepage.com%2Fimages%2Ficons%2Fcork%2Fcork-mark.png&logo=https%3A%2F%2Fsenior.handihomepage.com%2Fimages%2Ficons%2Fcork%2Fcork-mark.png&homepage=https%3A%2F%2Fhandihomepage.com%2F&weather-location=cork+city&radio=96+FM%3A+https%3A%2F%2Fonic.cork.live.stream.broadcasting.news%2Fstream-96fm&flip=https%3A%2F%2Fflipboard.com%2Ftopic%2Fcorkcity.rss&social-server=mastodon.ie&social-hashtag=%23corkcity&matrix-server=https%3A%2F%2Fmatrix.org&chat-rooms=%23corkchat%3Amatrix.org&support-image=https%3A%2F%2Fsenior.handihomepage.com%2Fimages%2Ficons%2Fcork%2Fcork-maskable-192x192.png&support-image-title=Welcome+to+the+Cork+Handi-homepage&support-description=This+is+your+homepage+for+Cork+events%2C+news%2C+buses+and+radio+etc.+Built+with+your+privacy+in+mind.+Our+mission+is+to+keep+you+%28and+your+data%29+safe+on+the+Web.+We+are+proud+to+be+supported+by+our+users.+Click+on+the+link+below+if+you%27d+like+to+buy+me+a+pint..%3F&support-link-url=https%3A%2F%2Fbuymeacoffee.com%2Fdazrunner&support=1&cast=https%3A%2F%2Frss.podplaystudio.com%2F2850.xml&elements=bus%2Ccalendar%2Ccast%2Cchat%2Cflip%2Cmusic%2Cradio%2Csocial%2Csupport%2Ctask&id=79de272e99cdebf40d822118e3feb72c3094abe3e4591ccb1b60a7536c6e5d51)
-
-## Free modules
+### Free modules
 
 | Module | Description |
 |---|---|
-| 📸 Gallery | Photo slideshow with lightbox (or a Pixelfed feed) |
-| 🎵 Player | Local audio player with visualiser |
-| 📻 Radio | Internet radio with country filter |
-| 📰 News | RSS feed reader |
-| 🐘 Social | Mastodon feed (profile, hashtag or local timeline) |
-| 📚 Flip | Flipboard profile/topic feeds |
-| ✉️ Newsletter | Newsletter RSS feed as a card scroller |
-| 🎙️ Cast | Podcast player |
-| 💬 Chat | Matrix messaging |
+| 📸 Gallery | Photo slideshow with lightbox (or a Pixelfed feed). Upload images or follow Pixelfed account |
+| 🎵 Player | Local audio player with visualiser. Upload your own music tracks, or listen to external feed |
+| 📻 Radio | Internet radio with country filter, choose your channel |
+| 📰 News | RSS feed reader - stay connected with News you care about, not news you do not. |
+| 🐘 Social | Mastodon is a free and open Social Network (follow by @profile or #hashtag) |
+| 📚 Flip | Flipboard is a news aggregation service, follow #topics or @accounts on your homepage |
+| ✉️ Newsletter | Cool feature, sign up to an RSS.app email to feed service (use this as public email adress for newsletters and other correspondance) |
+| 🎙️ Cast | Podcast player - listen to your favourite podcast feeds |
+| 💬 Chat | Matrix messaging. Matrix is a secure chat platform. Monitor open channels on your homepage |
 | ⚽ Sports | Live football scores and key events |
-| 🎪 Events | Festivals and things to do near you (Eventbrite) |
+| 🎪 Events | Festivals and things to do near you (Eventbrite). Enter your location, find things to do |
 
 ## Premium modules
 
 | Module | Description |
 |---|---|
-| 📞 Phone | One-tap audio/video calling with contact photos |
+| 📞 Phone | One-tap audio/video calling with contact photos. Browser to phone calling feature. |
 | 🚌 Bus | Real-time Irish bus tracker (GTFS-RT) |
-| 📅 Calendar | ICS calendar with reminders |
-| ✅ Tasks | To-do list |
-| 🧠 LLM | Private AI chat (client-side model) |
+| 📅 Calendar | ICS calendar with reminders. This calendar and calendar alert system works with Proton Calendar only (for the time-being) |
+| ✅ Tasks | To-do list. Enter your list of things to do privately |
+| 🧠 LLM | Private AI chat you download on your system and it works offline even. (experimental) |
 | ❤️ Support | Support link/card |
-| 📍 Location | SMS emergency location sharing |
+| 📍 Location | SMS emergency location sharing (experimental) |
 
-Premium modules are unlocked with a subscription (Stripe).
+Premium modules are unlocked with a subscription (Stripe) - unless otherwise included.
 
 ---
 
