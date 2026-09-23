@@ -87,7 +87,7 @@ The interface contains *elements* on-screen for each module eg. a local AI eleme
 | 📰 News | RSS feed reader - stay connected with News you care about, not news you do not. |
 | 🐘 Social | Mastodon is a free and open Social Network (follow by @profile or #hashtag) |
 | 📚 Flip | Flipboard is a news aggregation service, follow #topics or @accounts on your homepage |
-| ✉️ Newsletter | Cool feature, sign up to an RSS.app email to feed service (use this as public email adress for newsletters and other correspondance) |
+| ✉️ Newsletter | Cool feature, sign up to an RSS.app email to feed service (use this as public email address for newsletters and other correspondance) |
 | 🎙️ Cast | Podcast player - listen to your favourite podcast feeds |
 | 💬 Chat | Matrix messaging. Matrix is a secure chat platform. Monitor open channels on your homepage |
 | ⚽ Sports | Live football scores and key events |
