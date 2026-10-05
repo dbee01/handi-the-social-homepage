@@ -461,6 +461,22 @@ export default async function initMusic(container) {
   // Used both on a hard media error and when the pull stalls without firing an
   // error (the Vivaldi-tablet cut-out). Returns false when there is nothing to
   // recover (stream, attempts exhausted).
+  // Best-effort track duration that survives the tablet's unreliable
+  // audio.duration for blob-backed files: fall back to the end of the
+  // buffered range (which the media stack does keep current), then to an
+  // unknown value (0) that never matches the "near the end" test.
+  function reliableDuration(audio) {
+    if (!audio) return 0;
+    var d = audio.duration;
+    if (isFinite(d) && d > 0) return d;
+    try {
+      if (audio.buffered && audio.buffered.length) {
+        return audio.buffered.end(audio.buffered.length - 1);
+      }
+    } catch (e) {}
+    return 0;
+  }
+
   function attemptRecovery(audio) {
     var track = tracks[currentIndex];
     if (!track || !track.file) return false;
@@ -472,13 +488,15 @@ export default async function initMusic(container) {
       0;
     // If the pull died within the last few seconds of the track, resuming at
     // the same spot would just re-stall on the same tail bytes — advance to
-    // the next track instead of looping.
-    if (
-      audio &&
-      isFinite(audio.duration) &&
-      audio.duration > 0 &&
-      resumeAt > audio.duration - 4
-    ) {
+    // the next track instead of looping. Use a duration that is still valid
+    // even when audio.duration is NaN/Infinity (common on Android for blobs).
+    var dur = reliableDuration(audio);
+    if (dur > 0 && resumeAt > dur - 4) {
+      // Hard reset so the next track starts with a fresh recovery budget and
+      // a clean playing state instead of inheriting this track's failures.
+      recoveryAttempts = 0;
+      isPlaying = false;
+      stopCurrentAudio(true);
       playNext();
       return true;
     }
@@ -517,6 +535,10 @@ export default async function initMusic(container) {
     var token = ++loadToken;
     stopCurrentAudio(true);
     currentIndex = index;
+    // A new track gets a fresh recovery budget — never inherit a previous
+    // track's failed-recovery count, which would otherwise silently stop the
+    // next track from self-healing.
+    recoveryAttempts = 0;
     pendingAutoPlayIndex = -1;
     var track = tracks[currentIndex];
     trackTitleSpan.innerText = removeFileExtension(track.name);
