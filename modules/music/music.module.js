@@ -233,7 +233,9 @@ export default async function initMusic(container) {
     		pendingAutoPlayIndex = -1,
     		recoveryAttempts = 0,
     		lastProgress = 0,
-    		stallCheck = null;
+    		stallCheck = null,
+    		loadToken = 0,
+    		loadingIndex = -1;
 
 	  function readSession() {
 	    try {
@@ -401,10 +403,64 @@ export default async function initMusic(container) {
     updateTrackIconsAndActive();
   }
 
-  // Rebuild the blob URL for a local file and resume from the last known
-  // position. Used both on a hard media error and when the blob pull stalls
-  // without firing an error (the Vivaldi-tablet cut-out). Returns false when
-  // there is nothing to recover (stream, attempts exhausted).
+  // Read a whole on-device track into memory, one chunk at a time. The file
+  // lives in IndexedDB; playing straight from that blob URL lets the browser
+  // page the bytes back in mid-song, which is what makes the player jump.
+  // Assembling the chunks into one Blob keeps a single in-memory copy.
+  var TRACK_CHUNK_BYTES = 1024 * 1024;
+
+  async function readTrackIntoMemory(file, onProgress) {
+    var size = file.size || 0;
+    var chunks = [];
+    var read = 0;
+    while (read < size) {
+      var slice = file.slice(read, Math.min(read + TRACK_CHUNK_BYTES, size));
+      chunks.push(await slice.arrayBuffer());
+      read += slice.size;
+      if (onProgress) onProgress(read, size);
+    }
+    return new Blob(chunks, { type: file.type || "audio/mpeg" });
+  }
+
+  function freeTrackMemory(track) {
+    if (!track) return;
+    if (track.memoryUrl) {
+      try { URL.revokeObjectURL(track.memoryUrl); } catch (e) {}
+    }
+    track.memoryUrl = null;
+    track.memoryBlob = null;
+  }
+
+  // Returns the source the <audio> element should play. A local file is read
+  // fully into memory once and cached on the track, so pause/resume and a
+  // recovery retry reuse the same bytes; streams pass straight through.
+  function resolvePlayableUrl(track, token) {
+    if (!track.file || !track.file.size) return Promise.resolve(track.url);
+    if (track.memoryUrl) return Promise.resolve(track.memoryUrl);
+    if (!track.memoryPromise) {
+      track.memoryPromise = readTrackIntoMemory(track.file, function (done, total) {
+        if (token !== loadToken) return;
+        var pct = total ? Math.floor((done / total) * 100) : 0;
+        stateSpan.innerText = " | " + t("d_buffering", "Buffering…") + " " + pct + "%";
+      })
+        .then(function (blob) {
+          track.memoryPromise = null;
+          track.memoryBlob = blob;
+          track.memoryUrl = URL.createObjectURL(blob);
+          return track.memoryUrl;
+        })
+        .catch(function (err) {
+          track.memoryPromise = null;
+          throw err;
+        });
+    }
+    return track.memoryPromise;
+  }
+
+  // The track is read in from scratch and resumed from the last known position.
+  // Used both on a hard media error and when the pull stalls without firing an
+  // error (the Vivaldi-tablet cut-out). Returns false when there is nothing to
+  // recover (stream, attempts exhausted).
   function attemptRecovery(audio) {
     var track = tracks[currentIndex];
     if (!track || !track.file) return false;
@@ -429,9 +485,9 @@ export default async function initMusic(container) {
     recoveryAttempts++;
     isPlaying = false;
     stopCurrentAudio(true);
-    try { URL.revokeObjectURL(track.url); } catch (e) {}
-    try { track.url = URL.createObjectURL(track.file); } catch (e) { track.url = ""; }
-    if (!track.url) return false;
+    // Drop the resident copy so the next play reads the track in again from
+    // scratch instead of reusing whatever went bad.
+    freeTrackMemory(track);
     playTrack(currentIndex, true, resumeAt);
     return true;
   }
@@ -449,7 +505,7 @@ export default async function initMusic(container) {
     }, 3000);
   }
 
-  function playTrack(index, autoPlay, startAt) {
+  async function playTrack(index, autoPlay, startAt) {
     if (autoPlay === undefined) autoPlay = true;
     if (isLocked) {
       showError(t("d_playerLocked", "Player locked – unlock to play"));
@@ -458,11 +514,32 @@ export default async function initMusic(container) {
     if (index < 0 || index >= tracks.length) return;
     if (currentAudio && currentIndex === index && isPlaying) return;
 
+    var token = ++loadToken;
     stopCurrentAudio(true);
     currentIndex = index;
     pendingAutoPlayIndex = -1;
     var track = tracks[currentIndex];
     trackTitleSpan.innerText = removeFileExtension(track.name);
+
+    // Read the whole track into memory before handing it to the element. That
+    // read is what removes the jump: once playback starts there is nothing left
+    // for the browser to page back out of IndexedDB mid-song.
+    var src = track.url;
+    if (track.file && track.file.size) {
+      stateSpan.innerText = " | " + t("d_buffering", "Buffering…");
+      loadingIndex = index;
+      try {
+        src = await resolvePlayableUrl(track, token);
+      } catch (e) {
+        src = track.url;
+      }
+      if (loadingIndex === index) loadingIndex = -1;
+      if (isLocked || token !== loadToken) return; // superseded or locked
+      // Only the playing track needs its bytes resident.
+      tracks.forEach(function (tr) {
+        if (tr !== track) freeTrackMemory(tr);
+      });
+    }
 
     try {
       // Fresh element per play (same as the Cast module, which does not suffer
@@ -471,17 +548,12 @@ export default async function initMusic(container) {
       var audio = document.createElement("audio");
       audio.setAttribute("playsinline", "");
       audio.setAttribute("webkit-playsinline", "");
-      // The file is already local (an in-memory blob), so ask the browser to
-      // buffer the whole thing up front instead of relying on progressive
-      // range pulls — a failed range read is the tablet cut-out. Capped: a
-      // multi-hundred-MB file buffered fully could OOM a tablet.
-      audio.preload =
-        track.file && track.file.size > 50 * 1024 * 1024
-          ? "metadata"
-          : "auto";
+      // A local track is served from an in-memory Blob, so there is nothing to
+      // wait on: buffer the lot up front.
+      audio.preload = "auto";
       audio.volume = 1.0;
       audio.muted = window.handiNs.get("globalMute") === "true";
-      audio.src = track.url;
+      audio.src = src;
       (document.body || document.documentElement).appendChild(audio);
       window.__handiMusicAudio = audio;
       currentAudio = audio;
@@ -646,8 +718,16 @@ export default async function initMusic(container) {
       playTrack(pendingAutoPlayIndex, true);
       return;
     }
-    if (currentIndex === -1 || !currentAudio) {
+    if (currentIndex === -1) {
       playTrack(0, true);
+      return;
+    }
+    if (!currentAudio) {
+      // No element yet: either the track is still being read into memory, in
+      // which case the pending play() will start it, or playback was torn down
+      // and the track needs restarting.
+      if (loadingIndex === currentIndex) return;
+      playTrack(currentIndex, true);
       return;
     }
     if (isPlaying) {
@@ -821,6 +901,7 @@ export default async function initMusic(container) {
     }
     window.removeEventListener("pagehide", onPageHide);
     document.removeEventListener("visibilitychange", onVisibilityChange);
+    tracks.forEach(freeTrackMemory);
     var a = currentAudio;
     currentAudio = null;
     if (a) {
