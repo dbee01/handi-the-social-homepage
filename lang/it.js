@@ -207,6 +207,9 @@ var LANG = {
   d_live: "In tempo reale",
   d_scheduled: "Programmato",
   d_due: "In arrivo",
+  d_departureTime: "Orario di partenza",
+  d_destinationTime: "Orario di arrivo",
+  d_arrival: "Arrivo",
 
   d_tasks: "Attività",
   d_taskTitle: "Titolo attività",

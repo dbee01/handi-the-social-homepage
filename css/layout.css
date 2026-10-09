@@ -2057,6 +2057,100 @@ button:hover,
 }
 
 /* =========================================================
+   BUS JOURNEY FLOW
+   Scheduled/Live status, then two rows:
+   Departure → Time, Arrival → Time
+========================================================= */
+
+.bus-flow {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 10px;
+    padding: 14px 16px;
+}
+
+.bus-flow-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.bus-flow-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.bus-flow-tag {
+    flex: 0 0 auto;
+    min-width: 5.5rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    font-weight: 700;
+}
+
+.bus-flow-arrow {
+    flex: 0 0 auto;
+    color: #94a3b8;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.bus-flow-value {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bus-flow-time {
+    flex: 0 0 auto;
+    font-variant-numeric: tabular-nums;
+    font-size: 1.1rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.bus-flow-sub {
+    flex: 0 0 auto;
+    font-size: 0.8rem;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+.bus-status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.bus-status-live {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.bus-status-scheduled {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+/* =========================================================
    FOOTER LAYOUT
 ========================================================= */
 

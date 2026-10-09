@@ -2453,6 +2453,51 @@ app.get("/api/bus/v2/departures", async (req, res) => {
   }
 });
 
+// Scheduled journey durations (seconds) for a list of trips between two stops.
+// Returns { journeys: { trip_id: seconds|null } }.
+app.get("/api/bus/v2/journeys", async (req, res) => {
+  const { trips, from, to } = req.query;
+  if (!trips || !from) {
+    return res.status(400).json({ error: "trips and from required" });
+  }
+  const tripIds = String(trips)
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  try {
+    const journeys = {};
+    await Promise.all(
+      tripIds.map(async (tripId) => {
+        journeys[tripId] = await gtfsServer.getTripJourneySeconds(
+          tripId,
+          from,
+          to || null,
+        );
+      }),
+    );
+    res.json({ journeys });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.get("/api/bus/v2/route-journey", async (req, res) => {
+  const { route_id, from, to } = req.query;
+  if (!route_id || !from) {
+    return res.status(400).json({ error: "route_id and from required" });
+  }
+  try {
+    const journey_seconds = await gtfsServer.getRouteJourneySeconds(
+      route_id,
+      from,
+      to || null,
+    );
+    res.json({ journey_seconds });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });

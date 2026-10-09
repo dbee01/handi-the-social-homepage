@@ -569,6 +569,118 @@ async function getScheduledDepartures(routeId, stopId, limit = 4) {
   }
 }
 
+// Resolve a stoptime to seconds-since-midnight. node-gtfs exposes computed
+// *_timestamp fields; fall back to parsing the raw HH:MM:SS string.
+function stTimeToSecs(st, field) {
+  const ts = st[field + "_timestamp"];
+  if (typeof ts === "number" && Number.isFinite(ts)) return ts;
+  const raw = st[field + "_time"];
+  if (typeof raw === "string" && raw !== "") {
+    const parts = raw.split(":").map(Number);
+    if (parts.length >= 2 && parts.every((n) => Number.isFinite(n))) {
+      return parts[0] * 3600 + parts[1] * 60 + (parts[2] || 0);
+    }
+  }
+  return null;
+}
+
+// Core: scheduled journey duration (seconds) between two stops on one trip's
+// ordered stop_times — destination arrival minus departure-stop departure.
+function journeySecondsFromStoptimes(
+  stoptimes,
+  departureStopId,
+  destinationStopId,
+) {
+  if (!stoptimes || stoptimes.length < 2) return null;
+  const dep = stoptimes.find((s) => s.stop_id === departureStopId);
+  if (!dep) return null;
+  const depSecs = stTimeToSecs(dep, "departure");
+  if (depSecs == null) return null;
+
+  // Prefer the configured destination stop, but fall back to the trip's
+  // terminus (last stop in sequence) when it isn't configured, isn't on this
+  // trip, or is upstream of the departure stop.
+  let dest = destinationStopId
+    ? stoptimes.find((s) => s.stop_id === destinationStopId)
+    : null;
+  let destSecs = dest ? stTimeToSecs(dest, "arrival") : null;
+  if (destSecs == null || destSecs <= depSecs) {
+    dest = stoptimes[stoptimes.length - 1];
+    destSecs = stTimeToSecs(dest, "arrival");
+  }
+  if (destSecs == null || destSecs <= depSecs) return null;
+
+  const duration = destSecs - depSecs;
+  if (!Number.isFinite(duration) || duration <= 0) return null;
+  return duration;
+}
+
+// Scheduled journey duration (seconds) for a single trip.
+async function getTripJourneySeconds(tripId, departureStopId, destinationStopId) {
+  await waitForImport();
+  try {
+    const lib = await ensureLib();
+    const _db = getDb() || lib.openDb(config);
+    if (!db) db = _db;
+    const stoptimes = lib.getStoptimes(
+      { trip_id: tripId },
+      [],
+      [["stop_sequence", "ASC"]],
+    );
+    return journeySecondsFromStoptimes(
+      stoptimes,
+      departureStopId,
+      destinationStopId,
+    );
+  } catch (e) {
+    console.error("[GTFS] getTripJourneySeconds error:", e.message);
+    return null;
+  }
+}
+
+// Scheduled journey duration (seconds) for a route: resolve the route's trips
+// (accepting either the long "2 220 c b" form or the short "220" form) and
+// return the first trip's scheduled duration between the two stops.
+async function getRouteJourneySeconds(
+  routeId,
+  departureStopId,
+  destinationStopId,
+) {
+  await waitForImport();
+  try {
+    const lib = await ensureLib();
+    const _db = getDb() || lib.openDb(config);
+    if (!db) db = _db;
+
+    let trips = lib.getTrips({ route_id: routeId });
+    if (!trips || trips.length === 0) {
+      const allTrips = lib.getTrips();
+      trips = allTrips.filter((t) => {
+        const parts = (t.route_id || "").split(" ");
+        return parts.length >= 3 && parts[1] === routeId;
+      });
+    }
+
+    for (const trip of trips) {
+      const stoptimes = lib.getStoptimes(
+        { trip_id: trip.trip_id },
+        [],
+        [["stop_sequence", "ASC"]],
+      );
+      const seconds = journeySecondsFromStoptimes(
+        stoptimes,
+        departureStopId,
+        destinationStopId,
+      );
+      if (seconds != null) return seconds;
+    }
+    return null;
+  } catch (e) {
+    console.error("[GTFS] getRouteJourneySeconds error:", e.message);
+    return null;
+  }
+}
+
 module.exports = {
   doImport,
   getAllRoutes,
@@ -578,4 +690,6 @@ module.exports = {
   getStopInfo,
   getScheduledDepartures,
   getStopDirection,
+  getTripJourneySeconds,
+  getRouteJourneySeconds,
 };
