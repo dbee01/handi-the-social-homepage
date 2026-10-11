@@ -122,6 +122,15 @@ window.HANDI_MODULES = [
     defaultEnabled: 0,
     settingsConfig: { location: "", type: "", distance: "" },
   },
+  {
+    id: "fitness",
+    name: "Fitness",
+    icon: '<i class="fa-solid fa-heart-pulse"></i>',
+    desc: "Weight, workouts, nutrition & progress photos (wger)",
+    tier: "free",
+    defaultEnabled: 0,
+    settingsConfig: { token: "" },
+  },
 
   // ─── Premium modules ───────────────────────────────────────────────────
   {
