@@ -81,6 +81,7 @@ var LANG = {
     newsletter: { name: "Newsletter", desc: "Email digest" },
     sports: { name: "Sports", desc: "Live football" },
     events: { name: "Events", desc: "What's on near you" },
+    fitness: { name: "Fitness", desc: "Workouts & nutrition" },
   },
 
   // Dashboard component strings
@@ -310,6 +311,26 @@ var LANG = {
                 d_sportsError: "Could not load today's fixtures.",
                 d_sportsNone: "No fixtures today.",
                 d_sportsToday: "Today",
+
+  // Fitness
+  d_fitnessWeight: "Weight",
+  d_fitnessWorkouts: "Workouts",
+  d_fitnessNutrition: "Nutrition",
+  d_fitnessGallery: "Gallery",
+  d_fitnessNoKey: "Add your wger API key to see your fitness data.",
+  d_fitnessNoKeyHint: "Open Settings → Fitness, and paste your permanent wger token.",
+  d_fitnessBadKey: "Your wger API key was rejected.",
+  d_fitnessBadKeyHint: "Check the token in Settings → Fitness and try again.",
+  d_fitnessOffline: "Can't reach wger.de right now.",
+  d_fitnessOfflineHint: "Check your internet connection and try again.",
+  d_fitnessNoWeight: "No weight measurements yet.",
+  d_fitnessWeightHint: "Body weight over time",
+  d_fitnessEntries: "entries",
+  d_fitnessNoWorkouts: "No workouts logged yet.",
+  d_fitnessWorkoutSession: "Workout",
+  d_fitnessNoNutrition: "No nutrition plan yet.",
+  d_fitnessDailyTotals: "Daily totals",
+  d_fitnessNoGallery: "No progress photos yet.",
 
         // Weather
   d_weatherDisabled: "Weather module disabled.",
