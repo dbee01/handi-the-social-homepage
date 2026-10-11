@@ -248,6 +248,9 @@ var LANG = {
   d_live: "Live",
   d_scheduled: "Scheduled",
   d_due: "Due",
+  d_departureTime: "Departure Time",
+  d_destinationTime: "Destination Time",
+  d_arrival: "Arrival",
 
   // Task
     d_tasks: "Tasks",

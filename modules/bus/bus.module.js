@@ -104,8 +104,6 @@ export default async function initBus(container) {
     const style = document.createElement("style");
     style.id = "bus-live-style";
     style.textContent = `
-      .bus-item { padding:4px 0; font-size:0.9rem; }
-      .bus-dest { color:#64748b; font-size:0.85rem; margin-left:6px; }
       .bus-no-buses { color:#64748b; font-size:0.85rem; }
       .bus-icon-live {
         display: inline-block;
@@ -147,15 +145,7 @@ export default async function initBus(container) {
       r.route_short +
       `</span>
       </div>
-      <div class="bus-direction" id="bus-direction-dep">
-        <h4 class="bus-stop-label">📍 ` +
-      t("d_departure", "Departure") +
-      `</h4>
-        <div class="bus-stop-name">` +
-      escapeHtml(r.departure_stop_name) +
-      `</div>
-        <div class="bus-departures"></div>
-      </div>
+      <div class="bus-departures"></div>
     `;
 
     content.querySelectorAll(".bus-tab-btn").forEach((btn) => {
@@ -171,10 +161,12 @@ export default async function initBus(container) {
     });
   }
 
-  // Render a bus list into a container
+  // Render a bus list into a container. Each bus is laid out as a journey:
+  // Scheduled/Live → Departure Stop → Departure Time → Destination Stop → Destination Time
   function renderBusList(selector, data) {
     const list = content.querySelector(selector);
     if (!list) return;
+    const r = getRoute();
 
     if (!data || data.length === 0) {
       list.innerHTML =
@@ -213,26 +205,113 @@ export default async function initBus(container) {
         }
 
         const isLive = d.realtime === true;
-        const label = isLive
-          ? '<span style="font-size:1.12rem;color:#16a34a;font-weight:600;">' +
+        const statusChip = isLive
+          ? '<span class="bus-status-chip bus-status-live">' +
             t("d_live", "Live") +
-            ' <span class="bus-icon-live" style="font-size:1.12rem;">🚌</span></span>'
-          : '<span style="font-size:1.12rem;color:#f59e0b;font-weight:600;">🚏 ' +
+            ' <span class="bus-icon-live">🚌</span></span>'
+          : '<span class="bus-status-chip bus-status-scheduled">🚏 ' +
             t("d_scheduled", "Scheduled") +
             "</span>";
 
-        // Destination / headsign (e.g. "Northwood") — where this bus is going.
-        const dest = d.headsign
-          ? ' <span class="bus-dest">→ ' + escapeHtml(d.headsign) + "</span>"
-          : "";
+        // Destination stop — the route's configured destination, falling back
+        // to the per-trip headsign when no distinct destination is configured.
+        const hasDestination =
+          r.return_stop_id && r.return_stop_id !== r.departure_stop_id;
+        const destStop = hasDestination
+          ? r.return_stop_name
+          : d.headsign || "—";
+
+        // Arrival time at the destination = departure time + scheduled journey
+        // duration (seconds). The duration is fetched per trip_id.
+        let destTime = "—";
+        if (d.journey_seconds != null) {
+          if (typeof d.arrival_time === "string" && d.arrival_time !== "") {
+            const parts = d.arrival_time.split(":").map(Number);
+            const depSecs =
+              (parts[0] || 0) * 3600 + (parts[1] || 0) * 60 + (parts[2] || 0);
+            destTime = formatSecondsOfDay(depSecs + d.journey_seconds);
+          } else {
+            let depMs = null;
+            if (typeof d.arrival_time === "number" && d.arrival_time != null) {
+              depMs = d.arrival_time * 1000;
+            } else if (d.minutes_away != null) {
+              depMs = Date.now() + d.minutes_away * 60000;
+            }
+            if (depMs != null) {
+              destTime = new Date(
+                depMs + d.journey_seconds * 1000,
+              ).toLocaleTimeString("en-IE", {
+                timeZone: "Europe/Dublin",
+                hour12: false,
+              });
+            }
+          }
+        }
 
         return `
-          <div class="bus-item">
-            ${label}
-            ${arrivalText} <span class="bus-eta">${etaStr}</span>${dest}
+          <div class="bus-item bus-flow">
+            <div class="bus-flow-status">
+              ${statusChip}
+              <span class="bus-flow-sub">${arrivalText}</span>
+            </div>
+            <div class="bus-flow-row">
+              <span class="bus-flow-tag">${t("d_departure", "Departure")}</span>
+              <span class="bus-flow-value">${escapeHtml(r.departure_stop_name)}</span>
+              <span class="bus-flow-arrow">→</span>
+              <span class="bus-flow-time">${etaStr}</span>
+            </div>
+            <div class="bus-flow-row">
+              <span class="bus-flow-tag">${t("d_arrival", "Arrival")}</span>
+              <span class="bus-flow-value">${escapeHtml(destStop)}</span>
+              <span class="bus-flow-arrow">→</span>
+              <span class="bus-flow-time">${escapeHtml(destTime)}</span>
+            </div>
           </div>`;
       })
       .join("");
+  }
+
+  // Convert a Dublin wall-clock "HH:MM:SS" offset (seconds since midnight) plus
+  // a journey duration into a displayable clock time, wrapping past midnight.
+  function formatSecondsOfDay(secs) {
+    const s = ((Math.round(secs) % 86400) + 86400) % 86400;
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+  }
+
+  // Fetch the scheduled journey duration for the route (departure stop →
+  // arrival stop) and attach it as `journey_seconds` to every bus. Using the
+  // route rather than per-trip trip_ids avoids relying on realtime trip_id
+  // matching the static feed.
+  async function attachJourneyTimes(buses) {
+    const route = getRoute();
+    if (!buses || buses.length === 0) return;
+
+    const hasDest =
+      route.return_stop_id && route.return_stop_id !== route.departure_stop_id;
+    let url =
+      `/api/bus/v2/route-journey?route_id=${encodeURIComponent(route.route_id)}` +
+      `&from=${encodeURIComponent(route.departure_stop_id)}`;
+    if (hasDest) url += `&to=${encodeURIComponent(route.return_stop_id)}`;
+
+    try {
+      const res = await fetch(url);
+      const data = res.ok ? await res.json() : { journey_seconds: null };
+      const js = data.journey_seconds;
+      if (js == null) {
+        console.warn(
+          "[Bus] Journey time unavailable (arrival will show —). " +
+            `status=${res.status} url=${url}`,
+        );
+      }
+      for (const b of buses) {
+        b.journey_seconds = js ?? null;
+      }
+    } catch (e) {
+      console.error("[Bus] Journey lookup error:", e);
+    }
   }
 
   async function fetchBusData() {
@@ -257,6 +336,7 @@ export default async function initBus(container) {
         );
         const depBuses = depStop?.buses || [];
         if (depBuses.length > 0) {
+          await attachJourneyTimes(depBuses);
           renderBusList(".bus-departures", depBuses);
         } else {
           await fetchScheduledFallback(route, timeSpan);
@@ -293,6 +373,7 @@ export default async function initBus(container) {
           realtime: false,
           headsign: d.headsign || null,
           vehicle_id: null,
+          trip_id: d.trip_id || null,
         }));
       };
 
@@ -301,6 +382,7 @@ export default async function initBus(container) {
       ]);
 
       if (timeSpan) timeSpan.textContent = new Date().toLocaleTimeString();
+      await attachJourneyTimes(depBuses);
       renderBusList(".bus-departures", depBuses);
     } catch (e) {
       console.error("Scheduled fallback error:", e);

@@ -45,6 +45,7 @@ const DEFAULT_SETTINGS = {
   weather: { location: "Cork", country: "IE" },
   calendar: { url: "", notificationMinutes: 15 },
   cast: { volume: 100, soundLock: false, streamUrl: "" },
+  fitness: { token: "" },
 };
 
 export function loadSettings() {

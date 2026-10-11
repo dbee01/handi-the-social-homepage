@@ -21,8 +21,35 @@ live() {
     rsync -avz -e 'ssh -p 65002' \
       --exclude='.git' \
       --exclude='.gitignore' \
+      --exclude='.env' \
+      --exclude='.env.*' \
       --exclude='wp-config.php' \
+      --exclude='wp-config-sample.php' \
       --exclude='.htaccess' \
+      --exclude='.htpasswd' \
+      --exclude='.user.ini' \
+      --exclude='php.ini' \
+      --exclude='wp-content/uploads' \
+      --exclude='wp-content/cache' \
+      --exclude='wp-content/wflogs' \
+      --exclude='wp-content/upgrade' \
+      --exclude='wp-content/languages' \
+      --exclude='wp-content/ai1wm-backups' \
+      --exclude='wp-content/blogs.dir' \
+      --exclude='node_modules' \
+      --exclude='vendor' \
+      --exclude='composer.lock' \
+      --exclude='package-lock.json' \
+      --exclude='yarn.lock' \
+      --exclude='*.log' \
+      --exclude='*.sql' \
+      --exclude='*.cache' \
+      --exclude='.DS_Store' \
+      --exclude='.idea' \
+      --exclude='.vscode' \
+      --exclude='build' \
+      --exclude='dist' \
+      --exclude='.wp-cli' \
       "$src" \
       "u247564401@82.29.191.118:${path}"
   elif [ "$site" = "handi" ]; then
@@ -63,7 +90,7 @@ live() {
       --exclude='pwa' \
       "$src" \
       "u247564401@82.29.191.118:${path}"
-    ssh -p 65002 u247564401@82.29.191.118 "pkill -f 'lsnode:.*${site}' 2>/dev/null; sleep 3; echo Restarted
+    ssh -p 65002 u247564401@82.29.191.118 "pkill -f '[l]snode:.*${site}' 2>/dev/null; sleep 3; echo Restarted
 "
   fi
 }

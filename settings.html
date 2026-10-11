@@ -1159,6 +1159,45 @@
                 </div>
             </div>
 
+            <!-- Fitness Module (free) -->
+            <div class="module-card" data-module="fitness">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                        <h3>Fitness</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <small>
+                            Pulls your training data from
+                            <strong>wger.de</strong> — body-weight graph,
+                            workout history, nutrition diary and progress
+                            photos. Your key stays in your own browser.
+                        </small>
+                    </div>
+                    <div class="config-field">
+                        <label for="fitnessToken">
+                            <i class="fa-solid fa-key"></i> Wger API key
+                        </label>
+                        <input
+                            type="password"
+                            id="fitnessToken"
+                            placeholder="e.g. 1a2b3c…"
+                            autocomplete="off"
+                        />
+                        <small>
+                            Log into <strong>wger.de</strong> → User settings →
+                            API key, and paste your <em>permanent</em> token
+                            here. It never leaves this device.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
 
                         <!-- ============================================================ -->
                     <!-- PREMIUM MODULES SECTION -->
@@ -2102,6 +2141,16 @@
                     }
                 }
 
+                // Load the saved wger API key into the Fitness input.
+                if (settings.fitness) {
+                    const fitTokenInput =
+                        document.getElementById("fitnessToken");
+                    if (fitTokenInput) {
+                        fitTokenInput.value =
+                            settings.fitness.token || "";
+                    }
+                }
+
                 // Load phone contacts
                 if (settings.phone?.contacts) {
                     phoneContacts = settings.phone.contacts;
@@ -2493,6 +2542,14 @@
                     ?.value.trim();
                 if (calendarUrl !== "") {
                     settings.calendar.url = calendarUrl;
+                }
+
+                if (!settings.fitness) settings.fitness = {};
+                const fitnessToken = document
+                    .getElementById("fitnessToken")
+                    ?.value.trim();
+                if (fitnessToken !== "") {
+                    settings.fitness.token = fitnessToken;
                 }
 
                 if (!settings.phone) settings.phone = {};
