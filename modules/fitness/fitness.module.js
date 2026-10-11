@@ -216,15 +216,6 @@ export default async function initFitness(container) {
     );
   }
 
-  function showLoading() {
-    showMessage(
-      '<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:#64748b;">' +
-      '<i class="fa-solid fa-spinner fa-spin"></i> ' +
-      escapeHtml(t("d_loading", "Loading...")) +
-      "</div>",
-    );
-  }
-
   // -------------------------------------------------------------------------
   // Tab switching
   // -------------------------------------------------------------------------
@@ -594,9 +585,9 @@ export default async function initFitness(container) {
   // -------------------------------------------------------------------------
   // Initial load
   // -------------------------------------------------------------------------
-  showLoading();
   try {
-    // Render the tabs first, then load the default tab.
+    // Render the tabs first; loadTab() adds its own spinner inside the tab
+    // body, so there's no separate top-level "Loading..." that lingers.
     renderTabsHeader();
     await loadTab(currentTab);
   } catch (err) {
