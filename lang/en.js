@@ -469,7 +469,7 @@ var LANG = {
   h_github_repo:
     "<strong>Github Repo</strong><br><br>• Add your favourite Github repo activity page to see that repo's Github activity.",
   h_fitness:
-    "<strong>Fitness</strong><br><br>• Update your Wger.de fitness acitvity app and paste your token on the settings page to monitor your own fitness activity.<br><br> Your data goes from Wger to your browser. We do not see it.",
+    "<strong>Fitness</strong><br><br>• Update your Wger.de fitness acitvity app and paste your token on the settings page to monitor your own fitness activity.<br>• Your data goes from Wger to your browser. We do not see it.",
   h_chat:
     "<strong>Chat (Matrix)</strong><br><br>• Create your own Matrix account at <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> to start private family or friend chat rooms.<br>• Add room URLs, access token, user ID in <strong>Settings → Chat</strong>.<br>• The module checks for new messages every 30 seconds.<br>• Click the room header to expand and view messages.<br>• New message notifications appear as a red badge.",
   h_calendar:
