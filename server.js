@@ -1220,7 +1220,11 @@ app.get("/api/calendar-proxy", async (req, res) => {
 // which fetch from their own servers and therefore bypass the IP block.
 // The relays are free third-party services; swap or remove them as needed.
 // -----------------------------------------------------------------------------
-const BLOCKED_DIRECT_HOSTS = ["rte.ie", "streaming.broadcast.radio"];
+const BLOCKED_DIRECT_HOSTS = [
+  "rte.ie",
+  "streaming.broadcast.radio",
+  "codeberg.org",
+];
 
 function blockedHost(feedUrl) {
   try {
