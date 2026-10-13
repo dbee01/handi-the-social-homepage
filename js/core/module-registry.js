@@ -134,7 +134,7 @@ window.HANDI_MODULES = [
   {
     id: "github-user",
     name: "GitHub",
-    icon: '<i class="fa-brands fa-code-branch"></i>',
+    icon: '<i class="fa-brands fa-github"></i>',
     desc: "Your activity on GitHub",
     tier: "free",
     defaultEnabled: 0,

@@ -93,7 +93,7 @@ export default async function initGitHubRepo(container) {
     window.LANG && window.LANG.modules && window.LANG.modules["github-repo"]
       ? window.LANG.modules["github-repo"].name
       : "GitHub Repo";
-  title.innerHTML = '<i class="fa-brands fa-code-branch"></i> ' + modName;
+  title.innerHTML = '<i class="fa-brands fa-github"></i> ' + modName;
   container.appendChild(title);
 
   const content = document.createElement("div");
@@ -109,7 +109,7 @@ export default async function initGitHubRepo(container) {
     content.innerHTML = "";
     if (!items.length) {
       content.innerHTML =
-        '<div class="module-empty"><i class="fa-brands fa-code-branch"></i><p>' +
+        '<div class="module-empty"><i class="fa-brands fa-github"></i><p>' +
         escapeHtml(t("d_githubRepoEmpty", "No activity yet.")) +
         "</p></div>";
       return;

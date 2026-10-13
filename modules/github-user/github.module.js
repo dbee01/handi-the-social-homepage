@@ -153,7 +153,7 @@ export default async function initGitHub(container) {
     window.LANG && window.LANG.modules && window.LANG.modules["github-user"]
       ? window.LANG.modules["github-user"].name
       : "GitHub";
-  title.innerHTML = '<i class="fa-brands fa-code-branch"></i> ' + modName;
+  title.innerHTML = '<i class="fa-brands fa-github"></i> ' + modName;
   container.appendChild(title);
 
   const content = document.createElement("div");
@@ -169,7 +169,7 @@ export default async function initGitHub(container) {
     content.innerHTML = "";
     if (!items.length) {
       content.innerHTML =
-        '<div class="module-empty"><i class="fa-brands fa-code-branch"></i><p>' +
+        '<div class="module-empty"><i class="fa-brands fa-github"></i><p>' +
         escapeHtml(t("d_githubUserEmpty", "No activity yet.")) +
         "</p></div>";
       return;
