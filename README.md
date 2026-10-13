@@ -237,7 +237,6 @@ Copy `.env.example` to `.env`. The `.env` file is gitignored — never commit re
 | `LOG_USERNAME` / `LOG_PASSWORD` | Logging | HTTP auth for the log endpoint |
 | `LOG_LEVEL` / `LOG_MAX_BYTES` / `LOG_KEEP_BYTES` | Logging | Client event logging controls |
 | `PROXY_USERNAME_*` / `PROXY_PASSWORD_*` | News feeds | Feed-relay proxy credentials |
-| `FEED_RELAY_URL` | News feeds | Your free Cloudflare Worker relay (see `workers/feed-relay/`) — preferred, no paid proxy needed |
 
 ---
 

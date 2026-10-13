@@ -5,24 +5,35 @@
  */
 
 // modules/codeberg-user/codeberg.module.js
-// CODEBERG — reads the handi organisation activity feed on Codeberg and shows
-// the latest pushes, commits and issue activity in a compact panel. Fetched
-// through the server's generic feed relay (/api/feed) since cross-origin RSS
-// can't be read directly from the browser.
+// GITHUB USER ACTIVITY — reads a user's public events via GitHub's REST API
+// (https://api.github.com/users/{user}/events/public), which sends
+// `Access-Control-Allow-Origin: *`, so it can be fetched directly from the
+// browser — no server relay or proxy needed.
 
 import { loadSettings } from "../../js/core/settings.js";
 
-const DEFAULT_USER = "handi";
+const DEFAULT_USER = "dbee01";
 const REFRESH_MIN = 15;
 const MAX_ITEMS = 12;
+const API_ROOT = "https://api.github.com";
 
 function feedUrl() {
   try {
     var s = loadSettings();
     var user = (s && s["codeberg-user"] && s["codeberg-user"].user) || DEFAULT_USER;
-    return "https://codeberg.org/" + encodeURIComponent(user) + ".rss";
+    return API_ROOT + "/users/" + encodeURIComponent(user) + "/events/public?per_page=" + MAX_ITEMS;
   } catch (e) {
-    return "https://codeberg.org/" + DEFAULT_USER + ".rss";
+    return API_ROOT + "/users/" + DEFAULT_USER + "/events/public?per_page=" + MAX_ITEMS;
+  }
+}
+
+function profileUrl() {
+  try {
+    var s = loadSettings();
+    var user = (s && s["codeberg-user"] && s["codeberg-user"].user) || DEFAULT_USER;
+    return "https://github.com/" + encodeURIComponent(user);
+  } catch (e) {
+    return "https://github.com/" + DEFAULT_USER;
   }
 }
 
@@ -33,28 +44,89 @@ function escapeHtml(str) {
   });
 }
 
-function decodeEntities(str) {
+// Map a GitHub event `type` to a short human-readable action label shown as
+// the row's leading text, e.g. PushEvent -> "pushed".
+const EVENT_LABELS = {
+  PushEvent: "pushed",
+  CreateEvent: "created",
+  DeleteEvent: "deleted",
+  WatchEvent: "starred",
+  ForkEvent: "forked",
+  IssuesEvent: "touched an issue",
+  IssueCommentEvent: "commented",
+  PullRequestEvent: "updated a pull request",
+  PullRequestReviewEvent: "reviewed a pull request",
+  PullRequestReviewCommentEvent: "commented on a review",
+  ReleaseEvent: "released",
+  PublicEvent: "made a repo public",
+  GollumEvent: "edited the wiki",
+  CommitCommentEvent: "commented on a commit",
+};
+
+// Human-readable summary of a single GitHub event: "<action> <ref> at <repo>".
+function actionOf(ev) {
+  var verb = EVENT_LABELS[ev.type] || ev.type;
+  var repo = (ev.repo && ev.repo.name) || "";
+
+  // Push events name a branch; everything else is best described by the type.
+  if (ev.type === "PushEvent") {
+    var branch = shortRef((ev.payload && ev.payload.ref) || "");
+    var commits = (ev.payload && ev.payload.commits) || [];
+    var suffix = commits.length ? ", " + commits.length + " commit" + (commits.length === 1 ? "" : "s") : "";
+    return verb + " to " + branch + suffix + (repo ? " at " + repo : "");
+  }
+
+  if (ev.type === "CreateEvent" || ev.type === "ForkEvent") {
+    var what = ev.type === "ForkEvent" ? (repo + " fork") : (ev.payload.ref_type === "repository" ? "repository " + repo : shortRef(ev.payload.ref || ""));
+    return verb + " " + what;
+  }
+
+  if (ev.type === "WatchEvent") {
+    return verb + " " + repo;
+  }
+
+  return verb + (repo ? " at " + repo : "");
+}
+
+// Turn a full ref like "refs/heads/master" into "master".
+function shortRef(ref) {
+  if (!ref) return "";
+  return ref.replace(/^refs\/(heads|tags)\//, "") || ref;
+}
+
+// A short, linkable destination for each event; the repo page is a safe default.
+function linkOf(ev) {
+  if (ev.type === "PushEvent") {
+    var head = (ev.payload && ev.payload.head) || "";
+    var name = (ev.repo && ev.repo.name) || "";
+    if (head && name) return "https://github.com/" + name + "/commit/" + head;
+  }
+  return "https://github.com/" + ((ev.repo && ev.repo.name) || "");
+}
+
+// Short detail line: latest commit message, PR/issue title, etc.
+function excerptOf(ev) {
+  if (ev.type === "PushEvent") {
+    var commits = (ev.payload && ev.payload.commits) || [];
+    if (commits.length) {
+      var msg = commits[commits.length - 1].message || "";
+      return truncate(msg);
+    }
+  }
+  if (ev.type === "IssuesEvent" || ev.type === "PullRequestEvent") {
+    var o = ev.payload && (ev.payload.issue || ev.payload.pull_request);
+    if (o && o.title) return truncate(o.title);
+  }
+  if (ev.type === "ReleaseEvent" && ev.payload && ev.payload.release) {
+    return truncate(ev.payload.release.name || ev.payload.release.tag_name || "");
+  }
+  return "";
+}
+
+function truncate(str) {
+  str = String(str || "").replace(/\s+/g, " ").trim();
   if (!str) return "";
-  var d = document.createElement("div");
-  d.innerHTML = str;
-  return (d.textContent || d.innerText || "").trim();
-}
-
-// Pull the leading human-readable action out of a Codeberg activity title,
-// e.g. "handi pushed to main at handi/handi-the-social-homepage".
-function actionOf(title) {
-  var t = title || "";
-  var m = t.match(/^(\S[^a-z]*[a-z]+ (?:pushed|opened|commented|closed|merged|created|renamed|forked|released|updated|starred)[^\n]*)/i);
-  return m ? m[1].trim() : t;
-}
-
-// Codeberg activity descriptions often embed the commit/issue summary as
-// plain text after the links. Strip tags and collapse whitespace into a
-// short, readable excerpt.
-function excerptOf(description) {
-  var txt = decodeEntities((description || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim());
-  if (!txt) return "";
-  return txt.length > 140 ? txt.slice(0, 140).replace(/\s+\S*$/, "") + "…" : txt;
+  return str.length > 120 ? str.slice(0, 120).replace(/\s+\S*$/, "") + "…" : str;
 }
 
 function fmtDate(iso) {
@@ -137,7 +209,7 @@ export default async function initCodeberg(container) {
       foot.style.cssText = "margin-top:8px;text-align:right;";
       foot.innerHTML =
         '<a href="' + escapeHtml(channelLink) + '" target="_blank" rel="noopener" style="font-size:0.8rem;font-weight:600;">' +
-        escapeHtml(t("d_codebergUserViewProfile", "Open Codeberg")) +
+        escapeHtml(t("d_codebergUserViewProfile", "Open GitHub")) +
         " ↗</a>";
       content.appendChild(foot);
     }
@@ -160,41 +232,28 @@ export default async function initCodeberg(container) {
         escapeHtml(t("d_loading", "Loading...")) +
         "</div>";
 
-      var resp = await fetch("/api/feed?url=" + encodeURIComponent(feedUrl()));
+      var resp = await fetch(feedUrl(), {
+        headers: {
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      });
       if (!resp.ok) throw new Error("HTTP " + resp.status);
-      var xmlText = await resp.text();
-      var xmlDoc = new DOMParser().parseFromString(xmlText, "text/xml");
-      if (xmlDoc.querySelector("parsererror")) throw new Error("Invalid XML");
+      var events = await resp.json();
+      if (!Array.isArray(events)) throw new Error("Unexpected response");
 
-      var channel = xmlDoc.querySelector("channel");
-      var channelLink =
-        (channel && channel.querySelector("link") && channel.querySelector("link").textContent.trim()) ||
-        feedUrl().replace(/\.rss$/, "");
+      var items = events.slice(0, Math.min(events.length, MAX_ITEMS)).map(function (ev) {
+        return {
+          action: actionOf(ev),
+          link: linkOf(ev),
+          date: fmtDate(ev.created_at),
+          excerpt: excerptOf(ev),
+        };
+      });
 
-      var items = [];
-      var nodes = xmlDoc.querySelectorAll("item");
-      var limit = Math.min(nodes.length, MAX_ITEMS);
-      for (var i = 0; i < limit; i++) {
-        var node = nodes[i];
-        var rawTitle = (node.querySelector("title") && node.querySelector("title").textContent) || "";
-        var titleText = decodeEntities(rawTitle.trim());
-        var link = (node.querySelector("link") && node.querySelector("link").textContent.trim()) || "";
-        var rawDate = (node.querySelector("pubDate") && node.querySelector("pubDate").textContent) || "";
-        var rawDesc = (node.querySelector("description") && node.querySelector("description").textContent) || "";
-
-        // Activity summaries are wrapped in <![CDATA[ ... ]]> and may be empty
-        // when the title already carries the full action; fall back gracefully.
-        items.push({
-          action: actionOf(titleText) || titleText,
-          link: link,
-          date: fmtDate(rawDate),
-          excerpt: excerptOf(rawDesc),
-        });
-      }
-
-      render(items, channelLink);
+      render(items, profileUrl());
     } catch (err) {
-      console.error("Codeberg fetch error:", err);
+      console.error("GitHub fetch error:", err);
       showError();
     }
   }

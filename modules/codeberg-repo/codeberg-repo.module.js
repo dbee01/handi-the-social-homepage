@@ -5,26 +5,39 @@
  */
 
 // modules/codeberg-repo/codeberg-repo.module.js
-// CODEBERG-REPO — reads the handi/handi-the-social-homepage repository feed on
-// Codeberg and shows the latest commits, pushes and releases in a compact
-// panel. Fetched through the server's generic feed relay (/api/feed) since
-// cross-origin RSS can't be read directly from the browser.
+// GITHUB REPO COMMITS — reads the latest commits for a repository via GitHub's
+// REST API (https://api.github.com/repos/{owner}/{repo}/commits), which sends
+// `Access-Control-Allow-Origin: *`, so it can be fetched directly from the
+// browser — no server relay or proxy needed.
 
 import { loadSettings } from "../../js/core/settings.js";
 
-const DEFAULT_FEED = "https://codeberg.org/handi/handi-the-social-homepage.rss";
+const DEFAULT_REPO = "dbee01/handi-the-social-homepage";
 const REFRESH_MIN = 15;
 const MAX_ITEMS = 12;
+const API_ROOT = "https://api.github.com";
 
-function feedUrl() {
+// The settings field was historically a full feed URL; accept either a
+// GitHub "owner/repo" path or an old-style Codeberg feed URL (best-effort).
+function repoPath() {
   try {
     var s = loadSettings();
-    var feed =
-      (s && s["codeberg-repo"] && s["codeberg-repo"].feed) || DEFAULT_FEED;
-    return feed;
+    var raw = (s && s["codeberg-repo"] && s["codeberg-repo"].feed) || DEFAULT_REPO;
+    var m = String(raw).match(/github\.com\/([^/]+\/[^/?#]+)/i);
+    if (m) return m[1].replace(/\.git$/i, "");
+    if (/^[^/]+\/[^/]+$/.test(raw)) return raw;
+    return DEFAULT_REPO;
   } catch (e) {
-    return DEFAULT_FEED;
+    return DEFAULT_REPO;
   }
+}
+
+function commitsUrl() {
+  return API_ROOT + "/repos/" + encodeURIComponent(repoPath()) + "/commits?per_page=" + MAX_ITEMS;
+}
+
+function repoHtmlUrl() {
+  return "https://github.com/" + repoPath();
 }
 
 function escapeHtml(str) {
@@ -34,26 +47,19 @@ function escapeHtml(str) {
   });
 }
 
-function decodeEntities(str) {
-  if (!str) return "";
-  var d = document.createElement("div");
-  d.innerHTML = str;
-  return (d.textContent || d.innerText || "").trim();
+// Commit author: prefer the GitHub login, fall back to the commit author name.
+function authorOf(commit) {
+  if (commit.author && commit.author.login) return commit.author.login;
+  if (commit.commit && commit.commit.author && commit.commit.author.name) {
+    return commit.commit.author.name;
+  }
+  return "";
 }
 
-// Pull the leading human-readable action out of a Codeberg activity title,
-// e.g. "handi pushed to main at handi/handi-the-social-homepage".
-function actionOf(title) {
-  var t = title || "";
-  var m = t.match(/^(\S[^a-z]*[a-z]+ (?:pushed|opened|commented|closed|merged|created|renamed|forked|released|updated|starred)[^\n]*)/i);
-  return m ? m[1].trim() : t;
-}
-
-// Codeberg activity descriptions often embed the commit/issue summary as
-// plain text after the links. Strip tags and collapse whitespace into a
-// short, readable excerpt.
-function excerptOf(description) {
-  var txt = decodeEntities((description || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim());
+// Short detail line: the commit message.
+function excerptOf(commit) {
+  var msg = commit.commit && commit.commit.message;
+  var txt = String(msg || "").replace(/\s+/g, " ").trim();
   if (!txt) return "";
   return txt.length > 140 ? txt.slice(0, 140).replace(/\s+\S*$/, "") + "…" : txt;
 }
@@ -161,41 +167,31 @@ export default async function initCodebergRepo(container) {
         escapeHtml(t("d_loading", "Loading...")) +
         "</div>";
 
-      var resp = await fetch("/api/feed?url=" + encodeURIComponent(feedUrl()));
+      var resp = await fetch(commitsUrl(), {
+        headers: {
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      });
       if (!resp.ok) throw new Error("HTTP " + resp.status);
-      var xmlText = await resp.text();
-      var xmlDoc = new DOMParser().parseFromString(xmlText, "text/xml");
-      if (xmlDoc.querySelector("parsererror")) throw new Error("Invalid XML");
+      var commits = await resp.json();
+      if (!Array.isArray(commits)) throw new Error("Unexpected response");
 
-      var channel = xmlDoc.querySelector("channel");
-      var channelLink =
-        (channel && channel.querySelector("link") && channel.querySelector("link").textContent.trim()) ||
-        "https://codeberg.org/handi/handi-the-social-homepage";
+      var items = commits.slice(0, Math.min(commits.length, MAX_ITEMS)).map(function (c) {
+        var author = authorOf(c) || "";
+        var sha = (c.sha || "").slice(0, 7);
+        var action = (author ? author + " " : "") + "committed " + sha;
+        return {
+          action: action,
+          link: (c.html_url || ""),
+          date: fmtDate(c.commit && c.commit.committer && c.commit.committer.date),
+          excerpt: excerptOf(c),
+        };
+      });
 
-      var items = [];
-      var nodes = xmlDoc.querySelectorAll("item");
-      var limit = Math.min(nodes.length, MAX_ITEMS);
-      for (var i = 0; i < limit; i++) {
-        var node = nodes[i];
-        var rawTitle = (node.querySelector("title") && node.querySelector("title").textContent) || "";
-        var titleText = decodeEntities(rawTitle.trim());
-        var link = (node.querySelector("link") && node.querySelector("link").textContent.trim()) || "";
-        var rawDate = (node.querySelector("pubDate") && node.querySelector("pubDate").textContent) || "";
-        var rawDesc = (node.querySelector("description") && node.querySelector("description").textContent) || "";
-
-        // Activity summaries are wrapped in <![CDATA[ ... ]]> and may be empty
-        // when the title already carries the full action; fall back gracefully.
-        items.push({
-          action: actionOf(titleText) || titleText,
-          link: link,
-          date: fmtDate(rawDate),
-          excerpt: excerptOf(rawDesc),
-        });
-      }
-
-      render(items, channelLink);
+      render(items, repoHtmlUrl());
     } catch (err) {
-      console.error("Codeberg repo fetch error:", err);
+      console.error("GitHub repo fetch error:", err);
       showError();
     }
   }

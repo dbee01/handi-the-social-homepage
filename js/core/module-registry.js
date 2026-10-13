@@ -135,19 +135,19 @@ window.HANDI_MODULES = [
     id: "codeberg-user",
     name: "Codeberg",
     icon: '<i class="fa-brands fa-code-branch"></i>',
-    desc: "Your activity on Codeberg",
+    desc: "Your activity on GitHub",
     tier: "free",
     defaultEnabled: 0,
-    settingsConfig: { user: "handi" },
+    settingsConfig: { user: "dbee01" },
   },
   {
     id: "codeberg-repo",
     name: "Codeberg Repo",
     icon: '<i class="fa-solid fa-code-pull-request"></i>',
-    desc: "A repository feed on Codeberg",
+    desc: "Latest commits for a GitHub repo",
     tier: "free",
     defaultEnabled: 0,
-    settingsConfig: { feed: "https://codeberg.org/handi/handi-the-social-homepage.rss" },
+    settingsConfig: { feed: "dbee01/handi-the-social-homepage" },
   },
 
   // ─── Premium modules ───────────────────────────────────────────────────

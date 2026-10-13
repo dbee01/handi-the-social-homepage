@@ -1220,11 +1220,7 @@ app.get("/api/calendar-proxy", async (req, res) => {
 // which fetch from their own servers and therefore bypass the IP block.
 // The relays are free third-party services; swap or remove them as needed.
 // -----------------------------------------------------------------------------
-const BLOCKED_DIRECT_HOSTS = [
-  "rte.ie",
-  "streaming.broadcast.radio",
-  "codeberg.org",
-];
+const BLOCKED_DIRECT_HOSTS = ["rte.ie", "streaming.broadcast.radio"];
 
 function blockedHost(feedUrl) {
   try {
@@ -1291,30 +1287,13 @@ async function attemptFeedFetch(url, headers, timeout, proxy) {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Feed relay: ip : port : username : password
+// Relay list: ip : port : username : password
 // Credentials come from the host's .env file:
 //   PROXY_USERNAME_1 / PROXY_PASSWORD_1  – IPRoyal residential proxy
 //   PROXY_USERNAME_2 / PROXY_PASSWORD_2  – backup proxy
-//
-// A paid proxy is no longer required: when FEED_RELAY_URL is set (a free
-// Cloudflare Worker from workers/feed-relay), it is tried first — it re-emits
-// the feed with CORS and from a non-blocked IP, so browsers and this server
-// can both consume Codeberg/GitHub feeds without a residential proxy.
 function buildRelays(targetUrl) {
-  const relays = [];
-
-  // Preferred: your own free Cloudflare Worker relay (see workers/feed-relay).
-  // Optional; skipped when FEED_RELAY_URL is unset.
-  if (process.env.FEED_RELAY_URL) {
-    relays.push({
-      name: "Cloudflare worker relay (FEED_RELAY_URL)",
-      url: process.env.FEED_RELAY_URL + "/?url=" + encodeURIComponent(targetUrl),
-    });
-  }
-
-  // Paid proxy fallbacks — only used if the free worker is unavailable.
-  relays.push(
+  return [
+    // Preferred: previous proxy server (fastest in testing).
     {
       name: "proxy 91.193.255.216:12323",
       url: targetUrl,
@@ -1327,6 +1306,8 @@ function buildRelays(targetUrl) {
         },
       },
     },
+    // Backup: IPRoyal residential proxy (uses its IP, bypassing rte.ie's
+    // block on this server's IP).
     {
       name: "IPRoyal residential proxy (geo.iproyal.com:12321)",
       url: targetUrl,
@@ -1339,9 +1320,7 @@ function buildRelays(targetUrl) {
         },
       },
     },
-  );
-
-  return relays;
+  ];
 }
 
 async function fetchFeedWithRelay(feedUrl, headers) {
