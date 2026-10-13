@@ -277,8 +277,14 @@ var LANG = {
   d_fitnessEntries: "iontrálacha",
   d_fitnessNoWorkouts: "Gan cleachtaí logáilte go fóill.",
   d_fitnessWorkoutSession: "Cleachtadh",
-  d_fitnessNoNutrition: "Gan plean cothaithe go fóill.",
+  d_fitnessNoNutrition: "Gan iontrálacha dialainne cothaithe go fóill.",
   d_fitnessDailyTotals: "Iomláin laethúla",
+  d_fitnessNutritionEnergy: "Fuinneamh in aghaidh an lae",
+  d_fitnessNutritionMacros: "Miondealú macra",
+  d_fitnessNutritionHistory: "Dialann laethúil",
+  d_macroProtein: "Próitéin",
+  d_macroCarbs: "Carbaihiodráití",
+  d_macroFat: "Saill",
   d_fitnessNoGallery: "Gan grianghraif dul chun cinn go fóill.",
 
   // GitHub
@@ -367,6 +373,9 @@ var LANG = {
   h_radio: "<strong>📻 Raidió</strong><br><br>• Roghnaigh as stáisiúin raidió idirnáisiúnta.<br>• Cliceáil ar stáisiún chun sruthú a thosú – d'fhéadfadh sé cúpla soicind a thógáil.<br>• Beochanann an sintéiseoir le linn seinnte.<br>• Úsáid an <strong>glas</strong> (🔒) chun athruithe stáisiúin de thaisme a dhíchumasú.",
   h_emergency_alert: "<strong>📍 Foláireamh Suímh</strong><br><br><strong>📱 Fóin phóca amháin.</strong><br>• Seolann SMS le do shuíomh GPS chuig teagmhálacha iontaofa.<br>• Teastaíonn GPS agus líonra soghluaiste (níl sé ar fáil ar ríomhaire/táibléad).<br>• Cuir teagmhálacha leis in <strong>Socruithe → Comhroinnt Suímh</strong>.<br>• Díghlasáil an cnaipe (🔓) ansin brúigh <strong>ROINN</strong> chun seoladh.<br>• Tástáil le d'uimhir féin ar dtús lena chinntiú go n-oibríonn sé.",
   h_phone: "<strong>📞 Fón Cairdiúil</strong><br><br>• Glaoch aon-sconna chuig do theagmhálacha sábháilte.<br>• Cuir teagmhálacha le grianghraif in <strong>Socruithe → Fón Cairdiúil</strong>.<br>• Tá an modúl <strong>faoi ghlas de réir réamhshocraithe</strong> – díghlasáil chun glaonna a chumasú.<br>• Cabhraíonn grianghraif le teagmhálacha a aithint ar an toirt.",
+  h_github_user: "<strong>🐙 Úsáideoir Github</strong><br><br>• Cuir leathanach gníomhaíochta d'úsáideoir Github is fearr leat leis chun gníomhaíocht Github an úsáideora sin a fheiceáil.",
+  h_github_repo: "<strong>📦 Repo Github</strong><br><br>• Cuir leathanach gníomhaíochta do repo Github is fearr leat leis chun gníomhaíocht Github an repo sin a fheiceáil.",
+  h_fitness: "<strong>💪 Aclaíocht</strong><br><br>• Nuashonraigh d'aip aclaíochta Wger.de agus greamaigh do chomhartha ar an leathanach socruithe chun monatóireacht a dhéanamh ar do ghníomhaíocht aclaíochta féin.<br><br> Téann do shonraí ó Wger chuig do bhrabhsálaí. Ní fheiceann muidne iad.",
   h_chat: "<strong>💬 Comhrá (Matrix)</strong><br><br>• Cruthaigh do chuntas Matrix féin ag <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> chun seomraí comhrá príobháideacha a thosú do theaghlach nó do chairde.<br>• Cuir URLanna seomraí, comhartha rochtana, ID úsáideora in <strong>Socruithe → Comhrá</strong>.<br>• Seiceálann an modúl teachtaireachtaí nua gach 30 soicind.<br>• Cliceáil ar cheanntásc an tseomra chun é a leathnú agus teachtaireachtaí a fheiceáil.<br>• Taispeántar fógraí teachtaireachtaí nua mar shuaitheantas dearg.",
   h_calendar: "<strong>📅 Féilire (Proton ICS)</strong><br><br>• Taispeánann imeachtaí an lae inniu ó d'Fhéilire Proton.<br>• Faigh do nasc ICS ó Proton Calendar → Socruithe → Féilirí → 'Roinn le haon duine' → 'Cruthaigh nasc'.<br>• Greamaigh an nasc ICS in <strong>Socruithe → Féilire</strong>.<br><br><strong>🔔 Foláirimh:</strong><br>• Socraítear fógraí i d'aip féilire — m.sh. 2 fhógra ar imeacht = dhá fholáireamh ar an deais seo.<br>• Scoránaigh foláirimh air/as leis an gcnaipe ag barr an fhéilire.<br><br><strong>⚠️ Teorainneacha tábhachtacha (Proton, ní an modúl seo):</strong><br>• Nuashonraíonn an fotha ICS <strong>gach 4–16 uair an chloig</strong> – tógann imeachtaí nua am le feiceáil.<br>• Seans nach dtaispeánfar imeachtaí athfhillteacha i gceart.<br><br><strong>💡 Leideanna:</strong><br>• Mura bhfeictear imeacht, fan cúpla uair an chloig agus bain triail eile as.",
 

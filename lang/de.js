@@ -270,8 +270,14 @@ var LANG = {
   d_fitnessEntries: "Einträge",
   d_fitnessNoWorkouts: "Noch keine Workouts protokolliert.",
   d_fitnessWorkoutSession: "Workout",
-  d_fitnessNoNutrition: "Noch kein Ernährungsplan vorhanden.",
+  d_fitnessNoNutrition: "Noch keine Einträge im Ernährungstagebuch.",
   d_fitnessDailyTotals: "Tageswerte",
+  d_fitnessNutritionEnergy: "Energie pro Tag",
+  d_fitnessNutritionMacros: "Makro-Aufschlüsselung",
+  d_fitnessNutritionHistory: "Tägliches Tagebuch",
+  d_macroProtein: "Protein",
+  d_macroCarbs: "Kohlenhydrate",
+  d_macroFat: "Fett",
   d_fitnessNoGallery: "Noch keine Fortschrittsfotos.",
 
   // GitHub
@@ -355,6 +361,9 @@ var LANG = {
   h_radio: "<strong>📻 Radio</strong><br><br>• Wähle aus internationalen Radiosendern.<br>• Klicke auf einen Sender, um zu streamen – kann einige Sekunden dauern.<br>• Der Synthesizer animiert während der Wiedergabe.<br>• Verwende die <strong>Sperre</strong> (🔒), um versehentliche Senderwechsel zu deaktivieren.",
   h_emergency_alert: "<strong>📍 Standortalarm</strong><br><br><strong>📱 Nur für Mobiltelefone.</strong><br>• Sendet eine SMS mit deinem GPS-Standort an vertrauenswürdige Kontakte.<br>• Benötigt GPS und Mobilfunknetz (nicht auf Desktop/Tablet verfügbar).<br>• Kontakte hinzufügen unter <strong>Einstellungen → Standort teilen</strong>.<br>• Entsperre die Schaltfläche (🔓) und drücke dann <strong>TEILEN</strong> zum Senden.<br>• Teste zuerst mit deiner eigenen Nummer, um sicherzustellen, dass es funktioniert.",
   h_phone: "<strong>📞 Freundliches Telefon</strong><br><br>• Anruf mit einem Tipp auf gespeicherte Kontakte.<br>• Kontakte mit Fotos hinzufügen unter <strong>Einstellungen → Freundliches Telefon</strong>.<br>• Das Modul ist <strong>standardmäßig gesperrt</strong> – entsperren, um Anrufe zu aktivieren.<br>• Fotos helfen, Kontakte auf einen Blick zu erkennen.",
+  h_github_user: "<strong>🐙 Github-Benutzer</strong><br><br>• Füge die Aktivitätsseite deines Lieblings-Github-Benutzers hinzu, um dessen Github-Aktivität zu sehen.",
+  h_github_repo: "<strong>📦 Github-Repo</strong><br><br>• Füge die Aktivitätsseite deines Lieblings-Github-Repos hinzu, um dessen Github-Aktivität zu sehen.",
+  h_fitness: "<strong>💪 Fitness</strong><br><br>• Aktualisiere deine Wger.de-Fitness-App und füge dein Token auf der Einstellungsseite ein, um deine eigene Fitnessaktivität zu überwachen.<br><br> Deine Daten gehen von Wger zu deinem Browser. Wir sehen sie nicht.",
   h_chat: "<strong>💬 Chat (Matrix)</strong><br><br>• Erstelle dein eigenes Matrix-Konto bei <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a>, um private Familien- oder Freundes-Chaträume zu starten.<br>• Raum-URLs, Zugriffstoken, Benutzer-ID hinzufügen unter <strong>Einstellungen → Chat</strong>.<br>• Das Modul prüft alle 30 Sekunden auf neue Nachrichten.<br>• Klicke auf die Raumkopfzeile, um sie zu erweitern und Nachrichten anzuzeigen.<br>• Benachrichtigungen über neue Nachrichten erscheinen als rotes Abzeichen.",
   h_calendar: "<strong>📅 Kalender (Proton ICS)</strong><br><br>• Zeigt die heutigen Ereignisse aus deinem Proton Kalender.<br>• ICS-Link abrufen über Proton Calendar → Einstellungen → Kalender → 'Mit jedem teilen' → 'Link erstellen'.<br>• ICS-Link einfügen unter <strong>Einstellungen → Kalender</strong>.<br><br><strong>🔔 Alarme:</strong><br>• Benachrichtigungen werden in deiner Kalender-App eingestellt — z.B. 2 Benachrichtigungen pro Ereignis = zwei Alarme auf diesem Dashboard.<br>• Alarme mit dem Schalter oben im Kalender ein-/ausschalten.<br><br><strong>⚠️ Wichtige Einschränkungen (Proton, nicht dieses Modul):</strong><br>• Der ICS-Feed aktualisiert sich <strong>alle 4–16 Stunden</strong> – neue Ereignisse brauchen Zeit, um zu erscheinen.<br>• Wiederkehrende Ereignisse werden möglicherweise nicht korrekt angezeigt.<br><br><strong>💡 Tipps:</strong><br>• Wenn ein Ereignis nicht erscheint, warte einige Stunden und versuche es erneut.",
 

@@ -265,8 +265,14 @@ var LANG = {
   d_fitnessEntries: "metingen",
   d_fitnessNoWorkouts: "Nog geen workouts gelogd.",
   d_fitnessWorkoutSession: "Workout",
-  d_fitnessNoNutrition: "Nog geen voedingsplan.",
+  d_fitnessNoNutrition: "Nog geen vermeldingen in het voedingsdagboek.",
   d_fitnessDailyTotals: "Dagelijkse totalen",
+  d_fitnessNutritionEnergy: "Energie per dag",
+  d_fitnessNutritionMacros: "Macro-verdeling",
+  d_fitnessNutritionHistory: "Dagelijks dagboek",
+  d_macroProtein: "Eiwit",
+  d_macroCarbs: "Koolhydraten",
+  d_macroFat: "Vet",
   d_fitnessNoGallery: "Nog geen voortgangsfoto's.",
 
   // GitHub
@@ -350,6 +356,9 @@ var LANG = {
   h_radio: "<strong>📻 Radio</strong><br><br>• Kies uit internationale radiozenders.<br>• Klik op een zender om te streamen – kan enkele seconden duren.<br>• De synthesizer animeert tijdens het afspelen.<br>• Gebruik het <strong>slot</strong> (🔒) om onbedoelde zenderwijzigingen uit te schakelen.",
   h_emergency_alert: "<strong>📍 Locatie-alarm</strong><br><br><strong>📱 Alleen mobiele telefoons.</strong><br>• Verstuurt een sms met je GPS-locatie naar vertrouwde contacten.<br>• Vereist GPS en mobiel netwerk (niet beschikbaar op desktop/tablet).<br>• Voeg contacten toe in <strong>Instellingen → Locatie delen</strong>.<br>• Ontgrendel de knop (🔓) en druk vervolgens op <strong>DELEN</strong> om te verzenden.<br>• Test eerst met je eigen nummer om te controleren of het werkt.",
   h_phone: "<strong>📞 Vriendelijke telefoon</strong><br><br>• Bellen met één tik naar je opgeslagen contacten.<br>• Voeg contacten met foto's toe in <strong>Instellingen → Vriendelijke telefoon</strong>.<br>• De module is <strong>standaard vergrendeld</strong> – ontgrendel om bellen in te schakelen.<br>• Foto's helpen om contacten in één oogopslag te herkennen.",
+  h_github_user: "<strong>🐙 Github-gebruiker</strong><br><br>• Voeg de activiteitenpagina van je favoriete Github-gebruiker toe om de Github-activiteit van die gebruiker te zien.",
+  h_github_repo: "<strong>📦 Github-repo</strong><br><br>• Voeg de activiteitenpagina van je favoriete Github-repo toe om de Github-activiteit van die repo te zien.",
+  h_fitness: "<strong>💪 Fitness</strong><br><br>• Werk je Wger.de-fitnessapp bij en plak je token op de instellingenpagina om je eigen fitnessactiviteit te volgen.<br><br> Je gegevens gaan van Wger naar je browser. Wij zien ze niet.",
   h_chat: "<strong>💬 Chat (Matrix)</strong><br><br>• Maak je eigen Matrix-account aan op <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> om privé chatrooms voor familie of vrienden te starten.<br>• Voeg kamer-URL's, toegangstoken, gebruikers-ID toe in <strong>Instellingen → Chat</strong>.<br>• De module controleert elke 30 seconden op nieuwe berichten.<br>• Klik op de kamerheader om uit te vouwen en berichten te bekijken.<br>• Meldingen van nieuwe berichten verschijnen als een rode badge.",
   h_calendar: "<strong>📅 Agenda (Proton ICS)</strong><br><br>• Toont de afspraken van vandaag uit je Proton-agenda.<br>• Verkrijg je ICS-link via Proton Calendar → Instellingen → Agenda's → 'Delen met iedereen' → 'Link maken'.<br>• Plak de ICS-link in <strong>Instellingen → Agenda</strong>.<br><br><strong>🔔 Meldingen:</strong><br>• Meldingen worden ingesteld in je agenda-app — bv. 2 meldingen op een afspraak = twee waarschuwingen op dit dashboard.<br>• Schakel meldingen in/uit met de knop bovenaan de agenda.<br><br><strong>⚠️ Belangrijke beperkingen (Proton, niet deze module):</strong><br>• De ICS-feed wordt <strong>elke 4–16 uur</strong> bijgewerkt – nieuwe afspraken hebben tijd nodig om te verschijnen.<br>• Terugkerende afspraken worden mogelijk niet correct weergegeven.<br><br><strong>💡 Tips:</strong><br>• Als een afspraak niet verschijnt, wacht dan een paar uur en probeer opnieuw.",
 

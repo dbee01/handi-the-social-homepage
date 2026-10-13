@@ -265,8 +265,14 @@ var LANG = {
   d_fitnessEntries: "wpisy",
   d_fitnessNoWorkouts: "Brak zarejestrowanych treningów jeszcze.",
   d_fitnessWorkoutSession: "Trening",
-  d_fitnessNoNutrition: "Brak planu żywieniowego jeszcze.",
+  d_fitnessNoNutrition: "Brak wpisów w dzienniku żywieniowym jeszcze.",
   d_fitnessDailyTotals: "Dzienne sumy",
+  d_fitnessNutritionEnergy: "Energia na dzień",
+  d_fitnessNutritionMacros: "Podział makroskładników",
+  d_fitnessNutritionHistory: "Dziennik dzienny",
+  d_macroProtein: "Białko",
+  d_macroCarbs: "Węglowodany",
+  d_macroFat: "Tłuszcz",
   d_fitnessNoGallery: "Brak zdjęć postępów jeszcze.",
 
   // GitHub
@@ -350,6 +356,9 @@ var LANG = {
   h_radio: "<strong>📻 Radio</strong><br><br>• Wybierz spośród międzynarodowych stacji radiowych.<br>• Kliknij stację, aby rozpocząć transmisję – może to potrwać kilka sekund.<br>• Syntezator animuje się podczas odtwarzania.<br>• Użyj <strong>blokady</strong> (🔒), aby wyłączyć przypadkowe zmiany stacji.",
   h_emergency_alert: "<strong>📍 Alarm lokalizacyjny</strong><br><br><strong>📱 Tylko telefony komórkowe.</strong><br>• Wysyła SMS z Twoją lokalizacją GPS do zaufanych kontaktów.<br>• Wymaga GPS i sieci komórkowej (niedostępne na komputerze/tablecie).<br>• Dodaj kontakty w <strong>Ustawienia → Udostępnianie lokalizacji</strong>.<br>• Odblokuj przycisk (🔓), a następnie naciśnij <strong>UDOSTĘPNIJ</strong>, aby wysłać.<br>• Przetestuj najpierw z własnym numerem, aby upewnić się, że działa.",
   h_phone: "<strong>📞 Przyjazny telefon</strong><br><br>• Dzwonienie jednym dotknięciem do zapisanych kontaktów.<br>• Dodaj kontakty ze zdjęciami w <strong>Ustawienia → Przyjazny telefon</strong>.<br>• Moduł jest <strong>domyślnie zablokowany</strong> – odblokuj, aby włączyć połączenia.<br>• Zdjęcia pomagają rozpoznać kontakty na pierwszy rzut oka.",
+  h_github_user: "<strong>🐙 Użytkownik Github</strong><br><br>• Dodaj stronę aktywności swojego ulubionego użytkownika Github, aby zobaczyć jego aktywność na Github.",
+  h_github_repo: "<strong>📦 Repozytorium Github</strong><br><br>• Dodaj stronę aktywności swojego ulubionego repozytorium Github, aby zobaczyć jego aktywność.",
+  h_fitness: "<strong>💪 Fitness</strong><br><br>• Zaktualizuj swoją aplikację fitness Wger.de i wklej swój token na stronie ustawień, aby monitorować własną aktywność fizyczną.<br><br> Twoje dane trafiają z Wger do Twojej przeglądarki. My ich nie widzimy.",
   h_chat: "<strong>💬 Czat (Matrix)</strong><br><br>• Utwórz własne konto Matrix na <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a>, aby rozpocząć prywatne pokoje rozmów dla rodziny lub przyjaciół.<br>• Dodaj adresy URL pokoi, token dostępu, ID użytkownika w <strong>Ustawienia → Czat</strong>.<br>• Moduł sprawdza nowe wiadomości co 30 sekund.<br>• Kliknij nagłówek pokoju, aby rozwinąć i wyświetlić wiadomości.<br>• Powiadomienia o nowych wiadomościach pojawiają się jako czerwona plakietka.",
   h_calendar: "<strong>📅 Kalendarz (Proton ICS)</strong><br><br>• Pokazuje dzisiejsze wydarzenia z Twojego Kalendarza Proton.<br>• Uzyskaj link ICS z Proton Calendar → Ustawienia → Kalendarze → 'Udostępnij każdemu' → 'Utwórz link'.<br>• Wklej link ICS w <strong>Ustawienia → Kalendarz</strong>.<br><br><strong>🔔 Alerty:</strong><br>• Powiadomienia są ustawiane w aplikacji kalendarza — np. 2 powiadomienia na wydarzenie = dwa alerty na tym pulpicie.<br>• Włącz/wyłącz alerty przyciskiem u góry kalendarza.<br><br><strong>⚠️ Ważne ograniczenia (Proton, nie ten moduł):</strong><br>• Kanał ICS aktualizuje się <strong>co 4–16 godzin</strong> – nowe wydarzenia potrzebują czasu, aby się pojawić.<br>• Wydarzenia cykliczne mogą nie wyświetlać się poprawnie.<br><br><strong>💡 Wskazówki:</strong><br>• Jeśli wydarzenie się nie pojawia, poczekaj kilka godzin i spróbuj ponownie.",
 

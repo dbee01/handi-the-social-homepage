@@ -255,13 +255,13 @@ export default async function initBus(container) {
               <span class="bus-flow-sub">${arrivalText}</span>
             </div>
             <div class="bus-flow-row">
-              <span class="bus-flow-tag">${t("d_departure", "Departure")}</span>
+              <span class="bus-flow-tag">${t("d_departure", "Dept")}</span>
               <span class="bus-flow-value">${escapeHtml(r.departure_stop_name)}</span>
               <span class="bus-flow-arrow">→</span>
               <span class="bus-flow-time">${etaStr}</span>
             </div>
             <div class="bus-flow-row">
-              <span class="bus-flow-tag">${t("d_arrival", "Arrival")}</span>
+              <span class="bus-flow-tag">${t("d_arrival", "Arr")}</span>
               <span class="bus-flow-value">${escapeHtml(destStop)}</span>
               <span class="bus-flow-arrow">→</span>
               <span class="bus-flow-time">${escapeHtml(destTime)}</span>

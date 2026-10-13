@@ -264,8 +264,14 @@ var LANG = {
   d_fitnessEntries: "cofnodion",
   d_fitnessNoWorkouts: "Dim ymarferion wedi'u cofnodi eto.",
   d_fitnessWorkoutSession: "Ymarfer corff",
-  d_fitnessNoNutrition: "Dim cynllun maeth eto.",
+  d_fitnessNoNutrition: "Dim cofnodion dyddiadur maeth eto.",
   d_fitnessDailyTotals: "Cyfansymiau dyddiol",
+  d_fitnessNutritionEnergy: "Egni'r dydd",
+  d_fitnessNutritionMacros: "Dadansoddiad macro",
+  d_fitnessNutritionHistory: "Dyddiadur dyddiol",
+  d_macroProtein: "Protein",
+  d_macroCarbs: "Carbs",
+  d_macroFat: "Braster",
   d_fitnessNoGallery: "Dim lluniau cynnydd eto.",
 
   // GitHub
@@ -349,6 +355,9 @@ var LANG = {
   h_radio: "<strong>📻 Radio</strong><br><br>• Dewiswch o orsafoedd radio rhyngwladol.<br>• Cliciwch ar orsaf i ddechrau ffrydio – gall gymryd ychydig eiliadau.<br>• Mae'r syntheseisydd yn animeiddio wrth chwarae.<br>• Defnyddiwch y <strong>clo</strong> (🔒) i analluogi newidiadau gorsaf damweiniol.",
   h_emergency_alert: "<strong>📍 Rhybudd Lleoliad</strong><br><br><strong>📱 Ffonau symudol yn unig.</strong><br>• Yn anfon SMS gyda'ch lleoliad GPS at gysylltiadau dibynadwy.<br>• Mae angen GPS a rhwydwaith symudol (ddim ar gael ar gyfrifiadur/llechen).<br>• Ychwanegwch gysylltiadau yn <strong>Gosodiadau → Rhannu Lleoliad</strong>.<br>• Datgloi'r botwm (🔓) yna pwyswch <strong>RHANNU</strong> i anfon.<br>• Profwch gyda'ch rhif eich hun yn gyntaf i sicrhau ei fod yn gweithio.",
   h_phone: "<strong>📞 Ffôn Cyfeillgar</strong><br><br>• Galwad un-tap i'ch cysylltiadau sydd wedi'u cadw.<br>• Ychwanegwch gysylltiadau gyda lluniau yn <strong>Gosodiadau → Ffôn Cyfeillgar</strong>.<br>• Mae'r modiwl <strong>wedi'i gloi yn ddiofyn</strong> – datgloi i alluogi galwadau.<br>• Mae lluniau'n helpu i adnabod cysylltiadau ar unwaith.",
+  h_github_user: "<strong>🐙 Defnyddiwr Github</strong><br><br>• Ychwanegwch dudalen gweithgaredd eich hoff ddefnyddiwr Github i weld gweithgaredd Github y defnyddiwr hwnnw.",
+  h_github_repo: "<strong>📦 Repo Github</strong><br><br>• Ychwanegwch dudalen gweithgaredd eich hoff repo Github i weld gweithgaredd Github y repo hwnnw.",
+  h_fitness: "<strong>💪 Ffitrwydd</strong><br><br>• Diweddarwch eich ap ffitrwydd Wger.de a gludwch eich tocyn ar y dudalen gosodiadau i fonitro'ch gweithgaredd ffitrwydd eich hun.<br><br> Mae'ch data'n mynd o Wger i'ch porwr. Nid ydym ni'n ei weld.",
   h_chat: "<strong>💬 Sgwrs (Matrix)</strong><br><br>• Crëwch eich cyfrif Matrix eich hun yn <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> i ddechrau ystafelloedd sgwrsio preifat i deulu neu ffrindiau.<br>• Ychwanegwch URLau ystafelloedd, tocyn mynediad, ID defnyddiwr yn <strong>Gosodiadau → Sgwrs</strong>.<br>• Mae'r modiwl yn gwirio am negeseuon newydd bob 30 eiliad.<br>• Cliciwch bennawd yr ystafell i ehangu a gweld negeseuon.<br>• Mae hysbysiadau negeseuon newydd yn ymddangos fel bathodyn coch.",
   h_calendar: "<strong>📅 Calendr (Proton ICS)</strong><br><br>• Yn dangos digwyddiadau heddiw o'ch Calendr Proton.<br>• Cewch eich dolen ICS o Proton Calendar → Gosodiadau → Calendrau → 'Rhannu ag unrhyw un' → 'Creu dolen'.<br>• Gludwch y ddolen ICS yn <strong>Gosodiadau → Calendr</strong>.<br><br><strong>🔔 Rhybuddion:</strong><br>• Mae hysbysiadau'n cael eu gosod yn eich ap calendr — e.e. 2 hysbysiad ar ddigwyddiad = dau rybudd ar y dangosfwrdd hwn.<br>• Toglo rhybuddion ymlaen/i ffwrdd gyda'r botwm ar frig y calendr.<br><br><strong>⚠️ Cyfyngiadau pwysig (Proton, nid y modiwl hwn):</strong><br>• Mae'r porthiant ICS yn diweddaru <strong>bob 4–16 awr</strong> – mae digwyddiadau newydd yn cymryd amser i ymddangos.<br>• Efallai na fydd digwyddiadau cylchol yn ymddangos yn gywir.<br><br><strong>💡 Awgrymiadau:</strong><br>• Os nad yw digwyddiad yn ymddangos, arhoswch ychydig oriau a cheisiwch eto.",
 
