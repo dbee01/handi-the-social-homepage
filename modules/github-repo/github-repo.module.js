@@ -33,7 +33,12 @@ function repoPath() {
 }
 
 function commitsUrl() {
-  return API_ROOT + "/repos/" + encodeURIComponent(repoPath()) + "/commits?per_page=" + MAX_ITEMS;
+  // `repoPath()` is "owner/repo"; the slash is a path separator, not data,
+  // so encode each segment separately (encoding the whole string would turn
+  // the / into %2F and GitHub's API would 404).
+  var parts = repoPath().split("/");
+  var path = parts.map(encodeURIComponent).join("/");
+  return API_ROOT + "/repos/" + path + "/commits?per_page=" + MAX_ITEMS;
 }
 
 function repoHtmlUrl() {
