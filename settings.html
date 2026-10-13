@@ -1199,7 +1199,7 @@
             </div>
 
             <!-- GitHub User Activity Module (free) -->
-            <div class="module-card" data-module="codeberg-user">
+            <div class="module-card" data-module="github-user">
                 <div class="module-header">
                     <div class="module-title">
                         <i class="fa-brands fa-code-branch"></i>
@@ -1218,12 +1218,12 @@
                         </small>
                     </div>
                     <div class="config-field">
-                        <label for="codebergUser">
+                        <label for="githubUser">
                             <i class="fa-solid fa-user"></i> GitHub username
                         </label>
                         <input
                             type="text"
-                            id="codebergUser"
+                            id="githubUser"
                             placeholder="e.g. dbee01"
                             autocomplete="off"
                         />
@@ -1236,7 +1236,7 @@
             </div>
 
             <!-- GitHub Repo Commits Module (free) -->
-            <div class="module-card" data-module="codeberg-repo">
+            <div class="module-card" data-module="github-repo">
                 <div class="module-header">
                     <div class="module-title">
                         <i class="fa-solid fa-code-pull-request"></i>
@@ -1254,12 +1254,12 @@
                         </small>
                     </div>
                     <div class="config-field">
-                        <label for="codebergRepoFeed">
+                        <label for="githubRepoFeed">
                             <i class="fa-brands fa-github"></i> Repository (owner/repo)
                         </label>
                         <input
                             type="text"
-                            id="codebergRepoFeed"
+                            id="githubRepoFeed"
                             placeholder="owner/repo"
                             autocomplete="off"
                         />
@@ -2224,22 +2224,22 @@
                 }
 
                 // Load the saved GitHub username.
-                if (settings["codeberg-user"]) {
+                if (settings["github-user"]) {
                     const cbUserInput =
-                        document.getElementById("codebergUser");
+                        document.getElementById("githubUser");
                     if (cbUserInput) {
                         cbUserInput.value =
-                            settings["codeberg-user"].user || "dbee01";
+                            settings["github-user"].user || "dbee01";
                     }
                 }
 
                 // Load the saved GitHub repository (owner/repo).
-                if (settings["codeberg-repo"]) {
+                if (settings["github-repo"]) {
                     const cbRepoInput =
-                        document.getElementById("codebergRepoFeed");
+                        document.getElementById("githubRepoFeed");
                     if (cbRepoInput) {
                         cbRepoInput.value =
-                            settings["codeberg-repo"].feed ||
+                            settings["github-repo"].feed ||
                             "dbee01/handi-the-social-homepage";
                     }
                 }
@@ -2645,20 +2645,20 @@
                     settings.fitness.token = fitnessToken;
                 }
 
-                if (!settings["codeberg-user"]) settings["codeberg-user"] = {};
-                const codebergUser = document
-                    .getElementById("codebergUser")
+                if (!settings["github-user"]) settings["github-user"] = {};
+                const githubUser = document
+                    .getElementById("githubUser")
                     ?.value.trim();
-                if (codebergUser !== "") {
-                    settings["codeberg-user"].user = codebergUser;
+                if (githubUser !== "") {
+                    settings["github-user"].user = githubUser;
                 }
 
-                if (!settings["codeberg-repo"]) settings["codeberg-repo"] = {};
-                const codebergRepoFeed = document
-                    .getElementById("codebergRepoFeed")
+                if (!settings["github-repo"]) settings["github-repo"] = {};
+                const githubRepoFeed = document
+                    .getElementById("githubRepoFeed")
                     ?.value.trim();
-                if (codebergRepoFeed !== "") {
-                    settings["codeberg-repo"].feed = codebergRepoFeed;
+                if (githubRepoFeed !== "") {
+                    settings["github-repo"].feed = githubRepoFeed;
                 }
 
                 if (!settings.phone) settings.phone = {};

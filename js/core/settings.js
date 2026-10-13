@@ -46,8 +46,8 @@ const DEFAULT_SETTINGS = {
   calendar: { url: "", notificationMinutes: 15 },
   cast: { volume: 100, soundLock: false, streamUrl: "" },
   fitness: { token: "" },
-  "codeberg-user": { user: "dbee01" },
-  "codeberg-repo": {
+  "github-user": { user: "dbee01" },
+  "github-repo": {
     feed: "dbee01/handi-the-social-homepage",
   },
 };

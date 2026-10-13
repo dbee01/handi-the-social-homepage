@@ -4,7 +4,7 @@
  * See the LICENSE file in the repository root for full details.
  */
 
-// modules/codeberg-user/codeberg.module.js
+// modules/github-user/github.module.js
 // GITHUB USER ACTIVITY — reads a user's public events via GitHub's REST API
 // (https://api.github.com/users/{user}/events/public), which sends
 // `Access-Control-Allow-Origin: *`, so it can be fetched directly from the
@@ -20,7 +20,7 @@ const API_ROOT = "https://api.github.com";
 function feedUrl() {
   try {
     var s = loadSettings();
-    var user = (s && s["codeberg-user"] && s["codeberg-user"].user) || DEFAULT_USER;
+    var user = (s && s["github-user"] && s["github-user"].user) || DEFAULT_USER;
     return API_ROOT + "/users/" + encodeURIComponent(user) + "/events/public?per_page=" + MAX_ITEMS;
   } catch (e) {
     return API_ROOT + "/users/" + DEFAULT_USER + "/events/public?per_page=" + MAX_ITEMS;
@@ -30,7 +30,7 @@ function feedUrl() {
 function profileUrl() {
   try {
     var s = loadSettings();
-    var user = (s && s["codeberg-user"] && s["codeberg-user"].user) || DEFAULT_USER;
+    var user = (s && s["github-user"] && s["github-user"].user) || DEFAULT_USER;
     return "https://github.com/" + encodeURIComponent(user);
   } catch (e) {
     return "https://github.com/" + DEFAULT_USER;
@@ -136,7 +136,7 @@ function fmtDate(iso) {
   return d.toLocaleString("en-IE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
-export default async function initCodeberg(container) {
+export default async function initGitHub(container) {
   const t =
     window.t ||
     function (k, e) {
@@ -150,18 +150,18 @@ export default async function initCodeberg(container) {
   const title = document.createElement("div");
   title.className = "panel-title";
   const modName =
-    window.LANG && window.LANG.modules && window.LANG.modules["codeberg-user"]
-      ? window.LANG.modules["codeberg-user"].name
-      : "Codeberg";
+    window.LANG && window.LANG.modules && window.LANG.modules["github-user"]
+      ? window.LANG.modules["github-user"].name
+      : "GitHub";
   title.innerHTML = '<i class="fa-brands fa-code-branch"></i> ' + modName;
   container.appendChild(title);
 
   const content = document.createElement("div");
-  content.className = "codeberg-content";
+  content.className = "github-content";
   container.appendChild(content);
 
   const parentItem = container.closest(".dashboard-item");
-  if (parentItem) parentItem.dataset.module = "codeberg-user";
+  if (parentItem) parentItem.dataset.module = "github-user";
 
   let refreshIntervalId = null;
 
@@ -170,7 +170,7 @@ export default async function initCodeberg(container) {
     if (!items.length) {
       content.innerHTML =
         '<div class="module-empty"><i class="fa-brands fa-code-branch"></i><p>' +
-        escapeHtml(t("d_codebergUserEmpty", "No activity yet.")) +
+        escapeHtml(t("d_githubUserEmpty", "No activity yet.")) +
         "</p></div>";
       return;
     }
@@ -209,7 +209,7 @@ export default async function initCodeberg(container) {
       foot.style.cssText = "margin-top:8px;text-align:right;";
       foot.innerHTML =
         '<a href="' + escapeHtml(channelLink) + '" target="_blank" rel="noopener" style="font-size:0.8rem;font-weight:600;">' +
-        escapeHtml(t("d_codebergUserViewProfile", "Open GitHub")) +
+        escapeHtml(t("d_githubUserViewProfile", "Open GitHub")) +
         " ↗</a>";
       content.appendChild(foot);
     }
@@ -220,14 +220,14 @@ export default async function initCodeberg(container) {
   function showError() {
     content.innerHTML =
       '<div class="module-empty"><i class="fa-solid fa-triangle-exclamation"></i><p>' +
-      escapeHtml(t("d_codebergUserError", "Could not load the Codeberg feed.")) +
+      escapeHtml(t("d_githubUserError", "Could not load the GitHub feed.")) +
       "</p></div>";
   }
 
-  async function fetchCodeberg() {
+  async function fetchGitHub() {
     try {
       content.innerHTML =
-        '<div class="codeberg-loading" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:#64748b;">' +
+        '<div class="github-loading" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:#64748b;">' +
         '<i class="fa-solid fa-spinner fa-spin"></i> ' +
         escapeHtml(t("d_loading", "Loading...")) +
         "</div>";
@@ -258,8 +258,8 @@ export default async function initCodeberg(container) {
     }
   }
 
-  fetchCodeberg();
-  refreshIntervalId = setInterval(fetchCodeberg, REFRESH_MIN * 60 * 1000);
+  fetchGitHub();
+  refreshIntervalId = setInterval(fetchGitHub, REFRESH_MIN * 60 * 1000);
 
   return function () {
     if (refreshIntervalId) clearInterval(refreshIntervalId);

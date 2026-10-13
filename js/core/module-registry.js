@@ -132,8 +132,8 @@ window.HANDI_MODULES = [
     settingsConfig: { token: "" },
   },
   {
-    id: "codeberg-user",
-    name: "Codeberg",
+    id: "github-user",
+    name: "GitHub",
     icon: '<i class="fa-brands fa-code-branch"></i>',
     desc: "Your activity on GitHub",
     tier: "free",
@@ -141,8 +141,8 @@ window.HANDI_MODULES = [
     settingsConfig: { user: "dbee01" },
   },
   {
-    id: "codeberg-repo",
-    name: "Codeberg Repo",
+    id: "github-repo",
+    name: "GitHub Repo",
     icon: '<i class="fa-solid fa-code-pull-request"></i>',
     desc: "Latest commits for a GitHub repo",
     tier: "free",

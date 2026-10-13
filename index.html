@@ -440,10 +440,10 @@
                 <div id="fitness" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
-                <div id="codeberg-user" class="dashboard-item module">
+                <div id="github-user" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
-                <div id="codeberg-repo" class="dashboard-item module">
+                <div id="github-repo" class="dashboard-item module">
                     <div class="module-content"></div>
                 </div>
 
@@ -853,8 +853,8 @@
             import initSports from "./modules/sports/sports.module.js";
             import initEvents from "./modules/events/events.module.js";
             import initFitness from "./modules/fitness/fitness.module.js";
-            import initCodeberg from "./modules/codeberg-user/codeberg.module.js";
-            import initCodebergRepo from "./modules/codeberg-repo/codeberg-repo.module.js";
+            import initGitHub from "./modules/github-user/github.module.js";
+            import initGitHubRepo from "./modules/github-repo/github-repo.module.js";
 
             import initEmergency from "./modules/emergency/emergency.module.js";
             import { initLayout } from "./js/core/layout.js";
@@ -879,8 +879,8 @@
                 sports: initSports,
                 events: initEvents,
                 fitness: initFitness,
-                "codeberg-user": initCodeberg,
-                "codeberg-repo": initCodebergRepo,
+                "github-user": initGitHub,
+                "github-repo": initGitHubRepo,
                 emergency_alert: initEmergency,
             };
 

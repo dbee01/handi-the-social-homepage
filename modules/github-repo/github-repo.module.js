@@ -4,7 +4,7 @@
  * See the LICENSE file in the repository root for full details.
  */
 
-// modules/codeberg-repo/codeberg-repo.module.js
+// modules/github-repo/github-repo.module.js
 // GITHUB REPO COMMITS — reads the latest commits for a repository via GitHub's
 // REST API (https://api.github.com/repos/{owner}/{repo}/commits), which sends
 // `Access-Control-Allow-Origin: *`, so it can be fetched directly from the
@@ -18,11 +18,11 @@ const MAX_ITEMS = 12;
 const API_ROOT = "https://api.github.com";
 
 // The settings field was historically a full feed URL; accept either a
-// GitHub "owner/repo" path or an old-style Codeberg feed URL (best-effort).
+// GitHub "owner/repo" path or an old-style GitHub feed URL (best-effort).
 function repoPath() {
   try {
     var s = loadSettings();
-    var raw = (s && s["codeberg-repo"] && s["codeberg-repo"].feed) || DEFAULT_REPO;
+    var raw = (s && s["github-repo"] && s["github-repo"].feed) || DEFAULT_REPO;
     var m = String(raw).match(/github\.com\/([^/]+\/[^/?#]+)/i);
     if (m) return m[1].replace(/\.git$/i, "");
     if (/^[^/]+\/[^/]+$/.test(raw)) return raw;
@@ -71,7 +71,7 @@ function fmtDate(iso) {
   return d.toLocaleString("en-IE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
-export default async function initCodebergRepo(container) {
+export default async function initGitHubRepo(container) {
   const t =
     window.t ||
     function (k, e) {
@@ -85,18 +85,18 @@ export default async function initCodebergRepo(container) {
   const title = document.createElement("div");
   title.className = "panel-title";
   const modName =
-    window.LANG && window.LANG.modules && window.LANG.modules["codeberg-repo"]
-      ? window.LANG.modules["codeberg-repo"].name
-      : "Codeberg Repo";
+    window.LANG && window.LANG.modules && window.LANG.modules["github-repo"]
+      ? window.LANG.modules["github-repo"].name
+      : "GitHub Repo";
   title.innerHTML = '<i class="fa-brands fa-code-branch"></i> ' + modName;
   container.appendChild(title);
 
   const content = document.createElement("div");
-  content.className = "codeberg-repo-content";
+  content.className = "github-repo-content";
   container.appendChild(content);
 
   const parentItem = container.closest(".dashboard-item");
-  if (parentItem) parentItem.dataset.module = "codeberg-repo";
+  if (parentItem) parentItem.dataset.module = "github-repo";
 
   let refreshIntervalId = null;
 
@@ -105,7 +105,7 @@ export default async function initCodebergRepo(container) {
     if (!items.length) {
       content.innerHTML =
         '<div class="module-empty"><i class="fa-brands fa-code-branch"></i><p>' +
-        escapeHtml(t("d_codebergRepoEmpty", "No activity yet.")) +
+        escapeHtml(t("d_githubRepoEmpty", "No activity yet.")) +
         "</p></div>";
       return;
     }
@@ -144,7 +144,7 @@ export default async function initCodebergRepo(container) {
       foot.style.cssText = "margin-top:8px;text-align:right;";
       foot.innerHTML =
         '<a href="' + escapeHtml(channelLink) + '" target="_blank" rel="noopener" style="font-size:0.8rem;font-weight:600;">' +
-        escapeHtml(t("d_codebergRepoViewRepo", "Open repository")) +
+        escapeHtml(t("d_githubRepoViewRepo", "Open repository")) +
         " ↗</a>";
       content.appendChild(foot);
     }
@@ -155,14 +155,14 @@ export default async function initCodebergRepo(container) {
   function showError() {
     content.innerHTML =
       '<div class="module-empty"><i class="fa-solid fa-triangle-exclamation"></i><p>' +
-      escapeHtml(t("d_codebergRepoError", "Could not load the repository feed.")) +
+      escapeHtml(t("d_githubRepoError", "Could not load the repository feed.")) +
       "</p></div>";
   }
 
-  async function fetchCodebergRepo() {
+  async function fetchGitHubRepo() {
     try {
       content.innerHTML =
-        '<div class="codeberg-repo-loading" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:#64748b;">' +
+        '<div class="github-repo-loading" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:#64748b;">' +
         '<i class="fa-solid fa-spinner fa-spin"></i> ' +
         escapeHtml(t("d_loading", "Loading...")) +
         "</div>";
@@ -196,8 +196,8 @@ export default async function initCodebergRepo(container) {
     }
   }
 
-  fetchCodebergRepo();
-  refreshIntervalId = setInterval(fetchCodebergRepo, REFRESH_MIN * 60 * 1000);
+  fetchGitHubRepo();
+  refreshIntervalId = setInterval(fetchGitHubRepo, REFRESH_MIN * 60 * 1000);
 
   return function () {
     if (refreshIntervalId) clearInterval(refreshIntervalId);

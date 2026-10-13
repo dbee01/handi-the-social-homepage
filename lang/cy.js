@@ -65,8 +65,8 @@ var LANG = {
     newsletter: { name: "Cylchlythyr", desc: "Crynodeb e-bost" },
     sports: { name: "Chwaraeon", desc: "Pêl-droed byw" },
     fitness: { name: "Fitness", desc: "Ymarfer corff a maeth" },
-    "codeberg-user": { name: "Codeberg", desc: "Gweithgarwch Handi" },
-    "codeberg-repo": { name: "Codeberg Repo", desc: "Ffrwd ystorfa" },
+    "github-user": { name: "GitHub", desc: "Gweithgarwch Handi" },
+    "github-repo": { name: "GitHub Repo", desc: "Ffrwd ystorfa" },
   },
   d_loading: "Wrthi'n llwytho...",
   d_noData: "Dim data.",
@@ -268,13 +268,13 @@ var LANG = {
   d_fitnessDailyTotals: "Cyfansymiau dyddiol",
   d_fitnessNoGallery: "Dim lluniau cynnydd eto.",
 
-  // Codeberg
-  d_codebergUserEmpty: "Dim gweithgarwch eto.",
-  d_codebergUserViewProfile: "Agor Codeberg",
-  d_codebergUserError: "Methwyd llwytho ffrwd Codeberg.",
-  d_codebergRepoEmpty: "Dim gweithgarwch eto.",
-  d_codebergRepoViewRepo: "Agor y storfa",
-  d_codebergRepoError: "Methwyd llwytho ffrwd y storfa.",
+  // GitHub
+  d_githubUserEmpty: "Dim gweithgarwch eto.",
+  d_githubUserViewProfile: "Agor GitHub",
+  d_githubUserError: "Methwyd llwytho ffrwd GitHub.",
+  d_githubRepoEmpty: "Dim gweithgarwch eto.",
+  d_githubRepoViewRepo: "Agor y storfa",
+  d_githubRepoError: "Methwyd llwytho ffrwd y storfa.",
 
   d_customizeDashboard: "Addasu'r Dangosfwrdd",
   d_freeTrial: "✨ Rhowch gynnig ar Premiwm",

@@ -70,8 +70,8 @@ var LANG = {
     newsletter: { name: "Boletín", desc: "Resumen por correo" },
     sports: { name: "Deportes", desc: "Fútbol en directo" },
     fitness: { name: "Fitness", desc: "Entrenamientos y nutrición" },
-    "codeberg-user": { name: "Codeberg", desc: "Actividad práctica" },
-    "codeberg-repo": { name: "Codeberg Repo", desc: "Feed del repositorio" },
+    "github-user": { name: "GitHub", desc: "Actividad práctica" },
+    "github-repo": { name: "GitHub Repo", desc: "Feed del repositorio" },
   },
   d_loading: "Cargando...",
   d_noData: "Sin datos.",
@@ -273,13 +273,13 @@ var LANG = {
   d_fitnessDailyTotals: "Totales diarios",
   d_fitnessNoGallery: "Aún no hay fotos de progreso.",
 
-  // Codeberg
-  d_codebergUserEmpty: "Aún no hay actividad.",
-  d_codebergUserViewProfile: "Abrir Codeberg",
-  d_codebergUserError: "No se pudo cargar el feed de Codeberg.",
-  d_codebergRepoEmpty: "Aún no hay actividad.",
-  d_codebergRepoViewRepo: "Abrir repositorio",
-  d_codebergRepoError: "No se pudo cargar el feed del repositorio.",
+  // GitHub
+  d_githubUserEmpty: "Aún no hay actividad.",
+  d_githubUserViewProfile: "Abrir GitHub",
+  d_githubUserError: "No se pudo cargar el feed de GitHub.",
+  d_githubRepoEmpty: "Aún no hay actividad.",
+  d_githubRepoViewRepo: "Abrir repositorio",
+  d_githubRepoError: "No se pudo cargar el feed del repositorio.",
 
   d_customizeDashboard: "Personalizar panel",
   d_freeTrial: "✨ Probar Premium",

@@ -71,8 +71,8 @@ var LANG = {
     newsletter: { name: "Newsletter", desc: "E-Mail-Digest" },
     sports: { name: "Sport", desc: "Live-Fußball" },
     fitness: { name: "Fitness", desc: "Workouts & Ernährung" },
-    "codeberg-user": { name: "Codeberg", desc: "Handi-Aktivität" },
-    "codeberg-repo": { name: "Codeberg Repo", desc: "Repository-Feed" },
+    "github-user": { name: "GitHub", desc: "Handi-Aktivität" },
+    "github-repo": { name: "GitHub Repo", desc: "Repository-Feed" },
   },
   d_loading: "Lädt...",
   d_noData: "Keine Daten.",
@@ -274,13 +274,13 @@ var LANG = {
   d_fitnessDailyTotals: "Tageswerte",
   d_fitnessNoGallery: "Noch keine Fortschrittsfotos.",
 
-  // Codeberg
-  d_codebergUserEmpty: "Noch keine Aktivität.",
-  d_codebergUserViewProfile: "Codeberg öffnen",
-  d_codebergUserError: "Der Codeberg-Feed konnte nicht geladen werden.",
-  d_codebergRepoEmpty: "Noch keine Aktivität.",
-  d_codebergRepoViewRepo: "Repository öffnen",
-  d_codebergRepoError: "Der Repository-Feed konnte nicht geladen werden.",
+  // GitHub
+  d_githubUserEmpty: "Noch keine Aktivität.",
+  d_githubUserViewProfile: "GitHub öffnen",
+  d_githubUserError: "Der GitHub-Feed konnte nicht geladen werden.",
+  d_githubRepoEmpty: "Noch keine Aktivität.",
+  d_githubRepoViewRepo: "Repository öffnen",
+  d_githubRepoError: "Der Repository-Feed konnte nicht geladen werden.",
 
   d_customizeDashboard: "Dashboard anpassen",
   d_freeTrial: "✨ Premium testen",
