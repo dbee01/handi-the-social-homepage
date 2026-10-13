@@ -1198,6 +1198,79 @@
                 </div>
             </div>
 
+            <!-- Codeberg Module (free) -->
+            <div class="module-card" data-module="codeberg-user">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-brands fa-code-branch"></i>
+                        <h3>Codeberg User</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <small>
+                            Shows the latest activity from your
+                            <strong>Codeberg</strong> account — pushes, commits
+                            and issues. Updates automatically.
+                        </small>
+                    </div>
+                    <div class="config-field">
+                        <label for="codebergUser">
+                            <i class="fa-solid fa-user"></i> Codeberg username
+                        </label>
+                        <input
+                            type="text"
+                            id="codebergUser"
+                            placeholder="e.g. handi"
+                            autocomplete="off"
+                        />
+                        <small>
+                            Your public activity feed is read from
+                            <strong>codeberg.org/&lt;username&gt;.rss</strong>.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Codeberg Repo Module (free) -->
+            <div class="module-card" data-module="codeberg-repo">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-code-pull-request"></i>
+                        <h3>Codeberg Repo</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <small>
+                            Shows the latest activity from a single
+                            <strong>Codeberg</strong> repository — commits,
+                            pushes and releases.
+                        </small>
+                    </div>
+                    <div class="config-field">
+                        <label for="codebergRepoFeed">
+                            <i class="fa-solid fa-link"></i> Repository feed URL
+                        </label>
+                        <input
+                            type="text"
+                            id="codebergRepoFeed"
+                            placeholder="https://codeberg.org/handi/handi-the-social-homepage.rss"
+                            autocomplete="off"
+                        />
+                        <small>
+                            A public repository feed at
+                            <strong>codeberg.org/&lt;owner&gt;/&lt;repo&gt;.rss</strong>.
+                        </small>
+                    </div>
+                </div>
+            </div>
 
                         <!-- ============================================================ -->
                     <!-- PREMIUM MODULES SECTION -->
@@ -2151,6 +2224,27 @@
                     }
                 }
 
+                // Load the saved Codeberg username.
+                if (settings["codeberg-user"]) {
+                    const cbUserInput =
+                        document.getElementById("codebergUser");
+                    if (cbUserInput) {
+                        cbUserInput.value =
+                            settings["codeberg-user"].user || "handi";
+                    }
+                }
+
+                // Load the saved Codeberg repository feed URL.
+                if (settings["codeberg-repo"]) {
+                    const cbRepoInput =
+                        document.getElementById("codebergRepoFeed");
+                    if (cbRepoInput) {
+                        cbRepoInput.value =
+                            settings["codeberg-repo"].feed ||
+                            "https://codeberg.org/handi/handi-the-social-homepage.rss";
+                    }
+                }
+
                 // Load phone contacts
                 if (settings.phone?.contacts) {
                     phoneContacts = settings.phone.contacts;
@@ -2550,6 +2644,22 @@
                     ?.value.trim();
                 if (fitnessToken !== "") {
                     settings.fitness.token = fitnessToken;
+                }
+
+                if (!settings["codeberg-user"]) settings["codeberg-user"] = {};
+                const codebergUser = document
+                    .getElementById("codebergUser")
+                    ?.value.trim();
+                if (codebergUser !== "") {
+                    settings["codeberg-user"].user = codebergUser;
+                }
+
+                if (!settings["codeberg-repo"]) settings["codeberg-repo"] = {};
+                const codebergRepoFeed = document
+                    .getElementById("codebergRepoFeed")
+                    ?.value.trim();
+                if (codebergRepoFeed !== "") {
+                    settings["codeberg-repo"].feed = codebergRepoFeed;
                 }
 
                 if (!settings.phone) settings.phone = {};

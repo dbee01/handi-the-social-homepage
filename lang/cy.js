@@ -65,6 +65,8 @@ var LANG = {
     newsletter: { name: "Cylchlythyr", desc: "Crynodeb e-bost" },
     sports: { name: "Chwaraeon", desc: "Pêl-droed byw" },
     fitness: { name: "Fitness", desc: "Ymarfer corff a maeth" },
+    "codeberg-user": { name: "Codeberg", desc: "Gweithgarwch Handi" },
+    "codeberg-repo": { name: "Codeberg Repo", desc: "Ffrwd ystorfa" },
   },
   d_loading: "Wrthi'n llwytho...",
   d_noData: "Dim data.",
@@ -265,6 +267,14 @@ var LANG = {
   d_fitnessNoNutrition: "Dim cynllun maeth eto.",
   d_fitnessDailyTotals: "Cyfansymiau dyddiol",
   d_fitnessNoGallery: "Dim lluniau cynnydd eto.",
+
+  // Codeberg
+  d_codebergUserEmpty: "Dim gweithgarwch eto.",
+  d_codebergUserViewProfile: "Agor Codeberg",
+  d_codebergUserError: "Methwyd llwytho ffrwd Codeberg.",
+  d_codebergRepoEmpty: "Dim gweithgarwch eto.",
+  d_codebergRepoViewRepo: "Agor y storfa",
+  d_codebergRepoError: "Methwyd llwytho ffrwd y storfa.",
 
   d_customizeDashboard: "Addasu'r Dangosfwrdd",
   d_freeTrial: "✨ Rhowch gynnig ar Premiwm",

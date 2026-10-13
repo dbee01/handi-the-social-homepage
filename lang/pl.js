@@ -66,6 +66,8 @@ var LANG = {
     newsletter: { name: "Biuletyn", desc: "Podsumowanie e-mail" },
     sports: { name: "Sport", desc: "Piłka nożna na żywo" },
     fitness: { name: "Fitness", desc: "Treningi i odżywianie" },
+    "codeberg-user": { name: "Codeberg", desc: "Aktywność Handi" },
+    "codeberg-repo": { name: "Codeberg Repo", desc: "Kanał repozytorium" },
   },
   d_loading: "Ładowanie...",
   d_noData: "Brak danych.",
@@ -266,6 +268,14 @@ var LANG = {
   d_fitnessNoNutrition: "Brak planu żywieniowego jeszcze.",
   d_fitnessDailyTotals: "Dzienne sumy",
   d_fitnessNoGallery: "Brak zdjęć postępów jeszcze.",
+
+  // Codeberg
+  d_codebergUserEmpty: "Brak aktywności jeszcze.",
+  d_codebergUserViewProfile: "Otwórz Codeberg",
+  d_codebergUserError: "Nie udało się załadować kanału Codeberg.",
+  d_codebergRepoEmpty: "Brak aktywności jeszcze.",
+  d_codebergRepoViewRepo: "Otwórz repozytorium",
+  d_codebergRepoError: "Nie udało się załadować kanału repozytorium.",
 
   d_customizeDashboard: "Dostosuj pulpit",
   d_freeTrial: "✨ Wypróbuj Premium",

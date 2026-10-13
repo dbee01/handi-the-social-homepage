@@ -65,6 +65,8 @@ var LANG = {
     newsletter: { name: "Newsletter", desc: "Résumé par e-mail" },
     sports: { name: "Sport", desc: "Football en direct" },
     fitness: { name: "Fitness", desc: "Entraînements & nutrition" },
+    "codeberg-user": { name: "Codeberg", desc: "Activité Handi" },
+    "codeberg-repo": { name: "Codeberg Repo", desc: "Flux du dépôt" },
   },
   d_loading: "Chargement...",
   d_noData: "Aucune donnée.",
@@ -265,6 +267,14 @@ var LANG = {
   d_fitnessNoNutrition: "Aucun plan nutritionnel pour le moment.",
   d_fitnessDailyTotals: "Totaux quotidiens",
   d_fitnessNoGallery: "Aucune photo de progression pour le moment.",
+
+  // Codeberg
+  d_codebergUserEmpty: "Aucune activité pour le moment.",
+  d_codebergUserViewProfile: "Ouvrir Codeberg",
+  d_codebergUserError: "Impossible de charger le flux Codeberg.",
+  d_codebergRepoEmpty: "Aucune activité pour le moment.",
+  d_codebergRepoViewRepo: "Ouvrir le dépôt",
+  d_codebergRepoError: "Impossible de charger le flux du dépôt.",
 
   d_customizeDashboard: "Personnaliser le tableau de bord",
   d_freeTrial: "✨ Essayer Premium",

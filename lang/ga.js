@@ -77,6 +77,8 @@ var LANG = {
     sports: { name: "Spórt", desc: "Peil bheo" },
     events: { name: "Imeachtaí", desc: "Cad atá ar siúl in aice leat" },
     fitness: { name: "Fitness", desc: "Cleachtaí agus cothú" },
+    "codeberg-user": { name: "Codeberg", desc: "Gníomhaíocht Handi" },
+    "codeberg-repo": { name: "Codeberg Repo", desc: "Fotha stóir" },
   },
 
   d_loading: "Á lódáil...",
@@ -278,6 +280,14 @@ var LANG = {
   d_fitnessNoNutrition: "Gan plean cothaithe go fóill.",
   d_fitnessDailyTotals: "Iomláin laethúla",
   d_fitnessNoGallery: "Gan grianghraif dul chun cinn go fóill.",
+
+  // Codeberg
+  d_codebergUserEmpty: "Gan gníomhaíocht ar bith go fóill.",
+  d_codebergUserViewProfile: "Oscail Codeberg",
+  d_codebergUserError: "Níorbh fhéidir fotha Codeberg a lódáil.",
+  d_codebergRepoEmpty: "Gan gníomhaíocht ar bith go fóill.",
+  d_codebergRepoViewRepo: "Oscail an stór",
+  d_codebergRepoError: "Níorbh fhéidir fotha an stóir a lódáil.",
 
   d_customizeDashboard: "Saincheap an Deais",
   d_freeTrial: "✨ Bain triail as Préimh",

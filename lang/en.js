@@ -82,6 +82,8 @@ var LANG = {
     sports: { name: "Sports", desc: "Live football" },
     events: { name: "Events", desc: "What's on near you" },
     fitness: { name: "Fitness", desc: "Workouts & nutrition" },
+    "codeberg-user": { name: "Codeberg", desc: "Handi activity" },
+    "codeberg-repo": { name: "Codeberg Repo", desc: "Repository feed" },
   },
 
   // Dashboard component strings
@@ -331,6 +333,14 @@ var LANG = {
   d_fitnessNoNutrition: "No nutrition plan yet.",
   d_fitnessDailyTotals: "Daily totals",
   d_fitnessNoGallery: "No progress photos yet.",
+
+  // Codeberg
+  d_codebergUserEmpty: "No activity yet.",
+  d_codebergUserViewProfile: "Open Codeberg",
+  d_codebergUserError: "Could not load the Codeberg feed.",
+  d_codebergRepoEmpty: "No activity yet.",
+  d_codebergRepoViewRepo: "Open repository",
+  d_codebergRepoError: "Could not load the repository feed.",
 
         // Weather
   d_weatherDisabled: "Weather module disabled.",

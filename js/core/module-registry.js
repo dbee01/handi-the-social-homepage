@@ -131,6 +131,24 @@ window.HANDI_MODULES = [
     defaultEnabled: 0,
     settingsConfig: { token: "" },
   },
+  {
+    id: "codeberg-user",
+    name: "Codeberg",
+    icon: '<i class="fa-brands fa-code-branch"></i>',
+    desc: "Your activity on Codeberg",
+    tier: "free",
+    defaultEnabled: 0,
+    settingsConfig: { user: "handi" },
+  },
+  {
+    id: "codeberg-repo",
+    name: "Codeberg Repo",
+    icon: '<i class="fa-solid fa-code-pull-request"></i>',
+    desc: "A repository feed on Codeberg",
+    tier: "free",
+    defaultEnabled: 0,
+    settingsConfig: { feed: "https://codeberg.org/handi/handi-the-social-homepage.rss" },
+  },
 
   // ─── Premium modules ───────────────────────────────────────────────────
   {

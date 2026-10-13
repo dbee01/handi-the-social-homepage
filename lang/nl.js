@@ -66,6 +66,8 @@ var LANG = {
     newsletter: { name: "Nieuwsbrief", desc: "E-mailoverzicht" },
     sports: { name: "Sport", desc: "Live voetbal" },
     fitness: { name: "Fitness", desc: "Workouts en voeding" },
+    "codeberg-user": { name: "Codeberg", desc: "Activiteit op eigen hand" },
+    "codeberg-repo": { name: "Codeberg Repo", desc: "Repository-feed" },
   },
   d_loading: "Laden...",
   d_noData: "Geen gegevens.",
@@ -266,6 +268,14 @@ var LANG = {
   d_fitnessNoNutrition: "Nog geen voedingsplan.",
   d_fitnessDailyTotals: "Dagelijkse totalen",
   d_fitnessNoGallery: "Nog geen voortgangsfoto's.",
+
+  // Codeberg
+  d_codebergUserEmpty: "Nog geen activiteit.",
+  d_codebergUserViewProfile: "Codeberg openen",
+  d_codebergUserError: "Kon de Codeberg-feed niet laden.",
+  d_codebergRepoEmpty: "Nog geen activiteit.",
+  d_codebergRepoViewRepo: "Repository openen",
+  d_codebergRepoError: "Kon de repository-feed niet laden.",
 
   d_customizeDashboard: "Dashboard aanpassen",
   d_freeTrial: "✨ Probeer Premium",

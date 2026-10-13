@@ -64,6 +64,8 @@ var LANG = {
     newsletter: { name: "النشرة الإخبارية", desc: "ملخص بريدي" },
     sports: { name: "الرياضة", desc: "كرة قدم مباشرة" },
     fitness: { name: "Fitness", desc: "التمارين والتغذية" },
+    "codeberg-user": { name: "Codeberg", desc: "نشاط هاندي" },
+    "codeberg-repo": { name: "Codeberg Repo", desc: "موجز المستودع" },
   },
   d_loading: "جار التحميل...",
   d_noData: "لا توجد بيانات.",
@@ -264,6 +266,14 @@ var LANG = {
   d_fitnessNoNutrition: "لا توجد خطة تغذية بعد.",
   d_fitnessDailyTotals: "الإجماليات اليومية",
   d_fitnessNoGallery: "لا توجد صور تقدّم بعد.",
+
+  // Codeberg
+  d_codebergUserEmpty: "لا يوجد نشاط بعد.",
+  d_codebergUserViewProfile: "فتح Codeberg",
+  d_codebergUserError: "تعذّر تحميل موجز Codeberg.",
+  d_codebergRepoEmpty: "لا يوجد نشاط بعد.",
+  d_codebergRepoViewRepo: "فتح المستودع",
+  d_codebergRepoError: "تعذّر تحميل موجز المستودع.",
 
   d_customizeDashboard: "تخصيص لوحة القيادة",
   d_freeTrial: "✨ جرّب بريميوم",

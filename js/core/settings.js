@@ -46,6 +46,10 @@ const DEFAULT_SETTINGS = {
   calendar: { url: "", notificationMinutes: 15 },
   cast: { volume: 100, soundLock: false, streamUrl: "" },
   fitness: { token: "" },
+  "codeberg-user": { user: "handi" },
+  "codeberg-repo": {
+    feed: "https://codeberg.org/handi/handi-the-social-homepage.rss",
+  },
 };
 
 export function loadSettings() {
