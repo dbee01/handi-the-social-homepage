@@ -1326,17 +1326,6 @@
                             "
                         />
                         <input
-                            type="tel"
-                            id="phoneNumber"
-                            placeholder="+353987654321"
-                            style="
-                                flex: 1;
-                                min-width: 140px;
-                                font-size: 1.2rem;
-                                padding: 14px 16px;
-                            "
-                        />
-                        <input
                             type="text"
                             id="phoneWebrtcId"
                             placeholder="WebRTC ID (friend's identity)"
@@ -1853,7 +1842,7 @@
                 if (!container) return;
                 if (phoneContacts.length === 0) {
                     container.innerHTML =
-                        '<div style="padding: 20px; text-align: center; color: #64748b;">Add a contact below using the international telephone format (no spaces).</div>';
+                        '<div style="padding: 20px; text-align: center; color: #64748b;">Add a contact below using their WebRTC identity.</div>';
                     return;
                 }
                 container.innerHTML = phoneContacts
@@ -1865,7 +1854,7 @@
                     </div>
                     <div class="contact-info" style="flex:1;min-width:0;">
                         <strong style="font-size:1.3rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(c.name)}</strong>
-                        <small style="font-size:1.05rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(c.number)}</small>
+                        <small style="font-size:1.05rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(c.webrtcId || c.number)}</small>
                     </div>
                     <div class="elderlyShow phoneCaregiver">
                         <label style="display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:1.1rem;cursor:pointer;">
@@ -1916,24 +1905,22 @@
 
             function addPhoneContact() {
                 const nameInput = document.getElementById("phoneName");
-                const numberInput = document.getElementById("phoneNumber");
                 const webrtcIdInput = document.getElementById("phoneWebrtcId");
                 const photoInput = document.getElementById("phonePhoto");
                 const photoFile = photoInput?.files[0];
 
                 const name = nameInput?.value.trim();
-                const number = numberInput?.value.trim();
                 const webrtcId = webrtcIdInput?.value.trim() || "";
 
-                if (!name || !number) {
-                    alert("Please enter both name and phone number");
+                if (!name || !webrtcId) {
+                    alert("Please enter both a name and a WebRTC identity");
                     return;
                 }
 
                 const contact = {
                     name,
-                    number,
-                    webrtcId: webrtcId || number,
+                    number: "",
+                    webrtcId,
                     photo: null,
                     caregiver: phoneContacts.length === 0,
                     share_location: false,
@@ -1944,7 +1931,6 @@
 
                 // Clear inputs immediately
                 nameInput.value = "";
-                numberInput.value = "";
                 if (webrtcIdInput) webrtcIdInput.value = "";
 
                 if (photoFile) {
@@ -2749,8 +2735,8 @@
                 if (!settings.phone) settings.phone = {};
                 settings.phone.contacts = phoneContacts.map((c) => ({
                     name: c.name,
-                    number: c.number,
-                    webrtcId: c.webrtcId || c.number,
+                    number: c.number || "",
+                    webrtcId: c.webrtcId,
                     caregiver: c.caregiver,
                     share_location: c.share_location,
                 }));
