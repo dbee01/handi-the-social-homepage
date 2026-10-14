@@ -82,8 +82,10 @@ var LANG = {
     sports: { name: "Sports", desc: "Live football" },
     events: { name: "Events", desc: "What's on near you" },
     fitness: { name: "Fitness", desc: "Workouts & nutrition" },
-    "github-user": { name: "GitHub", desc: "Handi activity" },
+    "github-user": { name: "GitHub Activity", desc: "Handi activity" },
     "github-repo": { name: "GitHub Repo", desc: "Repository feed" },
+    "friendly-phone": { name: "Friendly Phone", desc: "Free browser-to-browser calls" },
+    "sim-phone": { name: "SIM Phone", desc: "Calls to any phone (WebRTC)" },
   },
 
   // Dashboard component strings
@@ -464,6 +466,10 @@ var LANG = {
     "<strong>Location Alert</strong><br><br><strong>• Mobile phones only.</strong><br>• Sends an SMS with your GPS location to trusted contacts.<br>• Requires GPS and mobile network (not available on desktop/tablet).<br>• Add contacts in <strong>Settings → Location Share</strong>.<br>• Unlock the button (🔓) then press <strong>SHARE</strong> to send.<br>• Test with your own number first to ensure it works.",
   h_phone:
     "<strong>Friendly Phone</strong><br><br>• One‑tap calling to your saved contacts.<br>• Add contacts with photos in <strong>Settings → Friendly Phone</strong>.<br>• The module is <strong>locked by default</strong> – unlock to enable calls.<br>• Photos help identify contacts at a glance.",
+  h_friendly_phone:
+    "<strong>Friendly Phone</strong><br><br>• Free browser-to-browser calls to your saved contacts.<br>• Add contacts with photos in <strong>Settings → Friendly Phone</strong>.<br>• Unlock the module to enable calls.<br>• Photos help identify contacts at a glance.",
+  h_sim_phone:
+    "<strong>SIM Phone</strong><br><br>• WebRTC calls to any real phone number via the Infobip SIP trunk.<br>• Add contacts in <strong>Settings → SIM Phone</strong>.<br>• Requires a <strong>Premium</strong> subscription.",
   h_github_user:
     "<strong>Github User</strong><br><br>• Add your favourite Github user activity page to see that user's Github activity.",
   h_github_repo:

@@ -79,6 +79,8 @@ var LANG = {
     fitness: { name: "Fitness", desc: "Cleachtaí agus cothú" },
     "github-user": { name: "GitHub", desc: "Gníomhaíocht Handi" },
     "github-repo": { name: "GitHub Repo", desc: "Fotha stóir" },
+    "friendly-phone": { name: "Fón Cairdiúil", desc: "Glaonna brabhsálaí-go-brabhsálaí saor in aisce" },
+    "sim-phone": { name: "Fón SIM", desc: "Glaonna chuig aon fhón (WebRTC)" },
   },
 
   d_loading: "Á lódáil...",
@@ -373,6 +375,8 @@ var LANG = {
   h_radio: "<strong>📻 Raidió</strong><br><br>• Roghnaigh as stáisiúin raidió idirnáisiúnta.<br>• Cliceáil ar stáisiún chun sruthú a thosú – d'fhéadfadh sé cúpla soicind a thógáil.<br>• Beochanann an sintéiseoir le linn seinnte.<br>• Úsáid an <strong>glas</strong> (🔒) chun athruithe stáisiúin de thaisme a dhíchumasú.",
   h_emergency_alert: "<strong>📍 Foláireamh Suímh</strong><br><br><strong>📱 Fóin phóca amháin.</strong><br>• Seolann SMS le do shuíomh GPS chuig teagmhálacha iontaofa.<br>• Teastaíonn GPS agus líonra soghluaiste (níl sé ar fáil ar ríomhaire/táibléad).<br>• Cuir teagmhálacha leis in <strong>Socruithe → Comhroinnt Suímh</strong>.<br>• Díghlasáil an cnaipe (🔓) ansin brúigh <strong>ROINN</strong> chun seoladh.<br>• Tástáil le d'uimhir féin ar dtús lena chinntiú go n-oibríonn sé.",
   h_phone: "<strong>📞 Fón Cairdiúil</strong><br><br>• Glaoch aon-sconna chuig do theagmhálacha sábháilte.<br>• Cuir teagmhálacha le grianghraif in <strong>Socruithe → Fón Cairdiúil</strong>.<br>• Tá an modúl <strong>faoi ghlas de réir réamhshocraithe</strong> – díghlasáil chun glaonna a chumasú.<br>• Cabhraíonn grianghraif le teagmhálacha a aithint ar an toirt.",
+  h_friendly_phone: "<strong>📞 Fón Cairdiúil</strong><br><br>• Glaonna brabhsálaí-go-brabhsálaí saor in aisce chuig do theagmhálacha sábháilte.<br>• Cuir teagmhálacha le grianghraif in <strong>Socruithe → Fón Cairdiúil</strong>.<br>• Díghlasáil an modúl chun glaonna a chumasú.<br>• Cabhraíonn grianghraif le teagmhálacha a aithint ar an toirt.",
+  h_sim_phone: "<strong>📡 Fón SIM</strong><br><br>• Glaonna WebRTC chuig aon fhíoruimhir ghutháin trí trunk SIP Infobip.<br>• Cuir teagmhálacha leis in <strong>Socruithe → Fón SIM</strong>.<br>• Teastaíonn síntiús <strong>Préimhe</strong>.",
   h_github_user: "<strong>🐙 Úsáideoir Github</strong><br><br>• Cuir leathanach gníomhaíochta d'úsáideoir Github is fearr leat leis chun gníomhaíocht Github an úsáideora sin a fheiceáil.",
   h_github_repo: "<strong>📦 Repo Github</strong><br><br>• Cuir leathanach gníomhaíochta do repo Github is fearr leat leis chun gníomhaíocht Github an repo sin a fheiceáil.",
   h_fitness: "<strong>💪 Aclaíocht</strong><br><br>• Nuashonraigh d'aip aclaíochta Wger.de agus greamaigh do chomhartha ar an leathanach socruithe chun monatóireacht a dhéanamh ar do ghníomhaíocht aclaíochta féin.<br><br> Téann do shonraí ó Wger chuig do bhrabhsálaí. Ní fheiceann muidne iad.",

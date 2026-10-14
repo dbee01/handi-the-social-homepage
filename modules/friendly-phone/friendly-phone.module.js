@@ -20,9 +20,9 @@ export default async function initPhone(container) {
   const title = document.createElement("div");
   title.className = "panel-title";
   var name =
-    window.LANG && window.LANG.modules && window.LANG.modules.phone
-      ? window.LANG.modules.phone.name
-      : "PHONE";
+    window.LANG && window.LANG.modules && window.LANG.modules["friendly-phone"]
+      ? window.LANG.modules["friendly-phone"].name
+      : "Friendly Phone";
   title.innerHTML = '<i class="fa-solid fa-phone"></i> ' + name;
   container.appendChild(title);
 
@@ -31,7 +31,7 @@ export default async function initPhone(container) {
   container.appendChild(content);
 
   const parentItem = container.closest(".dashboard-item");
-  if (parentItem) parentItem.dataset.module = "phone";
+  if (parentItem) parentItem.dataset.module = "friendly-phone";
 
   const settings = loadSettings();
   const contacts = settings.phone?.contacts || [];
@@ -56,7 +56,7 @@ export default async function initPhone(container) {
         </button>
       </div>`;
     content.querySelector("#phoneSettingsBtn").onclick = () => {
-      window.location.href = "settings.html?args=phone";
+      window.location.href = "settings.html?args=friendly-phone";
     };
     return;
   }
@@ -89,7 +89,7 @@ export default async function initPhone(container) {
       const hidden = document.createElement("div");
       hidden.style.display = "none";
       document.body.appendChild(hidden);
-      const mod = await import("./click-to-call.module.js");
+      const mod = await import("../sim-phone/click-to-call.module.js");
       await mod.default(hidden);
       // Wait for makeAudioCall to appear
       for (let i = 0; i < 20; i++) {

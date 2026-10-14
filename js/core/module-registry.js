@@ -149,13 +149,22 @@ window.HANDI_MODULES = [
     defaultEnabled: 0,
     settingsConfig: { feed: "dbee01/handi-the-social-homepage" },
   },
+  {
+    id: "friendly-phone",
+    name: "Friendly Phone",
+    icon: '<i class="fa-solid fa-phone"></i>',
+    desc: "Free browser-to-browser calls",
+    tier: "free",
+    defaultEnabled: 0,
+    settingsConfig: { contacts: [] },
+  },
 
   // ─── Premium modules ───────────────────────────────────────────────────
   {
-    id: "phone",
-    name: "Phone",
-    icon: '<i class="fa-solid fa-phone"></i>',
-    desc: "Free calls",
+    id: "sim-phone",
+    name: "SIM Phone",
+    icon: '<i class="fa-solid fa-phone-volume"></i>',
+    desc: "WebRTC calls to any phone number (Infobip)",
     tier: "premium",
     defaultEnabled: 0,
     settingsConfig: { contacts: [] },

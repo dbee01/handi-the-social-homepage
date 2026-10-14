@@ -1271,6 +1271,102 @@
                 </div>
             </div>
 
+            <!-- Friendly Phone (free) -->
+            <div class="module-card" data-module="friendly-phone">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-phone"></i>
+                        <h3>Friendly Phone</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Contacts</label>
+                        <div id="phoneContactsList" class="contact-list"></div>
+                    </div>
+                    <div
+                        style="
+                            display: flex;
+                            gap: 12px;
+                            margin-top: 16px;
+                            margin-bottom: 16px;
+                            flex-wrap: wrap;
+                        "
+                    >
+                        <div
+                            id="phonePhotoPreview"
+                            style="
+                                width: 72px;
+                                height: 72px;
+                                border-radius: 50%;
+                                background: #eaf2ff;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                flex-shrink: 0;
+                                cursor: pointer;
+                                border: 2px dashed #cbd5e1;
+                            "
+                            title="Tap to add photo"
+                        >
+                            <i class="fa-solid fa-hand-peace" style="font-size: 1.8rem; color: #0047cc;"></i>
+                        </div>
+                        <input
+                            type="text"
+                            id="phoneName"
+                            placeholder="Daz Murphy"
+                            style="
+                                flex: 1;
+                                min-width: 140px;
+                                font-size: 1.2rem;
+                                padding: 14px 16px;
+                            "
+                        />
+                        <input
+                            type="tel"
+                            id="phoneNumber"
+                            placeholder="+353987654321"
+                            style="
+                                flex: 1;
+                                min-width: 140px;
+                                font-size: 1.2rem;
+                                padding: 14px 16px;
+                            "
+                        />
+                        <input
+                            type="file"
+                            id="phonePhoto"
+                            accept="image/png,image/jpeg,image/webp"
+                            style="display: none"
+                        />
+                        <button
+                            id="phonePhotoBtn"
+                            class="upload-btn"
+                            style="
+                                background: #64748b;
+                                margin: 0;
+                                font-size: 1.1rem;
+                                padding: 14px 20px;
+                            "
+                            type="button"
+                        >
+                            📷
+                        </button>
+                        <button
+                            id="addPhoneInline"
+                            class="upload-btn"
+                            style="margin: 0; font-size: 1.1rem; padding: 14px 28px"
+                            type="button"
+                        >
+                            + Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
                         <!-- ============================================================ -->
                     <!-- PREMIUM MODULES SECTION -->
         <!-- ============================================================ -->
@@ -1278,12 +1374,12 @@
             <h2>Premium Elements (private)</h2>
         </div>
 
-        <!-- Premium 1: Phone -->
-        <div class="module-card" data-module="phone">
+        <!-- Premium: SIM Phone (WebRTC / Infobip) -->
+        <div class="module-card" data-module="sim-phone">
             <div class="module-header">
                 <div class="module-title">
-                    <i class="fa-solid fa-phone"></i>
-                    <h3>Phone</h3>
+                    <i class="fa-solid fa-phone-volume"></i>
+                    <h3>SIM Phone</h3>
                 </div>
                 <div class="toggle-switch">
                     <div class="toggle-slider"></div>
@@ -1291,8 +1387,15 @@
             </div>
             <div class="module-config">
                 <div class="config-field">
+                    <small>
+                        WebRTC calls to any <strong>real phone number</strong>
+                        via the Infobip SIP trunk. Requires a Premium
+                        subscription.
+                    </small>
+                </div>
+                <div class="config-field">
                     <label>Contacts</label>
-                    <div id="phoneContactsList" class="contact-list"></div>
+                    <div id="clickToCallContactsList" class="contact-list"></div>
                 </div>
                 <div
                     style="
@@ -1303,69 +1406,36 @@
                         flex-wrap: wrap;
                     "
                 >
-                    <div
-                        id="phonePhotoPreview"
-                        style="
-                            width: 72px;
-                            height: 72px;
-                            border-radius: 50%;
-                            background: #eaf2ff;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            flex-shrink: 0;
-                            cursor: pointer;
-                            border: 2px dashed #cbd5e1;
-                        "
-                        title="Tap to add photo"
-                    >
-                        <i class="fa-solid fa-hand-peace" style="font-size: 1.8rem; color: #0047cc;"></i>
-                    </div>
                     <input
                         type="text"
-                        id="phoneName"
-                        placeholder="Daz Murphy"
-                        style="
-                            flex: 1;
-                            min-width: 140px;
-                            font-size: 1.2rem;
-                            padding: 14px 16px;
-                        "
+                        id="ctcName"
+                        placeholder="Name"
+                        style="flex: 1; min-width: 140px;"
                     />
                     <input
                         type="tel"
-                        id="phoneNumber"
+                        id="ctcPhone"
                         placeholder="+353987654321"
-                        style="
-                            flex: 1;
-                            min-width: 140px;
-                            font-size: 1.2rem;
-                            padding: 14px 16px;
-                        "
+                        style="flex: 1; min-width: 140px;"
                     />
                     <input
                         type="file"
-                        id="phonePhoto"
+                        id="ctcPhoto"
                         accept="image/png,image/jpeg,image/webp"
                         style="display: none"
                     />
                     <button
-                        id="phonePhotoBtn"
+                        id="ctcPhotoBtn"
                         class="upload-btn"
-                        style="
-                            background: #64748b;
-                            margin: 0;
-                            font-size: 1.1rem;
-                            padding: 14px 20px;
-                        "
+                        style="background: #64748b; margin: 0;"
                         type="button"
                     >
                         📷
                     </button>
                     <button
-                        id="addPhoneInline"
+                        id="addCtcInline"
                         class="upload-btn"
-                        style="margin: 0; font-size: 1.1rem; padding: 14px 28px"
+                        style="margin: 0;"
                         type="button"
                     >
                         + Add
