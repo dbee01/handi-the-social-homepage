@@ -8,10 +8,11 @@
 // Standalone ringing / red-flash alert for incoming calls.
 //
 // This is intentionally separate from the calendar module so a ringing phone
-// always produces the visual + audible alert, even when the calendar module
-// isn't enabled (the calendar is premium and usually off). Any module can
-// trigger it by dispatching window "handiRingingStart" / "handiRingingStop"
-// events, or by calling the exposed window.handiRingAlert API directly.
+// always produces the visual (red flash) alert — no audio — even when the
+// calendar module isn't enabled (the calendar is premium and usually off).
+// Any module can trigger it by dispatching window "handiRingingStart" /
+// "handiRingingStop" events, or by calling the exposed window.handiRingAlert
+// API directly.
 
 (function () {
   var FLASH_COLORS = ["rgba(220, 0, 0, 0.25)", "rgba(220, 0, 0, 0.50)"];
@@ -19,70 +20,6 @@
   var flashOverlay = null;
   var flashInterval = null;
   var dismissHandler = null;
-  var audioCtx = null;
-  var osc = null;
-  var gain = null;
-  var beepStopTimer = null;
-
-  function initAudio() {
-    if (audioCtx) return audioCtx;
-    try {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    } catch (e) {
-      audioCtx = null;
-    }
-    return audioCtx;
-  }
-
-  function startBeep() {
-    var ctx = initAudio();
-    if (!ctx) return;
-    if (ctx.state === "suspended") {
-      ctx.resume().catch(function () {});
-    }
-    var o = ctx.createOscillator();
-    var g = ctx.createGain();
-    o.type = "square";
-    o.frequency.value = 880;
-    g.gain.value = 0.15;
-    o.connect(g);
-    g.connect(ctx.destination);
-    o.start();
-
-    var startTime = ctx.currentTime;
-    var duration = 10;
-    for (var t = 0; t < duration; t += 0.5) {
-      var isOn = Math.floor(t / 0.5) % 2 === 0;
-      g.gain.setValueAtTime(isOn ? 0.15 : 0, startTime + t);
-    }
-    g.gain.setValueAtTime(0, startTime + duration);
-    o.stop(startTime + duration);
-
-    osc = o;
-    gain = g;
-
-    if (beepStopTimer) clearTimeout(beepStopTimer);
-    beepStopTimer = setTimeout(function () {
-      try { o.stop(); } catch (e) {}
-      osc = null;
-      gain = null;
-    }, (duration + 0.5) * 1000);
-  }
-
-  function stopBeep() {
-    if (osc) {
-      try { osc.stop(); } catch (e) {}
-      osc = null;
-    }
-    if (gain) {
-      try { gain.disconnect(); } catch (e) {}
-      gain = null;
-    }
-    if (beepStopTimer) {
-      clearTimeout(beepStopTimer);
-      beepStopTimer = null;
-    }
-  }
 
   function startFlash() {
     if (!flashOverlay) {
@@ -133,12 +70,11 @@
   }
 
   function ring() {
-    startBeep();
+    // Ringing is visual-only (red flash). No audible alert/beep.
     startFlash();
   }
 
   function stop() {
-    stopBeep();
     stopFlash();
   }
 
