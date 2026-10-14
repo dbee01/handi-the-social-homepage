@@ -195,6 +195,9 @@ var LANG = {
   d_decline: "Rifiuta",
   d_online: "Online",
   d_offline: "Offline",
+  d_yourHandle: "Il tuo ID",
+  d_pickHandle: "Scegli un nome con cui gli amici possono chiamarti",
+  d_claim: "Riserva",
   d_invalidFile: "File non valido",
   d_dateUnknown: "Data sconosciuta",
 

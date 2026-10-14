@@ -209,6 +209,9 @@ var LANG = {
   d_decline: "Diúltaigh",
   d_online: "Ar líne",
   d_offline: "As líne",
+  d_yourHandle: "D'aitheantas",
+  d_pickHandle: "Roghnaigh ainm ar féidir le cairde glaoch ort leis",
+  d_claim: "Éiligh",
   d_invalidFile: "Comhad neamhbhailí",
   d_dateUnknown: "Dáta anaithnid",
 

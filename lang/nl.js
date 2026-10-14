@@ -197,6 +197,9 @@ var LANG = {
   d_decline: "Weigeren",
   d_online: "Online",
   d_offline: "Offline",
+  d_yourHandle: "Jouw ID",
+  d_pickHandle: "Kies een naam waaronder vrienden je kunnen bellen",
+  d_claim: "Claimen",
   d_invalidFile: "Ongeldig bestand",
   d_dateUnknown: "Datum onbekend",
 

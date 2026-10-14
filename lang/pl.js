@@ -197,6 +197,9 @@ var LANG = {
   d_decline: "Odrzuć",
   d_online: "Online",
   d_offline: "Offline",
+  d_yourHandle: "Twoje ID",
+  d_pickHandle: "Wybierz nazwę, pod którą znajomi mogą do Ciebie dzwonić",
+  d_claim: "Zarezerwuj",
   d_invalidFile: "Nieprawidłowy plik",
   d_dateUnknown: "Data nieznana",
 

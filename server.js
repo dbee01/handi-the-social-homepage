@@ -832,7 +832,7 @@ function writeWebrtcPresence(data) {
 
 // Register / heartbeat a presence. Returns the full roster.
 app.post("/api/webrtc/presence", (req, res) => {
-  const { userId, displayName, online } = req.body || {};
+  const { userId, displayName, handle, online } = req.body || {};
   if (!userId) return res.status(400).json({ error: "Missing userId" });
 
   const now = Date.now();
@@ -840,7 +840,8 @@ app.post("/api/webrtc/presence", (req, res) => {
   const prev = all[userId] || {};
   const entry = {
     userId,
-    displayName: displayName || prev.displayName || "Anonymous",
+    handle: handle || prev.handle || "",
+    displayName: displayName || handle || prev.displayName || "Anonymous",
     // A client that says it's offline goes offline immediately; otherwise we
     // stamp lastSeen and let the staleness window decide "online".
     lastSeen: now,
@@ -882,6 +883,105 @@ app.post("/api/webrtc/presence/offline", (req, res) => {
 // List the presence roster.
 app.get("/api/webrtc/presence", (req, res) => {
   res.json({ success: true, roster: rosterWithStatus(readWebrtcPresence()) });
+});
+
+// ---------------------------------------------------------------------------
+// WebRTC handles (human-friendly unique names)
+// ---------------------------------------------------------------------------
+// A handle is a short, unique, human-typable name (e.g. "daz") that a user
+// claims as their WebRTC identity. Friends dial each other by handle rather
+// than by the opaque handi_user_<uuid>. The handle is what's used as the
+// Infobip `identity`, so it must be stable and unique per server.
+const WEBRTC_HANDLES_FILE =
+  process.env.WEBRTC_HANDLES_FILE ||
+  path.join(__dirname, "data", "webrtc-handles.json");
+const WEBRTC_HANDLE_RE = /^[a-zA-Z0-9][a-zA-Z0-9._-]{2,31}$/;
+
+function readWebrtcHandles() {
+  try {
+    if (!fs.existsSync(WEBRTC_HANDLES_FILE)) return {};
+    const raw = fs.readFileSync(WEBRTC_HANDLES_FILE, "utf8");
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    console.warn("Failed to read WebRTC handles:", e.message);
+    return {};
+  }
+}
+
+function writeWebrtcHandles(data) {
+  try {
+    fs.mkdirSync(path.dirname(WEBRTC_HANDLES_FILE), { recursive: true });
+    fs.writeFileSync(WEBRTC_HANDLES_FILE, JSON.stringify(data, null, 2), "utf8");
+    return true;
+  } catch (e) {
+    console.warn("Failed to write WebRTC handles:", e.message);
+    return false;
+  }
+}
+
+// handles file maps handle -> userId
+function findUserIdByHandle(handle) {
+  const handles = readWebrtcHandles();
+  return handles[handle] || null;
+}
+
+function findHandleByUserId(userId) {
+  const handles = readWebrtcHandles();
+  for (const h in handles) {
+    if (handles[h] === userId) return h;
+  }
+  return null;
+}
+
+// Look up a user's current handle.
+app.get("/api/webrtc/handle/:userId", (req, res) => {
+  const { userId } = req.params;
+  res.json({ success: true, handle: findHandleByUserId(userId) || "" });
+});
+
+// Claim / reassign a handle for a user.
+app.post("/api/webrtc/handle", (req, res) => {
+  const { userId, handle } = req.body || {};
+  if (!userId) return res.status(400).json({ error: "Missing userId" });
+  if (!handle || typeof handle !== "string" || !WEBRTC_HANDLE_RE.test(handle)) {
+    return res.status(400).json({
+      error:
+        "Invalid handle. Use 3-32 characters: letters, numbers, dot, dash, underscore.",
+    });
+  }
+
+  const normalized = handle.toLowerCase();
+  const handles = readWebrtcHandles();
+  const owner = handles[normalized];
+
+  // Taken by a different user → reject.
+  if (owner && owner !== userId) {
+    return res.status(409).json({ error: "That handle is already taken." });
+  }
+
+  // Release any previous handle this user held.
+  for (const h in handles) {
+    if (handles[h] === userId) delete handles[h];
+  }
+  handles[normalized] = userId;
+  writeWebrtcHandles(handles);
+
+  // Reflect the handle in presence so the roster shows a friendly name.
+  const presence = readWebrtcPresence();
+  if (presence[userId]) {
+    presence[userId].handle = normalized;
+    presence[userId].displayName = normalized;
+    writeWebrtcPresence(presence);
+  }
+
+  res.json({ success: true, handle: normalized });
+});
+
+// Resolve a handle to a userId (used to confirm a contact's identity).
+app.get("/api/webrtc/lookup/:handle", (req, res) => {
+  const { handle } = req.params;
+  const userId = findUserIdByHandle(handle.toLowerCase());
+  res.json({ success: true, handle: handle.toLowerCase(), userId: userId || null });
 });
 
 // Endpoint to initiate a Click-to-Call with video fallback

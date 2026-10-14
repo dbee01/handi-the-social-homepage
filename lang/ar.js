@@ -195,6 +195,9 @@ var LANG = {
   d_decline: "رفض",
   d_online: "متصل",
   d_offline: "غير متصل",
+  d_yourHandle: "معرفك",
+  d_pickHandle: "اختر اسماً يمكن لأصدقائك الاتصال بك به",
+  d_claim: "احجز",
   d_invalidFile: "ملف غير صالح",
   d_dateUnknown: "تاريخ غير معروف",
 

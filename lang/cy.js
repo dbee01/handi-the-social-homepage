@@ -196,6 +196,9 @@ var LANG = {
   d_decline: "Gwrthod",
   d_online: "Ar-lein",
   d_offline: "All-lein",
+  d_yourHandle: "Eich ID",
+  d_pickHandle: "Dewiswch enw y gall ffrindiau eich galw wrtho",
+  d_claim: "Hawlio",
   d_invalidFile: "Ffeil annilys",
   d_dateUnknown: "Dyddiad anhysbys",
 

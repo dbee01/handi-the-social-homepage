@@ -180,6 +180,9 @@ var LANG = {
   d_decline: "Decline",
   d_online: "Online",
   d_offline: "Offline",
+  d_yourHandle: "Your ID",
+  d_pickHandle: "Pick a name friends can call you by",
+  d_claim: "Claim",
 
   // Click-to-call
   d_selectDevices: "Select Devices",

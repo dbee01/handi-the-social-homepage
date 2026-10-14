@@ -96,11 +96,62 @@ export default async function initPhone(container) {
     return userId;
   }
 
+  function getHandle() {
+    return localStorage.getItem("webrtc_handle") || "";
+  }
+
+  function setHandle(handle) {
+    localStorage.setItem("webrtc_handle", handle);
+  }
+
   function getDisplayName() {
-    return localStorage.getItem("webrtc_display_name") || "Anonymous";
+    return getHandle() || localStorage.getItem("webrtc_display_name") || "Anonymous";
   }
 
   const myUserId = ensureIdentity();
+  // The Infobip identity is the handle when one is claimed, otherwise the
+  // machine UUID. Friends dial you by this string.
+  function myIdentity() {
+    return getHandle() || myUserId;
+  }
+
+  // ── Handle claiming (option 3: human-friendly unique name) ────────────
+  async function claimHandle(handle) {
+    const h = String(handle || "").trim().toLowerCase();
+    if (!h) return { ok: false, error: "Handle cannot be empty" };
+    try {
+      const r = await fetch("/api/webrtc/handle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: myUserId, handle: h }),
+      });
+      const data = await r.json();
+      if (r.ok && data.success) {
+        setHandle(data.handle);
+        return { ok: true, handle: data.handle };
+      }
+      return { ok: false, error: (data && data.error) || "Could not claim handle" };
+    } catch (e) {
+      return { ok: false, error: "Network error" };
+    }
+  }
+
+  function renderHandleBar() {
+    const handle = getHandle();
+    const bar = document.createElement("div");
+    bar.className = "fp-handle-bar";
+    if (handle) {
+      bar.innerHTML =
+        '<span class="fp-handle-label">' + escapeHtml(t("d_yourHandle", "Your ID")) + ":</span> " +
+        '<strong>' + escapeHtml(handle) + "</strong>";
+    } else {
+      bar.innerHTML =
+        '<span>' + escapeHtml(t("d_pickHandle", "Pick a name friends can call you by")) + ":</span> " +
+        '<input class="fp-handle-input" placeholder="e.g. daz" maxlength="32" /> ' +
+        '<button class="fp-handle-btn" type="button">' + escapeHtml(t("d_claim", "Claim")) + "</button>";
+    }
+    return bar;
+  }
 
   // ── Presence (server-side roster) ──────────────────────────────────────
   async function registerPresence(online) {
@@ -110,6 +161,7 @@ export default async function initPhone(container) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: myUserId,
+          handle: getHandle(),
           displayName: getDisplayName(),
           online,
         }),
@@ -156,7 +208,7 @@ export default async function initPhone(container) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          identity: myUserId,
+          identity: myIdentity(),
           enableVideo: true,
         }),
       });
@@ -369,12 +421,15 @@ export default async function initPhone(container) {
   // ── Presence → contact list rendering ─────────────────────────────────
   function renderContacts(roster) {
     roster = roster || [];
+    // Build a lookup by both the machine userId and the human handle.
     const statusById = {};
     roster.forEach((p) => {
       statusById[p.userId] = p;
+      if (p.handle) statusById[p.handle] = p;
     });
 
     content.innerHTML =
+      renderHandleBar().outerHTML +
       '<div class="phone-list">' +
       contacts
         .map(function (c) {
@@ -406,8 +461,33 @@ export default async function initPhone(container) {
         .join("") +
       "</div>";
 
+    // Wire the handle-claim form if present.
+    bindHandleClaim();
     // Re-wire the call buttons after re-render.
     bindCallButtons();
+  }
+
+  async function bindHandleClaim() {
+    const btn = content.querySelector(".fp-handle-btn");
+    const input = content.querySelector(".fp-handle-input");
+    if (!btn || !input) return;
+    btn.onclick = async function () {
+      const result = await claimHandle(input.value);
+      if (result.ok) {
+        // Reconnect Infobip with the new identity and refresh.
+        if (infobipRTC) {
+          try { infobipRTC.disconnect(); } catch (e) {}
+          infobipRTC = null;
+          isConnected = false;
+        }
+        if (callingBtn) setCalling(callingBtn, false);
+        authenticateAndConnect();
+        renderContacts([]);
+        refreshPresence();
+      } else {
+        alert(result.error);
+      }
+    };
   }
 
   function bindCallButtons() {
@@ -468,7 +548,11 @@ export default async function initPhone(container) {
       ".fp-presence{display:inline-block;width:10px;height:10px;border-radius:50%;margin-left:6px;vertical-align:middle}" +
       ".fp-online{background:#16a34a}" +
       ".fp-offline{background:#9ca3af}" +
-      ".phone-call[disabled]{opacity:.4;cursor:not-allowed}";
+      ".phone-call[disabled]{opacity:.4;cursor:not-allowed}" +
+      ".fp-handle-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px;border-radius:10px;border:1px solid rgba(128,128,128,.25);margin-bottom:10px;font-size:.9rem}" +
+      ".fp-handle-input{flex:1;min-width:120px;padding:6px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:.95rem}" +
+      ".fp-handle-btn{border:none;background:var(--topbar-accent,#0047cc);color:#fff;padding:6px 14px;border-radius:8px;cursor:pointer;font-weight:600}" +
+      ".fp-handle-label{opacity:.7}";
     document.head.appendChild(s);
   }
 
