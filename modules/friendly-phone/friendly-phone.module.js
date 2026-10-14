@@ -269,7 +269,7 @@ export default async function initPhone(container) {
     const callerIdentity = incomingCall && incomingCall.source
       ? incomingCall.source().identifier
       : "Unknown";
-    // Trigger the red flashing + audible ring via the calendar alert.
+    // Trigger the red flashing + audible ring (standalone ring-alert).
     try { window.dispatchEvent(new Event("handiRingingStart")); } catch (e) {}
     showIncomingCallUI(callerIdentity, incomingCall);
   }

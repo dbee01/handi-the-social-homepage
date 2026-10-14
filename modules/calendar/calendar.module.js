@@ -490,34 +490,6 @@ export default async function initCalendar(container) {
     stopScreenFlash();
   }
 
-  // ── Cross-module alert API (used by the phone module when someone rings) ──
-  // Expose a small, reusable global so other modules can trigger the same
-  // red flashing + audible ring without duplicating the alert logic. Falls
-  // back to a no-op when the calendar module isn't loaded/enabled.
-  window.handiAlert = {
-    ring: function () {
-      try { triggerAlert("📞 Incoming call", "Someone is calling you"); } catch (e) {}
-    },
-    // Flashing only (used when the caller wants the visual signal without
-    // system notification spam).
-    flash: function () {
-      try { startScreenFlash(); } catch (e) {}
-    },
-    stop: function () {
-      clearAlert();
-    },
-  };
-
-  // Allow other modules to trigger the alert via DOM events (decoupled).
-  function onRingingStart() {
-    if (window.handiAlert) window.handiAlert.ring();
-  }
-  function onRingingStop() {
-    if (window.handiAlert) window.handiAlert.stop();
-  }
-  window.addEventListener("handiRingingStart", onRingingStart);
-  window.addEventListener("handiRingingStop", onRingingStop);
-
   function checkForUpcomingEvents(events) {
     if (!alertsEnabled) return;
     const now = new Date();
@@ -817,8 +789,5 @@ export default async function initCalendar(container) {
     if (refreshIntervalId) clearInterval(refreshIntervalId);
     stopAlertInterval();
     clearAlert();
-    window.removeEventListener("handiRingingStart", onRingingStart);
-    window.removeEventListener("handiRingingStop", onRingingStop);
-    if (window.handiAlert) delete window.handiAlert;
   };
 }
