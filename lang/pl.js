@@ -200,6 +200,11 @@ var LANG = {
   d_yourHandle: "Twoje ID",
   d_pickHandle: "Wybierz nazwę, pod którą znajomi mogą do Ciebie dzwonić",
   d_claim: "Zarezerwuj",
+  d_inCall: "W trakcie rozmowy",
+  d_mute: "Wycisz",
+  d_unmute: "Włącz dźwięk",
+  d_volume: "Głośność",
+  d_hangup: "Rozłącz",
   d_invalidFile: "Nieprawidłowy plik",
   d_dateUnknown: "Data nieznana",
 

@@ -205,6 +205,11 @@ var LANG = {
   d_yourHandle: "Deine ID",
   d_pickHandle: "Wähle einen Namen, unter dem Freunde dich anrufen können",
   d_claim: "Reservieren",
+  d_inCall: "Im Gespräch",
+  d_mute: "Stummschalten",
+  d_unmute: "Stummschaltung aufheben",
+  d_volume: "Lautstärke",
+  d_hangup: "Auflegen",
   d_invalidFile: "Ungültige Datei",
   d_dateUnknown: "Datum unbekannt",
 

@@ -269,6 +269,8 @@ export default async function initPhone(container) {
     const callerIdentity = incomingCall && incomingCall.source
       ? incomingCall.source().identifier
       : "Unknown";
+    // Trigger the red flashing + audible ring via the calendar alert.
+    try { window.dispatchEvent(new Event("handiRingingStart")); } catch (e) {}
     showIncomingCallUI(callerIdentity, incomingCall);
   }
 
@@ -290,11 +292,15 @@ export default async function initPhone(container) {
     incomingModal.querySelector("#fpAccept").onclick = () => {
       pendingIncomingCall = incomingCall;
       currentCall = incomingCall;
+      // Stop the ringing alert.
+      try { window.dispatchEvent(new Event("handiRingingStop")); } catch (e) {}
       incomingCall.accept();
       hideIncomingCallUI();
+      showCallPanel(callerIdentity);
     };
     incomingModal.querySelector("#fpDecline").onclick = () => {
       try { incomingCall.decline(); } catch (e) {}
+      try { window.dispatchEvent(new Event("handiRingingStop")); } catch (e) {}
       hideIncomingCallUI();
     };
 
@@ -303,7 +309,7 @@ export default async function initPhone(container) {
       const s = document.createElement("style");
       s.id = "fp-incoming-style";
       s.textContent =
-        ".fp-incoming-modal{position:fixed;bottom:20px;right:20px;z-index:10000;font-family:inherit}" +
+        ".fp-incoming-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10000;font-family:inherit}" +
         ".fp-incoming{background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.25);padding:16px;width:280px}" +
         ".fp-incoming-head{font-weight:700;margin-bottom:8px}" +
         ".fp-incoming-caller{display:flex;align-items:center;gap:8px;margin-bottom:12px}" +
@@ -318,6 +324,81 @@ export default async function initPhone(container) {
     if (incomingModal) {
       incomingModal.remove();
       incomingModal = null;
+    }
+  }
+
+  // ── In-call phone panel (hangup, mute, volume) ─────────────────────────
+  let callPanel = null;
+  let callPanelMuted = false;
+
+  function showCallPanel(caller) {
+    hideCallPanel();
+
+    callPanel = document.createElement("div");
+    callPanel.className = "fp-call-panel";
+    callPanel.innerHTML =
+      '<div class="fp-call-panel-inner">' +
+      '<div class="fp-call-panel-caller"><i class="fa-solid fa-user"></i> <strong>' + escapeHtml(caller) + "</strong></div>" +
+      '<div class="fp-call-panel-status">' + escapeHtml(t("d_inCall", "In call")) + "</div>" +
+      '<div class="fp-call-panel-actions">' +
+      '<button class="fp-ctl" id="fpMuteBtn" title="' + escapeHtml(t("d_mute", "Mute")) + '"><i class="fa-solid fa-microphone"></i></button>' +
+      '<button class="fp-ctl" id="fpVolumeBtn" title="' + escapeHtml(t("d_volume", "Volume")) + '"><i class="fa-solid fa-volume-high"></i></button>' +
+      '<button class="fp-ctl fp-ctl-danger" id="fpHangupBtn" title="' + escapeHtml(t("d_hangup", "Hang up")) + '"><i class="fa-solid fa-phone-slash"></i></button>' +
+      "</div></div>";
+    document.body.appendChild(callPanel);
+
+    // Inject panel styles once.
+    if (!document.getElementById("fp-call-panel-style")) {
+      const s = document.createElement("style");
+      s.id = "fp-call-panel-style";
+      s.textContent =
+        ".fp-call-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10001;font-family:inherit}" +
+        ".fp-call-panel-inner{background:#fff;border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.3);padding:20px;width:300px;text-align:center}" +
+        ".fp-call-panel-caller{font-size:1.1rem;margin-bottom:4px}" +
+        ".fp-call-panel-status{color:#64748b;font-size:.85rem;margin-bottom:16px}" +
+        ".fp-call-panel-actions{display:flex;justify-content:center;gap:14px}" +
+        ".fp-ctl{width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;font-size:1.15rem;color:#fff;background:#334155}" +
+        ".fp-ctl:active{opacity:.8}" +
+        ".fp-ctl-danger{background:#dc2626}" +
+        ".fp-ctl.muted{background:#d97706}";
+      document.head.appendChild(s);
+    }
+
+    callPanel.querySelector("#fpMuteBtn").onclick = function () {
+      callPanelMuted = !callPanelMuted;
+      try {
+        if (currentCall && typeof currentCall.mute === "function") {
+          currentCall.mute(callPanelMuted);
+        }
+      } catch (e) {}
+      callPanel.querySelector("#fpMuteBtn").classList.toggle("muted", callPanelMuted);
+      callPanel.querySelector("#fpMuteBtn").querySelector("i").className =
+        callPanelMuted ? "fa-solid fa-microphone-slash" : "fa-solid fa-microphone";
+    };
+
+    callPanel.querySelector("#fpVolumeBtn").onclick = function () {
+      // Toggle the remote audio output mute (volume on/off is the simplest
+      // reliable control across browsers without a full volume UI).
+      const a = document.getElementById("fpRemoteAudio");
+      if (a) a.muted = !a.muted;
+      const btn = callPanel.querySelector("#fpVolumeBtn");
+      const isMuted = a && a.muted;
+      btn.querySelector("i").className = isMuted
+        ? "fa-solid fa-volume-xmark"
+        : "fa-solid fa-volume-high";
+    };
+
+    callPanel.querySelector("#fpHangupBtn").onclick = function () {
+      hangup();
+      hideCallPanel();
+    };
+  }
+
+  function hideCallPanel() {
+    if (callPanel) {
+      callPanel.remove();
+      callPanel = null;
+      callPanelMuted = false;
     }
   }
 
@@ -430,6 +511,8 @@ export default async function initPhone(container) {
     if (v) { v.srcObject = null; v.remove(); }
     const a = document.getElementById("fpRemoteAudio");
     if (a) { a.srcObject = null; a.remove(); }
+    hideCallPanel();
+    try { window.dispatchEvent(new Event("handiRingingStop")); } catch (e) {}
     try { window.dispatchEvent(new Event("handiCallEnded")); } catch (e) {}
   }
 
@@ -439,6 +522,8 @@ export default async function initPhone(container) {
       currentCall = null;
     }
     if (callingBtn) setCalling(callingBtn, false);
+    hideCallPanel();
+    try { window.dispatchEvent(new Event("handiRingingStop")); } catch (e) {}
   }
 
   // ── Presence → contact list rendering ─────────────────────────────────

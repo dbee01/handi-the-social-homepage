@@ -198,6 +198,11 @@ var LANG = {
   d_yourHandle: "Il tuo ID",
   d_pickHandle: "Scegli un nome con cui gli amici possono chiamarti",
   d_claim: "Riserva",
+  d_inCall: "In chiamata",
+  d_mute: "Disattiva audio",
+  d_unmute: "Riattiva audio",
+  d_volume: "Volume",
+  d_hangup: "Riaggancia",
   d_invalidFile: "File non valido",
   d_dateUnknown: "Data sconosciuta",
 

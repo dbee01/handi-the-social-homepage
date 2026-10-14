@@ -200,6 +200,11 @@ var LANG = {
   d_yourHandle: "Jouw ID",
   d_pickHandle: "Kies een naam waaronder vrienden je kunnen bellen",
   d_claim: "Claimen",
+  d_inCall: "In gesprek",
+  d_mute: "Dempen",
+  d_unmute: "Dempen opheffen",
+  d_volume: "Volume",
+  d_hangup: "Ophangen",
   d_invalidFile: "Ongeldig bestand",
   d_dateUnknown: "Datum onbekend",
 

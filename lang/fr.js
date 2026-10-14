@@ -199,6 +199,11 @@ var LANG = {
   d_yourHandle: "Votre ID",
   d_pickHandle: "Choisissez un nom sous lequel vos amis peuvent vous appeler",
   d_claim: "Réserver",
+  d_inCall: "En appel",
+  d_mute: "Couper le micro",
+  d_unmute: "Réactiver le micro",
+  d_volume: "Volume",
+  d_hangup: "Raccrocher",
   d_invalidFile: "Fichier invalide",
   d_dateUnknown: "Date inconnue",
 

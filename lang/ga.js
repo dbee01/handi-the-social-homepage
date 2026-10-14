@@ -212,6 +212,11 @@ var LANG = {
   d_yourHandle: "D'aitheantas",
   d_pickHandle: "Roghnaigh ainm ar féidir le cairde glaoch ort leis",
   d_claim: "Éiligh",
+  d_inCall: "I nglao",
+  d_mute: "Balbhú",
+  d_unmute: "Díbhalbhú",
+  d_volume: "Airde",
+  d_hangup: "Croch suas",
   d_invalidFile: "Comhad neamhbhailí",
   d_dateUnknown: "Dáta anaithnid",
 

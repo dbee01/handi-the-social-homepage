@@ -198,6 +198,11 @@ var LANG = {
   d_yourHandle: "معرفك",
   d_pickHandle: "اختر اسماً يمكن لأصدقائك الاتصال بك به",
   d_claim: "احجز",
+  d_inCall: "في مكالمة",
+  d_mute: "كتم",
+  d_unmute: "إلغاء الكتم",
+  d_volume: "مستوى الصوت",
+  d_hangup: "إنهاء المكالمة",
   d_invalidFile: "ملف غير صالح",
   d_dateUnknown: "تاريخ غير معروف",
 

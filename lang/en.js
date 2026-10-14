@@ -183,6 +183,11 @@ var LANG = {
   d_yourHandle: "Your ID",
   d_pickHandle: "Pick a name friends can call you by",
   d_claim: "Claim",
+  d_inCall: "In call",
+  d_mute: "Mute",
+  d_unmute: "Unmute",
+  d_volume: "Volume",
+  d_hangup: "Hang up",
 
   // Click-to-call
   d_selectDevices: "Select Devices",

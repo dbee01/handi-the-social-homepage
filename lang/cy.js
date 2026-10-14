@@ -199,6 +199,11 @@ var LANG = {
   d_yourHandle: "Eich ID",
   d_pickHandle: "Dewiswch enw y gall ffrindiau eich galw wrtho",
   d_claim: "Hawlio",
+  d_inCall: "Mewn galwad",
+  d_mute: "Tewi",
+  d_unmute: "Dad-dewi",
+  d_volume: "Cyfaint",
+  d_hangup: "Rhoi'r ffôn i lawr",
   d_invalidFile: "Ffeil annilys",
   d_dateUnknown: "Dyddiad anhysbys",
 
