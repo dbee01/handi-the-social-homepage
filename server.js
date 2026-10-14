@@ -697,6 +697,105 @@ app.post("/api/webrtc/room", async (req, res) => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// WebRTC contacts API
+// ---------------------------------------------------------------------------
+// Contacts are persisted server-side in a JSON file (acts as server-side
+// local storage) so the browser can read/write them via these endpoints.
+const WEBRTC_CONTACTS_FILE =
+  process.env.WEBRTC_CONTACTS_FILE || path.join(__dirname, "data", "webrtc-contacts.json");
+
+function readWebrtcContacts() {
+  try {
+    if (!fs.existsSync(WEBRTC_CONTACTS_FILE)) return {};
+    const raw = fs.readFileSync(WEBRTC_CONTACTS_FILE, "utf8");
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    console.warn("Failed to read WebRTC contacts:", e.message);
+    return {};
+  }
+}
+
+function writeWebrtcContacts(data) {
+  try {
+    fs.mkdirSync(path.dirname(WEBRTC_CONTACTS_FILE), { recursive: true });
+    fs.writeFileSync(WEBRTC_CONTACTS_FILE, JSON.stringify(data, null, 2), "utf8");
+    return true;
+  } catch (e) {
+    console.warn("Failed to write WebRTC contacts:", e.message);
+    return false;
+  }
+}
+
+function getUserWebrtcContacts(userId) {
+  const all = readWebrtcContacts();
+  return all[userId] || [];
+}
+
+function setUserWebrtcContacts(userId, contacts) {
+  const all = readWebrtcContacts();
+  all[userId] = contacts;
+  writeWebrtcContacts(all);
+}
+
+// Validate that a caller identity is in the user's contact list
+app.post("/api/webrtc/validate-caller", (req, res) => {
+  const { userId, callerIdentity } = req.body || {};
+  if (!userId) return res.json({ allowed: false, error: "Missing userId" });
+  const contacts = getUserWebrtcContacts(userId);
+  const isAllowed = contacts.some(
+    (c) => c.webrtcId === callerIdentity || c.phoneNumber === callerIdentity,
+  );
+  res.json({
+    allowed: isAllowed,
+    message: isAllowed ? "Caller verified" : "Caller not in contacts",
+  });
+});
+
+// List a user's WebRTC contacts
+app.get("/api/webrtc/contacts/:userId", (req, res) => {
+  const { userId } = req.params;
+  res.json({ success: true, contacts: getUserWebrtcContacts(userId) });
+});
+
+// Add a WebRTC contact
+app.post("/api/webrtc/contacts", (req, res) => {
+  const { userId, name, webrtcId, phoneNumber } = req.body || {};
+  if (!userId) return res.status(400).json({ error: "Missing userId" });
+  if (!name && !webrtcId && !phoneNumber) {
+    return res.status(400).json({ error: "Missing contact details" });
+  }
+  const contacts = getUserWebrtcContacts(userId);
+  const newContact = {
+    id: Date.now(),
+    name: name || "",
+    webrtcId: webrtcId || "",
+    phoneNumber: phoneNumber || "",
+  };
+  contacts.push(newContact);
+  setUserWebrtcContacts(userId, contacts);
+  res.json({ success: true, contact: newContact });
+});
+
+// Delete a WebRTC contact
+app.delete("/api/webrtc/contacts/:userId/:contactId", (req, res) => {
+  const { userId, contactId } = req.params;
+  const contacts = getUserWebrtcContacts(userId);
+  const filtered = contacts.filter((c) => c.id !== parseInt(contactId, 10));
+  setUserWebrtcContacts(userId, filtered);
+  res.json({ success: true });
+});
+
+// Health check for the WebRTC API
+app.get("/api/webrtc/health", (req, res) => {
+  res.json({
+    status: "ok",
+    infobipConfigured: !!INFOBIP_API_KEY && INFOBIP_API_KEY !== "YOUR_API_KEY",
+    baseUrl: INFOBIP_BASE_URL,
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Endpoint to initiate a Click-to-Call with video fallback
 app.post("/api/click-to-call", async (req, res) => {
   const { from, to, videoUrl, text } = req.body;
