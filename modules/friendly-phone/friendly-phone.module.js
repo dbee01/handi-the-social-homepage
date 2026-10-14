@@ -202,8 +202,31 @@ export default async function initPhone(container) {
     }, 15000);
   }
 
+  async function ensureInfobipSdk() {
+    if (typeof window.createInfobipRtc === "function") return true;
+    if (document.querySelector('script[src*="infobip.rtc.js"]')) {
+      // Script is in flight — wait for it to finish.
+      for (let i = 0; i < 50; i++) {
+        if (typeof window.createInfobipRtc === "function") return true;
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      return typeof window.createInfobipRtc === "function";
+    }
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "/js/vendor/infobip.rtc.js";
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+    return typeof window.createInfobipRtc === "function";
+  }
+
   async function authenticateAndConnect() {
     try {
+      const sdkReady = await ensureInfobipSdk();
+      if (!sdkReady) throw new Error("Infobip SDK failed to load");
+
       const response = await fetch("/api/webrtc/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
