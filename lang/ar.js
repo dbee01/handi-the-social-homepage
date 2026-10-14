@@ -188,6 +188,11 @@ var LANG = {
   d_timeout: null,
   d_ringing: "جار الرنين...",
   d_caregiver: "مقدم الرعاية",
+  d_freeCall: "مكالمة مجانية",
+  d_videoCall: "مكالمة فيديو",
+  d_incomingCall: "مكالمة واردة",
+  d_accept: "قبول",
+  d_decline: "رفض",
   d_invalidFile: "ملف غير صالح",
   d_dateUnknown: "تاريخ غير معروف",
 

@@ -190,6 +190,11 @@ var LANG = {
   d_timeout: null,
   d_ringing: "Overgaan...",
   d_caregiver: "Verzorger",
+  d_freeCall: "Gratis bellen",
+  d_videoCall: "Videogesprek",
+  d_incomingCall: "Inkomend gesprek",
+  d_accept: "Accepteren",
+  d_decline: "Weigeren",
   d_invalidFile: "Ongeldig bestand",
   d_dateUnknown: "Datum onbekend",
 

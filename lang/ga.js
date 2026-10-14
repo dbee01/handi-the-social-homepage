@@ -202,6 +202,11 @@ var LANG = {
   d_timeout: null,
   d_ringing: "Ag bualadh...",
   d_caregiver: "Cúramóir",
+  d_freeCall: "Glaoch saor in aisce",
+  d_videoCall: "Glaoch físe",
+  d_incomingCall: "Glaoch ag teacht isteach",
+  d_accept: "Glac",
+  d_decline: "Diúltaigh",
   d_invalidFile: "Comhad neamhbhailí",
   d_dateUnknown: "Dáta anaithnid",
 

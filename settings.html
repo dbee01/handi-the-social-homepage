@@ -1337,6 +1337,17 @@
                             "
                         />
                         <input
+                            type="text"
+                            id="phoneWebrtcId"
+                            placeholder="WebRTC ID (friend's identity)"
+                            style="
+                                flex: 1;
+                                min-width: 140px;
+                                font-size: 1.1rem;
+                                padding: 14px 16px;
+                            "
+                        />
+                        <input
                             type="file"
                             id="phonePhoto"
                             accept="image/png,image/jpeg,image/webp"
@@ -1906,11 +1917,13 @@
             function addPhoneContact() {
                 const nameInput = document.getElementById("phoneName");
                 const numberInput = document.getElementById("phoneNumber");
+                const webrtcIdInput = document.getElementById("phoneWebrtcId");
                 const photoInput = document.getElementById("phonePhoto");
                 const photoFile = photoInput?.files[0];
 
                 const name = nameInput?.value.trim();
                 const number = numberInput?.value.trim();
+                const webrtcId = webrtcIdInput?.value.trim() || "";
 
                 if (!name || !number) {
                     alert("Please enter both name and phone number");
@@ -1920,6 +1933,7 @@
                 const contact = {
                     name,
                     number,
+                    webrtcId: webrtcId || number,
                     photo: null,
                     caregiver: phoneContacts.length === 0,
                     share_location: false,
@@ -1931,6 +1945,7 @@
                 // Clear inputs immediately
                 nameInput.value = "";
                 numberInput.value = "";
+                if (webrtcIdInput) webrtcIdInput.value = "";
 
                 if (photoFile) {
                     const MAX_SIZE = 7 * 1024 * 1024;
@@ -2735,6 +2750,7 @@
                 settings.phone.contacts = phoneContacts.map((c) => ({
                     name: c.name,
                     number: c.number,
+                    webrtcId: c.webrtcId || c.number,
                     caregiver: c.caregiver,
                     share_location: c.share_location,
                 }));

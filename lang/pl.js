@@ -190,6 +190,11 @@ var LANG = {
   d_timeout: null,
   d_ringing: "Dzwonienie...",
   d_caregiver: "Opiekun",
+  d_freeCall: "Darmowa rozmowa",
+  d_videoCall: "Rozmowa wideo",
+  d_incomingCall: "Rozmowa przychodząca",
+  d_accept: "Akceptuj",
+  d_decline: "Odrzuć",
   d_invalidFile: "Nieprawidłowy plik",
   d_dateUnknown: "Data nieznana",
 

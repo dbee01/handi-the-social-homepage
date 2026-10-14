@@ -4,7 +4,14 @@
  * See the LICENSE file in the repository root for full details.
  */
 // modules/friendly-phone/friendly-phone.module.js
-// Unified Phone module — SIM, Video, and Click-to-Call in one element.
+// Friendly Phone — free browser-to-browser (Infobip WebRTC "callWebrtc") calling.
+//
+// Contacts carry a WebRTC identity (`webrtcId`) that identifies the other
+// person's Infobip WebRTC endpoint (NOT a PSTN/SIP phone number). Calls are
+// placed with `infobipRTC.callWebrtc(identity)` and answered via the
+// `incoming-webrtc-call` event — so no phone number or SIP trunk is involved.
+// This is intentionally separate from the paid SIM Phone module, which uses
+// `callPhone(number)` to reach real phone numbers over the Infobip SIP trunk.
 import { loadSettings } from "../../js/core/settings.js";
 
 export default async function initPhone(container) {
@@ -13,6 +20,7 @@ export default async function initPhone(container) {
     function (k, e) {
       return e || k;
     };
+
   const pinBtn = container.querySelector(".pin-btn");
   container.innerHTML = "";
   if (pinBtn) container.prepend(pinBtn);
@@ -46,23 +54,136 @@ export default async function initPhone(container) {
     });
   } catch (e) {}
 
+  function escapeHtml(str) {
+    if (!str) return "";
+    return str.replace(/[&<>]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m]);
+  }
+
   if (!contacts.length) {
-    content.innerHTML = `
-      <div class="module-empty">
-        <i class="fa-solid fa-address-book"></i>
-        <p>${t("d_noContacts", "No contacts saved.")}</p>
-        <button class="settings-link-btn" id="phoneSettingsBtn">
-          <i class="fa-solid fa-gear"></i> ${t("d_addContacts", "Add Contacts in Settings")}
-        </button>
-      </div>`;
+    content.innerHTML =
+      '<div class="module-empty">' +
+      '<i class="fa-solid fa-address-book"></i>' +
+      "<p>" + escapeHtml(t("d_noContacts", "No contacts saved.")) + "</p>" +
+      '<button class="settings-link-btn" id="phoneSettingsBtn">' +
+      '<i class="fa-solid fa-gear"></i> ' + escapeHtml(t("d_addContacts", "Add Contacts in Settings")) +
+      "</button></div>";
     content.querySelector("#phoneSettingsBtn").onclick = () => {
       window.location.href = "settings.html?args=friendly-phone";
     };
     return;
   }
 
-  // Tracks which button is currently in a call
+  // ── Infobip WebRTC state ───────────────────────────────────────────────
+  let infobipRTC = null;
+  let currentCall = null;
+  let isConnected = false;
+  let userIdentity = null;
+  let pendingIncomingCall = null;
   let callingBtn = null;
+  let incomingModal = null;
+
+  async function authenticateAndConnect() {
+    try {
+      const response = await fetch("/api/webrtc/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          identity: localStorage.getItem("webrtc_user_id") || "handi_user_" + Date.now(),
+          enableVideo: true,
+        }),
+      });
+      const data = await response.json();
+      if (!data.token) throw new Error("No token");
+      userIdentity = data.identity || userIdentity;
+
+      infobipRTC = createInfobipRtc(data.token, { debug: false });
+
+      infobipRTC.on("connected", (event) => {
+        isConnected = true;
+        if (event && event.identity) userIdentity = event.identity;
+        console.log("[friendly-phone] connected as", userIdentity);
+      });
+
+      infobipRTC.on("disconnected", () => {
+        isConnected = false;
+      });
+
+      infobipRTC.on("incoming-webrtc-call", (event) => {
+        handleIncomingCall(event.incomingCall);
+      });
+
+      infobipRTC.connect();
+    } catch (e) {
+      console.warn("[friendly-phone] Infobip connect failed:", e);
+    }
+  }
+
+  function handleIncomingCall(incomingCall) {
+    const callerIdentity = incomingCall && incomingCall.source
+      ? incomingCall.source().identifier
+      : "Unknown";
+    showIncomingCallUI(callerIdentity, incomingCall);
+  }
+
+  function showIncomingCallUI(callerIdentity, incomingCall) {
+    if (incomingModal) incomingModal.remove();
+
+    incomingModal = document.createElement("div");
+    incomingModal.className = "fp-incoming-modal";
+    incomingModal.innerHTML =
+      '<div class="fp-incoming">' +
+      '<div class="fp-incoming-head">' + escapeHtml(t("d_incomingCall", "Incoming call")) + "</div>" +
+      '<div class="fp-incoming-caller"><i class="fa-solid fa-user"></i> <strong>' + escapeHtml(callerIdentity) + "</strong></div>" +
+      '<div class="fp-incoming-actions">' +
+      '<button class="fp-accept" id="fpAccept"><i class="fa-solid fa-phone"></i> ' + escapeHtml(t("d_accept", "Accept")) + "</button>" +
+      '<button class="fp-decline" id="fpDecline"><i class="fa-solid fa-phone-slash"></i> ' + escapeHtml(t("d_decline", "Decline")) + "</button>" +
+      "</div></div>";
+    document.body.appendChild(incomingModal);
+
+    incomingModal.querySelector("#fpAccept").onclick = () => {
+      pendingIncomingCall = incomingCall;
+      currentCall = incomingCall;
+      incomingCall.accept();
+      hideIncomingCallUI();
+    };
+    incomingModal.querySelector("#fpDecline").onclick = () => {
+      try { incomingCall.decline(); } catch (e) {}
+      hideIncomingCallUI();
+    };
+
+    // Attach inline styles once
+    if (!document.getElementById("fp-incoming-style")) {
+      const s = document.createElement("style");
+      s.id = "fp-incoming-style";
+      s.textContent =
+        ".fp-incoming-modal{position:fixed;bottom:20px;right:20px;z-index:10000;font-family:inherit}" +
+        ".fp-incoming{background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.25);padding:16px;width:280px}" +
+        ".fp-incoming-head{font-weight:700;margin-bottom:8px}" +
+        ".fp-incoming-caller{display:flex;align-items:center;gap:8px;margin-bottom:12px}" +
+        ".fp-incoming-actions{display:flex;gap:8px}" +
+        ".fp-accept,.fp-decline{flex:1;border:none;border-radius:40px;padding:10px;color:#fff;cursor:pointer;font-weight:600}" +
+        ".fp-accept{background:#16a34a}.fp-decline{background:#dc2626}";
+      document.head.appendChild(s);
+    }
+  }
+
+  function hideIncomingCallUI() {
+    if (incomingModal) {
+      incomingModal.remove();
+      incomingModal = null;
+    }
+  }
+
+  async function ensureConnected() {
+    if (isConnected && infobipRTC) return true;
+    await authenticateAndConnect();
+    // Wait briefly for the connection to establish.
+    for (let i = 0; i < 30; i++) {
+      if (isConnected) return true;
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    return false;
+  }
 
   function setCalling(btn, active) {
     if (callingBtn && callingBtn !== btn) setCalling(callingBtn, false);
@@ -82,134 +203,164 @@ export default async function initPhone(container) {
     }
   }
 
-  async function ensureWebRTC() {
-    if (typeof window.makeAudioCall === "function") return true;
-    // Load into a hidden container so it doesn't overwrite Phone UI
-    try {
-      const hidden = document.createElement("div");
-      hidden.style.display = "none";
-      document.body.appendChild(hidden);
-      const mod = await import("../sim-phone/click-to-call.module.js");
-      await mod.default(hidden);
-      // Wait for makeAudioCall to appear
-      for (let i = 0; i < 20; i++) {
-        if (typeof window.makeAudioCall === "function") return true;
-        await new Promise((r) => setTimeout(r, 100));
-      }
-    } catch (e) {
-      console.warn("Failed to load WebRTC:", e);
+  function makeCall(webrtcId, video) {
+    if (!webrtcId) {
+      console.warn("[friendly-phone] contact has no WebRTC identity");
+      return;
     }
-    return false;
-  }
-
-  // Restore button when call ends (poll for call state)
-  function watchCallEnd() {
-    const check = setInterval(() => {
-      if (!callingBtn) {
-        clearInterval(check);
-        return;
-      }
-      if (typeof window.makeAudioCall !== "function") {
-        clearInterval(check);
-        return;
-      }
-      // No active call means the button should be reset
-      // We rely on the click-to-call module's endCall to be called via hangup
-    }, 2000);
-  }
-
-  function escapeHtml(str) {
-    if (!str) return "";
-    return str.replace(
-      /[&<>]/g,
-      (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m],
-    );
-  }
-
-  content.innerHTML = `
-    <div class="phone-list">
-      ${contacts
-        .map(
-          (c) => `
-        <div class="phone-card">
-          <div class="phone-card-left">
-          ${
-            c.photo
-              ? `<img class="phone-avatar" src="${c.photo}" alt="">`
-              : `<div class="phone-avatar placeholder"><i class="fa-solid fa-user"></i></div>`
+    let localStream = null;
+    navigator.mediaDevices
+      .getUserMedia({ video: !!video, audio: true })
+      .then((stream) => {
+        localStream = stream;
+      })
+      .catch((err) => console.warn("Could not access media:", err))
+      .finally(() => {
+        try {
+          const opts = (window.WebrtcCallOptions
+            ? window.WebrtcCallOptions.builder()
+            : null);
+          let callOptions;
+          if (opts) {
+            callOptions = opts.setVideo(!!video).build();
+          } else {
+            callOptions = { video: !!video };
           }
-          <div class="phone-name">
-            ${escapeHtml(c.name)}
-            ${c.caregiver ? '<span class="elderlyShow" style="font-size:0.6rem;background:#f59e0b;color:white;padding:1px 5px;border-radius:6px;margin-left:4px;">' + t("d_caregiver", "Caregiver") + "</span>" : ""}
-          </div>
-          </div>
-          <div class="phone-actions">
-            <button class="phone-call video-call" data-number="${escapeHtml(c.number)}" title="Video Call">
-              <i class="fa-solid fa-video"></i>
-            </button>
-            <button class="phone-call webrtc-call" data-number="${escapeHtml(c.number)}" title="Free Call">
-              <i class="fa-solid fa-phone"></i>
-            </button>
-          </div>
-        </div>
-      `,
-        )
-        .join("")}
-    </div>
-  `;
+          currentCall = infobipRTC.callWebrtc(webrtcId, callOptions);
+          currentCall.on("established", (event) => {
+            if (event && event.stream) {
+              attachRemoteAudio(event.stream, video);
+            }
+            if (callingBtn) setCalling(callingBtn, false);
+          });
+          currentCall.on("hangup", () => {
+            cleanupCall(localStream);
+            if (callingBtn) setCalling(callingBtn, false);
+          });
+          currentCall.on("error", () => {
+            cleanupCall(localStream);
+            if (callingBtn) setCalling(callingBtn, false);
+          });
+          if (localStream) {
+            try { currentCall.localStream = localStream; } catch (e) {}
+          }
+        } catch (err) {
+          console.error("[friendly-phone] call failed:", err);
+          if (localStream) localStream.getTracks().forEach((tr) => tr.stop());
+          if (callingBtn) setCalling(callingBtn, false);
+        }
+      });
+  }
 
-  // Wire up WebRTC (headset) buttons
+  function attachRemoteAudio(stream, video) {
+    if (video) {
+      // For video the remote stream is surfaced via the local <video> fallback.
+      let v = document.getElementById("fpRemoteVideo");
+      if (!v) {
+        v = document.createElement("video");
+        v.id = "fpRemoteVideo";
+        v.autoplay = true;
+        v.playsInline = true;
+        v.style.cssText = "position:fixed;right:16px;bottom:16px;width:240px;border-radius:12px;z-index:9999;background:#000;";
+        document.body.appendChild(v);
+      }
+      v.srcObject = stream;
+    } else {
+      let a = document.getElementById("fpRemoteAudio");
+      if (!a) {
+        a = document.createElement("audio");
+        a.id = "fpRemoteAudio";
+        a.autoplay = true;
+        document.body.appendChild(a);
+      }
+      a.srcObject = stream;
+    }
+  }
+
+  function cleanupCall(localStream) {
+    if (localStream) localStream.getTracks().forEach((tr) => tr.stop());
+    const v = document.getElementById("fpRemoteVideo");
+    if (v) { v.srcObject = null; v.remove(); }
+    const a = document.getElementById("fpRemoteAudio");
+    if (a) { a.srcObject = null; a.remove(); }
+    try { window.dispatchEvent(new Event("handiCallEnded")); } catch (e) {}
+  }
+
+  function hangup() {
+    if (currentCall) {
+      try { currentCall.hangup(); } catch (e) {}
+      currentCall = null;
+    }
+    if (callingBtn) setCalling(callingBtn, false);
+  }
+
+  // ── Render contacts ────────────────────────────────────────────────────
+  content.innerHTML =
+    '<div class="phone-list">' +
+    contacts
+      .map(
+        (c) => {
+          const webrtcId = c.webrtcId || c.number || "";
+          return (
+            '<div class="phone-card">' +
+            '<div class="phone-card-left">' +
+            (c.photo
+              ? '<img class="phone-avatar" src="' + escapeHtml(c.photo) + '" alt="">'
+              : '<div class="phone-avatar placeholder"><i class="fa-solid fa-user"></i></div>') +
+            '<div class="phone-name">' +
+            escapeHtml(c.name) +
+            (c.caregiver
+              ? '<span class="elderlyShow" style="font-size:0.6rem;background:#f59e0b;color:white;padding:1px 5px;border-radius:6px;margin-left:4px;">' + t("d_caregiver", "Caregiver") + "</span>"
+              : "") +
+            "</div></div>" +
+            '<div class="phone-actions">' +
+            '<button class="phone-call video-call" data-webrtc-id="' + escapeHtml(webrtcId) + '" title="' + escapeHtml(t("d_videoCall", "Video call")) + '"><i class="fa-solid fa-video"></i></button>' +
+            '<button class="phone-call webrtc-call" data-webrtc-id="' + escapeHtml(webrtcId) + '" title="' + escapeHtml(t("d_freeCall", "Free call")) + '"><i class="fa-solid fa-phone"></i></button>' +
+            "</div></div>"
+          );
+        },
+      )
+      .join("") +
+    "</div>";
+
   content.querySelectorAll(".webrtc-call").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
       e.preventDefault();
       if (btn.classList.contains("calling")) {
-        if (typeof window.endCall === "function") window.endCall();
-        setCalling(btn, false);
+        hangup();
         return;
       }
-      const ok = await ensureWebRTC();
+      const ok = await ensureConnected();
       if (!ok) {
-        window.location.href = "tel:" + btn.dataset.number;
+        console.warn("[friendly-phone] not connected");
         return;
       }
       setCalling(btn, true);
-      try {
-        window.makeAudioCall(btn.dataset.number);
-      } catch (err) {
-        setCalling(btn, false);
-      }
+      makeCall(btn.dataset.webrtcId, false);
     });
   });
 
-  // Wire up video call buttons
   content.querySelectorAll(".video-call").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
       e.preventDefault();
       if (btn.classList.contains("calling")) {
-        if (typeof window.endCall === "function") window.endCall();
-        setCalling(btn, false);
+        hangup();
         return;
       }
-      const ok = await ensureWebRTC();
+      const ok = await ensureConnected();
       if (!ok) {
-        window.location.href = "tel:" + btn.dataset.number;
+        console.warn("[friendly-phone] not connected");
         return;
       }
       setCalling(btn, true);
-      try {
-        if (typeof window.makeVideoCall === "function") {
-          window.makeVideoCall(btn.dataset.number);
-        } else {
-          window.makeAudioCall(btn.dataset.number);
-        }
-      } catch (err) {
-        setCalling(btn, false);
-      }
+      makeCall(btn.dataset.webrtcId, true);
     });
   });
 
-  // Restore button state
   window.addEventListener("handiCallEnded", () => {
     if (callingBtn) setCalling(callingBtn, false);
   });
+
+  // Establish the Infobip connection in the background so incoming calls work.
+  authenticateAndConnect();
 }

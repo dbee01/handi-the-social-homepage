@@ -173,6 +173,11 @@ var LANG = {
   d_noContacts: "No contacts saved.",
   d_addContacts: "Add Contacts in Settings",
   d_caregiver: "Caregiver",
+  d_freeCall: "Free call",
+  d_videoCall: "Video call",
+  d_incomingCall: "Incoming call",
+  d_accept: "Accept",
+  d_decline: "Decline",
 
   // Click-to-call
   d_selectDevices: "Select Devices",

@@ -189,6 +189,11 @@ var LANG = {
   d_timeout: null,
   d_ringing: "Canu...",
   d_caregiver: "Gofalwr",
+  d_freeCall: "Galwad am ddim",
+  d_videoCall: "Galwad fideo",
+  d_incomingCall: "Galwad yn dod i mewn",
+  d_accept: "Derbyn",
+  d_decline: "Gwrthod",
   d_invalidFile: "Ffeil annilys",
   d_dateUnknown: "Dyddiad anhysbys",
 

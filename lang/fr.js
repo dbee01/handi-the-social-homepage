@@ -189,6 +189,11 @@ var LANG = {
   d_timeout: null,
   d_ringing: "Sonnerie...",
   d_caregiver: "Soignant",
+  d_freeCall: "Appel gratuit",
+  d_videoCall: "Appel vidéo",
+  d_incomingCall: "Appel entrant",
+  d_accept: "Accepter",
+  d_decline: "Refuser",
   d_invalidFile: "Fichier invalide",
   d_dateUnknown: "Date inconnue",
 
