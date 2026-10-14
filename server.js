@@ -796,6 +796,94 @@ app.get("/api/webrtc/health", (req, res) => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// WebRTC presence API
+// ---------------------------------------------------------------------------
+// Anonymous users (no login) register a stable identity + display name so
+// others can find them and see whether they're online. Presence is file-backed
+// and derived from lastSeen (a user is online if they've heartbeated recently).
+const WEBRTC_PRESENCE_FILE =
+  process.env.WEBRTC_PRESENCE_FILE ||
+  path.join(__dirname, "data", "webrtc-presence.json");
+const WEBRTC_PRESENCE_OFFLINE_MS =
+  parseInt(process.env.WEBRTC_PRESENCE_OFFLINE_MS, 10) || 45000; // 45s
+
+function readWebrtcPresence() {
+  try {
+    if (!fs.existsSync(WEBRTC_PRESENCE_FILE)) return {};
+    const raw = fs.readFileSync(WEBRTC_PRESENCE_FILE, "utf8");
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    console.warn("Failed to read WebRTC presence:", e.message);
+    return {};
+  }
+}
+
+function writeWebrtcPresence(data) {
+  try {
+    fs.mkdirSync(path.dirname(WEBRTC_PRESENCE_FILE), { recursive: true });
+    fs.writeFileSync(WEBRTC_PRESENCE_FILE, JSON.stringify(data, null, 2), "utf8");
+    return true;
+  } catch (e) {
+    console.warn("Failed to write WebRTC presence:", e.message);
+    return false;
+  }
+}
+
+// Register / heartbeat a presence. Returns the full roster.
+app.post("/api/webrtc/presence", (req, res) => {
+  const { userId, displayName, online } = req.body || {};
+  if (!userId) return res.status(400).json({ error: "Missing userId" });
+
+  const now = Date.now();
+  const all = readWebrtcPresence();
+  const prev = all[userId] || {};
+  const entry = {
+    userId,
+    displayName: displayName || prev.displayName || "Anonymous",
+    // A client that says it's offline goes offline immediately; otherwise we
+    // stamp lastSeen and let the staleness window decide "online".
+    lastSeen: now,
+    online: online !== false,
+    connectedAt: prev.connectedAt || now,
+  };
+  all[userId] = entry;
+  writeWebrtcPresence(all);
+
+  res.json({ success: true, presence: entry, roster: rosterWithStatus(all) });
+});
+
+function rosterWithStatus(all) {
+  const now = Date.now();
+  return Object.values(all)
+    .map((p) => {
+      const online = p.online !== false && now - p.lastSeen < WEBRTC_PRESENCE_OFFLINE_MS;
+      return { ...p, online, lastSeen: p.lastSeen };
+    })
+    .sort((a, b) => {
+      if (a.online !== b.online) return a.online ? -1 : 1;
+      return (b.lastSeen || 0) - (a.lastSeen || 0);
+    });
+}
+
+// Explicitly mark a presence offline (e.g. on tab close / disconnect).
+app.post("/api/webrtc/presence/offline", (req, res) => {
+  const { userId } = req.body || {};
+  if (!userId) return res.status(400).json({ error: "Missing userId" });
+  const all = readWebrtcPresence();
+  if (all[userId]) {
+    all[userId].online = false;
+    all[userId].lastSeen = Date.now();
+    writeWebrtcPresence(all);
+  }
+  res.json({ success: true });
+});
+
+// List the presence roster.
+app.get("/api/webrtc/presence", (req, res) => {
+  res.json({ success: true, roster: rosterWithStatus(readWebrtcPresence()) });
+});
+
 // Endpoint to initiate a Click-to-Call with video fallback
 app.post("/api/click-to-call", async (req, res) => {
   const { from, to, videoUrl, text } = req.body;

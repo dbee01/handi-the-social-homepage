@@ -178,6 +178,8 @@ var LANG = {
   d_incomingCall: "Incoming call",
   d_accept: "Accept",
   d_decline: "Decline",
+  d_online: "Online",
+  d_offline: "Offline",
 
   // Click-to-call
   d_selectDevices: "Select Devices",

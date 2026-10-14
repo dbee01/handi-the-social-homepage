@@ -193,6 +193,8 @@ var LANG = {
   d_incomingCall: "Chamada a entrar",
   d_accept: "Aceitar",
   d_decline: "Recusar",
+  d_online: "Online",
+  d_offline: "Offline",
   d_invalidFile: "Ficheiro inválido",
   d_dateUnknown: "Data desconhecida",
 

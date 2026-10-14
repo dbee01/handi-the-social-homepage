@@ -194,6 +194,8 @@ var LANG = {
   d_incomingCall: "Galwad yn dod i mewn",
   d_accept: "Derbyn",
   d_decline: "Gwrthod",
+  d_online: "Ar-lein",
+  d_offline: "All-lein",
   d_invalidFile: "Ffeil annilys",
   d_dateUnknown: "Dyddiad anhysbys",
 

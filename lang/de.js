@@ -200,6 +200,8 @@ var LANG = {
   d_incomingCall: "Eingehender Anruf",
   d_accept: "Annehmen",
   d_decline: "Ablehnen",
+  d_online: "Online",
+  d_offline: "Offline",
   d_invalidFile: "Ungültige Datei",
   d_dateUnknown: "Datum unbekannt",
 

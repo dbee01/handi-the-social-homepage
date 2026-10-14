@@ -195,6 +195,8 @@ var LANG = {
   d_incomingCall: "Inkomend gesprek",
   d_accept: "Accepteren",
   d_decline: "Weigeren",
+  d_online: "Online",
+  d_offline: "Offline",
   d_invalidFile: "Ongeldig bestand",
   d_dateUnknown: "Datum onbekend",
 

@@ -207,6 +207,8 @@ var LANG = {
   d_incomingCall: "Glaoch ag teacht isteach",
   d_accept: "Glac",
   d_decline: "Diúltaigh",
+  d_online: "Ar líne",
+  d_offline: "As líne",
   d_invalidFile: "Comhad neamhbhailí",
   d_dateUnknown: "Dáta anaithnid",
 

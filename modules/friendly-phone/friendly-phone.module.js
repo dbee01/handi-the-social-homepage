@@ -81,6 +81,74 @@ export default async function initPhone(container) {
   let pendingIncomingCall = null;
   let callingBtn = null;
   let incomingModal = null;
+  let presenceTimer = null;
+  let presencePollTimer = null;
+
+  // ── Stable identity + display name (anonymous, no login) ──────────────
+  function ensureIdentity() {
+    let userId = localStorage.getItem("webrtc_user_id");
+    if (!userId) {
+      userId = "handi_user_" + (window.crypto && crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2) + Date.now().toString(36));
+      localStorage.setItem("webrtc_user_id", userId);
+    }
+    return userId;
+  }
+
+  function getDisplayName() {
+    return localStorage.getItem("webrtc_display_name") || "Anonymous";
+  }
+
+  const myUserId = ensureIdentity();
+
+  // ── Presence (server-side roster) ──────────────────────────────────────
+  async function registerPresence(online) {
+    try {
+      await fetch("/api/webrtc/presence", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: myUserId,
+          displayName: getDisplayName(),
+          online,
+        }),
+        keepalive: true,
+      });
+    } catch (e) {
+      console.warn("[friendly-phone] presence register failed:", e);
+    }
+  }
+
+  async function markPresenceOffline() {
+    try {
+      await fetch("/api/webrtc/presence/offline", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: myUserId }),
+        keepalive: true,
+      });
+    } catch (e) {
+      /* best effort */
+    }
+  }
+
+  async function fetchRoster() {
+    try {
+      const r = await fetch("/api/webrtc/presence");
+      const data = await r.json();
+      return (data && data.roster) || [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function startPresenceHeartbeat() {
+    if (presenceTimer) clearInterval(presenceTimer);
+    presenceTimer = setInterval(() => {
+      if (isConnected) registerPresence(true);
+    }, 15000);
+  }
 
   async function authenticateAndConnect() {
     try {
@@ -88,13 +156,13 @@ export default async function initPhone(container) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          identity: localStorage.getItem("webrtc_user_id") || "handi_user_" + Date.now(),
+          identity: myUserId,
           enableVideo: true,
         }),
       });
       const data = await response.json();
       if (!data.token) throw new Error("No token");
-      userIdentity = data.identity || userIdentity;
+      userIdentity = data.identity || myUserId;
 
       infobipRTC = createInfobipRtc(data.token, { debug: false });
 
@@ -102,10 +170,14 @@ export default async function initPhone(container) {
         isConnected = true;
         if (event && event.identity) userIdentity = event.identity;
         console.log("[friendly-phone] connected as", userIdentity);
+        registerPresence(true);
+        startPresenceHeartbeat();
+        refreshPresence();
       });
 
       infobipRTC.on("disconnected", () => {
         isConnected = false;
+        markPresenceOffline();
       });
 
       infobipRTC.on("incoming-webrtc-call", (event) => {
@@ -294,13 +366,25 @@ export default async function initPhone(container) {
     if (callingBtn) setCalling(callingBtn, false);
   }
 
-  // ── Render contacts ────────────────────────────────────────────────────
-  content.innerHTML =
-    '<div class="phone-list">' +
-    contacts
-      .map(
-        (c) => {
+  // ── Presence → contact list rendering ─────────────────────────────────
+  function renderContacts(roster) {
+    roster = roster || [];
+    const statusById = {};
+    roster.forEach((p) => {
+      statusById[p.userId] = p;
+    });
+
+    content.innerHTML =
+      '<div class="phone-list">' +
+      contacts
+        .map(function (c) {
           const webrtcId = c.webrtcId || c.number || "";
+          const p = statusById[webrtcId];
+          const online = p ? !!p.online : false;
+          const dot =
+            '<span class="fp-presence fp-' + (online ? "online" : "offline") + '" ' +
+            'title="' + escapeHtml(online ? t("d_online", "Online") : t("d_offline", "Offline")) + '"></span>';
+          const disabled = online ? "" : " disabled";
           return (
             '<div class="phone-card">' +
             '<div class="phone-card-left">' +
@@ -308,57 +392,97 @@ export default async function initPhone(container) {
               ? '<img class="phone-avatar" src="' + escapeHtml(c.photo) + '" alt="">'
               : '<div class="phone-avatar placeholder"><i class="fa-solid fa-user"></i></div>') +
             '<div class="phone-name">' +
-            escapeHtml(c.name) +
+            escapeHtml(c.name) + dot +
             (c.caregiver
               ? '<span class="elderlyShow" style="font-size:0.6rem;background:#f59e0b;color:white;padding:1px 5px;border-radius:6px;margin-left:4px;">' + t("d_caregiver", "Caregiver") + "</span>"
               : "") +
             "</div></div>" +
             '<div class="phone-actions">' +
-            '<button class="phone-call video-call" data-webrtc-id="' + escapeHtml(webrtcId) + '" title="' + escapeHtml(t("d_videoCall", "Video call")) + '"><i class="fa-solid fa-video"></i></button>' +
-            '<button class="phone-call webrtc-call" data-webrtc-id="' + escapeHtml(webrtcId) + '" title="' + escapeHtml(t("d_freeCall", "Free call")) + '"><i class="fa-solid fa-phone"></i></button>' +
+            '<button class="phone-call video-call" data-webrtc-id="' + escapeHtml(webrtcId) + '" title="' + escapeHtml(t("d_videoCall", "Video call")) + '"' + disabled + '><i class="fa-solid fa-video"></i></button>' +
+            '<button class="phone-call webrtc-call" data-webrtc-id="' + escapeHtml(webrtcId) + '" title="' + escapeHtml(t("d_freeCall", "Free call")) + '"' + disabled + '><i class="fa-solid fa-phone"></i></button>' +
             "</div></div>"
           );
-        },
-      )
-      .join("") +
-    "</div>";
+        })
+        .join("") +
+      "</div>";
 
-  content.querySelectorAll(".webrtc-call").forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      if (btn.classList.contains("calling")) {
-        hangup();
-        return;
-      }
-      const ok = await ensureConnected();
-      if (!ok) {
-        console.warn("[friendly-phone] not connected");
-        return;
-      }
-      setCalling(btn, true);
-      makeCall(btn.dataset.webrtcId, false);
-    });
-  });
+    // Re-wire the call buttons after re-render.
+    bindCallButtons();
+  }
 
-  content.querySelectorAll(".video-call").forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      if (btn.classList.contains("calling")) {
-        hangup();
-        return;
-      }
-      const ok = await ensureConnected();
-      if (!ok) {
-        console.warn("[friendly-phone] not connected");
-        return;
-      }
-      setCalling(btn, true);
-      makeCall(btn.dataset.webrtcId, true);
+  function bindCallButtons() {
+    content.querySelectorAll(".webrtc-call").forEach(function (btn) {
+      btn.onclick = async function (e) {
+        e.preventDefault();
+        if (btn.disabled) return;
+        if (btn.classList.contains("calling")) {
+          hangup();
+          return;
+        }
+        const ok = await ensureConnected();
+        if (!ok) {
+          console.warn("[friendly-phone] not connected");
+          return;
+        }
+        setCalling(btn, true);
+        makeCall(btn.dataset.webrtcId, false);
+      };
     });
-  });
+
+    content.querySelectorAll(".video-call").forEach(function (btn) {
+      btn.onclick = async function (e) {
+        e.preventDefault();
+        if (btn.disabled) return;
+        if (btn.classList.contains("calling")) {
+          hangup();
+          return;
+        }
+        const ok = await ensureConnected();
+        if (!ok) {
+          console.warn("[friendly-phone] not connected");
+          return;
+        }
+        setCalling(btn, true);
+        makeCall(btn.dataset.webrtcId, true);
+      };
+    });
+  }
+
+  async function refreshPresence() {
+    const roster = await fetchRoster();
+    renderContacts(roster);
+  }
+
+  function startPresencePolling() {
+    if (presencePollTimer) clearInterval(presencePollTimer);
+    presencePollTimer = setInterval(function () {
+      refreshPresence();
+    }, 15000);
+  }
+
+  // Attach presence styles once.
+  if (!document.getElementById("fp-presence-style")) {
+    const s = document.createElement("style");
+    s.id = "fp-presence-style";
+    s.textContent =
+      ".fp-presence{display:inline-block;width:10px;height:10px;border-radius:50%;margin-left:6px;vertical-align:middle}" +
+      ".fp-online{background:#16a34a}" +
+      ".fp-offline{background:#9ca3af}" +
+      ".phone-call[disabled]{opacity:.4;cursor:not-allowed}";
+    document.head.appendChild(s);
+  }
+
+  // Initial render (offline until roster loads), then poll.
+  renderContacts([]);
+  startPresencePolling();
+  refreshPresence();
 
   window.addEventListener("handiCallEnded", () => {
     if (callingBtn) setCalling(callingBtn, false);
+  });
+
+  window.addEventListener("beforeunload", () => {
+    markPresenceOffline();
   });
 
   // Establish the Infobip connection in the background so incoming calls work.

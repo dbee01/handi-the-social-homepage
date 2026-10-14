@@ -193,6 +193,8 @@ var LANG = {
   d_incomingCall: "مكالمة واردة",
   d_accept: "قبول",
   d_decline: "رفض",
+  d_online: "متصل",
+  d_offline: "غير متصل",
   d_invalidFile: "ملف غير صالح",
   d_dateUnknown: "تاريخ غير معروف",
 
