@@ -1198,6 +1198,174 @@
                 </div>
             </div>
 
+            <!-- GitHub User Activity Module (free) -->
+            <div class="module-card" data-module="github-user">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-brands fa-github"></i>
+                        <h3>GitHub Activity</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <small>
+                            Shows the latest public activity from your
+                            <strong>GitHub</strong> account — pushes, commits
+                            and issues. Updates automatically.
+                        </small>
+                    </div>
+                    <div class="config-field">
+                        <label for="githubUser">
+                            <i class="fa-solid fa-user"></i> GitHub username
+                        </label>
+                        <input
+                            type="text"
+                            id="githubUser"
+                            placeholder="e.g. dbee01"
+                            autocomplete="off"
+                        />
+                        <small>
+                            Read from the public events API at
+                            <strong>api.github.com/users/&lt;username&gt;/events/public</strong>.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GitHub Repo Commits Module (free) -->
+            <div class="module-card" data-module="github-repo">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-code-pull-request"></i>
+                        <h3>GitHub Repo</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <small>
+                            Shows the latest commits for a single
+                            <strong>GitHub</strong> repository.
+                        </small>
+                    </div>
+                    <div class="config-field">
+                        <label for="githubRepoFeed">
+                            <i class="fa-brands fa-github"></i> Repository (owner/repo)
+                        </label>
+                        <input
+                            type="text"
+                            id="githubRepoFeed"
+                            placeholder="owner/repo"
+                            autocomplete="off"
+                        />
+                        <small>
+                            A public GitHub repository in the form
+                            <strong>&lt;owner&gt;/&lt;repo&gt;</strong>.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Friendly Phone (free) -->
+            <div class="module-card" data-module="friendly-phone">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa-solid fa-phone"></i>
+                        <h3>Friendly Phone</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="module-config">
+                    <div class="config-field">
+                        <label>Contacts</label>
+                        <div id="phoneContactsList" class="contact-list"></div>
+                    </div>
+                    <div
+                        style="
+                            display: flex;
+                            gap: 12px;
+                            margin-top: 16px;
+                            margin-bottom: 16px;
+                            flex-wrap: wrap;
+                        "
+                    >
+                        <div
+                            id="phonePhotoPreview"
+                            style="
+                                width: 72px;
+                                height: 72px;
+                                border-radius: 50%;
+                                background: #eaf2ff;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                flex-shrink: 0;
+                                cursor: pointer;
+                                border: 2px dashed #cbd5e1;
+                            "
+                            title="Tap to add photo"
+                        >
+                            <i class="fa-solid fa-hand-peace" style="font-size: 1.8rem; color: #0047cc;"></i>
+                        </div>
+                        <input
+                            type="text"
+                            id="phoneName"
+                            placeholder="Daz Murphy"
+                            style="
+                                flex: 1;
+                                min-width: 140px;
+                                font-size: 1.2rem;
+                                padding: 14px 16px;
+                            "
+                        />
+                        <input
+                            type="text"
+                            id="phoneWebrtcId"
+                            placeholder="WebRTC ID (friend's identity)"
+                            style="
+                                flex: 1;
+                                min-width: 140px;
+                                font-size: 1.1rem;
+                                padding: 14px 16px;
+                            "
+                        />
+                        <input
+                            type="file"
+                            id="phonePhoto"
+                            accept="image/png,image/jpeg,image/webp"
+                            style="display: none"
+                        />
+                        <button
+                            id="phonePhotoBtn"
+                            class="upload-btn"
+                            style="
+                                background: #64748b;
+                                margin: 0;
+                                font-size: 1.1rem;
+                                padding: 14px 20px;
+                            "
+                            type="button"
+                        >
+                            📷
+                        </button>
+                        <button
+                            id="addPhoneInline"
+                            class="upload-btn"
+                            style="margin: 0; font-size: 1.1rem; padding: 14px 28px"
+                            type="button"
+                        >
+                            + Add
+                        </button>
+                    </div>
+                </div>
+            </div>
 
                         <!-- ============================================================ -->
                     <!-- PREMIUM MODULES SECTION -->
@@ -1206,12 +1374,12 @@
             <h2>Premium Elements (private)</h2>
         </div>
 
-        <!-- Premium 1: Phone -->
-        <div class="module-card" data-module="phone">
+        <!-- Premium: SIM Phone (WebRTC / Infobip) -->
+        <div class="module-card" data-module="sim-phone">
             <div class="module-header">
                 <div class="module-title">
-                    <i class="fa-solid fa-phone"></i>
-                    <h3>Phone</h3>
+                    <i class="fa-solid fa-phone-volume"></i>
+                    <h3>SIM Phone</h3>
                 </div>
                 <div class="toggle-switch">
                     <div class="toggle-slider"></div>
@@ -1219,8 +1387,15 @@
             </div>
             <div class="module-config">
                 <div class="config-field">
+                    <small>
+                        WebRTC calls to any <strong>real phone number</strong>
+                        via the Infobip SIP trunk. Requires a Premium
+                        subscription.
+                    </small>
+                </div>
+                <div class="config-field">
                     <label>Contacts</label>
-                    <div id="phoneContactsList" class="contact-list"></div>
+                    <div id="clickToCallContactsList" class="contact-list"></div>
                 </div>
                 <div
                     style="
@@ -1231,69 +1406,36 @@
                         flex-wrap: wrap;
                     "
                 >
-                    <div
-                        id="phonePhotoPreview"
-                        style="
-                            width: 72px;
-                            height: 72px;
-                            border-radius: 50%;
-                            background: #eaf2ff;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            flex-shrink: 0;
-                            cursor: pointer;
-                            border: 2px dashed #cbd5e1;
-                        "
-                        title="Tap to add photo"
-                    >
-                        <i class="fa-solid fa-hand-peace" style="font-size: 1.8rem; color: #0047cc;"></i>
-                    </div>
                     <input
                         type="text"
-                        id="phoneName"
-                        placeholder="Daz Murphy"
-                        style="
-                            flex: 1;
-                            min-width: 140px;
-                            font-size: 1.2rem;
-                            padding: 14px 16px;
-                        "
+                        id="ctcName"
+                        placeholder="Name"
+                        style="flex: 1; min-width: 140px; font-size: large; padding: 13px;"
                     />
                     <input
                         type="tel"
-                        id="phoneNumber"
+                        id="ctcPhone"
                         placeholder="+353987654321"
-                        style="
-                            flex: 1;
-                            min-width: 140px;
-                            font-size: 1.2rem;
-                            padding: 14px 16px;
-                        "
+                        style="flex: 1; min-width: 140px; font-size: large; padding: 13px;"
                     />
                     <input
                         type="file"
-                        id="phonePhoto"
+                        id="ctcPhoto"
                         accept="image/png,image/jpeg,image/webp"
                         style="display: none"
                     />
                     <button
-                        id="phonePhotoBtn"
+                        id="ctcPhotoBtn"
                         class="upload-btn"
-                        style="
-                            background: #64748b;
-                            margin: 0;
-                            font-size: 1.1rem;
-                            padding: 14px 20px;
-                        "
+                        style="background: #64748b; margin: 0;"
                         type="button"
                     >
                         📷
                     </button>
                     <button
-                        id="addPhoneInline"
+                        id="addCtcInline"
                         class="upload-btn"
-                        style="margin: 0; font-size: 1.1rem; padding: 14px 28px"
+                        style="margin: 0;"
                         type="button"
                     >
                         + Add
@@ -1700,7 +1842,7 @@
                 if (!container) return;
                 if (phoneContacts.length === 0) {
                     container.innerHTML =
-                        '<div style="padding: 20px; text-align: center; color: #64748b;">Add a contact below using the international telephone format (no spaces).</div>';
+                        '<div style="padding: 20px; text-align: center; color: #64748b;">Add a contact below using their WebRTC identity.</div>';
                     return;
                 }
                 container.innerHTML = phoneContacts
@@ -1712,7 +1854,7 @@
                     </div>
                     <div class="contact-info" style="flex:1;min-width:0;">
                         <strong style="font-size:1.3rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(c.name)}</strong>
-                        <small style="font-size:1.05rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(c.number)}</small>
+                        <small style="font-size:1.05rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(c.webrtcId || c.number)}</small>
                     </div>
                     <div class="elderlyShow phoneCaregiver">
                         <label style="display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:1.1rem;cursor:pointer;">
@@ -1763,21 +1905,22 @@
 
             function addPhoneContact() {
                 const nameInput = document.getElementById("phoneName");
-                const numberInput = document.getElementById("phoneNumber");
+                const webrtcIdInput = document.getElementById("phoneWebrtcId");
                 const photoInput = document.getElementById("phonePhoto");
                 const photoFile = photoInput?.files[0];
 
                 const name = nameInput?.value.trim();
-                const number = numberInput?.value.trim();
+                const webrtcId = webrtcIdInput?.value.trim() || "";
 
-                if (!name || !number) {
-                    alert("Please enter both name and phone number");
+                if (!name || !webrtcId) {
+                    alert("Please enter both a name and a WebRTC identity");
                     return;
                 }
 
                 const contact = {
                     name,
-                    number,
+                    number: "",
+                    webrtcId,
                     photo: null,
                     caregiver: phoneContacts.length === 0,
                     share_location: false,
@@ -1788,7 +1931,7 @@
 
                 // Clear inputs immediately
                 nameInput.value = "";
-                numberInput.value = "";
+                if (webrtcIdInput) webrtcIdInput.value = "";
 
                 if (photoFile) {
                     const MAX_SIZE = 7 * 1024 * 1024;
@@ -2148,6 +2291,27 @@
                     if (fitTokenInput) {
                         fitTokenInput.value =
                             settings.fitness.token || "";
+                    }
+                }
+
+                // Load the saved GitHub username.
+                if (settings["github-user"]) {
+                    const cbUserInput =
+                        document.getElementById("githubUser");
+                    if (cbUserInput) {
+                        cbUserInput.value =
+                            settings["github-user"].user || "dbee01";
+                    }
+                }
+
+                // Load the saved GitHub repository (owner/repo).
+                if (settings["github-repo"]) {
+                    const cbRepoInput =
+                        document.getElementById("githubRepoFeed");
+                    if (cbRepoInput) {
+                        cbRepoInput.value =
+                            settings["github-repo"].feed ||
+                            "dbee01/handi-the-social-homepage";
                     }
                 }
 
@@ -2552,10 +2716,27 @@
                     settings.fitness.token = fitnessToken;
                 }
 
+                if (!settings["github-user"]) settings["github-user"] = {};
+                const githubUser = document
+                    .getElementById("githubUser")
+                    ?.value.trim();
+                if (githubUser !== "") {
+                    settings["github-user"].user = githubUser;
+                }
+
+                if (!settings["github-repo"]) settings["github-repo"] = {};
+                const githubRepoFeed = document
+                    .getElementById("githubRepoFeed")
+                    ?.value.trim();
+                if (githubRepoFeed !== "") {
+                    settings["github-repo"].feed = githubRepoFeed;
+                }
+
                 if (!settings.phone) settings.phone = {};
                 settings.phone.contacts = phoneContacts.map((c) => ({
                     name: c.name,
-                    number: c.number,
+                    number: c.number || "",
+                    webrtcId: c.webrtcId,
                     caregiver: c.caregiver,
                     share_location: c.share_location,
                 }));

@@ -4,7 +4,7 @@
  * See the LICENSE file in the repository root for full details.
  */
 
-// modules/click-to-call/click-to-call.module.js
+// modules/sim-phone/click-to-call.module.js
 // Click-to-Call module: calls a phone number via Infobip WebRTC
 // corresponding to the WEBRTC infobip JS SDK WEBRTC
 // https://github.com/infobip/infobip-rtc-js
@@ -928,13 +928,16 @@ export default function initClickToCall(container) {
   container.innerHTML = "";
   if (pinBtn) container.prepend(pinBtn);
 
+  const parentItem = container.closest(".dashboard-item");
+  if (parentItem) parentItem.dataset.module = "sim-phone";
+
   const title = document.createElement("div");
   title.className = "panel-title";
   var name =
-    window.LANG && window.LANG.modules && window.LANG.modules.phone
-      ? window.LANG.modules.phone.name
-      : "CLICK-TO-CALL";
-  title.innerHTML = '<i class="fa-solid fa-phone"></i> ' + name;
+    window.LANG && window.LANG.modules && window.LANG.modules["sim-phone"]
+      ? window.LANG.modules["sim-phone"].name
+      : "SIM Phone";
+  title.innerHTML = '<i class="fa-solid fa-phone-volume"></i> ' + name;
   container.appendChild(title);
 
   const content = document.createElement("div");
@@ -980,7 +983,7 @@ export default function initClickToCall(container) {
   const settingsBtn = content.querySelector(".ctc-settings-btn");
   if (settingsBtn) {
     settingsBtn.addEventListener("click", () => {
-      location.href = "settings.html?args=click_to_call";
+      location.href = "settings.html?args=sim-phone";
     });
   }
 

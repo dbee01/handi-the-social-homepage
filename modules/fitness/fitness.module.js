@@ -260,7 +260,9 @@ export default async function initFitness(container) {
     content.prepend(bar);
     bar.querySelectorAll("[data-fitness-tab]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        selectTab(btn.getAttribute("data-fitness-tab"));
+        selectTab(btn.getAttribute("data-fitness-tab")).then(function () {
+          if (window.refreshDashboardLayout) window.refreshDashboardLayout();
+        });
       });
     });
   }
@@ -455,80 +457,200 @@ export default async function initFitness(container) {
   }
 
   // ---- Nutrition ---------------------------------------------------------
+  // The wger "nutrition diary" is the LogItem endpoint. Each entry points at an
+  // ingredient + an optional weight unit + an amount; we resolve those to real
+  // names/macros and roll everything up per day for a daily breakdown + charts.
   async function loadNutrition(body) {
-    // nutritionplaninfo returns the whole plan nested: meals -> items ->
-    // nutritional values, so one request suffices (no N+1 fan-out).
-    var plans = await wgerGet("/nutritionplaninfo/", { ordering: "-creation_date", limit: 1 });
-    var planList = (plans && plans.results) || [];
-    if (!planList.length) {
+    var data = await wgerGet("/nutritiondiary/", { ordering: "-datetime", limit: 300 });
+    var entries = (data && data.results) || [];
+    if (!entries.length) {
       body.innerHTML =
         '<div class="module-empty"><i class="fa-solid fa-utensils"></i><p>' +
-        escapeHtml(t("d_fitnessNoNutrition", "No nutrition plan yet.")) +
+        escapeHtml(t("d_fitnessNoNutrition", "No nutritional diary entries yet.")) +
         "</p></div>";
       return;
     }
-    var plan = planList[0];
-    var meals = Array.isArray(plan.meals) ? plan.meals : [];
 
-    var html = '<div style="font-weight:700;font-size:1.1rem;margin-bottom:6px;">' +
-      escapeHtml(t("d_fitnessNutrition", "Nutrition")) + "</div>";
+    // Resolve ingredient + weight-unit metadata on demand, caching by id so we
+    // never hit the API twice for the same ingredient/unit.
+    var ingredientCache = {};
+    var unitCache = {};
+    async function resolveIngredient(id) {
+      if (ingredientCache[id]) return ingredientCache[id];
+      try {
+        var info = await wgerGet("/ingredientinfo/" + id + "/");
+        ingredientCache[id] = info;
+        return info;
+      } catch (e) {
+        ingredientCache[id] = null;
+        return null;
+      }
+    }
+    async function resolveUnit(id) {
+      if (!id) return null;
+      if (unitCache[id]) return unitCache[id];
+      try {
+        var info = await wgerGet("/ingredientweightunit/" + id + "/");
+        unitCache[id] = info;
+        return info;
+      } catch (e) {
+        unitCache[id] = null;
+        return null;
+      }
+    }
 
-    var totals = { energy: 0, protein: 0, carbohydrates: 0, fat: 0 };
-    var anyItems = false;
+    // Compute the nutritional values for a single diary entry, mirroring wger's
+    // BaseMealItem.get_nutritional_values: ingredient.*value * weight / 100,
+    // where weight = amount * weight_unit.gram (defaults to grams).
+    function computeEntry(item, ingredient, unit) {
+      var amount = parseFloat(item.amount);
+      if (!Number.isFinite(amount)) amount = 0;
+      var gramsPerUnit = unit && parseFloat(unit.gram) ? parseFloat(unit.gram) : 1;
+      var weight = amount * gramsPerUnit;
+      var g = (ingredient && Number(ingredient)) ? Number(ingredient) : 0;
+      function mac(val) {
+        var v = ingredient ? parseFloat(ingredient[val]) : NaN;
+        if (!Number.isFinite(v)) return 0;
+        return (v * weight) / 100;
+      }
+      return {
+        energy: mac("energy"),
+        protein: mac("protein"),
+        carbohydrates: mac("carbohydrates"),
+        fat: mac("fat"),
+        weight: weight,
+      };
+    }
 
-    meals.forEach(function (meal, i) {
-      var items = Array.isArray(meal.meal_items) ? meal.meal_items : [];
-      var nv = meal.nutritional_values || {};
-      if (!items.length) return;
-      anyItems = true;
+    // Resolve every entry's ingredient + unit, then attach computed values.
+    var resolved = [];
+    for (var i = 0; i < entries.length; i++) {
+      var entry = entries[i];
+      var ingredient = await resolveIngredient(entry.ingredient);
+      var unit = await resolveUnit(entry.weight_unit);
+      var nv = computeEntry(entry, ingredient, unit);
+      resolved.push({
+        datetime: entry.datetime,
+        name: (ingredient && ingredient.name) ? ingredient.name : "—",
+        amount: entry.amount || "",
+        unitName: (unit && unit.name) ? unit.name : "g",
+        energy: nv.energy,
+        protein: nv.protein,
+        carbohydrates: nv.carbohydrates,
+        fat: nv.fat,
+        weight: nv.weight,
+      });
+    }
 
-      var itemHtml = items.map(function (it) {
-        var name = it.ingredient_obj && it.ingredient_obj.name
-          ? it.ingredient_obj.name
-          : "—";
-        var amount = it.amount || "";
-        return '<span>' + escapeHtml(name) + (amount ? " (" + escapeHtml(amount) + "g)" : "") + "</span>";
-      }).join(", ");
+    // Group by local calendar day (newest first).
+    function dayKey(iso) {
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) return "?";
+      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    }
+    var days = {};
+    resolved.forEach(function (r) {
+      var k = dayKey(r.datetime);
+      if (!days[k]) days[k] = { key: k, items: [], energy: 0, protein: 0, carbohydrates: 0, fat: 0 };
+      var d = days[k];
+      d.items.push(r);
+      d.energy += r.energy;
+      d.protein += r.protein;
+      d.carbohydrates += r.carbohydrates;
+      d.fat += r.fat;
+    });
+    var dayList = Object.keys(days).map(function (k) { return days[k]; })
+      .sort(function (a, b) { return a.key < b.key ? 1 : -1; });
 
-      var e = Number(nv.energy) || 0;
-      var p = Number(nv.protein) || 0;
-      var c = Number(nv.carbohydrates) || 0;
-      var f = Number(nv.fat) || 0;
-      totals.energy += e;
-      totals.protein += p;
-      totals.carbohydrates += c;
-      totals.fat += f;
-
-      html +=
-        '<div style="padding:10px 12px;border-radius:10px;border:1px solid rgba(128,128,128,0.2);margin-bottom:8px;">' +
-        '<div style="font-weight:700;">' + escapeHtml(meal.name || ("Meal " + (i + 1))) + "</div>" +
-        '<div style="font-size:0.82rem;opacity:0.75;margin-top:2px;">' + itemHtml + "</div>" +
-        '<div style="font-size:0.8rem;margin-top:4px;opacity:0.7;">' +
-        Math.round(e) + " kcal · " + Math.round(p) + "g P · " +
-        Math.round(c) + "g C · " + Math.round(f) + "g F</div>" +
-        "</div>";
+    // Latest day + running totals for the summary header.
+    var latest = dayList[0];
+    var total = { energy: 0, protein: 0, carbohydrates: 0, fat: 0 };
+    resolved.forEach(function (r) {
+      total.energy += r.energy;
+      total.protein += r.protein;
+      total.carbohydrates += r.carbohydrates;
+      total.fat += r.fat;
     });
 
-    if (!anyItems) {
-      body.innerHTML =
-        '<div class="module-empty"><i class="fa-solid fa-utensils"></i><p>' +
-        escapeHtml(t("d_fitnessNoNutrition", "No meals logged yet.")) +
-        "</p></div>";
-      return;
+    // ---- Build HTML -----------------------------------------------------
+    var html = '<div style="font-weight:700;font-size:1.1rem;">' +
+      escapeHtml(t("d_fitnessNutrition", "Nutrition")) + "</div>";
+
+    // Today's totals highlight.
+    html +=
+      '<div style="margin-top:6px;">' +
+      '<div style="font-size:0.78rem;opacity:0.6;text-transform:uppercase;letter-spacing:0.03em;">' +
+      escapeHtml(t("d_fitnessDailyTotals", "Daily totals")) + " — " + escapeHtml(fmtDate(latest.key)) + "</div>" +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">' +
+      macroPill("Energy", Math.round(latest.energy) + " kcal", "#f59e0b") +
+      macroPill("Protein", Math.round(latest.protein) + " g", "#16a34a") +
+      macroPill("Carbs", Math.round(latest.carbohydrates) + " g", "#2563eb") +
+      macroPill("Fat", Math.round(latest.fat) + " g", "#dc2626") +
+      "</div></div>";
+
+    // Calories-over-time chart (oldest -> newest).
+    var chartPoints = dayList.slice().reverse().map(function (d) {
+      var ts = Date.parse(d.key);
+      return { x: ts, y: Math.round(d.energy) };
+    });
+    if (chartPoints.length >= 2) {
+      html += '<div style="margin-top:10px;">' +
+        '<div style="font-size:0.78rem;opacity:0.6;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px;">' +
+        escapeHtml(t("d_fitnessNutritionEnergy", "Energy per day")) + "</div>" +
+        renderLineChart(chartPoints, {
+          label: t("d_fitnessNutritionEnergy", "Energy per day"),
+          color: "#f59e0b",
+        }) +
+        "</div>";
     }
 
-    // Macro summary bar
-    var summary =
-      '<div style="font-weight:700;margin-top:6px;">' +
-      escapeHtml(t("d_fitnessDailyTotals", "Daily totals")) + "</div>" +
-      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">' +
-      macroPill("Energy", Math.round(totals.energy) + " kcal", "#f59e0b") +
-      macroPill("Protein", Math.round(totals.protein) + " g", "#16a34a") +
-      macroPill("Carbs", Math.round(totals.carbohydrates) + " g", "#2563eb") +
-      macroPill("Fat", Math.round(totals.fat) + " g", "#dc2626") +
-      "</div>";
+    // Macro breakdown bar across all logged days.
+    var pSum = total.protein, cSum = total.carbohydrates, fSum = total.fat;
+    var macroSum = pSum + cSum + fSum;
+    if (macroSum > 0) {
+      var pPct = (pSum / macroSum) * 100;
+      var cPct = (cSum / macroSum) * 100;
+      var fPct = (fSum / macroSum) * 100;
+      html +=
+        '<div style="margin-top:10px;">' +
+        '<div style="font-size:0.78rem;opacity:0.6;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px;">' +
+        escapeHtml(t("d_fitnessNutritionMacros", "Macro breakdown")) + "</div>" +
+        '<div style="display:flex;height:12px;border-radius:999px;overflow:hidden;">' +
+        '<div style="width:' + pPct.toFixed(1) + '%;background:#16a34a;"></div>' +
+        '<div style="width:' + cPct.toFixed(1) + '%;background:#2563eb;"></div>' +
+        '<div style="width:' + fPct.toFixed(1) + '%;background:#dc2626;"></div>' +
+        "</div>" +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;font-size:0.78rem;">' +
+        '<span style="color:#16a34a;">■ ' + escapeHtml(t("d_macroProtein", "Protein")) + " " + pPct.toFixed(0) + "%</span>" +
+        '<span style="color:#2563eb;">■ ' + escapeHtml(t("d_macroCarbs", "Carbs")) + " " + cPct.toFixed(0) + "%</span>" +
+        '<span style="color:#dc2626;">■ ' + escapeHtml(t("d_macroFat", "Fat")) + " " + fPct.toFixed(0) + "%</span>" +
+        "</div></div>";
+    }
 
-    body.innerHTML = html + summary;
+    // Per-day detail list.
+    html += '<div style="font-weight:700;font-size:0.95rem;margin:12px 0 6px;">' +
+      escapeHtml(t("d_fitnessNutritionHistory", "Daily diary")) + "</div>";
+
+    dayList.forEach(function (d) {
+      html +=
+        '<div style="padding:10px 12px;border-radius:10px;border:1px solid rgba(128,128,128,0.2);margin-bottom:8px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">' +
+        '<span style="font-weight:700;">' + escapeHtml(fmtDate(d.key)) + "</span>" +
+        '<span style="font-size:0.8rem;">' +
+        Math.round(d.energy) + " kcal · " + Math.round(d.protein) + "g P · " +
+        Math.round(d.carbohydrates) + "g C · " + Math.round(d.fat) + "g F</span>" +
+        "</div>";
+      d.items.forEach(function (r) {
+        html +=
+          '<div style="display:flex;justify-content:space-between;font-size:0.82rem;opacity:0.75;margin-top:3px;">' +
+          '<span>' + escapeHtml(r.name) + (r.amount ? " <span style='opacity:0.6;'>" + escapeHtml(r.amount) + " " + escapeHtml(r.unitName) + "</span>" : "") + "</span>" +
+          '<span>' + Math.round(r.energy) + " kcal</span>" +
+          "</div>";
+      });
+      html += "</div>";
+    });
+
+    body.innerHTML = html;
   }
 
   function macroPill(label, value, color) {

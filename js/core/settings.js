@@ -16,6 +16,8 @@ const DEFAULT_SETTINGS = {
     radio: false,
     emergency: false,
     phone: false,
+    "friendly-phone": false,
+    "sim-phone": false,
     chat: false,
     calendar: false,
   },
@@ -34,6 +36,7 @@ const DEFAULT_SETTINGS = {
   mastodon: { instanceUrl: "https://mastodon.ie", limit: 4 },
   live_bus: { routeIds: "", stopIds: "" },
   phone: { contacts: [], autoDialDelay: 10 },
+  click_to_call: { contacts: [] },
   emergency: { contacts: [], checkInterval: 5 },
   chat: {
     rooms: ["#the-ple-room-ireland:matrix.org"],
@@ -46,6 +49,10 @@ const DEFAULT_SETTINGS = {
   calendar: { url: "", notificationMinutes: 15 },
   cast: { volume: 100, soundLock: false, streamUrl: "" },
   fitness: { token: "" },
+  "github-user": { user: "dbee01" },
+  "github-repo": {
+    feed: "dbee01/handi-the-social-homepage",
+  },
 };
 
 export function loadSettings() {

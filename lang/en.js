@@ -82,6 +82,10 @@ var LANG = {
     sports: { name: "Sports", desc: "Live football" },
     events: { name: "Events", desc: "What's on near you" },
     fitness: { name: "Fitness", desc: "Workouts & nutrition" },
+    "github-user": { name: "GitHub Activity", desc: "Handi activity" },
+    "github-repo": { name: "GitHub Repo", desc: "Repository feed" },
+    "friendly-phone": { name: "Friendly Phone", desc: "Free browser-to-browser calls" },
+    "sim-phone": { name: "SIM Phone", desc: "Calls to any phone (WebRTC)" },
   },
 
   // Dashboard component strings
@@ -169,6 +173,21 @@ var LANG = {
   d_noContacts: "No contacts saved.",
   d_addContacts: "Add Contacts in Settings",
   d_caregiver: "Caregiver",
+  d_freeCall: "Free call",
+  d_videoCall: "Video call",
+  d_incomingCall: "Incoming call",
+  d_accept: "Accept",
+  d_decline: "Decline",
+  d_online: "Online",
+  d_offline: "Offline",
+  d_yourHandle: "Your ID",
+  d_pickHandle: "Pick a name friends can call you by",
+  d_claim: "Claim",
+  d_inCall: "In call",
+  d_mute: "Mute",
+  d_unmute: "Unmute",
+  d_volume: "Volume",
+  d_hangup: "Hang up",
 
   // Click-to-call
   d_selectDevices: "Select Devices",
@@ -328,9 +347,23 @@ var LANG = {
   d_fitnessEntries: "entries",
   d_fitnessNoWorkouts: "No workouts logged yet.",
   d_fitnessWorkoutSession: "Workout",
-  d_fitnessNoNutrition: "No nutrition plan yet.",
+  d_fitnessNoNutrition: "No nutritional diary entries yet.",
   d_fitnessDailyTotals: "Daily totals",
+  d_fitnessNutritionEnergy: "Energy per day",
+  d_fitnessNutritionMacros: "Macro breakdown",
+  d_fitnessNutritionHistory: "Daily diary",
+  d_macroProtein: "Protein",
+  d_macroCarbs: "Carbs",
+  d_macroFat: "Fat",
   d_fitnessNoGallery: "No progress photos yet.",
+
+  // GitHub
+  d_githubUserEmpty: "No activity yet.",
+  d_githubUserViewProfile: "Open GitHub",
+  d_githubUserError: "Could not load the GitHub feed.",
+  d_githubRepoEmpty: "No activity yet.",
+  d_githubRepoViewRepo: "Open repository",
+  d_githubRepoError: "Could not load the repository feed.",
 
         // Weather
   d_weatherDisabled: "Weather module disabled.",
@@ -433,25 +466,35 @@ var LANG = {
 
   // Module help texts
   h_gallery:
-    "<strong>📸 Gallery</strong><br><br>• Upload images in <strong>Settings → Gallery</strong>.<br>• Use <strong>Prev / Next</strong> to browse, <strong>Play/Pause</strong> for slideshow.<br>• Click <strong>Full Screen Gallery</strong> to open the lightbox.<br>• Image filenames appear as captions – use names like <code>my+lovely+horse.jpg</code> for readability.",
+    "<strong>Gallery</strong><br><br>• Upload images in <strong>Settings → Gallery</strong>.<br>• Use <strong>Prev / Next</strong> to browse, <strong>Play/Pause</strong> for slideshow.<br>• Click <strong>Full Screen Gallery</strong> to open the lightbox.<br>• Image filenames appear as captions – use names like <code>my+lovely+horse.jpg</code> for readability.",
   h_live_bus:
-    "<strong>🚌 Live Bus</strong><br><br>• Shows real‑time arrival times for your chosen stop.<br>• Configure routes and stops in <strong>Settings → Live Bus Tracker</strong>.<br>• Click <strong>Refresh Times</strong> to update manually.<br>• Use <strong>Switch Direction</strong> to toggle between stops.",
+    "<strong>Live Bus</strong><br><br>• Shows real‑time arrival times for your chosen stop.<br>• Configure routes and stops in <strong>Settings → Live Bus Tracker</strong>.<br>• Click <strong>Refresh Times</strong> to update manually.<br>• Use <strong>Switch Direction</strong> to toggle between stops.",
   h_music:
-    "<strong>🎵 Music Player</strong><br><br>• Upload MP3 files in <strong>Settings → Music Player</strong>.<br>• Click a track to play – the visualiser responds to sound.<br>• Use <strong>Prev / Next</strong> and the <strong>lock</strong> to prevent accidental changes.<br>• File extensions (e.g., .mp3) are hidden for cleaner display.",
+    "<strong>Music Player</strong><br><br>• Upload MP3 files in <strong>Settings → Music Player</strong>.<br>• Click a track to play – the visualiser responds to sound.<br>• Use <strong>Prev / Next</strong> and the <strong>lock</strong> to prevent accidental changes.<br>• File extensions (e.g., .mp3) are hidden for cleaner display.",
   h_news:
-    "<strong>📰 News</strong><br><br>• Fetches the latest headlines from your chosen RSS feed.<br>• Change the feed in <strong>Settings → News</strong>.<br>• Use the <strong>▲ / ▼</strong> buttons to scroll through articles.<br>• Click any headline to read the full story on the source website.",
+    "<strong>News</strong><br><br>• Fetches the latest headlines from your chosen RSS feed.<br>• Change the feed in <strong>Settings → News</strong>.<br>• Use the <strong>▲ / ▼</strong> buttons to scroll through articles.<br>• Click any headline to read the full story on the source website.",
   h_social:
-    "<strong>🐘 Social</strong><br><br>• Shows trending links from your Mastodon feed.<br>• Change the instance in <strong>Settings → Social</strong>.<br>• Use <strong>▲ / ▼</strong> to scroll through posts.<br>• Click any link to open it in a new tab.",
+    "<strong>Social</strong><br><br>• Shows trending links from your Mastodon feed.<br>• Change the instance in <strong>Settings → Social</strong>.<br>• Use <strong>▲ / ▼</strong> to scroll through posts.<br>• Click any link to open it in a new tab.",
   h_radio:
-    "<strong>📻 Radio</strong><br><br>• Choose from international radio stations.<br>• Click a station to start streaming – may take a few seconds.<br>• The synthesiser animates while playing.<br>• Use the <strong>lock</strong> (🔒) to disable accidental station changes.",
+    "<strong>Radio</strong><br><br>• Choose from international radio stations.<br>• Click a station to start streaming – may take a few seconds.<br>• The synthesiser animates while playing.<br>• Use the <strong>lock</strong> (🔒) to disable accidental station changes.",
   h_emergency_alert:
-    "<strong>📍 Location Alert</strong><br><br><strong>📱 Mobile phones only.</strong><br>• Sends an SMS with your GPS location to trusted contacts.<br>• Requires GPS and mobile network (not available on desktop/tablet).<br>• Add contacts in <strong>Settings → Location Share</strong>.<br>• Unlock the button (🔓) then press <strong>SHARE</strong> to send.<br>• Test with your own number first to ensure it works.",
+    "<strong>Location Alert</strong><br><br><strong>• Mobile phones only.</strong><br>• Sends an SMS with your GPS location to trusted contacts.<br>• Requires GPS and mobile network (not available on desktop/tablet).<br>• Add contacts in <strong>Settings → Location Share</strong>.<br>• Unlock the button (🔓) then press <strong>SHARE</strong> to send.<br>• Test with your own number first to ensure it works.",
   h_phone:
-    "<strong>📞 Friendly Phone</strong><br><br>• One‑tap calling to your saved contacts.<br>• Add contacts with photos in <strong>Settings → Friendly Phone</strong>.<br>• The module is <strong>locked by default</strong> – unlock to enable calls.<br>• Photos help identify contacts at a glance.",
+    "<strong>Friendly Phone</strong><br><br>• One‑tap calling to your saved contacts.<br>• Add contacts with photos in <strong>Settings → Friendly Phone</strong>.<br>• The module is <strong>locked by default</strong> – unlock to enable calls.<br>• Photos help identify contacts at a glance.",
+  h_friendly_phone:
+    "<strong>Friendly Phone</strong><br><br>• Free browser-to-browser calls to your saved contacts.<br>• Add contacts with photos in <strong>Settings → Friendly Phone</strong>.<br>• Unlock the module to enable calls.<br>• Photos help identify contacts at a glance.",
+  h_sim_phone:
+    "<strong>SIM Phone</strong><br><br>• WebRTC calls to any real phone number via the Infobip SIP trunk.<br>• Add contacts in <strong>Settings → SIM Phone</strong>.<br>• Requires a <strong>Premium</strong> subscription.",
+  h_github_user:
+    "<strong>Github User</strong><br><br>• Add your favourite Github user activity page to see that user's Github activity.",
+  h_github_repo:
+    "<strong>Github Repo</strong><br><br>• Add your favourite Github repo activity page to see that repo's Github activity.",
+  h_fitness:
+    "<strong>Fitness</strong><br><br>• Update your Wger.de fitness acitvity app and paste your token on the settings page to monitor your own fitness activity.<br>• Your data goes from Wger to your browser. We do not see it.",
   h_chat:
-    "<strong>💬 Chat (Matrix)</strong><br><br>• Create your own Matrix account at <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> to start private family or friend chat rooms.<br>• Add room URLs, access token, user ID in <strong>Settings → Chat</strong>.<br>• The module checks for new messages every 30 seconds.<br>• Click the room header to expand and view messages.<br>• New message notifications appear as a red badge.",
+    "<strong>Chat (Matrix)</strong><br><br>• Create your own Matrix account at <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> to start private family or friend chat rooms.<br>• Add room URLs, access token, user ID in <strong>Settings → Chat</strong>.<br>• The module checks for new messages every 30 seconds.<br>• Click the room header to expand and view messages.<br>• New message notifications appear as a red badge.",
   h_calendar:
-      "<strong>📅 Calendar (Proton ICS)</strong><br><br>• Shows today's events from your Proton Calendar.<br>• Get your ICS link from Proton Calendar → Settings → Calendars → 'Share with anyone' → 'Create link'.<br>• Paste the ICS link in <strong>Settings → Calendar</strong>.<br><br><strong>🔔 Alerts:</strong><br>• Notifications are set in your calendar app — e.g. 2 notifications on a calendar event = two alerts on this dashboard.<br>• Toggle alerts On/Off using the button at the top of the calendar.<br><br><strong>⚠️ Important limitations (Proton, not this module):</strong><br>• The ICS feed updates <strong>every 4–16 hours</strong> – new events take time to appear.<br>• Recurring events may not appear correctly.<br><br><strong>💡 Tips:</strong><br>• If an event doesn't appear, wait a few hours and try again.",
+      "<strong>Calendar (Proton ICS)</strong><br><br>• Shows today's events from your Proton Calendar.<br>• Get your ICS link from Proton Calendar → Settings → Calendars → 'Share with anyone' → 'Create link'.<br>• Paste the ICS link in <strong>Settings → Calendar</strong>.<br><br><strong>🔔 Alerts:</strong><br>• Notifications are set in your calendar app — e.g. 2 notifications on a calendar event = two alerts on this dashboard.<br>• Toggle alerts On/Off using the button at the top of the calendar.<br><br><strong>⚠️ Important limitations (Proton, not this module):</strong><br>• The ICS feed updates <strong>every 4–16 hours</strong> – new events take time to appear.<br>• Recurring events may not appear correctly.<br><br><strong>💡 Tips:</strong><br>• If an event doesn't appear, wait a few hours and try again.",
 
     h_llm:
         "<strong>🧠 Private AI (LLM)</strong><br><br>• Downloads a language model directly to your browser.<br>• <strong>100% private</strong> — no data ever leaves your device.<br>• Pick a model and click <strong>Load</strong> — first download is ~600MB–2GB.<br>• <strong>Requires WebGPU</strong> (Chrome/Edge 113+, Vivaldi with <code>#enable-unsafe-webgpu</code> flag).<br>• Once loaded, chat runs entirely offline on your GPU.<br>• Use <strong>Clear</strong> to reset the conversation.<br>• Chat history saved locally (last 100 messages).",
