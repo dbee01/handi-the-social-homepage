@@ -193,6 +193,17 @@
                 font-size: 1rem;
                 color: #1e293b;
             }
+            /* Small '+' after each module name, indicating a dropdown.
+               Rendered via ::after so it applies uniformly to every card. */
+            .module-title h3::after {
+                content: "+";
+                display: inline-block;
+                margin-left: 5px;
+                font-size: 0.75rem;
+                line-height: 1;
+                color: #94a3b8;
+                font-weight: 500;
+            }
             .toggle-switch {
                 width: 52px;
                 height: 26px;
