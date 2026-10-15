@@ -294,6 +294,21 @@ export default async function initPhone(container) {
       currentCall = incomingCall;
       // Stop the ringing alert.
       try { window.dispatchEvent(new Event("handiRingingStop")); } catch (e) {}
+
+      // Attach remote media once the call is established, exactly like the
+      // outgoing path — without this the receiver's audio is never played.
+      incomingCall.on("established", (event) => {
+        if (event && event.stream) {
+          attachRemoteAudio(event.stream, hasVideoStream(event.stream));
+        }
+      });
+      incomingCall.on("hangup", () => {
+        cleanupCall(null);
+      });
+      incomingCall.on("error", () => {
+        cleanupCall(null);
+      });
+
       incomingCall.accept();
       hideIncomingCallUI();
       showCallPanel(callerIdentity);
@@ -484,7 +499,16 @@ export default async function initPhone(container) {
       });
   }
 
+  function hasVideoStream(stream) {
+    return !!stream && stream.getVideoTracks && stream.getVideoTracks().length > 0;
+  }
+
   function attachRemoteAudio(stream, video) {
+    // Auto-detect a video stream so the receiver routes to a <video> element
+    // even when the incoming direction flag is unknown.
+    if (video !== false && hasVideoStream(stream)) {
+      video = true;
+    }
     if (video) {
       // For video the remote stream is surfaced via the local <video> fallback.
       let v = document.getElementById("fpRemoteVideo");
