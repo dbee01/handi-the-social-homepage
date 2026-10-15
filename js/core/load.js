@@ -158,6 +158,8 @@ function applyCMRState() {
   if (!window.handiNs || !window.getCMR) return;
   var cmr = window.getCMR();
   document.querySelectorAll(".dashboard-item").forEach(function (item) {
+    // The support panel is fixed/un-collapsible — never collapse it.
+    if (item.dataset.module === "support") return;
     var key = cmrKeyFor(item);
     if (key && cmr[key] === 1) applyModuleCollapse(item, true);
   });

@@ -379,7 +379,13 @@ const CMR_KEY = "handiCMR";
 window.CMR_EXPANDED = 0;
 window.CMR_COLLAPSED = 1;
 
-// getCMR() -- reads the live CMR, seeding missing modules to expanded (0)
+// Default collapse state for a module. Every module starts collapsed by
+// default except `support`, which is fixed/un-collapsible and stays expanded.
+function defaultCMRFor(m) {
+  return m && m.id === "support" ? window.CMR_EXPANDED : window.CMR_COLLAPSED;
+}
+
+// getCMR() -- reads the live CMR, seeding missing modules to their default
 window.getCMR = function () {
   try {
     const raw = window.handiNs.get(CMR_KEY);
@@ -388,7 +394,7 @@ window.getCMR = function () {
       let changed = false;
       for (const m of window.HANDI_MODULES) {
         if (!(m.id in parsed)) {
-          parsed[m.id] = window.CMR_EXPANDED;
+          parsed[m.id] = defaultCMRFor(m);
           changed = true;
         }
       }
@@ -402,7 +408,7 @@ window.getCMR = function () {
   }
   const seed = {};
   for (const m of window.HANDI_MODULES) {
-    seed[m.id] = window.CMR_EXPANDED;
+    seed[m.id] = defaultCMRFor(m);
   }
   window.handiNs.set(CMR_KEY, JSON.stringify(seed));
   return seed;
