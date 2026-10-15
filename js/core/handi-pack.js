@@ -488,8 +488,10 @@
     var fontRaw = qs.get("font");
     var textFont = qs.get("text-font");
     var headerFont = qs.get("header-font");
+    var seniorsMode = qs.get("seniors") === "1";
+    var css = "";
     if (colorsRaw || fontRaw || textFont || headerFont) {
-      var css = ":root {\n";
+      css += ":root {\n";
       if (colorsRaw) {
         var c = colorsRaw.split("|").map(function (x) { return x.trim(); });
         // Order: primary, secondary, tertiary, text, background
@@ -511,6 +513,13 @@
       if (textFont) css += "  --text-font: " + textFont + ";\n";
       if (headerFont) css += "  --header-font: " + headerFont + ";\n";
       css += "}\n";
+    }
+    // Seniors mode: reveal the elderly-friendly controls that are hidden by
+    // default (.elderlyShow { display: none }).
+    if (seniorsMode) {
+      css += ".elderlyShow { display: block !important; }\n";
+    }
+    if (css) {
       try { window.handiNs.set("handiCustomTheme", css); } catch (e) {}
     }
 
