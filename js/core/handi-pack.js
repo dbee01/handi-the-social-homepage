@@ -250,6 +250,21 @@
       ensure("newsletter").feedUrl = v;
     }
 
+    // Fitness (wger.de) — permanent API token, kept in the user's browser.
+    if ((v = qs.get("fitness-token"))) {
+      ensure("fitness").token = v;
+    }
+
+    // GitHub activity — public events for a single username.
+    if ((v = qs.get("github-user"))) {
+      ensure("github-user").user = v;
+    }
+
+    // GitHub repo commits — a single public repository (owner/repo).
+    if ((v = qs.get("github-repo"))) {
+      ensure("github-repo").feed = v;
+    }
+
     // Radio stream or feed URL, optionally labelled "Station Name:url". The
     // name is kept in settings.radio.streamName so the Radio module can label
     // the row instead of the generic "Live Stream". The raw URL is also kept
@@ -394,6 +409,9 @@
     if (qs.get("music")) autoModules.push("music");
     if (qs.get("podcasts") || qs.get("cast")) autoModules.push("cast");
     if (qs.has("newsletter")) autoModules.push("newsletter");
+    if (qs.get("fitness-token")) autoModules.push("fitness");
+    if (qs.get("github-user")) autoModules.push("github-user");
+    if (qs.get("github-repo")) autoModules.push("github-repo");
     if (qs.get("bus-routes")) autoModules.push("live_bus");
     if (qs.get("calendar")) autoModules.push("calendar");
     if (qs.get("phone-contacts")) autoModules.push("phone");
