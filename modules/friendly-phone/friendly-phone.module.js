@@ -295,12 +295,18 @@ export default async function initPhone(container) {
       // Stop the ringing alert.
       try { window.dispatchEvent(new Event("handiRingingStop")); } catch (e) {}
 
-      // Attach remote media once the call is established, exactly like the
-      // outgoing path — without this the receiver's audio is never played.
+      // The Infobip SDK delivers audio and video through separate events:
+      // "established" carries the remote AUDIO stream, while the remote VIDEO
+      // stream arrives via "remote-camera-video-added".
       incomingCall.on("established", (event) => {
-        if (event && event.stream) {
-          attachRemoteAudio(event.stream, hasVideoStream(event.stream));
-        }
+        if (event && event.stream) attachRemoteAudioStream(event.stream);
+      });
+      incomingCall.on("remote-camera-video-added", (event) => {
+        if (event && event.stream) attachRemoteVideoStream(event.stream);
+      });
+      incomingCall.on("remote-camera-video-removed", () => {
+        const v = document.getElementById("fpRemoteVideo");
+        if (v) { v.srcObject = null; v.remove(); }
       });
       incomingCall.on("hangup", () => {
         cleanupCall(null);
@@ -475,10 +481,15 @@ export default async function initPhone(container) {
           // incoming one, so mute / volume / hangup are always available.
           showCallPanel(callerLabel);
           currentCall.on("established", (event) => {
-            if (event && event.stream) {
-              attachRemoteAudio(event.stream, video);
-            }
+            if (event && event.stream) attachRemoteAudioStream(event.stream);
             if (callingBtn) setCalling(callingBtn, false);
+          });
+          currentCall.on("remote-camera-video-added", (event) => {
+            if (event && event.stream) attachRemoteVideoStream(event.stream);
+          });
+          currentCall.on("remote-camera-video-removed", () => {
+            const v = document.getElementById("fpRemoteVideo");
+            if (v) { v.srcObject = null; v.remove(); }
           });
           currentCall.on("hangup", () => {
             cleanupCall(localStream);
@@ -499,38 +510,28 @@ export default async function initPhone(container) {
       });
   }
 
-  function hasVideoStream(stream) {
-    return !!stream && stream.getVideoTracks && stream.getVideoTracks().length > 0;
+  function attachRemoteAudioStream(stream) {
+    let a = document.getElementById("fpRemoteAudio");
+    if (!a) {
+      a = document.createElement("audio");
+      a.id = "fpRemoteAudio";
+      a.autoplay = true;
+      document.body.appendChild(a);
+    }
+    a.srcObject = stream;
   }
 
-  function attachRemoteAudio(stream, video) {
-    // Auto-detect a video stream so the receiver routes to a <video> element
-    // even when the incoming direction flag is unknown.
-    if (video !== false && hasVideoStream(stream)) {
-      video = true;
+  function attachRemoteVideoStream(stream) {
+    let v = document.getElementById("fpRemoteVideo");
+    if (!v) {
+      v = document.createElement("video");
+      v.id = "fpRemoteVideo";
+      v.autoplay = true;
+      v.playsInline = true;
+      v.style.cssText = "position:fixed;right:16px;bottom:120px;width:240px;border-radius:12px;z-index:100010;background:#000;";
+      document.body.appendChild(v);
     }
-    if (video) {
-      // For video the remote stream is surfaced via the local <video> fallback.
-      let v = document.getElementById("fpRemoteVideo");
-      if (!v) {
-        v = document.createElement("video");
-        v.id = "fpRemoteVideo";
-        v.autoplay = true;
-        v.playsInline = true;
-        v.style.cssText = "position:fixed;right:16px;bottom:120px;width:240px;border-radius:12px;z-index:100010;background:#000;";
-        document.body.appendChild(v);
-      }
-      v.srcObject = stream;
-    } else {
-      let a = document.getElementById("fpRemoteAudio");
-      if (!a) {
-        a = document.createElement("audio");
-        a.id = "fpRemoteAudio";
-        a.autoplay = true;
-        document.body.appendChild(a);
-      }
-      a.srcObject = stream;
-    }
+    v.srcObject = stream;
   }
 
   function cleanupCall(localStream) {
