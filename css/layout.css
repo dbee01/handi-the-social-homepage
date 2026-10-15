@@ -2229,8 +2229,8 @@ footer {
 
 /* Avatar image */
 .phone-avatar {
-    width: 120px !important;
-    height: 120px !important;
+    width: 60px !important;
+    height: 60px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
     flex-shrink: 0 !important;
@@ -2240,7 +2240,7 @@ footer {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-size: 3rem !important;
+    font-size: 1.5rem !important;
 }
 
 .phone-name {
@@ -2285,8 +2285,8 @@ footer {
 /* Compact screens: keep the horizontal layout, shrink the avatar */
 @media (max-width: 900px) {
     .phone-avatar {
-        width: 80px !important;
-        height: 80px !important;
+        width: 40px !important;
+        height: 40px !important;
     }
 }
 
@@ -2297,8 +2297,8 @@ footer {
     }
 
     .phone-avatar {
-        width: 70px !important;
-        height: 70px !important;
+        width: 35px !important;
+        height: 35px !important;
     }
 
     .phone-name {
@@ -2315,8 +2315,8 @@ footer {
 /* Very small screens */
 @media (max-width: 480px) {
     .phone-avatar {
-        width: 100px !important;
-        height: 100px !important;
+        width: 50px !important;
+        height: 50px !important;
     }
 
     .phone-name {
