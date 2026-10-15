@@ -517,7 +517,7 @@ export default async function initPhone(container) {
         v.id = "fpRemoteVideo";
         v.autoplay = true;
         v.playsInline = true;
-        v.style.cssText = "position:fixed;right:16px;bottom:16px;width:240px;border-radius:12px;z-index:9999;background:#000;";
+        v.style.cssText = "position:fixed;right:16px;bottom:120px;width:240px;border-radius:12px;z-index:100010;background:#000;";
         document.body.appendChild(v);
       }
       v.srcObject = stream;
