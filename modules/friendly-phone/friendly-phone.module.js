@@ -431,11 +431,12 @@ export default async function initPhone(container) {
     }
   }
 
-  function makeCall(webrtcId, video) {
+  function makeCall(webrtcId, video, label) {
     if (!webrtcId) {
       console.warn("[friendly-phone] contact has no WebRTC identity");
       return;
     }
+    const callerLabel = label || webrtcId;
     let localStream = null;
     navigator.mediaDevices
       .getUserMedia({ video: !!video, audio: true })
@@ -455,6 +456,9 @@ export default async function initPhone(container) {
             callOptions = { video: !!video };
           }
           currentCall = infobipRTC.callWebrtc(webrtcId, callOptions);
+          // Pop up the same in-call menu for the outgoing caller as for an
+          // incoming one, so mute / volume / hangup are always available.
+          showCallPanel(callerLabel);
           currentCall.on("established", (event) => {
             if (event && event.stream) {
               attachRemoteAudio(event.stream, video);
@@ -561,8 +565,8 @@ export default async function initPhone(container) {
               : "") +
             "</div></div>" +
             '<div class="phone-actions">' +
-            '<button class="phone-call video-call" data-webrtc-id="' + escapeHtml(webrtcId) + '" title="' + escapeHtml(t("d_videoCall", "Video call")) + '"' + disabled + '><i class="fa-solid fa-video"></i></button>' +
-            '<button class="phone-call webrtc-call" data-webrtc-id="' + escapeHtml(webrtcId) + '" title="' + escapeHtml(t("d_freeCall", "Free call")) + '"' + disabled + '><i class="fa-solid fa-phone"></i></button>' +
+            '<button class="phone-call video-call" data-webrtc-id="' + escapeHtml(webrtcId) + '" data-name="' + escapeHtml(c.name) + '" title="' + escapeHtml(t("d_videoCall", "Video call")) + '"' + disabled + '><i class="fa-solid fa-video"></i></button>' +
+            '<button class="phone-call webrtc-call" data-webrtc-id="' + escapeHtml(webrtcId) + '" data-name="' + escapeHtml(c.name) + '" title="' + escapeHtml(t("d_freeCall", "Free call")) + '"' + disabled + '><i class="fa-solid fa-phone"></i></button>' +
             "</div></div>"
           );
         })
@@ -613,7 +617,7 @@ export default async function initPhone(container) {
           return;
         }
         setCalling(btn, true);
-        makeCall(btn.dataset.webrtcId, false);
+        makeCall(btn.dataset.webrtcId, false, btn.dataset.name);
       };
     });
 
@@ -631,7 +635,7 @@ export default async function initPhone(container) {
           return;
         }
         setCalling(btn, true);
-        makeCall(btn.dataset.webrtcId, true);
+        makeCall(btn.dataset.webrtcId, true, btn.dataset.name);
       };
     });
   }
