@@ -61,6 +61,7 @@ export default async function initPhone(container) {
 
   if (!contacts.length) {
     content.innerHTML =
+      renderHandleBar().outerHTML +
       '<div class="module-empty">' +
       '<i class="fa-solid fa-address-book"></i>' +
       "<p>" + escapeHtml(t("d_noContacts", "No contacts saved.")) + "</p>" +
@@ -70,6 +71,7 @@ export default async function initPhone(container) {
     content.querySelector("#phoneSettingsBtn").onclick = () => {
       window.location.href = "settings.html?args=handi-phone";
     };
+    bindHandleClaim();
     return;
   }
 
