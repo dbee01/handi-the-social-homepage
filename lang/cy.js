@@ -197,7 +197,7 @@ var LANG = {
   d_online: "Ar-lein",
   d_offline: "All-lein",
   d_yourHandle: "Eich ID",
-  d_pickHandle: "Dewiswch enw y gall ffrindiau eich galw wrtho",
+  d_pickHandle: "Hawliwch enw ffôn handi",
   d_claim: "Hawlio",
   d_inCall: "Mewn galwad",
   d_mute: "Tewi",

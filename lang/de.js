@@ -203,7 +203,7 @@ var LANG = {
   d_online: "Online",
   d_offline: "Offline",
   d_yourHandle: "Deine ID",
-  d_pickHandle: "Wähle einen Namen, unter dem Freunde dich anrufen können",
+  d_pickHandle: "Handi-Telefon-Namen reservieren",
   d_claim: "Reservieren",
   d_inCall: "Im Gespräch",
   d_mute: "Stummschalten",

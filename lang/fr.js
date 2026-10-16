@@ -197,7 +197,7 @@ var LANG = {
   d_online: "En ligne",
   d_offline: "Hors ligne",
   d_yourHandle: "Votre ID",
-  d_pickHandle: "Choisissez un nom sous lequel vos amis peuvent vous appeler",
+  d_pickHandle: "Réservez un nom de téléphone handi",
   d_claim: "Réserver",
   d_inCall: "En appel",
   d_mute: "Couper le micro",

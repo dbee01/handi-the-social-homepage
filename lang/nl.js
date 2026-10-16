@@ -198,7 +198,7 @@ var LANG = {
   d_online: "Online",
   d_offline: "Offline",
   d_yourHandle: "Jouw ID",
-  d_pickHandle: "Kies een naam waaronder vrienden je kunnen bellen",
+  d_pickHandle: "Claim handi-telefoonnaam",
   d_claim: "Claimen",
   d_inCall: "In gesprek",
   d_mute: "Dempen",
