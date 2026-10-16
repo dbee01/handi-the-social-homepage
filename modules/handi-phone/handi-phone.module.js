@@ -683,6 +683,7 @@ export default async function initPhone(container) {
     s.id = "fp-presence-style";
     s.textContent =
       ".fp-presence{display:inline-block;width:10px;height:10px;border-radius:50%;margin-left:6px;vertical-align:middle}" +
+      ".elderlyShow .fp-presence{width:30px;height:30px}" +
       ".fp-online{background:#16a34a}" +
       ".fp-offline{background:#9ca3af}" +
       ".phone-call[disabled]{opacity:.4;cursor:not-allowed}" +
