@@ -163,8 +163,8 @@ export default async function initPhone(container) {
       // button/input reset or theme override ordering.
       bar.innerHTML =
         '<span>' + escapeHtml(t("d_pickHandle", "Claim handi phone name")) + ":</span> " +
-        '<input class="fp-handle-input" placeholder="e.g. daz" maxlength="12" ' +
-        'style="height:44px;padding:0 12px;border:1px solid #cbd5e1;border-radius:10px;font-size:0.95rem;line-height:1;box-sizing:border-box;background:#fff;color:#1e1e1e;" /> ' +
+        '<input class="fp-handle-input" type="text" size="12" maxlength="12" placeholder="e.g. daz" ' +
+        'style="width:12ch;height:44px;padding:0 12px;border:1px solid #cbd5e1;border-radius:10px;font-size:0.95rem;line-height:1;box-sizing:border-box;background:#fff;color:#1e1e1e;" /> ' +
         '<button class="fp-handle-btn" type="button" ' +
         'style="height:44px;padding:0 18px;border:1px solid #0047cc;border-radius:10px;cursor:pointer;font-weight:600;font-size:0.95rem;line-height:1;box-sizing:border-box;background:#0047cc;color:#fff;white-space:nowrap;">' + escapeHtml(t("d_claim", "Claim")) + "</button>";
     }
@@ -706,7 +706,7 @@ export default async function initPhone(container) {
       ".fp-offline{background:#9ca3af}" +
       ".phone-call[disabled]{opacity:.4;cursor:not-allowed}" +
       ".fp-handle-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px;border-radius:10px;border:1px solid rgba(128,128,128,.25);margin-bottom:10px;font-size:.9rem}" +
-      ".fp-handle-input{flex:1;min-width:120px;height:44px;min-height:44px;padding:0 12px;border:1px solid #cbd5e1;border-radius:10px;font-size:.95rem;line-height:1;box-sizing:border-box;background:#fff;color:inherit;appearance:none}" +
+      ".fp-handle-input{width:12ch;flex:0 0 auto;height:44px;min-height:44px;padding:0 12px;border:1px solid #cbd5e1;border-radius:10px;font-size:.95rem;line-height:1;box-sizing:border-box;background:#fff;color:inherit;appearance:none}" +
       ".fp-handle-btn{height:44px;min-height:44px;padding:0 18px;border:1px solid var(--topbar-accent,#0047cc);background:var(--topbar-accent,#0047cc)!important;color:#fff!important;border-radius:10px;cursor:pointer;font-weight:600;font-size:.95rem;line-height:1;box-sizing:border-box;white-space:nowrap;appearance:none}" +
       ".fp-handle-btn:hover{background:var(--topbar-accent,#0047cc)!important;border-color:var(--topbar-accent,#0047cc)!important;filter:brightness(1.08);color:#fff!important}" +
       ".fp-handle-label{opacity:.7}";
