@@ -84,7 +84,7 @@ var LANG = {
     fitness: { name: "Fitness", desc: "Workouts & nutrition" },
     "github-user": { name: "GitHub Activity", desc: "Handi activity" },
     "github-repo": { name: "GitHub Repo", desc: "Repository feed" },
-    "friendly-phone": { name: "Friendly Phone", desc: "Free browser-to-browser calls" },
+    "handi-phone": { name: "Handi Phone", desc: "Free browser-to-browser calls" },
     "sim-phone": { name: "SIM Phone", desc: "Calls to any phone (WebRTC)" },
   },
 
@@ -261,7 +261,7 @@ var LANG = {
 
   // Bus
   d_noBusRoutes: "No bus routes configured.",
-  d_departure: "Departure",
+  d_departure: "Deptarture",
   d_return: "Return",
   d_changeDirection: "Change Direction",
   d_noUpcoming: "No upcoming",
@@ -481,8 +481,8 @@ var LANG = {
     "<strong>Location Alert</strong><br><br><strong>• Mobile phones only.</strong><br>• Sends an SMS with your GPS location to trusted contacts.<br>• Requires GPS and mobile network (not available on desktop/tablet).<br>• Add contacts in <strong>Settings → Location Share</strong>.<br>• Unlock the button (🔓) then press <strong>SHARE</strong> to send.<br>• Test with your own number first to ensure it works.",
   h_phone:
     "<strong>Friendly Phone</strong><br><br>• One‑tap calling to your saved contacts.<br>• Add contacts with photos in <strong>Settings → Friendly Phone</strong>.<br>• The module is <strong>locked by default</strong> – unlock to enable calls.<br>• Photos help identify contacts at a glance.",
-  h_friendly_phone:
-    "<strong>Friendly Phone</strong><br><br>• Free browser-to-browser calls to your saved contacts.<br>• Add contacts with photos in <strong>Settings → Friendly Phone</strong>.<br>• Unlock the module to enable calls.<br>• Photos help identify contacts at a glance.",
+  h_handi_phone:
+    "<strong>Handi Phone</strong><br><br>• Free browser-to-browser calls to your saved contacts.<br>• Add contacts with photos in <strong>Settings → Handi Phone</strong>.<br>• Unlock the module to enable calls.<br>• Photos help identify contacts at a glance.",
   h_sim_phone:
     "<strong>SIM Phone</strong><br><br>• WebRTC calls to any real phone number via the Infobip SIP trunk.<br>• Add contacts in <strong>Settings → SIM Phone</strong>.<br>• Requires a <strong>Premium</strong> subscription.",
   h_github_user:

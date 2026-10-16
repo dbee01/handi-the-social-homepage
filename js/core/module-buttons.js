@@ -27,7 +27,7 @@
     fitness: "h_fitness",
     "github-user": "h_github_user",
     "github-repo": "h_github_repo",
-    "friendly-phone": "h_friendly_phone",
+    "handi-phone": "h_handi_phone",
     "sim-phone": "h_sim_phone",
         llm: "h_llm",
             task: "h_task",

@@ -17,7 +17,7 @@ import initGallery from "./modules/gallery/gallery.module.js";
 import initRadio from "./modules/radio/radio.module.js";
 import initSupport from "./modules/support/support.module.js";
 import initLocalPlayer from "./modules/local-player/local-player.module.js";
-import initFriendlyPhone from "./modules/friendly-phone/friendly-phone.module.js";
+import initHandiPhone from "./modules/handi-phone/handi-phone.module.js";
 import initLayoutSystem from "./modules/ui/layout-system.js";
 
 window.layoutSystemInitialized = false;
@@ -28,7 +28,7 @@ const moduleInits = {
   'gallery': initGallery,
   'emergency': initEmergency,
   'bus': initBus,
-  'friendly-phone': initFriendlyPhone,
+  'handi-phone': initHandiPhone,
   'radio': initRadio,
     'support': initSupport,
     'news': initNews,
@@ -89,7 +89,7 @@ function refreshModule(moduleId) {
  */
 function refreshAllModules() {
   console.log('🔄 Refreshing all visible modules...');
-  const moduleIds = ['local-player', 'gallery', 'emergency', 'bus', 'friendly-phone', 'radio', 'news', 'mastodon'];
+  const moduleIds = ['local-player', 'gallery', 'emergency', 'bus', 'handi-phone', 'radio', 'news', 'mastodon'];
   
   moduleIds.forEach(moduleId => {
     setTimeout(() => {
@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
   safeInit("Emergency", "emergency", initEmergency);
   safeInit("Bus", "bus", initBus);
   safeInit("Gallery", "gallery", initGallery);
-  safeInit("Friendly Phone", "friendly-phone", initFriendlyPhone);
+  safeInit("Handi Phone", "handi-phone", initHandiPhone);
   
   // Initialize Energy module (has multiple elements)
   try {

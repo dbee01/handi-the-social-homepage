@@ -16,7 +16,7 @@ const DEFAULT_SETTINGS = {
     radio: false,
     emergency: false,
     phone: false,
-    "friendly-phone": false,
+    "handi-phone": false,
     "sim-phone": false,
     chat: false,
     calendar: false,

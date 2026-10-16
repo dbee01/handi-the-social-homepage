@@ -3,8 +3,8 @@
  * This file is part of HandiHomepage and is released under the GNU General Public License v3.0.
  * See the LICENSE file in the repository root for full details.
  */
-// modules/friendly-phone/friendly-phone.module.js
-// Friendly Phone — free browser-to-browser (Infobip WebRTC "callWebrtc") calling.
+// modules/handi-phone/handi-phone.module.js
+// Handi Phone — free browser-to-browser (Infobip WebRTC "callWebrtc") calling.
 //
 // Contacts carry a WebRTC identity (`webrtcId`) that identifies the other
 // person's Infobip WebRTC endpoint (NOT a PSTN/SIP phone number). Calls are
@@ -28,9 +28,9 @@ export default async function initPhone(container) {
   const title = document.createElement("div");
   title.className = "panel-title";
   var name =
-    window.LANG && window.LANG.modules && window.LANG.modules["friendly-phone"]
-      ? window.LANG.modules["friendly-phone"].name
-      : "Friendly Phone";
+    window.LANG && window.LANG.modules && window.LANG.modules["handi-phone"]
+      ? window.LANG.modules["handi-phone"].name
+      : "Handi Phone";
   title.innerHTML = '<i class="fa-solid fa-phone"></i> ' + name;
   container.appendChild(title);
 
@@ -39,7 +39,7 @@ export default async function initPhone(container) {
   container.appendChild(content);
 
   const parentItem = container.closest(".dashboard-item");
-  if (parentItem) parentItem.dataset.module = "friendly-phone";
+  if (parentItem) parentItem.dataset.module = "handi-phone";
 
   const settings = loadSettings();
   const contacts = settings.phone?.contacts || [];
@@ -68,7 +68,7 @@ export default async function initPhone(container) {
       '<i class="fa-solid fa-gear"></i> ' + escapeHtml(t("d_addContacts", "Add Contacts in Settings")) +
       "</button></div>";
     content.querySelector("#phoneSettingsBtn").onclick = () => {
-      window.location.href = "settings.html?args=friendly-phone";
+      window.location.href = "settings.html?args=handi-phone";
     };
     return;
   }
@@ -168,7 +168,7 @@ export default async function initPhone(container) {
         keepalive: true,
       });
     } catch (e) {
-      console.warn("[friendly-phone] presence register failed:", e);
+      console.warn("[handi-phone] presence register failed:", e);
     }
   }
 
@@ -244,7 +244,7 @@ export default async function initPhone(container) {
       infobipRTC.on("connected", (event) => {
         isConnected = true;
         if (event && event.identity) userIdentity = event.identity;
-        console.log("[friendly-phone] connected as", userIdentity);
+        console.log("[handi-phone] connected as", userIdentity);
         registerPresence(true);
         startPresenceHeartbeat();
         refreshPresence();
@@ -261,7 +261,7 @@ export default async function initPhone(container) {
 
       infobipRTC.connect();
     } catch (e) {
-      console.warn("[friendly-phone] Infobip connect failed:", e);
+      console.warn("[handi-phone] Infobip connect failed:", e);
     }
   }
 
@@ -454,7 +454,7 @@ export default async function initPhone(container) {
 
   function makeCall(webrtcId, video, label) {
     if (!webrtcId) {
-      console.warn("[friendly-phone] contact has no WebRTC identity");
+      console.warn("[handi-phone] contact has no WebRTC identity");
       return;
     }
     const callerLabel = label || webrtcId;
@@ -503,7 +503,7 @@ export default async function initPhone(container) {
             try { currentCall.localStream = localStream; } catch (e) {}
           }
         } catch (err) {
-          console.error("[friendly-phone] call failed:", err);
+          console.error("[handi-phone] call failed:", err);
           if (localStream) localStream.getTracks().forEach((tr) => tr.stop());
           if (callingBtn) setCalling(callingBtn, false);
         }
@@ -638,7 +638,7 @@ export default async function initPhone(container) {
         }
         const ok = await ensureConnected();
         if (!ok) {
-          console.warn("[friendly-phone] not connected");
+          console.warn("[handi-phone] not connected");
           return;
         }
         setCalling(btn, true);
@@ -656,7 +656,7 @@ export default async function initPhone(container) {
         }
         const ok = await ensureConnected();
         if (!ok) {
-          console.warn("[friendly-phone] not connected");
+          console.warn("[handi-phone] not connected");
           return;
         }
         setCalling(btn, true);

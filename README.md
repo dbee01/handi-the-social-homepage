@@ -280,7 +280,7 @@ ple/
 ├── modules/                   # One folder per dashboard module
 │   ├── gallery/  music/  cast/  radio/  news/  mastodon/  flip/  newsletter/
 │   ├── sports/   events/  chat/                        # free modules
-│   ├── friendly-phone/  bus/  calendar/  task/  ai/  support/  emergency/
+│   ├── handi-phone/  bus/  calendar/  task/  ai/  support/  emergency/
 │   └── weather/  ui/                                   # premium + shared UI
 ├── lang/                      # UI translations (en, ga, de, fr, es, it, nl, …)
 ├── manifests/                 # Extra web app manifests (cork, gaeilge)

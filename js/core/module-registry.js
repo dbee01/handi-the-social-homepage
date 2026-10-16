@@ -150,8 +150,8 @@ window.HANDI_MODULES = [
     settingsConfig: { feed: "dbee01/handi-the-social-homepage" },
   },
   {
-    id: "friendly-phone",
-    name: "Friendly Phone",
+    id: "handi-phone",
+    name: "Handi Phone",
     icon: '<i class="fa-solid fa-phone"></i>',
     desc: "Free browser-to-browser calls",
     tier: "free",

@@ -72,6 +72,23 @@
         .filter(Boolean);
     }
 
+    // Parse "Name: WebRTC ID" contact lines for the Handi Phone module.
+    function parseWebrtcContactLines(str) {
+      return (str || "")
+        .split(/\r?\n/)
+        .map(function (line) {
+          line = (line || "").trim();
+          if (!line) return null;
+          var i = line.indexOf(":");
+          if (i <= 0) return { name: line, webrtcId: line };
+          return {
+            name: line.slice(0, i).trim(),
+            webrtcId: line.slice(i + 1).trim(),
+          };
+        })
+        .filter(Boolean);
+    }
+
     // Verify the pack id stamp: recompute the HMAC over the sorted query
     // (minus id) with both secrets. An admin-secret match proves the link
     // came from builder-admin.html and premium modules may be unlocked.
@@ -363,6 +380,12 @@
     if ((v = qs.get("phone-contacts"))) {
       ensure("phone").contacts = parseContactLines(v);
     }
+    if ((v = qs.get("handi-phone-contacts"))) {
+      ensure("phone").contacts = parseWebrtcContactLines(v);
+    }
+    if ((v = qs.get("sim-phone-contacts"))) {
+      ensure("click_to_call").contacts = parseContactLines(v);
+    }
     if ((v = qs.get("emergency-contacts"))) {
       ensure("emergency_alert").contacts = parseContactLines(v);
     }
@@ -415,6 +438,8 @@
     if (qs.get("bus-routes")) autoModules.push("live_bus");
     if (qs.get("calendar")) autoModules.push("calendar");
     if (qs.get("phone-contacts")) autoModules.push("phone");
+    if (qs.get("handi-phone-contacts")) autoModules.push("handi-phone");
+    if (qs.get("sim-phone-contacts")) autoModules.push("sim-phone");
     if (qs.get("emergency-contacts")) autoModules.push("emergency_alert");
     if (qs.get("sports")) autoModules.push("sports");
     if (qs.has("sports")) autoModules.push("sports");
@@ -441,6 +466,8 @@
         "cast",
         "newsletter",
         "phone",
+        "handi-phone",
+        "sim-phone",
         "live_bus",
         "emergency_alert",
         "support",
