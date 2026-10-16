@@ -702,8 +702,9 @@ export default async function initPhone(container) {
       ".fp-offline{background:#9ca3af}" +
       ".phone-call[disabled]{opacity:.4;cursor:not-allowed}" +
       ".fp-handle-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px;border-radius:10px;border:1px solid rgba(128,128,128,.25);margin-bottom:10px;font-size:.9rem}" +
-      ".fp-handle-input{flex:1;min-width:120px;padding:6px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:.95rem}" +
-      ".fp-handle-btn{border:none;background:var(--topbar-accent,#0047cc);color:#fff;padding:6px 14px;border-radius:8px;cursor:pointer;font-weight:600}" +
+      ".fp-handle-input{flex:1;min-width:120px;height:38px;padding:0 12px;border:1px solid #cbd5e1;border-radius:10px;font-size:.95rem;line-height:38px;box-sizing:border-box;background:#fff;color:inherit}" +
+      ".fp-handle-btn{height:38px;padding:0 18px;border:1px solid var(--topbar-accent,#0047cc);background:var(--topbar-accent,#0047cc);color:#fff;border-radius:10px;cursor:pointer;font-weight:600;font-size:.95rem;line-height:36px;box-sizing:border-box;white-space:nowrap}" +
+      ".fp-handle-btn:hover{filter:brightness(1.08)}" +
       ".fp-handle-label{opacity:.7}";
     document.head.appendChild(s);
   }
