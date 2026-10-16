@@ -160,8 +160,8 @@ export default async function initPhone(container) {
         '<strong>' + escapeHtml(handle) + "</strong>";
     } else {
       bar.innerHTML =
-        '<span>' + escapeHtml(t("d_pickHandle", "Pick a name friends can call you by")) + ":</span> " +
-        '<input class="fp-handle-input" placeholder="e.g. daz" maxlength="32" /> ' +
+        '<span>' + escapeHtml(t("d_pickHandle", "Claim handi phone name")) + ":</span> " +
+        '<input class="fp-handle-input" placeholder="e.g. daz" maxlength="12" /> ' +
         '<button class="fp-handle-btn" type="button">' + escapeHtml(t("d_claim", "Claim")) + "</button>";
     }
     return bar;
