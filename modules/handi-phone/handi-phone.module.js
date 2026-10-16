@@ -127,13 +127,25 @@ export default async function initPhone(container) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: myUserId, handle: h }),
       });
-      const data = await r.json();
+      // Read the body as text first so a non-JSON (HTML) response — e.g. a
+      // 404/502 from a missing route or reverse proxy — surfaces the real
+      // status instead of being swallowed as a generic "Network error".
+      const text = await r.text();
+      let data = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (e) {
+        data = { raw: text.slice(0, 200) };
+      }
       if (r.ok && data.success) {
         setHandle(data.handle);
         return { ok: true, handle: data.handle };
       }
-      return { ok: false, error: (data && data.error) || "Could not claim handle" };
+      const msg = (data && data.error) || "Could not claim handle";
+      console.error("[handi-phone] claim handle HTTP " + r.status + ":", msg, data);
+      return { ok: false, error: msg };
     } catch (e) {
+      console.error("[handi-phone] claim handle request failed:", e && e.message, e);
       return { ok: false, error: "Network error" };
     }
   }

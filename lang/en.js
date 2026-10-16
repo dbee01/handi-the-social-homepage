@@ -182,7 +182,7 @@ var LANG = {
   d_offline: "Offline",
   d_yourHandle: "Your ID",
   d_pickHandle: "Pick a name friends can call you by",
-  d_claim: "Claim",
+  d_claim: "Claim name",
   d_inCall: "In call",
   d_mute: "Mute",
   d_unmute: "Unmute",
