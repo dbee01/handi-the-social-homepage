@@ -376,6 +376,35 @@
       bus.routeIds = v;
       bus.stopIds = v;
     }
+    // Structured bus config from the admin builder: newline-separated
+    // "route|departure|arrival" lines (up to 3). Values are human-friendly
+    // (route number + stop names) and resolved to GTFS ids by the bus module.
+    if ((v = qs.get("bus"))) {
+      var bus2 = ensure("live_bus");
+      String(v)
+        .split(/\r?\n/)
+        .map(function (s) { return s.trim(); })
+        .filter(Boolean)
+        .slice(0, 3)
+        .forEach(function (line, idx) {
+          var parts = line.split("|").map(function (s) { return s.trim(); });
+          var i = idx + 1;
+          var routeShort = parts[0] || "";
+          var depName = parts[1] || "";
+          var arrName = parts[2] || "";
+          if (!routeShort) return;
+          bus2["route" + i + "_id"] = routeShort;
+          bus2["route" + i + "_short"] = routeShort;
+          if (depName) {
+            bus2["route" + i + "_departure_stop"] = depName;
+            bus2["route" + i + "_departure_name"] = depName;
+          }
+          if (arrName && arrName !== depName) {
+            bus2["route" + i + "_return_stop"] = arrName;
+            bus2["route" + i + "_return_name"] = arrName;
+          }
+        });
+    }
     if ((v = qs.get("calendar"))) ensure("calendar").url = v;
     if ((v = qs.get("phone-contacts"))) {
       ensure("phone").contacts = parseContactLines(v);
@@ -439,7 +468,7 @@
     if (qs.get("fitness-token")) autoModules.push("fitness");
     if (qs.get("github-user")) autoModules.push("github-user");
     if (qs.get("github-repo")) autoModules.push("github-repo");
-    if (qs.get("bus-routes")) autoModules.push("live_bus");
+    if (qs.get("bus-routes") || qs.get("bus")) autoModules.push("live_bus");
     if (qs.get("calendar")) autoModules.push("calendar");
     if (qs.get("phone-contacts")) autoModules.push("phone");
     if (qs.get("handi-phone-contacts")) autoModules.push("handi-phone");

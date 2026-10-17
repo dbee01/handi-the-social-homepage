@@ -99,6 +99,106 @@ export default async function initBus(container) {
     return routesData[currentTabIndex];
   }
 
+  // Effective from/to for the current route, honouring the direction toggle.
+  // When reversed (and a distinct return stop exists) we swap the departure
+  // and destination stops so the user can browse the opposite direction.
+  function getEffectiveStops() {
+    const r = getRoute();
+    const hasReturn = !!(
+      r.return_stop_id && r.return_stop_id !== r.departure_stop_id
+    );
+    const reversed = !showingDeparture && hasReturn;
+    return {
+      fromId: reversed ? r.return_stop_id : r.departure_stop_id,
+      fromName: reversed
+        ? r.return_stop_name || r.return_stop_id
+        : r.departure_stop_name || r.departure_stop_id,
+      toId: reversed
+        ? r.departure_stop_id
+        : hasReturn
+          ? r.return_stop_id
+          : r.departure_stop_id,
+      toName: reversed
+        ? r.departure_stop_name || r.departure_stop_id
+        : hasReturn
+          ? r.return_stop_name || r.return_stop_id
+          : r.departure_stop_name || r.departure_stop_id,
+      hasReturn,
+    };
+  }
+
+  // Resolve human-friendly pack values (route number + stop names) into the
+  // GTFS route_id / stop_id the bus API needs. The settings page already
+  // stores real ids, so this only kicks in when a value looks unresolved
+  // (route id equals the short name, or a stop id equals its display name).
+  async function resolveRoutes() {
+    let routesById = null;
+    async function ensureRoutesLookup() {
+      if (routesById) return routesById;
+      try {
+        const res = await fetch("/api/bus/v2/routes");
+        const data = res.ok ? await res.json() : { routes: [] };
+        const map = {};
+        (data.routes || []).forEach((route) => {
+          const short = String(route.short_name || route.route_id || "")
+            .trim()
+            .toLowerCase();
+          const id = String(route.route_id || "")
+            .trim()
+            .toLowerCase();
+          if (short && !map[short]) map[short] = route.route_id;
+          if (id && !map[id]) map[id] = route.route_id;
+        });
+        routesById = map;
+      } catch (e) {
+        routesById = {};
+      }
+      return routesById;
+    }
+
+    for (const r of routesData) {
+      // Route short name → GTFS route_id.
+      if (!r.route_id || r.route_id === r.route_short) {
+        const lookup = await ensureRoutesLookup();
+        const resolved =
+          lookup[String(r.route_short || "").trim().toLowerCase()];
+        if (resolved) r.route_id = resolved;
+      }
+
+      const depNeedsResolve =
+        r.departure_stop_name &&
+        r.departure_stop_id === r.departure_stop_name;
+      const retNeedsResolve =
+        r.return_stop_name &&
+        r.return_stop_id === r.return_stop_name &&
+        r.return_stop_id !== r.departure_stop_id;
+      if (!depNeedsResolve && !retNeedsResolve) continue;
+
+      try {
+        const sres = await fetch(
+          "/api/bus/v2/stops?route_id=" + encodeURIComponent(r.route_id),
+        );
+        const sdata = sres.ok ? await sres.json() : { stops: [] };
+        const byName = {};
+        (sdata.stops || []).forEach((s) => {
+          byName[String(s.stop_name || "").trim().toLowerCase()] = s.stop_id;
+        });
+        if (depNeedsResolve) {
+          const id =
+            byName[String(r.departure_stop_name || "").trim().toLowerCase()];
+          if (id) r.departure_stop_id = id;
+        }
+        if (retNeedsResolve) {
+          const id =
+            byName[String(r.return_stop_name || "").trim().toLowerCase()];
+          if (id) r.return_stop_id = id;
+        }
+      } catch (e) {
+        console.warn("[Bus] stop resolution failed:", e);
+      }
+    }
+  }
+
   // Inject styles once
   if (!document.getElementById("bus-live-style")) {
     const style = document.createElement("style");
@@ -136,15 +236,25 @@ export default async function initBus(container) {
       tabsHtml += "</div>";
     }
 
+    const stops = getEffectiveStops();
+    const canReverse = stops.hasReturn;
+
     content.innerHTML =
       `
       ${tabsHtml}
       <div class="bus-timestamp">
         <i class="fa-solid fa-sync-alt"></i> <span class="bus-time">--:--:--</span>
-        <span class="bus-footnote">Route ` +
-      r.route_short +
-      `</span>
+        <span class="bus-footnote">Route ${r.route_short}</span>
       </div>
+      ${
+        canReverse
+          ? `<div class="bus-toolbar" style="display:flex;justify-content:flex-end;margin-bottom:4px;">
+              <button class="bus-direction-btn" type="button" style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--primary, #0047cc);border-radius:999px;background:#fff;color:var(--primary, #0047cc);cursor:pointer;font-size:0.9rem;font-weight:600;">
+                <i class="fa-solid fa-right-left"></i> ${escapeHtml(t("d_changeDirection", "Change Direction"))}
+              </button>
+            </div>`
+          : ""
+      }
       <div class="bus-departures"></div>
     `;
 
@@ -159,6 +269,15 @@ export default async function initBus(container) {
         }
       });
     });
+
+    const dirBtn = content.querySelector(".bus-direction-btn");
+    if (dirBtn) {
+      dirBtn.addEventListener("click", () => {
+        showingDeparture = !showingDeparture;
+        renderUI();
+        fetchBusData();
+      });
+    }
   }
 
   // Render a bus list into a container. Each bus is laid out as a journey:
@@ -166,7 +285,7 @@ export default async function initBus(container) {
   function renderBusList(selector, data) {
     const list = content.querySelector(selector);
     if (!list) return;
-    const r = getRoute();
+    const stops = getEffectiveStops();
 
     if (!data || data.length === 0) {
       list.innerHTML =
@@ -215,10 +334,8 @@ export default async function initBus(container) {
 
         // Destination stop — the route's configured destination, falling back
         // to the per-trip headsign when no distinct destination is configured.
-        const hasDestination =
-          r.return_stop_id && r.return_stop_id !== r.departure_stop_id;
-        const destStop = hasDestination
-          ? r.return_stop_name
+        const destStop = stops.hasReturn
+          ? stops.toName
           : d.headsign || "—";
 
         // Arrival time at the destination = departure time + scheduled journey
@@ -256,7 +373,7 @@ export default async function initBus(container) {
             </div>
             <div class="bus-flow-row">
               <span class="bus-flow-tag">${t("d_departure", "Dept")}</span>
-              <span class="bus-flow-value">${escapeHtml(r.departure_stop_name)}</span>
+              <span class="bus-flow-value">${escapeHtml(stops.fromName)}</span>
               <span class="bus-flow-arrow">→</span>
               <span class="bus-flow-time">${etaStr}</span>
             </div>
@@ -289,12 +406,11 @@ export default async function initBus(container) {
     const route = getRoute();
     if (!buses || buses.length === 0) return;
 
-    const hasDest =
-      route.return_stop_id && route.return_stop_id !== route.departure_stop_id;
+    const stops = getEffectiveStops();
     let url =
       `/api/bus/v2/route-journey?route_id=${encodeURIComponent(route.route_id)}` +
-      `&from=${encodeURIComponent(route.departure_stop_id)}`;
-    if (hasDest) url += `&to=${encodeURIComponent(route.return_stop_id)}`;
+      `&from=${encodeURIComponent(stops.fromId)}`;
+    if (stops.hasReturn) url += `&to=${encodeURIComponent(stops.toId)}`;
 
     try {
       const res = await fetch(url);
@@ -324,15 +440,15 @@ export default async function initBus(container) {
     try {
       // Fetch the chosen (departure) stop — each bus row marks its own
       // destination stop via the headsign, so no separate end stop is needed.
-      const stopIds = [route.departure_stop_id];
-      const rtUrl = `/api/bus-realtime?route=${encodeURIComponent(route.route_short)}&stops=${encodeURIComponent(stopIds.join(","))}`;
+      const stops = getEffectiveStops();
+      const rtUrl = `/api/bus-realtime?route=${encodeURIComponent(route.route_short)}&stops=${encodeURIComponent(stops.fromId)}`;
       const rtRes = await fetch(rtUrl);
       const rtData = rtRes.ok ? await rtRes.json() : null;
 
       if (rtData && rtData.stops && rtData.stops.length > 0) {
         if (timeSpan) timeSpan.textContent = new Date().toLocaleTimeString();
         const depStop = rtData.stops.find(
-          (s) => s.stop_id === route.departure_stop_id,
+          (s) => s.stop_id === stops.fromId,
         );
         const depBuses = depStop?.buses || [];
         if (depBuses.length > 0) {
@@ -357,6 +473,7 @@ export default async function initBus(container) {
 
   async function fetchScheduledFallback(route, timeSpan) {
     try {
+      const stops = getEffectiveStops();
       const fetchOne = async (stopId) => {
         const url = `/api/bus/v2/departures?route_id=${encodeURIComponent(route.route_id)}&stop_id=${encodeURIComponent(stopId)}&limit=3`;
         const res = await fetch(url);
@@ -378,7 +495,7 @@ export default async function initBus(container) {
       };
 
       const [depBuses] = await Promise.all([
-        fetchOne(route.departure_stop_id),
+        fetchOne(stops.fromId),
       ]);
 
       if (timeSpan) timeSpan.textContent = new Date().toLocaleTimeString();
@@ -398,6 +515,7 @@ export default async function initBus(container) {
     );
   }
 
+  await resolveRoutes();
   renderUI();
   fetchBusData();
 }
