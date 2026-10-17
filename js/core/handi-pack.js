@@ -173,8 +173,22 @@
     if ((v = qs.get("events-type"))) ensure("events").type = v;
 
     if ((v = qs.get("news"))) {
-      ensure("news").rssUrl = v;
-      try { window.handiNs.set("handiNewsFeed", v); } catch (e) {}
+      // The builder sends "Feed Name: URL" (one or more lines); the News
+      // module shows a single feed, so take the first URL and drop any label.
+      var newsUrl = String(v).trim();
+      var newsLines = newsUrl
+        .split(/\r?\n/)
+        .map(function (s) { return s.trim(); })
+        .filter(Boolean);
+      if (newsLines.length) {
+        var first = newsLines[0];
+        var schemeColon = first.indexOf("://");
+        var sep =
+          schemeColon > 0 ? first.lastIndexOf(":", schemeColon - 1) : -1;
+        newsUrl = sep > 0 ? first.slice(sep + 1).trim() : first;
+      }
+      ensure("news").rssUrl = newsUrl;
+      try { window.handiNs.set("handiNewsFeed", newsUrl); } catch (e) {}
     }
 
     // Flipboard: accept both the original flipboard-* names and the shorter
