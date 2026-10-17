@@ -1295,6 +1295,25 @@
                 </div>
                 <div class="module-config">
                     <div class="config-field">
+                        <label>Your name</label>
+                        <input
+                            type="text"
+                            id="handiPhoneName"
+                            placeholder="Daz Murphy"
+                        />
+                        <small>Your display name. Your unique WebRTC ID is shown below — share it with the people you want to call you.</small>
+                    </div>
+                    <div class="config-field">
+                        <label>Your WebRTC ID</label>
+                        <div
+                            id="handiPhoneWebrtcId"
+                            style="font-family:monospace;word-break:break-all;padding:10px 12px;background:#f1f5f9;border-radius:8px;"
+                        >
+                            —
+                        </div>
+                        <small>This is your unique identity — two people can share a name, but not this ID.</small>
+                    </div>
+                    <div class="config-field">
                         <label>Contacts</label>
                         <div id="phoneContactsList" class="contact-list"></div>
                     </div>
@@ -2455,6 +2474,29 @@
                     } catch (e) {}
                     renderPhoneContacts();
                 }
+
+                // Load the user's own Handi Phone identity (name + WebRTC ID).
+                const hpNameInput = document.getElementById("handiPhoneName");
+                if (hpNameInput) {
+                    hpNameInput.value =
+                        localStorage.getItem("webrtc_display_name") ||
+                        localStorage.getItem("webrtc_handle") ||
+                        "";
+                }
+                const hpIdEl = document.getElementById("handiPhoneWebrtcId");
+                if (hpIdEl) {
+                    let id = localStorage.getItem("webrtc_user_id");
+                    if (!id) {
+                        id =
+                            "handi_user_" +
+                            (window.crypto && crypto.randomUUID
+                                ? crypto.randomUUID()
+                                : Math.random().toString(36).slice(2) +
+                                  Date.now().toString(36));
+                        localStorage.setItem("webrtc_user_id", id);
+                    }
+                    hpIdEl.textContent = id;
+                }
                 if (
                     document.getElementById("autoDialDelay") &&
                     settings.phone?.autoDialDelay
@@ -2893,6 +2935,22 @@
                 settings.phone.autoDialDelay =
                     parseInt(document.getElementById("autoDialDelay")?.value) ||
                     10;
+
+                // Persist the Handi Phone display name (name only). The
+                // WebRTC ID itself is generated/stored in localStorage and
+                // surfaced read-only above, so two people with the same name
+                // remain distinct and reachable.
+                const hpNameInput = document.getElementById("handiPhoneName");
+                if (hpNameInput) {
+                    const name = hpNameInput.value.trim();
+                    if (name) {
+                        localStorage.setItem("webrtc_display_name", name);
+                        localStorage.setItem("webrtc_handle", name);
+                    } else {
+                        localStorage.removeItem("webrtc_display_name");
+                        localStorage.removeItem("webrtc_handle");
+                    }
+                }
 
                 if (!settings.emergency_alert) settings.emergency_alert = {};
                                 settings.emergency_alert.contacts = emergencyContacts;

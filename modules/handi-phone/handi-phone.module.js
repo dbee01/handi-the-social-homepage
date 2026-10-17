@@ -80,15 +80,21 @@ export default async function initPhone(container) {
   }
 
   function getDisplayName() {
-    return getHandle() || localStorage.getItem("webrtc_display_name") || "Anonymous";
+    return localStorage.getItem("webrtc_display_name") || getHandle() || "Anonymous";
+  }
+
+  function setDisplayName(name) {
+    localStorage.setItem("webrtc_display_name", name);
+    localStorage.setItem("webrtc_handle", name);
   }
 
   // Initialized before any early return so claimHandle can always read it.
   const myUserId = ensureIdentity();
-  // The Infobip identity is the handle when one is claimed, otherwise the
-  // machine UUID. Friends dial you by this string.
+  // The Infobip identity is the unique WebRTC ID (machine UUID). The user's
+  // name is display-only, so two people can share a name and still be reached
+  // by their distinct IDs.
   function myIdentity() {
-    return getHandle() || myUserId;
+    return myUserId;
   }
 
   // ── Infobip WebRTC state ───────────────────────────────────────────────
@@ -119,56 +125,38 @@ export default async function initPhone(container) {
   }
 
   // ── Handle claiming (option 3: human-friendly unique name) ────────────
-  async function claimHandle(handle) {
-    const h = String(handle || "").trim().toLowerCase();
-    if (!h) return { ok: false, error: "Handle cannot be empty" };
-    try {
-      const r = await fetch("/api/webrtc/handle", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: myUserId, handle: h }),
-      });
-      // Read the body as text first so a non-JSON (HTML) response — e.g. a
-      // 404/502 from a missing route or reverse proxy — surfaces the real
-      // status instead of being swallowed as a generic "Network error".
-      const text = await r.text();
-      let data = {};
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch (e) {
-        data = { raw: text.slice(0, 200) };
-      }
-      if (r.ok && data.success) {
-        setHandle(data.handle);
-        return { ok: true, handle: data.handle };
-      }
-      const msg = (data && data.error) || "Could not claim handle";
-      console.error("[handi-phone] claim handle HTTP " + r.status + ":", msg, data);
-      return { ok: false, error: msg };
-    } catch (e) {
-      console.error("[handi-phone] claim handle request failed:", e && e.message, e);
-      return { ok: false, error: "Network error" };
-    }
+  async function claimHandle(name) {
+    const n = String(name || "").trim();
+    if (!n) return { ok: false, error: "Name cannot be empty" };
+    setDisplayName(n);
+    return { ok: true, name: n };
   }
 
   function renderHandleBar() {
-    const handle = getHandle();
     const bar = document.createElement("div");
     bar.className = "fp-handle-bar";
-    if (handle) {
-      bar.innerHTML =
-        '<span class="fp-handle-label">' + escapeHtml(t("d_yourHandle", "Your ID")) + ":</span> " +
-        '<strong>' + escapeHtml(handle) + "</strong>";
+    const id = myUserId;
+    const name = getDisplayName();
+    const hasName = !!name && name !== "Anonymous";
+
+    let html =
+      '<span class="fp-handle-label">' + escapeHtml(t("d_yourHandle", "Your WebRTC ID")) + ":</span> " +
+      '<strong>' + escapeHtml(id) + "</strong>";
+
+    if (hasName) {
+      html += ' <span style="opacity:.7">(' + escapeHtml(name) + ")</span>";
     } else {
       // Inline styles guarantee a consistent look regardless of the global
       // button/input reset or theme override ordering.
-      bar.innerHTML =
-        '<span>' + escapeHtml(t("d_pickHandle", "Claim handi phone name")) + ":</span> " +
-        '<input class="fp-handle-input" type="text" size="12" maxlength="12" placeholder="e.g. daz" ' +
+      html +=
+        ' <span>' + escapeHtml(t("d_pickHandle", "Claim handi phone name")) + ":</span> " +
+        '<input class="fp-handle-input" type="text" size="12" maxlength="32" placeholder="e.g. Daz" ' +
         'style="width:12ch;height:44px;padding:0 12px;border:1px solid #cbd5e1;border-radius:10px;font-size:0.95rem;line-height:1;box-sizing:border-box;background:#fff;color:#1e1e1e;" /> ' +
         '<button class="fp-handle-btn" type="button" ' +
         'style="height:44px;padding:0 18px;border:1px solid var(--primary, #0047cc);border-radius:10px;cursor:pointer;font-weight:600;font-size:0.95rem;line-height:1;box-sizing:border-box;background:var(--primary, #0047cc);color:#fff;white-space:nowrap;">' + escapeHtml(t("d_claim", "Claim")) + "</button>";
     }
+
+    bar.innerHTML = html;
     return bar;
   }
 
@@ -627,14 +615,8 @@ export default async function initPhone(container) {
     btn.onclick = async function () {
       const result = await claimHandle(input.value);
       if (result.ok) {
-        // Reconnect Infobip with the new identity and refresh.
-        if (infobipRTC) {
-          try { infobipRTC.disconnect(); } catch (e) {}
-          infobipRTC = null;
-          isConnected = false;
-        }
-        if (callingBtn) setCalling(callingBtn, false);
-        authenticateAndConnect();
+        // Identity is unchanged (the WebRTC ID is stable); just refresh the
+        // name in the roster and re-render.
         renderContacts([]);
         refreshPresence();
       } else {

@@ -200,7 +200,7 @@ var LANG = {
   d_decline: "رفض",
   d_online: "متصل",
   d_offline: "غير متصل",
-  d_yourHandle: "معرفك",
+  d_yourHandle: "معرف WebRTC الخاص بك",
   d_pickHandle: "احجز اسم هاتف هاندي",
   d_claim: "احجز",
   d_inCall: "في مكالمة",

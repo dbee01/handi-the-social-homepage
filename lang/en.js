@@ -185,7 +185,7 @@ var LANG = {
   d_decline: "Decline",
   d_online: "Online",
   d_offline: "Offline",
-  d_yourHandle: "Your ID",
+  d_yourHandle: "Your WebRTC ID",
   d_pickHandle: "Claim handi phone name",
   d_claim: "Claim",
   d_inCall: "In call",
