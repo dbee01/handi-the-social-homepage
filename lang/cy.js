@@ -69,6 +69,10 @@ var LANG = {
     "github-repo": { name: "GitHub Repo", desc: "Ffrwd ystorfa" },
     "handi-phone": { name: "Ffôn Handi", desc: "Galwadau porwr-i-borwr am ddim" },
     "sim-phone": { name: "Ffôn SIM", desc: "Galwadau i unrhyw ffôn (WebRTC)" },
+    channel1: { name: "Sianel 1", desc: "porthiant Atom/RSS" },
+    channel2: { name: "Sianel 2", desc: "porthiant Atom/RSS" },
+    channel3: { name: "Sianel 3", desc: "porthiant Atom/RSS" },
+    channel4: { name: "Sianel 4", desc: "porthiant Atom/RSS" },
   },
   d_loading: "Wrthi'n llwytho...",
   d_noData: "Dim data.",
@@ -97,6 +101,7 @@ var LANG = {
   d_addImages: "Ychwanegu delweddau",
   d_noImages: "Dim delweddau.",
   d_fullScreen: "Sgrin lawn",
+  d_reduce: "Lleihau",
   d_pause: "Saib",
   d_play: "Chwarae",
   d_pasteIcal: "Gludo URL iCal...",
@@ -257,6 +262,10 @@ var LANG = {
         // Newsletter
         d_newsletterEmpty: "Dim eitemau cylchlythyr wedi'u canfod.",
         d_newsletterLoad: "Llwytho cylchlythyr",
+        d_channelEmpty: "Dim eitemau.",
+        d_channelConfigure: "Ychwanegwch URL porthiant Atom/RSS yn Gosodiadau.",
+        d_channelLoad: "Llwytho Sianel",
+        d_channelInvalid: "Methu llwytho'r porthiant hwn. Gwiriwch fod yr URL yn borthiant Atom/RSS dilys.",
 
         // Sports
         d_sportsNoKey: "Nid yw chwaraeon byw wedi'i ffurfweddu ar y gweinydd.",
@@ -380,6 +389,10 @@ var LANG = {
   h_chat: "<strong>💬 Sgwrs (Matrix)</strong><br><br>• Crëwch eich cyfrif Matrix eich hun yn <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> i ddechrau ystafelloedd sgwrsio preifat i deulu neu ffrindiau.<br>• Ychwanegwch URLau ystafelloedd, tocyn mynediad, ID defnyddiwr yn <strong>Gosodiadau → Sgwrs</strong>.<br>• Mae'r modiwl yn gwirio am negeseuon newydd bob 30 eiliad.<br>• Cliciwch bennawd yr ystafell i ehangu a gweld negeseuon.<br>• Mae hysbysiadau negeseuon newydd yn ymddangos fel bathodyn coch.",
   h_calendar: "<strong>📅 Calendr (Proton ICS)</strong><br><br>• Yn dangos digwyddiadau heddiw o'ch Calendr Proton.<br>• Cewch eich dolen ICS o Proton Calendar → Gosodiadau → Calendrau → 'Rhannu ag unrhyw un' → 'Creu dolen'.<br>• Gludwch y ddolen ICS yn <strong>Gosodiadau → Calendr</strong>.<br><br><strong>🔔 Rhybuddion:</strong><br>• Mae hysbysiadau'n cael eu gosod yn eich ap calendr — e.e. 2 hysbysiad ar ddigwyddiad = dau rybudd ar y dangosfwrdd hwn.<br>• Toglo rhybuddion ymlaen/i ffwrdd gyda'r botwm ar frig y calendr.<br><br><strong>⚠️ Cyfyngiadau pwysig (Proton, nid y modiwl hwn):</strong><br>• Mae'r porthiant ICS yn diweddaru <strong>bob 4–16 awr</strong> – mae digwyddiadau newydd yn cymryd amser i ymddangos.<br>• Efallai na fydd digwyddiadau cylchol yn ymddangos yn gywir.<br><br><strong>💡 Awgrymiadau:</strong><br>• Os nad yw digwyddiad yn ymddangos, arhoswch ychydig oriau a cheisiwch eto.",
 
+  h_channel1: "<strong>Sianel 1</strong><br><br>• Yn darllen porthiant Atom/RSS ac yn dangos ei eitemau.<br>• Gludwch URL Rhestr Chwarae YouTube yn <strong>Gosodiadau → Sianel 1</strong>.<br>• Defnyddiwch y botymau ‹ / › i sgrolio.<br>• Cliciwch eitem i'w hagor.",
+  h_channel2: "<strong>Sianel 2</strong><br><br>• Yn darllen porthiant Atom/RSS ac yn dangos ei eitemau.<br>• Gludwch URL Rhestr Chwarae YouTube yn <strong>Gosodiadau → Sianel 2</strong>.<br>• Defnyddiwch y botymau ‹ / › i sgrolio.<br>• Cliciwch eitem i'w hagor.",
+  h_channel3: "<strong>Sianel 3</strong><br><br>• Yn darllen porthiant Atom/RSS ac yn dangos ei eitemau.<br>• Gludwch URL Rhestr Chwarae YouTube yn <strong>Gosodiadau → Sianel 3</strong>.<br>• Defnyddiwch y botymau ‹ / › i sgrolio.<br>• Cliciwch eitem i'w hagor.",
+  h_channel4: "<strong>Sianel 4</strong><br><br>• Yn darllen porthiant Atom/RSS ac yn dangos ei eitemau.<br>• Gludwch URL Rhestr Chwarae YouTube yn <strong>Gosodiadau → Sianel 4</strong>.<br>• Defnyddiwch y botymau ‹ / › i sgrolio.<br>• Cliciwch eitem i'w hagor.",
   h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
   h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",
   h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",

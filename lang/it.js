@@ -68,6 +68,10 @@ var LANG = {
     "github-repo": { name: "GitHub Repo", desc: "Feed del repository" },
     "handi-phone": { name: "Telefono Handi", desc: "Chiamate gratuite browser-to-browser" },
     "sim-phone": { name: "Telefono SIM", desc: "Chiamate verso qualsiasi telefono (WebRTC)" },
+    channel1: { name: "Canale 1", desc: "feed Atom/RSS" },
+    channel2: { name: "Canale 2", desc: "feed Atom/RSS" },
+    channel3: { name: "Canale 3", desc: "feed Atom/RSS" },
+    channel4: { name: "Canale 4", desc: "feed Atom/RSS" },
   },
   d_loading: "Caricamento...",
   d_noData: "Nessun dato.",
@@ -96,6 +100,7 @@ var LANG = {
   d_addImages: "Aggiungi immagini",
   d_noImages: "Nessuna immagine.",
   d_fullScreen: "Schermo intero",
+  d_reduce: "Riduci",
   d_pause: "Pausa",
   d_play: "Riproduci",
   d_pasteIcal: "Incolla URL iCal...",
@@ -257,6 +262,10 @@ var LANG = {
         // Newsletter
         d_newsletterEmpty: "Nessun elemento della newsletter trovato.",
         d_newsletterLoad: "Carica newsletter",
+                d_channelEmpty: "Nessun elemento trovato.",
+                d_channelConfigure: "Aggiungi un URL di feed Atom/RSS nelle Impostazioni.",
+                d_channelLoad: "Carica canale",
+                d_channelInvalid: "Impossibile caricare questo feed. Verifica che l'URL sia un feed Atom/RSS valido.",
 
         // Sports
         d_sportsNoKey: "Lo sport dal vivo non è configurato sul server.",
@@ -379,6 +388,11 @@ var LANG = {
   h_fitness: "<strong>💪 Fitness</strong><br><br>• Aggiorna la tua app fitness Wger.de e incolla il tuo token nella pagina delle impostazioni per monitorare la tua attività fisica.<br><br> I tuoi dati vanno da Wger al tuo browser. Noi non li vediamo.",
   h_chat: "<strong>💬 Chat (Matrix)</strong><br><br>• Crea il tuo account Matrix su <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> per avviare stanze di chat private per famiglia o amici.<br>• Aggiungi URL delle stanze, token di accesso, ID utente in <strong>Impostazioni → Chat</strong>.<br>• Il modulo controlla nuovi messaggi ogni 30 secondi.<br>• Clicca sull'intestazione della stanza per espandere e visualizzare i messaggi.<br>• Le notifiche di nuovi messaggi appaiono come un badge rosso.",
   h_calendar: "<strong>📅 Calendario (Proton ICS)</strong><br><br>• Mostra gli eventi di oggi dal tuo Calendario Proton.<br>• Ottieni il tuo link ICS da Proton Calendar → Impostazioni → Calendari → 'Condividi con chiunque' → 'Crea link'.<br>• Incolla il link ICS in <strong>Impostazioni → Calendario</strong>.<br><br><strong>🔔 Avvisi:</strong><br>• Le notifiche sono impostate nella tua app calendario — es. 2 notifiche su un evento = due avvisi su questa dashboard.<br>• Attiva/disattiva gli avvisi con il pulsante in cima al calendario.<br><br><strong>⚠️ Limitazioni importanti (Proton, non questo modulo):</strong><br>• Il feed ICS si aggiorna <strong>ogni 4–16 ore</strong> – i nuovi eventi impiegano tempo ad apparire.<br>• Gli eventi ricorrenti potrebbero non apparire correttamente.<br><br><strong>💡 Suggerimenti:</strong><br>• Se un evento non appare, attendi qualche ora e riprova.",
+
+  h_channel1: "<strong>Canale 1</strong><br><br>• Legge un feed Atom/RSS e mostra i suoi elementi.<br>• Incolla un URL di playlist YouTube in <strong>Impostazioni → Canale 1</strong>.<br>• Usa i pulsanti ‹ / › per scorrere.<br>• Clicca su un elemento per aprirlo.",
+  h_channel2: "<strong>Canale 2</strong><br><br>• Legge un feed Atom/RSS e mostra i suoi elementi.<br>• Incolla un URL di playlist YouTube in <strong>Impostazioni → Canale 2</strong>.<br>• Usa i pulsanti ‹ / › per scorrere.<br>• Clicca su un elemento per aprirlo.",
+  h_channel3: "<strong>Canale 3</strong><br><br>• Legge un feed Atom/RSS e mostra i suoi elementi.<br>• Incolla un URL di playlist YouTube in <strong>Impostazioni → Canale 3</strong>.<br>• Usa i pulsanti ‹ / › per scorrere.<br>• Clicca su un elemento per aprirlo.",
+  h_channel4: "<strong>Canale 4</strong><br><br>• Legge un feed Atom/RSS e mostra i suoi elementi.<br>• Incolla un URL di playlist YouTube in <strong>Impostazioni → Canale 4</strong>.<br>• Usa i pulsanti ‹ / › per scorrere.<br>• Clicca su un elemento per aprirlo.",
 
   h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
   h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",

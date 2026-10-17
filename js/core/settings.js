@@ -53,6 +53,10 @@ const DEFAULT_SETTINGS = {
   "github-repo": {
     feed: "dbee01/handi-the-social-homepage",
   },
+  channel1: { feedUrl: "" },
+  channel2: { feedUrl: "" },
+  channel3: { feedUrl: "" },
+  channel4: { feedUrl: "" },
 };
 
 export function loadSettings() {
@@ -74,6 +78,33 @@ export function saveSettings(settings) {
   window.dispatchEvent(
     new CustomEvent("settingsChanged", { detail: settings }),
   );
+}
+
+// Convert a YouTube playlist URL into the matching YouTube Atom feed URL.
+// e.g. https://youtube.com/playlist?list=PL2v...
+//   → https://www.youtube.com/feeds/videos.xml?playlist_id=PL2v...
+// Any other URL is returned unchanged.
+export function normalizeFeedUrl(url) {
+  if (!url) return "";
+  const trimmed = String(url).trim();
+  if (!trimmed) return "";
+  try {
+    const parsed = new URL(trimmed);
+    const host = parsed.hostname.replace(/^www\./, "").toLowerCase();
+    const isYoutube =
+      host === "youtube.com" || host.endsWith(".youtube.com");
+    if (isYoutube && parsed.pathname === "/playlist") {
+      const listId = parsed.searchParams.get("list");
+      if (listId) {
+        return (
+          "https://www.youtube.com/feeds/videos.xml?playlist_id=" + listId
+        );
+      }
+    }
+  } catch (e) {
+    /* not a parseable URL — return as-is */
+  }
+  return trimmed;
 }
 
 function mergeDeep(target, source) {

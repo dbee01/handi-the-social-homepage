@@ -1455,6 +1455,106 @@
             </div>
         </div>
 
+        <!-- Premium 2: Channel 1 (Atom/RSS) -->
+        <div class="module-card" data-module="channel1">
+            <div class="module-header">
+                <div class="module-title">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                    <h3>Channel 1</h3>
+                </div>
+                <div class="toggle-switch">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            <div class="module-config">
+                <div class="config-field">
+                    <label for="channel1FeedUrl">Atom/RSS feed URL:</label
+                    ><input
+                        type="text"
+                        id="channel1FeedUrl"
+                        placeholder="https://www.youtube.com/feeds/videos.xml?playlist_id=..."
+                        inputmode="url"
+                    />
+                    <small>Paste an Atom/RSS feed URL (e.g. an RSS.app feed or a YouTube playlist feed). Its entries will appear on the homepage Channel 1 element.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium 3: Channel 2 (Atom/RSS) -->
+        <div class="module-card" data-module="channel2">
+            <div class="module-header">
+                <div class="module-title">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                    <h3>Channel 2</h3>
+                </div>
+                <div class="toggle-switch">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            <div class="module-config">
+                <div class="config-field">
+                    <label for="channel2FeedUrl">Atom/RSS feed URL:</label
+                    ><input
+                        type="text"
+                        id="channel2FeedUrl"
+                        placeholder="https://www.youtube.com/feeds/videos.xml?playlist_id=..."
+                        inputmode="url"
+                    />
+                    <small>Paste an Atom/RSS feed URL (e.g. an RSS.app feed or a YouTube playlist feed). Its entries will appear on the homepage Channel 2 element.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium 4: Channel 3 (Atom/RSS) -->
+        <div class="module-card" data-module="channel3">
+            <div class="module-header">
+                <div class="module-title">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                    <h3>Channel 3</h3>
+                </div>
+                <div class="toggle-switch">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            <div class="module-config">
+                <div class="config-field">
+                    <label for="channel3FeedUrl">Atom/RSS feed URL:</label
+                    ><input
+                        type="text"
+                        id="channel3FeedUrl"
+                        placeholder="https://www.youtube.com/feeds/videos.xml?playlist_id=..."
+                        inputmode="url"
+                    />
+                    <small>Paste an Atom/RSS feed URL (e.g. an RSS.app feed or a YouTube playlist feed). Its entries will appear on the homepage Channel 3 element.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium 5: Channel 4 (Atom/RSS) -->
+        <div class="module-card" data-module="channel4">
+            <div class="module-header">
+                <div class="module-title">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                    <h3>Channel 4</h3>
+                </div>
+                <div class="toggle-switch">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            <div class="module-config">
+                <div class="config-field">
+                    <label for="channel4FeedUrl">Atom/RSS feed URL:</label
+                    ><input
+                        type="text"
+                        id="channel4FeedUrl"
+                        placeholder="https://www.youtube.com/feeds/videos.xml?playlist_id=..."
+                        inputmode="url"
+                    />
+                    <small>Paste an Atom/RSS feed URL (e.g. an RSS.app feed or a YouTube playlist feed). Its entries will appear on the homepage Channel 4 element.</small>
+                </div>
+            </div>
+        </div>
+
         <!-- Premium 2: Live Bus Tracker -->
 
         <div class="module-card" data-module="live_bus">
@@ -1869,10 +1969,6 @@
                     </div>
                     <div class="elderlyShow phoneCaregiver">
                         <label style="display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:1.1rem;cursor:pointer;">
-                            <span>🩺 Caregiver</span>
-                            <input type="radio" name="caregiver" class="caregiver-radio" data-index="${i}" ${c.caregiver ? "checked" : ""} style="transform:scale(2);flex-shrink:0;" />
-                        </label>
-                        <label style="display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:1.1rem;cursor:pointer;">
                             <span>📍 Share</span>
                             <input type="checkbox" class="shareloc-check" data-index="${i}" ${c.share_location ? "checked" : ""} style="transform:scale(2);flex-shrink:0;" />
                         </label>
@@ -1882,19 +1978,6 @@
             `,
                     )
                     .join("");
-
-                // Wire up caregiver radios (only one at a time)
-                document
-                    .querySelectorAll(".caregiver-radio")
-                    .forEach((radio) => {
-                        radio.addEventListener("change", () => {
-                            const idx = parseInt(radio.dataset.index);
-                            phoneContacts.forEach((c, i) => {
-                                c.caregiver = i === idx;
-                            });
-                            renderPhoneContacts();
-                        });
-                    });
 
                 // Wire up share location checkboxes
                 document.querySelectorAll(".shareloc-check").forEach((cb) => {
@@ -1933,7 +2016,6 @@
                     number: "",
                     webrtcId,
                     photo: null,
-                    caregiver: phoneContacts.length === 0,
                     share_location: false,
                 };
 
@@ -2049,11 +2131,30 @@
                         <strong>${escapeHtml(c.name)}</strong><br>
                         <small>${escapeHtml(c.number)}</small>
                     </div>
+                    <div class="elderlyShow phoneCaregiver">
+                        <label style="display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:1.1rem;cursor:pointer;">
+                            <span>🩺 Caregiver</span>
+                            <input type="radio" name="ctc-caregiver" class="ctc-caregiver-radio" data-index="${i}" ${c.caregiver ? "checked" : ""} style="transform:scale(2);flex-shrink:0;" />
+                        </label>
+                    </div>
                     <button class="delete-ctc-contact" data-index="${i}">✖ Delete</button>
                 </div>
             `,
                     )
                     .join("");
+
+                // Wire up caregiver radios (only one at a time)
+                document
+                    .querySelectorAll(".ctc-caregiver-radio")
+                    .forEach((radio) => {
+                        radio.addEventListener("change", () => {
+                            const idx = parseInt(radio.dataset.index);
+                            clickToCallContacts.forEach((c, i) => {
+                                c.caregiver = i === idx;
+                            });
+                            renderClickToCallContacts();
+                        });
+                    });
 
                 document
                     .querySelectorAll(".delete-ctc-contact")
@@ -2092,6 +2193,7 @@
                             name,
                             number,
                             photo: e.target.result,
+                            caregiver: clickToCallContacts.length === 0,
                         });
                         renderClickToCallContacts();
                         nameInput.value = "";
@@ -2100,7 +2202,12 @@
                     };
                     reader.readAsDataURL(photoFile);
                 } else {
-                    clickToCallContacts.push({ name, number, photo: null });
+                    clickToCallContacts.push({
+                        name,
+                        number,
+                        photo: null,
+                        caregiver: clickToCallContacts.length === 0,
+                    });
                     renderClickToCallContacts();
                     nameInput.value = "";
                     numberInput.value = "";
@@ -2525,6 +2632,14 @@
                     }
                 }
 
+                // Load channel settings
+                ["channel1", "channel2", "channel3", "channel4"].forEach((cid) => {
+                    const input = document.getElementById(cid + "FeedUrl");
+                    if (input) {
+                        input.value = (settings[cid] && settings[cid].feedUrl) || "";
+                    }
+                });
+
                 // Load events settings
                 if (settings.events) {
                     if (document.getElementById("eventsLocation")) {
@@ -2686,6 +2801,12 @@
                 settings.newsletter.feedUrl =
                     document.getElementById("newsletterFeedUrl")?.value.trim() || "";
 
+                ["channel1", "channel2", "channel3", "channel4"].forEach((cid) => {
+                    if (!settings[cid]) settings[cid] = {};
+                    settings[cid].feedUrl =
+                        document.getElementById(cid + "FeedUrl")?.value.trim() || "";
+                });
+
                 if (!settings.events) settings.events = {};
                 settings.events.location =
                     document.getElementById("eventsLocation")?.value.trim() || "";
@@ -2748,7 +2869,6 @@
                     name: c.name,
                     number: c.number || "",
                     webrtcId: c.webrtcId,
-                    caregiver: c.caregiver,
                     share_location: c.share_location,
                 }));
                 // Store photos separately to avoid quota

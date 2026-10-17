@@ -69,6 +69,10 @@ var LANG = {
     "github-repo": { name: "GitHub Repo", desc: "Flux du dépôt" },
     "handi-phone": { name: "Téléphone Handi", desc: "Appels gratuits navigateur à navigateur" },
     "sim-phone": { name: "Téléphone SIM", desc: "Appels vers tout téléphone (WebRTC)" },
+    channel1: { name: "Canal 1", desc: "flux Atom/RSS" },
+    channel2: { name: "Canal 2", desc: "flux Atom/RSS" },
+    channel3: { name: "Canal 3", desc: "flux Atom/RSS" },
+    channel4: { name: "Canal 4", desc: "flux Atom/RSS" },
   },
   d_loading: "Chargement...",
   d_noData: "Aucune donnée.",
@@ -97,6 +101,7 @@ var LANG = {
   d_addImages: "Ajouter des images",
   d_noImages: "Aucune image dans la galerie.",
   d_fullScreen: "Plein écran",
+  d_reduce: "Réduire",
   d_pause: "Pause",
   d_play: "Lecture",
   d_pasteIcal: "Coller l'URL iCal...",
@@ -257,6 +262,10 @@ var LANG = {
         // Newsletter
         d_newsletterEmpty: "Aucun élément de newsletter trouvé.",
         d_newsletterLoad: "Charger la newsletter",
+        d_channelEmpty: "Aucun élément trouvé.",
+        d_channelConfigure: "Ajoutez une URL de flux Atom/RSS dans les paramètres.",
+        d_channelLoad: "Charger le canal",
+        d_channelInvalid: "Impossible de charger ce flux. Vérifiez que l'URL est un flux Atom/RSS valide.",
 
         // Sports
         d_sportsNoKey: "Le sport en direct n'est pas configuré sur le serveur.",
@@ -379,6 +388,11 @@ var LANG = {
   h_fitness: "<strong>💪 Fitness</strong><br><br>• Mettez à jour votre application de fitness Wger.de et collez votre jeton sur la page des paramètres pour suivre votre propre activité physique.<br><br> Vos données vont de Wger à votre navigateur. Nous ne les voyons pas.",
   h_chat: "<strong>💬 Chat (Matrix)</strong><br><br>• Créez votre propre compte Matrix sur <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> pour démarrer des salons de discussion privés pour la famille ou les amis.<br>• Ajoutez les URL des salons, le jeton d'accès et l'ID utilisateur dans <strong>Paramètres → Chat</strong>.<br>• Le module vérifie les nouveaux messages toutes les 30 secondes.<br>• Cliquez sur l'en-tête du salon pour l'agrandir et voir les messages.<br>• Les notifications de nouveaux messages apparaissent sous forme de badge rouge.",
   h_calendar: "<strong>📅 Calendrier (Proton ICS)</strong><br><br>• Affiche les événements du jour de votre calendrier Proton.<br>• Obtenez votre lien ICS depuis Proton Calendar → Paramètres → Calendriers → « Partager avec tout le monde » → « Créer un lien ».<br>• Collez le lien ICS dans <strong>Paramètres → Calendrier</strong>.<br><br><strong>🔔 Alertes :</strong><br>• Les notifications sont définies dans votre application de calendrier — ex. 2 notifications sur un événement = deux alertes sur ce tableau de bord.<br>• Activez/désactivez les alertes avec le bouton en haut du calendrier.<br><br><strong>⚠️ Limitations importantes (Proton, pas ce module) :</strong><br>• Le flux ICS se met à jour <strong>toutes les 4 à 16 heures</strong> – les nouveaux événements prennent du temps à apparaître.<br>• Les événements récurrents peuvent ne pas s'afficher correctement.<br><br><strong>💡 Conseils :</strong><br>• Si un événement n'apparaît pas, attendez quelques heures et réessayez.",
+
+  h_channel1: "<strong>Canal 1</strong><br><br>• Lit un flux Atom/RSS et affiche ses entrées.<br>• Collez une URL de playlist YouTube dans <strong>Paramètres → Canal 1</strong>.<br>• Utilisez les boutons ‹ / › pour faire défiler.<br>• Cliquez sur une entrée pour l'ouvrir.",
+  h_channel2: "<strong>Canal 2</strong><br><br>• Lit un flux Atom/RSS et affiche ses entrées.<br>• Collez une URL de playlist YouTube dans <strong>Paramètres → Canal 2</strong>.<br>• Utilisez les boutons ‹ / › pour faire défiler.<br>• Cliquez sur une entrée pour l'ouvrir.",
+  h_channel3: "<strong>Canal 3</strong><br><br>• Lit un flux Atom/RSS et affiche ses entrées.<br>• Collez une URL de playlist YouTube dans <strong>Paramètres → Canal 3</strong>.<br>• Utilisez les boutons ‹ / › pour faire défiler.<br>• Cliquez sur une entrée pour l'ouvrir.",
+  h_channel4: "<strong>Canal 4</strong><br><br>• Lit un flux Atom/RSS et affiche ses entrées.<br>• Collez une URL de playlist YouTube dans <strong>Paramètres → Canal 4</strong>.<br>• Utilisez les boutons ‹ / › pour faire défiler.<br>• Cliquez sur une entrée pour l'ouvrir.",
 
   h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
   h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",

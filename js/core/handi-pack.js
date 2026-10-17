@@ -386,6 +386,10 @@
     if ((v = qs.get("sim-phone-contacts"))) {
       ensure("click_to_call").contacts = parseContactLines(v);
     }
+    if ((v = qs.get("channel1-feed"))) ensure("channel1").feedUrl = v;
+    if ((v = qs.get("channel2-feed"))) ensure("channel2").feedUrl = v;
+    if ((v = qs.get("channel3-feed"))) ensure("channel3").feedUrl = v;
+    if ((v = qs.get("channel4-feed"))) ensure("channel4").feedUrl = v;
     if ((v = qs.get("emergency-contacts"))) {
       ensure("emergency_alert").contacts = parseContactLines(v);
     }
@@ -440,6 +444,10 @@
     if (qs.get("phone-contacts")) autoModules.push("phone");
     if (qs.get("handi-phone-contacts")) autoModules.push("handi-phone");
     if (qs.get("sim-phone-contacts")) autoModules.push("sim-phone");
+    if (qs.get("channel1-feed")) autoModules.push("channel1");
+    if (qs.get("channel2-feed")) autoModules.push("channel2");
+    if (qs.get("channel3-feed")) autoModules.push("channel3");
+    if (qs.get("channel4-feed")) autoModules.push("channel4");
     if (qs.get("emergency-contacts")) autoModules.push("emergency_alert");
     if (qs.get("sports")) autoModules.push("sports");
     if (qs.has("sports")) autoModules.push("sports");
@@ -468,6 +476,10 @@
         "phone",
         "handi-phone",
         "sim-phone",
+        "channel1",
+        "channel2",
+        "channel3",
+        "channel4",
         "live_bus",
         "emergency_alert",
         "support",

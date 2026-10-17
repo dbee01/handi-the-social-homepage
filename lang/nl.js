@@ -70,6 +70,10 @@ var LANG = {
     "github-repo": { name: "GitHub Repo", desc: "Repository-feed" },
     "handi-phone": { name: "Handi telefoon", desc: "Gratis browser-naar-browser bellen" },
     "sim-phone": { name: "SIM-telefoon", desc: "Bellen naar elk telefoonnummer (WebRTC)" },
+    channel1: { name: "Kanaal 1", desc: "Atom/RSS-feed" },
+    channel2: { name: "Kanaal 2", desc: "Atom/RSS-feed" },
+    channel3: { name: "Kanaal 3", desc: "Atom/RSS-feed" },
+    channel4: { name: "Kanaal 4", desc: "Atom/RSS-feed" },
   },
   d_loading: "Laden...",
   d_noData: "Geen gegevens.",
@@ -98,6 +102,7 @@ var LANG = {
   d_addImages: "Afbeeldingen toevoegen",
   d_noImages: "Geen afbeeldingen in galerij.",
   d_fullScreen: "Volledig scherm",
+  d_reduce: "Verkleinen",
   d_pause: "Pauze",
   d_play: "Afspelen",
   d_pasteIcal: "iCal-URL plakken...",
@@ -258,6 +263,10 @@ var LANG = {
         // Newsletter
         d_newsletterEmpty: "Geen nieuwsbriefitems gevonden.",
         d_newsletterLoad: "Nieuwsbrief laden",
+                d_channelEmpty: "Geen items gevonden.",
+                d_channelConfigure: "Voeg een Atom/RSS-feed-URL toe in Instellingen.",
+                d_channelLoad: "Kanaal laden",
+                d_channelInvalid: "Deze feed kon niet worden geladen. Controleer of de URL een geldige Atom/RSS-feed is.",
 
         // Sports
         d_sportsNoKey: "Live sport is niet geconfigureerd op de server.",
@@ -381,6 +390,10 @@ var LANG = {
   h_chat: "<strong>💬 Chat (Matrix)</strong><br><br>• Maak je eigen Matrix-account aan op <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> om privé chatrooms voor familie of vrienden te starten.<br>• Voeg kamer-URL's, toegangstoken, gebruikers-ID toe in <strong>Instellingen → Chat</strong>.<br>• De module controleert elke 30 seconden op nieuwe berichten.<br>• Klik op de kamerheader om uit te vouwen en berichten te bekijken.<br>• Meldingen van nieuwe berichten verschijnen als een rode badge.",
   h_calendar: "<strong>📅 Agenda (Proton ICS)</strong><br><br>• Toont de afspraken van vandaag uit je Proton-agenda.<br>• Verkrijg je ICS-link via Proton Calendar → Instellingen → Agenda's → 'Delen met iedereen' → 'Link maken'.<br>• Plak de ICS-link in <strong>Instellingen → Agenda</strong>.<br><br><strong>🔔 Meldingen:</strong><br>• Meldingen worden ingesteld in je agenda-app — bv. 2 meldingen op een afspraak = twee waarschuwingen op dit dashboard.<br>• Schakel meldingen in/uit met de knop bovenaan de agenda.<br><br><strong>⚠️ Belangrijke beperkingen (Proton, niet deze module):</strong><br>• De ICS-feed wordt <strong>elke 4–16 uur</strong> bijgewerkt – nieuwe afspraken hebben tijd nodig om te verschijnen.<br>• Terugkerende afspraken worden mogelijk niet correct weergegeven.<br><br><strong>💡 Tips:</strong><br>• Als een afspraak niet verschijnt, wacht dan een paar uur en probeer opnieuw.",
 
+  h_channel1: "<strong>Kanaal 1</strong><br><br>• Leest een Atom/RSS-feed en toont de items.<br>• Plak een YouTube-afspeellijst-URL in <strong>Instellingen → Kanaal 1</strong>.<br>• Gebruik de ‹ / › knoppen om te scrollen.<br>• Klik op een item om het te openen.",
+  h_channel2: "<strong>Kanaal 2</strong><br><br>• Leest een Atom/RSS-feed en toont de items.<br>• Plak een YouTube-afspeellijst-URL in <strong>Instellingen → Kanaal 2</strong>.<br>• Gebruik de ‹ / › knoppen om te scrollen.<br>• Klik op een item om het te openen.",
+  h_channel3: "<strong>Kanaal 3</strong><br><br>• Leest een Atom/RSS-feed en toont de items.<br>• Plak een YouTube-afspeellijst-URL in <strong>Instellingen → Kanaal 3</strong>.<br>• Gebruik de ‹ / › knoppen om te scrollen.<br>• Klik op een item om het te openen.",
+  h_channel4: "<strong>Kanaal 4</strong><br><br>• Leest een Atom/RSS-feed en toont de items.<br>• Plak een YouTube-afspeellijst-URL in <strong>Instellingen → Kanaal 4</strong>.<br>• Gebruik de ‹ / › knoppen om te scrollen.<br>• Klik op een item om het te openen.",
   h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
   h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",
   h_cast: "<strong>🎙️ Cast</strong><br><br>• Podcast player with 250MB limit. Unlock to play.",

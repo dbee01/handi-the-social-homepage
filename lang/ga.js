@@ -81,6 +81,10 @@ var LANG = {
     "github-repo": { name: "GitHub Repo", desc: "Fotha stóir" },
     "handi-phone": { name: "Fón Handi", desc: "Glaonna brabhsálaí-go-brabhsálaí saor in aisce" },
     "sim-phone": { name: "Fón SIM", desc: "Glaonna chuig aon fhón (WebRTC)" },
+    channel1: { name: "Cainéal 1", desc: "fotha Atom/RSS" },
+    channel2: { name: "Cainéal 2", desc: "fotha Atom/RSS" },
+    channel3: { name: "Cainéal 3", desc: "fotha Atom/RSS" },
+    channel4: { name: "Cainéal 4", desc: "fotha Atom/RSS" },
   },
 
   d_loading: "Á lódáil...",
@@ -110,6 +114,7 @@ var LANG = {
   d_addImages: "Cuir Íomhánna Leis",
   d_noImages: "Gan íomhánna sa ghailearaí.",
   d_fullScreen: "Lánscáileán",
+  d_reduce: "Laghdaigh",
   d_pause: "Sos",
   d_play: "Seinn",
   d_pasteIcal: "Greamaigh URL iCal...",
@@ -271,6 +276,12 @@ var LANG = {
         d_newsletterEmpty: "Ní bhfuarthas aon mhír nuachtlitreach.",
         d_newsletterLoad: "Luchtaigh nuachtlitir",
 
+        // Channel
+        d_channelEmpty: "Níl aon mhíreanna ann.",
+        d_channelConfigure: "Cuir URL fotha Atom/RSS leis sna Socruithe.",
+        d_channelLoad: "Lódáil Cainéal",
+        d_channelInvalid: "Níorbh fhéidir an fotha seo a lódáil. Deimhnigh gur URL fotha Atom/RSS bailí é.",
+
         // Sports
         d_sportsNoKey: "Níl spórt beo cumraithe ar an bhfreastalaí.",
         d_sportsNoKeyHint: "Cuir APISPORTS_KEY le .env an fhreastalaí agus atosaigh.",
@@ -397,6 +408,11 @@ var LANG = {
   h_fitness: "<strong>💪 Aclaíocht</strong><br><br>• Nuashonraigh d'aip aclaíochta Wger.de agus greamaigh do chomhartha ar an leathanach socruithe chun monatóireacht a dhéanamh ar do ghníomhaíocht aclaíochta féin.<br><br> Téann do shonraí ó Wger chuig do bhrabhsálaí. Ní fheiceann muidne iad.",
   h_chat: "<strong>💬 Comhrá (Matrix)</strong><br><br>• Cruthaigh do chuntas Matrix féin ag <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> chun seomraí comhrá príobháideacha a thosú do theaghlach nó do chairde.<br>• Cuir URLanna seomraí, comhartha rochtana, ID úsáideora in <strong>Socruithe → Comhrá</strong>.<br>• Seiceálann an modúl teachtaireachtaí nua gach 30 soicind.<br>• Cliceáil ar cheanntásc an tseomra chun é a leathnú agus teachtaireachtaí a fheiceáil.<br>• Taispeántar fógraí teachtaireachtaí nua mar shuaitheantas dearg.",
   h_calendar: "<strong>📅 Féilire (Proton ICS)</strong><br><br>• Taispeánann imeachtaí an lae inniu ó d'Fhéilire Proton.<br>• Faigh do nasc ICS ó Proton Calendar → Socruithe → Féilirí → 'Roinn le haon duine' → 'Cruthaigh nasc'.<br>• Greamaigh an nasc ICS in <strong>Socruithe → Féilire</strong>.<br><br><strong>🔔 Foláirimh:</strong><br>• Socraítear fógraí i d'aip féilire — m.sh. 2 fhógra ar imeacht = dhá fholáireamh ar an deais seo.<br>• Scoránaigh foláirimh air/as leis an gcnaipe ag barr an fhéilire.<br><br><strong>⚠️ Teorainneacha tábhachtacha (Proton, ní an modúl seo):</strong><br>• Nuashonraíonn an fotha ICS <strong>gach 4–16 uair an chloig</strong> – tógann imeachtaí nua am le feiceáil.<br>• Seans nach dtaispeánfar imeachtaí athfhillteacha i gceart.<br><br><strong>💡 Leideanna:</strong><br>• Mura bhfeictear imeacht, fan cúpla uair an chloig agus bain triail eile as.",
+
+  h_channel1: "<strong>Cainéal 1</strong><br><br>• Léann fotha Atom/RSS agus taispeánann sé a chuid míreanna.<br>• Greamaigh URL Seinliosta YouTube in <strong>Socruithe → Cainéal 1</strong>.<br>• Úsáid na cnaipí <strong>‹ / ›</strong> chun scrollú.<br>• Cliceáil ar mhír chun é a oscailt.",
+  h_channel2: "<strong>Cainéal 2</strong><br><br>• Léann fotha Atom/RSS agus taispeánann sé a chuid míreanna.<br>• Greamaigh URL Seinliosta YouTube in <strong>Socruithe → Cainéal 2</strong>.<br>• Úsáid na cnaipí <strong>‹ / ›</strong> chun scrollú.<br>• Cliceáil ar mhír chun é a oscailt.",
+  h_channel3: "<strong>Cainéal 3</strong><br><br>• Léann fotha Atom/RSS agus taispeánann sé a chuid míreanna.<br>• Greamaigh URL Seinliosta YouTube in <strong>Socruithe → Cainéal 3</strong>.<br>• Úsáid na cnaipí <strong>‹ / ›</strong> chun scrollú.<br>• Cliceáil ar mhír chun é a oscailt.",
+  h_channel4: "<strong>Cainéal 4</strong><br><br>• Léann fotha Atom/RSS agus taispeánann sé a chuid míreanna.<br>• Greamaigh URL Seinliosta YouTube in <strong>Socruithe → Cainéal 4</strong>.<br>• Úsáid na cnaipí <strong>‹ / ›</strong> chun scrollú.<br>• Cliceáil ar mhír chun é a oscailt.",
 
   h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
   h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",

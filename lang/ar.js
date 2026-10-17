@@ -68,6 +68,10 @@ var LANG = {
     "github-repo": { name: "GitHub Repo", desc: "موجز المستودع" },
     "handi-phone": { name: "هاتف هاندي", desc: "مكالمات مجانية بين المتصفحات" },
     "sim-phone": { name: "هاتف SIM", desc: "اتصال بأي هاتف (WebRTC)" },
+    channel1: { name: "قناة 1", desc: "خلاصة Atom/RSS" },
+    channel2: { name: "قناة 2", desc: "خلاصة Atom/RSS" },
+    channel3: { name: "قناة 3", desc: "خلاصة Atom/RSS" },
+    channel4: { name: "قناة 4", desc: "خلاصة Atom/RSS" },
   },
   d_loading: "جار التحميل...",
   d_noData: "لا توجد بيانات.",
@@ -96,6 +100,7 @@ var LANG = {
   d_addImages: "إضافة صور",
   d_noImages: "لا توجد صور.",
   d_fullScreen: "ملء الشاشة",
+  d_reduce: "تصغير",
   d_pause: "إيقاف مؤقت",
   d_play: "تشغيل",
   d_pasteIcal: "لصق رابط iCal...",
@@ -256,6 +261,10 @@ var LANG = {
         // Newsletter
         d_newsletterEmpty: "لا توجد عناصر في النشرة الإخبارية.",
         d_newsletterLoad: "تحميل النشرة الإخبارية",
+        d_channelEmpty: "لا توجد عناصر.",
+        d_channelConfigure: "أضف رابط خلاصة Atom/RSS في الإعدادات.",
+        d_channelLoad: "تحميل القناة",
+        d_channelInvalid: "تعذر تحميل هذه الخلاصة. تحقق من أن الرابط هو خلاصة Atom/RSS صالحة.",
 
         // Sports
         d_sportsNoKey: "الرياضة المباشرة غير مهيأة على الخادم.",
@@ -377,6 +386,11 @@ var LANG = {
   h_fitness: "<strong>💪 اللياقة البدنية</strong><br><br>• حدّث تطبيق اللياقة الخاص بك على Wger.de والصق رمز الوصول الخاص بك في صفحة الإعدادات لمراقبة نشاطك البدني.<br><br> تنتقل بياناتك من Wger إلى متصفحك. نحن لا نراها.",
   h_chat: "<strong>💬 الدردشة (Matrix)</strong><br><br>• أنشئ حساب Matrix الخاص بك على <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> لبدء غرف دردشة خاصة للعائلة أو الأصدقاء.<br>• أضف روابط الغرف ورمز الوصول ومعرف المستخدم في <strong>الإعدادات → الدردشة</strong>.<br>• تتحقق الوحدة من الرسائل الجديدة كل 30 ثانية.<br>• انقر على رأس الغرفة لتوسيعها وعرض الرسائل.<br>• تظهر إشعارات الرسائل الجديدة كشارة حمراء.",
   h_calendar: "<strong>📅 التقويم (Proton ICS)</strong><br><br>• يعرض أحداث اليوم من تقويم Proton الخاص بك.<br>• احصل على رابط ICS من Proton Calendar → الإعدادات → التقويمات → 'مشاركة مع أي شخص' → 'إنشاء رابط'.<br>• الصق رابط ICS في <strong>الإعدادات → التقويم</strong>.<br><br><strong>🔔 التنبيهات:</strong><br>• يتم ضبط الإشعارات في تطبيق التقويم الخاص بك — مثال: إشعاران على حدث = تنبيهان على لوحة القيادة هذه.<br>• قم بتشغيل/إيقاف التنبيهات باستخدام الزر أعلى التقويم.<br><br><strong>⚠️ قيود هامة (Proton، وليس هذه الوحدة):</strong><br>• يتم تحديث تغذية ICS <strong>كل 4–16 ساعة</strong> – تستغرق الأحداث الجديدة وقتاً للظهور.<br>• قد لا تظهر الأحداث المتكررة بشكل صحيح.<br><br><strong>💡 نصائح:</strong><br>• إذا لم يظهر حدث، انتظر بضع ساعات وحاول مرة أخرى.",
+
+  h_channel1: "<strong>قناة 1</strong><br><br>• يقرأ خلاصة Atom/RSS ويعرض عناصرها.<br>• الصق رابط قائمة تشغيل YouTube في <strong>الإعدادات → قناة 1</strong>.<br>• استخدم زرّي ‹ / › للتمرير.<br>• انقر على عنصر لفتحه.",
+  h_channel2: "<strong>قناة 2</strong><br><br>• يقرأ خلاصة Atom/RSS ويعرض عناصرها.<br>• الصق رابط قائمة تشغيل YouTube في <strong>الإعدادات → قناة 2</strong>.<br>• استخدم زرّي ‹ / › للتمرير.<br>• انقر على عنصر لفتحه.",
+  h_channel3: "<strong>قناة 3</strong><br><br>• يقرأ خلاصة Atom/RSS ويعرض عناصرها.<br>• الصق رابط قائمة تشغيل YouTube في <strong>الإعدادات → قناة 3</strong>.<br>• استخدم زرّي ‹ / › للتمرير.<br>• انقر على عنصر لفتحه.",
+  h_channel4: "<strong>قناة 4</strong><br><br>• يقرأ خلاصة Atom/RSS ويعرض عناصرها.<br>• الصق رابط قائمة تشغيل YouTube في <strong>الإعدادات → قناة 4</strong>.<br>• استخدم زرّي ‹ / › للتمرير.<br>• انقر على عنصر لفتحه.",
 
   h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
   h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",

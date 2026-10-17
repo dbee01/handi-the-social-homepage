@@ -75,6 +75,10 @@ var LANG = {
     "github-repo": { name: "GitHub Repo", desc: "Repository-Feed" },
     "handi-phone": { name: "Handi Telefon", desc: "Kostenlose Browser-zu-Browser-Anrufe" },
     "sim-phone": { name: "SIM-Telefon", desc: "Anrufe an jedes Telefon (WebRTC)" },
+    channel1: { name: "Kanal 1", desc: "Atom/RSS-Feed" },
+    channel2: { name: "Kanal 2", desc: "Atom/RSS-Feed" },
+    channel3: { name: "Kanal 3", desc: "Atom/RSS-Feed" },
+    channel4: { name: "Kanal 4", desc: "Atom/RSS-Feed" },
   },
   d_loading: "Lädt...",
   d_noData: "Keine Daten.",
@@ -103,6 +107,7 @@ var LANG = {
   d_addImages: "Bilder hinzufügen",
   d_noImages: "Keine Bilder in der Galerie.",
   d_fullScreen: "Vollbild",
+  d_reduce: "Verkleinern",
   d_pause: "Pause",
   d_play: "Wiedergabe",
   d_pasteIcal: "iCal-URL einfügen...",
@@ -263,6 +268,10 @@ var LANG = {
         // Newsletter
         d_newsletterEmpty: "Keine Newsletter-Einträge gefunden.",
         d_newsletterLoad: "Newsletter laden",
+                d_channelEmpty: "Keine Einträge gefunden.",
+                d_channelConfigure: "Atom/RSS-Feed-URL in den Einstellungen hinzufügen.",
+                d_channelLoad: "Kanal laden",
+                d_channelInvalid: "Dieser Feed konnte nicht geladen werden. Prüfe, ob die URL ein gültiger Atom/RSS-Feed ist.",
 
         // Sports
         d_sportsNoKey: "Live-Sport ist auf dem Server nicht konfiguriert.",
@@ -385,6 +394,11 @@ var LANG = {
   h_fitness: "<strong>💪 Fitness</strong><br><br>• Aktualisiere deine Wger.de-Fitness-App und füge dein Token auf der Einstellungsseite ein, um deine eigene Fitnessaktivität zu überwachen.<br><br> Deine Daten gehen von Wger zu deinem Browser. Wir sehen sie nicht.",
   h_chat: "<strong>💬 Chat (Matrix)</strong><br><br>• Erstelle dein eigenes Matrix-Konto bei <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a>, um private Familien- oder Freundes-Chaträume zu starten.<br>• Raum-URLs, Zugriffstoken, Benutzer-ID hinzufügen unter <strong>Einstellungen → Chat</strong>.<br>• Das Modul prüft alle 30 Sekunden auf neue Nachrichten.<br>• Klicke auf die Raumkopfzeile, um sie zu erweitern und Nachrichten anzuzeigen.<br>• Benachrichtigungen über neue Nachrichten erscheinen als rotes Abzeichen.",
   h_calendar: "<strong>📅 Kalender (Proton ICS)</strong><br><br>• Zeigt die heutigen Ereignisse aus deinem Proton Kalender.<br>• ICS-Link abrufen über Proton Calendar → Einstellungen → Kalender → 'Mit jedem teilen' → 'Link erstellen'.<br>• ICS-Link einfügen unter <strong>Einstellungen → Kalender</strong>.<br><br><strong>🔔 Alarme:</strong><br>• Benachrichtigungen werden in deiner Kalender-App eingestellt — z.B. 2 Benachrichtigungen pro Ereignis = zwei Alarme auf diesem Dashboard.<br>• Alarme mit dem Schalter oben im Kalender ein-/ausschalten.<br><br><strong>⚠️ Wichtige Einschränkungen (Proton, nicht dieses Modul):</strong><br>• Der ICS-Feed aktualisiert sich <strong>alle 4–16 Stunden</strong> – neue Ereignisse brauchen Zeit, um zu erscheinen.<br>• Wiederkehrende Ereignisse werden möglicherweise nicht korrekt angezeigt.<br><br><strong>💡 Tipps:</strong><br>• Wenn ein Ereignis nicht erscheint, warte einige Stunden und versuche es erneut.",
+
+  h_channel1: "<strong>Kanal 1</strong><br><br>• Liest einen Atom/RSS-Feed und zeigt dessen Einträge an.<br>• Füge eine YouTube-Playlist-URL in <strong>Einstellungen → Kanal 1</strong> ein.<br>• Nutze die ‹ / › -Schaltflächen zum Scrollen.<br>• Klicke auf einen Eintrag, um ihn zu öffnen.",
+  h_channel2: "<strong>Kanal 2</strong><br><br>• Liest einen Atom/RSS-Feed und zeigt dessen Einträge an.<br>• Füge eine YouTube-Playlist-URL in <strong>Einstellungen → Kanal 2</strong> ein.<br>• Nutze die ‹ / › -Schaltflächen zum Scrollen.<br>• Klicke auf einen Eintrag, um ihn zu öffnen.",
+  h_channel3: "<strong>Kanal 3</strong><br><br>• Liest einen Atom/RSS-Feed und zeigt dessen Einträge an.<br>• Füge eine YouTube-Playlist-URL in <strong>Einstellungen → Kanal 3</strong> ein.<br>• Nutze die ‹ / › -Schaltflächen zum Scrollen.<br>• Klicke auf einen Eintrag, um ihn zu öffnen.",
+  h_channel4: "<strong>Kanal 4</strong><br><br>• Liest einen Atom/RSS-Feed und zeigt dessen Einträge an.<br>• Füge eine YouTube-Playlist-URL in <strong>Einstellungen → Kanal 4</strong> ein.<br>• Nutze die ‹ / › -Schaltflächen zum Scrollen.<br>• Klicke auf einen Eintrag, um ihn zu öffnen.",
 
   h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
   h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",

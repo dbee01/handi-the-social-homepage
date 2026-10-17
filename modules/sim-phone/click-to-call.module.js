@@ -964,7 +964,7 @@ export default function initClickToCall(container) {
               ${c.photo ? `<img src="${c.photo}" alt="">` : '<i class="fa-solid fa-user"></i>'}
             </div>
             <div class="ctc-info ctc-phone-trigger" data-number="${escapeHtml(c.number)}">
-              <div class="ctc-name">${escapeHtml(c.name)}</div>
+              <div class="ctc-name">${escapeHtml(c.name)}${c.caregiver ? ' <span class="elderlyShow" style="font-size:0.6rem;background:#f59e0b;color:white;padding:1px 5px;border-radius:6px;margin-left:4px;">' + t("d_caregiver", "Caregiver") + '</span>' : ''}</div>
               <div class="ctc-number">${escapeHtml(c.number)}</div>
             </div>
             <button class="ctc-phone-btn" data-number="${escapeHtml(c.number)}" title="Call">

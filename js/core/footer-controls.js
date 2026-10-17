@@ -138,7 +138,7 @@
         const settings = JSON.parse(
           window.handiNs.get("handiSettings") || "{}",
         );
-        const contacts = settings.phone?.contacts || [];
+        const contacts = settings.click_to_call?.contacts || [];
         const caregiver = contacts.find((c) => c.caregiver) || contacts[0];
         if (caregiver && caregiver.number) {
           // Ensure WebRTC is loaded
@@ -165,7 +165,7 @@
           }
         } else {
           alert(
-            "No caregiver contact found. Add a contact in Settings \u2192 Phone.",
+            "No caregiver contact found. Add a contact in Settings \u2192 SIM Phone.",
           );
         }
       } catch (e) {

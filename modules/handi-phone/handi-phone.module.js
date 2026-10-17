@@ -91,6 +91,17 @@ export default async function initPhone(container) {
     return getHandle() || myUserId;
   }
 
+  // ── Infobip WebRTC state ───────────────────────────────────────────────
+  let infobipRTC = null;
+  let currentCall = null;
+  let isConnected = false;
+  let userIdentity = null;
+  let pendingIncomingCall = null;
+  let callingBtn = null;
+  let incomingModal = null;
+  let presenceTimer = null;
+  let presencePollTimer = null;
+
   if (!contacts.length) {
     content.innerHTML =
       renderHandleBar().outerHTML +
@@ -106,17 +117,6 @@ export default async function initPhone(container) {
     bindHandleClaim();
     return;
   }
-
-  // ── Infobip WebRTC state ───────────────────────────────────────────────
-  let infobipRTC = null;
-  let currentCall = null;
-  let isConnected = false;
-  let userIdentity = null;
-  let pendingIncomingCall = null;
-  let callingBtn = null;
-  let incomingModal = null;
-  let presenceTimer = null;
-  let presencePollTimer = null;
 
   // ── Handle claiming (option 3: human-friendly unique name) ────────────
   async function claimHandle(handle) {
@@ -604,9 +604,6 @@ export default async function initPhone(container) {
               : '<div class="phone-avatar placeholder"><i class="fa-solid fa-user"></i></div>') +
             '<div class="phone-name">' +
             escapeHtml(c.name) + dot +
-            (c.caregiver
-              ? '<span class="elderlyShow" style="font-size:0.6rem;background:#f59e0b;color:white;padding:1px 5px;border-radius:6px;margin-left:4px;">' + t("d_caregiver", "Caregiver") + "</span>"
-              : "") +
             "</div></div>" +
             '<div class="phone-actions">' +
             '<button class="phone-call video-call" data-webrtc-id="' + escapeHtml(webrtcId) + '" data-name="' + escapeHtml(c.name) + '" title="' + escapeHtml(t("d_videoCall", "Video call")) + '"' + disabled + '><i class="fa-solid fa-video"></i></button>' +
@@ -702,7 +699,7 @@ export default async function initPhone(container) {
     s.id = "fp-presence-style";
     s.textContent =
       ".fp-presence{display:inline-block;width:10px;height:10px;border-radius:50%;margin-left:6px;vertical-align:middle}" +
-      ".elderlyShow .fp-presence{width:30px;height:30px}" +
+      ".elderlyShow .fp-presence{display:inline-block;width:20px;height:20px}" +
       ".fp-online{background:#16a34a}" +
       ".fp-offline{background:#9ca3af}" +
       ".phone-call[disabled]{opacity:.4;cursor:not-allowed}" +

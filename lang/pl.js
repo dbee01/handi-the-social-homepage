@@ -70,6 +70,10 @@ var LANG = {
     "github-repo": { name: "GitHub Repo", desc: "Kanał repozytorium" },
     "handi-phone": { name: "Telefon Handi", desc: "Darmowe rozmowy przeglądarka-przeglądarka" },
     "sim-phone": { name: "Telefon SIM", desc: "Rozmowy na dowolny telefon (WebRTC)" },
+    channel1: { name: "Kanał 1", desc: "kanał Atom/RSS" },
+    channel2: { name: "Kanał 2", desc: "kanał Atom/RSS" },
+    channel3: { name: "Kanał 3", desc: "kanał Atom/RSS" },
+    channel4: { name: "Kanał 4", desc: "kanał Atom/RSS" },
   },
   d_loading: "Ładowanie...",
   d_noData: "Brak danych.",
@@ -98,6 +102,7 @@ var LANG = {
   d_addImages: "Dodaj obrazy",
   d_noImages: "Brak obrazów.",
   d_fullScreen: "Pełny ekran",
+  d_reduce: "Zmniejsz",
   d_pause: "Pauza",
   d_play: "Odtwarzaj",
   d_pasteIcal: "Wklej URL iCal...",
@@ -259,6 +264,11 @@ var LANG = {
         d_newsletterEmpty: "Nie znaleziono elementów biuletynu.",
         d_newsletterLoad: "Załaduj newsletter",
 
+        d_channelEmpty: "Nie znaleziono elementów.",
+        d_channelConfigure: "Dodaj URL kanału Atom/RSS w Ustawieniach.",
+        d_channelLoad: "Wczytaj kanał",
+        d_channelInvalid: "Nie udało się wczytać tego kanału. Sprawdź, czy URL to prawidłowy kanał Atom/RSS.",
+
         // Sports
         d_sportsNoKey: "Sport na żywo nie jest skonfigurowany na serwerze.",
         d_sportsNoKeyHint: "Dodaj APISPORTS_KEY do .env serwera i uruchom ponownie.",
@@ -380,6 +390,11 @@ var LANG = {
   h_fitness: "<strong>💪 Fitness</strong><br><br>• Zaktualizuj swoją aplikację fitness Wger.de i wklej swój token na stronie ustawień, aby monitorować własną aktywność fizyczną.<br><br> Twoje dane trafiają z Wger do Twojej przeglądarki. My ich nie widzimy.",
   h_chat: "<strong>💬 Czat (Matrix)</strong><br><br>• Utwórz własne konto Matrix na <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a>, aby rozpocząć prywatne pokoje rozmów dla rodziny lub przyjaciół.<br>• Dodaj adresy URL pokoi, token dostępu, ID użytkownika w <strong>Ustawienia → Czat</strong>.<br>• Moduł sprawdza nowe wiadomości co 30 sekund.<br>• Kliknij nagłówek pokoju, aby rozwinąć i wyświetlić wiadomości.<br>• Powiadomienia o nowych wiadomościach pojawiają się jako czerwona plakietka.",
   h_calendar: "<strong>📅 Kalendarz (Proton ICS)</strong><br><br>• Pokazuje dzisiejsze wydarzenia z Twojego Kalendarza Proton.<br>• Uzyskaj link ICS z Proton Calendar → Ustawienia → Kalendarze → 'Udostępnij każdemu' → 'Utwórz link'.<br>• Wklej link ICS w <strong>Ustawienia → Kalendarz</strong>.<br><br><strong>🔔 Alerty:</strong><br>• Powiadomienia są ustawiane w aplikacji kalendarza — np. 2 powiadomienia na wydarzenie = dwa alerty na tym pulpicie.<br>• Włącz/wyłącz alerty przyciskiem u góry kalendarza.<br><br><strong>⚠️ Ważne ograniczenia (Proton, nie ten moduł):</strong><br>• Kanał ICS aktualizuje się <strong>co 4–16 godzin</strong> – nowe wydarzenia potrzebują czasu, aby się pojawić.<br>• Wydarzenia cykliczne mogą nie wyświetlać się poprawnie.<br><br><strong>💡 Wskazówki:</strong><br>• Jeśli wydarzenie się nie pojawia, poczekaj kilka godzin i spróbuj ponownie.",
+
+  h_channel1: "<strong>Kanał 1</strong><br><br>• Czyta kanał Atom/RSS i pokazuje jego wpisy.<br>• Wklej URL playlisty YouTube w <strong>Ustawienia → Kanał 1</strong>.<br>• Użyj przycisków ‹ / › do przewijania.<br>• Kliknij wpis, aby go otworzyć.",
+  h_channel2: "<strong>Kanał 2</strong><br><br>• Czyta kanał Atom/RSS i pokazuje jego wpisy.<br>• Wklej URL playlisty YouTube w <strong>Ustawienia → Kanał 2</strong>.<br>• Użyj przycisków ‹ / › do przewijania.<br>• Kliknij wpis, aby go otworzyć.",
+  h_channel3: "<strong>Kanał 3</strong><br><br>• Czyta kanał Atom/RSS i pokazuje jego wpisy.<br>• Wklej URL playlisty YouTube w <strong>Ustawienia → Kanał 3</strong>.<br>• Użyj przycisków ‹ / › do przewijania.<br>• Kliknij wpis, aby go otworzyć.",
+  h_channel4: "<strong>Kanał 4</strong><br><br>• Czyta kanał Atom/RSS i pokazuje jego wpisy.<br>• Wklej URL playlisty YouTube w <strong>Ustawienia → Kanał 4</strong>.<br>• Użyj przycisków ‹ / › do przewijania.<br>• Kliknij wpis, aby go otworzyć.",
 
   h_llm: "<strong>🧠 Private AI</strong><br><br>• Private browser AI. WebGPU required. 100% on-device.",
   h_task: "<strong>📋 Tasks</strong><br><br>• Tasks with labels and subtasks. Edit with ✎, delete with ✖.",

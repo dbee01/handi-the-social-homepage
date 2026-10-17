@@ -86,6 +86,10 @@ var LANG = {
     "github-repo": { name: "GitHub Repo", desc: "Repository feed" },
     "handi-phone": { name: "Handi Phone", desc: "Free browser-to-browser calls" },
     "sim-phone": { name: "SIM Phone", desc: "Calls to any phone (WebRTC)" },
+    channel1: { name: "Channel 1", desc: "Atom/RSS feed" },
+    channel2: { name: "Channel 2", desc: "Atom/RSS feed" },
+    channel3: { name: "Channel 3", desc: "Atom/RSS feed" },
+    channel4: { name: "Channel 4", desc: "Atom/RSS feed" },
   },
 
   // Dashboard component strings
@@ -116,6 +120,7 @@ var LANG = {
   d_addImages: "Add Images",
   d_noImages: "No images in gallery.",
   d_fullScreen: "Full Screen",
+  d_reduce: "Reduce",
   d_pause: "Pause",
   d_play: "Play",
   d_pasteIcal: "Paste iCal URL...",
@@ -324,6 +329,12 @@ var LANG = {
                 d_newsletterConfigure: "Add a newsletter feed URL in Settings.",
                 d_newsletterLoad: "Load Newsletter",
 
+                // Channels
+                d_channelEmpty: "No items found.",
+                d_channelConfigure: "Add an Atom/RSS feed URL in Settings.",
+                d_channelLoad: "Load Channel",
+                d_channelInvalid: "Could not load this feed. Check the URL is a valid Atom/RSS feed.",
+
                 // Sports
                 d_sportsNoKey: "Live sports is not configured on the server.",
                 d_sportsNoKeyHint: "Add APISPORTS_KEY to the server's .env and restart.",
@@ -495,6 +506,14 @@ var LANG = {
     "<strong>Chat (Matrix)</strong><br><br>• Create your own Matrix account at <a href='https://app.element.io' target='_blank' rel='noopener'>Element Matrix</a> to start private family or friend chat rooms.<br>• Add room URLs, access token, user ID in <strong>Settings → Chat</strong>.<br>• The module checks for new messages every 30 seconds.<br>• Click the room header to expand and view messages.<br>• New message notifications appear as a red badge.",
   h_calendar:
       "<strong>Calendar (Proton ICS)</strong><br><br>• Shows today's events from your Proton Calendar.<br>• Get your ICS link from Proton Calendar → Settings → Calendars → 'Share with anyone' → 'Create link'.<br>• Paste the ICS link in <strong>Settings → Calendar</strong>.<br><br><strong>🔔 Alerts:</strong><br>• Notifications are set in your calendar app — e.g. 2 notifications on a calendar event = two alerts on this dashboard.<br>• Toggle alerts On/Off using the button at the top of the calendar.<br><br><strong>⚠️ Important limitations (Proton, not this module):</strong><br>• The ICS feed updates <strong>every 4–16 hours</strong> – new events take time to appear.<br>• Recurring events may not appear correctly.<br><br><strong>💡 Tips:</strong><br>• If an event doesn't appear, wait a few hours and try again.",
+  h_channel1:
+    "<strong>Channel 1</strong><br><br>• Reads an Atom/RSS feed and shows its entries on your homepage.<br>• Paste a YouTube Playlist URL in <strong>Settings → Channel 1</strong>.<br>• Use the <strong>‹ / ›</strong> buttons to scroll through entries.<br>• Click any entry to open it in a new tab.",
+  h_channel2:
+    "<strong>Channel 2</strong><br><br>• Reads an Atom/RSS feed and shows its entries on your homepage.<br>• Paste a YouTube Playlist URL in <strong>Settings → Channel 2</strong>.<br>• Use the <strong>‹ / ›</strong> buttons to scroll through entries.<br>• Click any entry to open it in a new tab.",
+  h_channel3:
+    "<strong>Channel 3</strong><br><br>• Reads an Atom/RSS feed and shows its entries on your homepage.<br>• Paste a YouTube Playlist URL in <strong>Settings → Channel 3</strong>.<br>• Use the <strong>‹ / ›</strong> buttons to scroll through entries.<br>• Click any entry to open it in a new tab.",
+  h_channel4:
+    "<strong>Channel 4</strong><br><br>• Reads an Atom/RSS feed and shows its entries on your homepage.<br>• Paste a YouTube Playlist URL in <strong>Settings → Channel 4</strong>.<br>• Use the <strong>‹ / ›</strong> buttons to scroll through entries.<br>• Click any entry to open it in a new tab.",
 
     h_llm:
         "<strong>🧠 Private AI (LLM)</strong><br><br>• Downloads a language model directly to your browser.<br>• <strong>100% private</strong> — no data ever leaves your device.<br>• Pick a model and click <strong>Load</strong> — first download is ~600MB–2GB.<br>• <strong>Requires WebGPU</strong> (Chrome/Edge 113+, Vivaldi with <code>#enable-unsafe-webgpu</code> flag).<br>• Once loaded, chat runs entirely offline on your GPU.<br>• Use <strong>Clear</strong> to reset the conversation.<br>• Chat history saved locally (last 100 messages).",
