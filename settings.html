@@ -1923,6 +1923,14 @@
                                 }
                             }
                         }
+                        // Preserve stored keys that aren't in the registry
+                        // defaults (e.g. `phone`, `click_to_call` for the SIM
+                        // Phone contacts) so they survive a settings save.
+                        for (const key of Object.keys(parsed)) {
+                            if (defaults[key] === undefined) {
+                                defaults[key] = parsed[key];
+                            }
+                        }
                         return defaults;
                     }
                 } catch (e) {}
