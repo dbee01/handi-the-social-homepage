@@ -76,23 +76,20 @@ export default async function initPhone(container) {
   const suppliedContactsRaw =
     urlParam("handi-phone-contacts") ?? urlParam("phone-contacts");
   let selfIdentitySupplied = false;
+  let selfName = "";
+  let selfId = "";
   if (suppliedContactsRaw) {
     const supplied = parseWebrtcContactLines(suppliedContactsRaw);
     if (supplied.length) {
       const me = supplied[0];
       selfIdentitySupplied = true;
+      selfName = me.name || "";
+      selfId = me.webrtcId || "";
       // Adopt the first identity as the owner: a human name + the WebRTC id.
-      if (me.name) setDisplayName(me.name);
-      if (me.webrtcId && me.webrtcId !== me.name) {
-        localStorage.setItem("webrtc_user_id_v2", me.webrtcId);
+      if (selfName) setDisplayName(selfName);
+      if (selfId && selfId !== selfName) {
+        localStorage.setItem("webrtc_user_id_v2", selfId);
       }
-      // Drop the owner from the list of callable contacts (the remaining
-      // lines are the people this person calls).
-      const meKey = me.webrtcId;
-      contacts = contacts.filter((c) => {
-        const id = c.webrtcId || c.number || c.name || "";
-        return id !== meKey;
-      });
     }
   }
 
@@ -167,6 +164,23 @@ export default async function initPhone(container) {
   // by their distinct IDs.
   function myIdentity() {
     return myUserId;
+  }
+
+  // Drop the owner from the callable contact list so they can't ring
+  // themselves. Match against the adopted identity (myUserId) and/or the
+  // owner's display name, covering whatever field the contact ended up in.
+  if (selfIdentitySupplied && contacts.length) {
+    contacts = contacts.filter((c) => {
+      const webrtcId = c.webrtcId || "";
+      const number = c.number || "";
+      const name = c.name || "";
+      const matchesId =
+        (selfId && (webrtcId === selfId || number === selfId)) ||
+        webrtcId === myUserId ||
+        number === myUserId;
+      const matchesName = selfName && name === selfName;
+      return !matchesId && !matchesName;
+    });
   }
 
   // ── Infobip WebRTC state ───────────────────────────────────────────────
