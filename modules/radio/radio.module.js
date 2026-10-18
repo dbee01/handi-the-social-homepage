@@ -836,6 +836,11 @@ export default async function initRadio(container) {
       activeStationName = n2;
       if (!isLocked) stopVisualiser = startFakeVisualiser(synthCanvas);
       window.logEvent(2, "radio_play", { station: n2, url: url });
+      if (typeof window.refreshDashboardLayout === "function") {
+        requestAnimationFrame(function () {
+          window.refreshDashboardLayout();
+        });
+      }
     }
     function oe(a2, err) {
       if (a2 !== currentAudio) return;
