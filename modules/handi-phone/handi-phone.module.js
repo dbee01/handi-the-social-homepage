@@ -438,7 +438,7 @@ export default async function initPhone(container) {
     callPanel.innerHTML =
       '<div class="fp-call-panel-inner">' +
       '<div class="fp-call-panel-caller"><i class="fa-solid fa-user"></i> <strong>' + escapeHtml(caller) + "</strong></div>" +
-      '<div class="fp-call-panel-status">' + escapeHtml(t("d_inCall", "In call")) + "</div>" +
+      '<div class="fp-call-panel-status">' + escapeHtml(t("d_calling", "Calling…")) + "</div>" +
       '<div class="fp-call-panel-actions">' +
       '<button class="fp-ctl" id="fpMuteBtn" title="' + escapeHtml(t("d_mute", "Mute")) + '"><i class="fa-solid fa-microphone"></i></button>' +
       '<button class="fp-ctl" id="fpVolumeDownBtn" title="' + escapeHtml(t("d_volumeDown", "Volume down")) + '"><i class="fa-solid fa-volume-low"></i></button>' +
@@ -496,6 +496,12 @@ export default async function initPhone(container) {
       callPanel = null;
       callPanelMuted = false;
     }
+  }
+
+  function setCallPanelStatus(message) {
+    if (!callPanel) return;
+    const el = callPanel.querySelector(".fp-call-panel-status");
+    if (el) el.textContent = message;
   }
 
   async function ensureConnected() {
@@ -558,6 +564,7 @@ export default async function initPhone(container) {
           // incoming one, so mute / volume / hangup are always available.
           showCallPanel(callerLabel);
           currentCall.on("established", (event) => {
+            setCallPanelStatus(t("d_inCall", "In call"));
             if (event && event.stream) attachRemoteAudioStream(event.stream);
             if (callingBtn) setCalling(callingBtn, false);
           });
@@ -568,12 +575,16 @@ export default async function initPhone(container) {
             const v = document.getElementById("fpRemoteVideo");
             if (v) { v.srcObject = null; v.remove(); }
           });
-          currentCall.on("hangup", () => {
-            cleanupCall(localStream);
+          currentCall.on("hangup", (e) => {
+            console.warn("[handi-phone] call hangup", e && e.status ? e.status : e);
+            setCallPanelStatus(t("d_callEnded", "Call ended"));
+            setTimeout(function () { cleanupCall(localStream); }, 800);
             if (callingBtn) setCalling(callingBtn, false);
           });
-          currentCall.on("error", () => {
-            cleanupCall(localStream);
+          currentCall.on("error", (e) => {
+            console.error("[handi-phone] call error", e && e.errorCode ? e.errorCode : e);
+            setCallPanelStatus(t("d_callFailed", "Call failed"));
+            setTimeout(function () { cleanupCall(localStream); }, 1200);
             if (callingBtn) setCalling(callingBtn, false);
           });
           if (localStream) {
