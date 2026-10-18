@@ -214,7 +214,7 @@ var LANG = {
   d_decline: "Diúltaigh",
   d_online: "Ar líne",
   d_offline: "As líne",
-  d_yourHandle: "D'aitheantas WebRTC",
+  d_yourHandle: "D'aitheantas CallID Handi",
   d_pickHandle: "Éiligh ainm fón handi",
   d_claim: "Éiligh",
   d_inCall: "I nglao",

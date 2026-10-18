@@ -200,7 +200,7 @@ var LANG = {
   d_decline: "Recusar",
   d_online: "Online",
   d_offline: "Offline",
-  d_yourHandle: "O seu ID WebRTC",
+  d_yourHandle: "O seu CallID Handi",
   d_pickHandle: "Reserve o nome do telefone handi",
   d_claim: "Reservar",
   d_inCall: "Em chamada",

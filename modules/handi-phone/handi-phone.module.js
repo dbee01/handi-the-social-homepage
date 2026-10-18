@@ -205,7 +205,7 @@ export default async function initPhone(container) {
     const hasName = !!name && name !== "Anonymous";
 
     let html =
-      '<span class="fp-handle-label">' + escapeHtml(t("d_yourHandle", "Your WebRTC ID")) + ":</span> " +
+      '<span class="fp-handle-label">' + escapeHtml(t("d_yourHandle", "Your Handi CallID")) + ":</span> " +
       '<strong>' + escapeHtml(id) + "</strong>";
 
     if (hasName) {

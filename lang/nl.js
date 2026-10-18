@@ -202,7 +202,7 @@ var LANG = {
   d_decline: "Weigeren",
   d_online: "Online",
   d_offline: "Offline",
-  d_yourHandle: "Jouw WebRTC-ID",
+  d_yourHandle: "Jouw Handi CallID",
   d_pickHandle: "Claim handi-telefoonnaam",
   d_claim: "Claimen",
   d_inCall: "In gesprek",

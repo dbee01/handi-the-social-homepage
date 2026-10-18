@@ -207,7 +207,7 @@ var LANG = {
   d_decline: "Ablehnen",
   d_online: "Online",
   d_offline: "Offline",
-  d_yourHandle: "Deine WebRTC-ID",
+  d_yourHandle: "Deine Handi-CallID",
   d_pickHandle: "Handi-Telefon-Namen reservieren",
   d_claim: "Reservieren",
   d_inCall: "Im Gespräch",

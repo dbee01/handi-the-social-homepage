@@ -201,7 +201,7 @@ var LANG = {
   d_decline: "Gwrthod",
   d_online: "Ar-lein",
   d_offline: "All-lein",
-  d_yourHandle: "Eich ID WebRTC",
+  d_yourHandle: "Eich CallID Handi",
   d_pickHandle: "Hawliwch enw ffôn handi",
   d_claim: "Hawlio",
   d_inCall: "Mewn galwad",
