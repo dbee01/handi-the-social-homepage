@@ -5,11 +5,11 @@
  */
 
 // js/core/ring-alert.js
-// Standalone ringing / red-flash alert for incoming calls.
+// Standalone ringing / red-flash + beep alert for incoming calls.
 //
 // This is intentionally separate from the calendar module so a ringing phone
-// always produces the visual (red flash) alert — no audio — even when the
-// calendar module isn't enabled (the calendar is premium and usually off).
+// always produces the visual (red flash) and audible (beep) alert even when
+// the calendar module isn't enabled (the calendar is premium and usually off).
 // Any module can trigger it by dispatching window "handiRingingStart" /
 // "handiRingingStop" events, or by calling the exposed window.handiRingAlert
 // API directly.
@@ -20,6 +20,62 @@
   var flashOverlay = null;
   var flashInterval = null;
   var dismissHandler = null;
+
+  // Audible ring (beep) using the Web Audio API — no external asset needed.
+  var audioCtx = null;
+  var beepTimer = null;
+
+  function ensureAudioContext() {
+    if (!audioCtx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      audioCtx = new AC();
+    }
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume().catch(function () {});
+    }
+    return audioCtx;
+  }
+
+  function playSingleBeep() {
+    var ctx = ensureAudioContext();
+    if (!ctx) return;
+    if (ctx.state === "suspended") {
+      ctx.resume().catch(function () {});
+    }
+    try {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.4);
+    } catch (e) {
+      /* audio may be blocked until a user gesture */
+    }
+  }
+
+  function startBeep() {
+    stopBeep();
+    // Two beeps per second (classic ring), repeating until stopped.
+    beepTimer = setInterval(function () {
+      playSingleBeep();
+      setTimeout(playSingleBeep, 500);
+    }, 1000);
+    playSingleBeep();
+  }
+
+  function stopBeep() {
+    if (beepTimer) {
+      clearInterval(beepTimer);
+      beepTimer = null;
+    }
+  }
 
   function startFlash() {
     if (!flashOverlay) {
@@ -70,12 +126,14 @@
   }
 
   function ring() {
-    // Ringing is visual-only (red flash). No audible alert/beep.
+    // Visual red flash + audible beep.
     startFlash();
+    startBeep();
   }
 
   function stop() {
     stopFlash();
+    stopBeep();
   }
 
   // Exposed API.
@@ -89,4 +147,17 @@
   // reference). The phone dispatches these; we react here.
   window.addEventListener("handiRingingStart", ring);
   window.addEventListener("handiRingingStop", stop);
+
+  // Unlock/resume the audio context on the first user interaction so the
+  // beep is audible when an incoming call arrives (browsers block autoplay
+  // until after a gesture).
+  function unlockAudio() {
+    ensureAudioContext();
+    window.removeEventListener("click", unlockAudio);
+    window.removeEventListener("keydown", unlockAudio);
+    window.removeEventListener("touchstart", unlockAudio);
+  }
+  window.addEventListener("click", unlockAudio);
+  window.addEventListener("keydown", unlockAudio);
+  window.addEventListener("touchstart", unlockAudio);
 })();

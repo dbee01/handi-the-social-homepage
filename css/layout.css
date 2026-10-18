@@ -119,18 +119,19 @@ header {
 }
 
 .header-datetime {
-    flex: 0 0 auto !important;
+    flex: 1 0 100% !important;
     display: flex !important;
     align-items: center !important;
-    justify-content: flex-end !important;
+    justify-content: center !important;
     gap: 8px !important;
     white-space: nowrap !important;
-    order: 3 !important;
-    padding: 8px 16px !important;
+    order: 0 !important;
+    padding: 2px 16px 6px !important;
     border-radius: 48px !important;
     color: var(--primary, #0047cc) !important;
     font-family: var(--header-font, inherit) !important;
     font-weight: 600;
+    text-align: center !important;
 }
 
 .header-datetime i {
@@ -166,7 +167,8 @@ header {
     }
     .header-datetime {
         justify-content: center !important;
-        width: auto !important;
+        width: 100% !important;
+        order: 0 !important;
     }
     .search-wrapper {
         max-width: 100% !important;
