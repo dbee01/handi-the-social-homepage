@@ -45,11 +45,10 @@ export default async function initPhone(container) {
   let contacts = settings.phone?.contacts || [];
 
   // ── Self identity supplied by the page URL ────────────────────────────
-  // The builder-admin form lists contacts as "Name: WebRTC ID" lines. When a
-  // pack link carries `handi-phone-contacts` (or legacy `phone-contacts`), the
-  // FIRST line is the *owner's own* identity — adopt it here (handle + display
-  // name + WebRTC id) and remove it from the contact list so it isn't shown as
-  // a callee. Only prompt the user to claim a name when no id was supplied.
+  // The builder-admin form lists contacts as "Name: WebRTC ID" lines. When the
+  // URL carries `handi-phone-contacts` (or legacy `phone-contacts`): the FIRST
+  // line is the *owner's own* identity, and every following line is a contact.
+  // Only prompt the user to claim a name when no id was supplied.
   function urlParam(name) {
     return new URLSearchParams(window.location.search).get(name);
   }
@@ -70,26 +69,22 @@ export default async function initPhone(container) {
     return out;
   }
 
-  // A self identity is present when the URL explicitly supplies at least one
-  // WebRTC contact line. (The pack may already have merged these into
-  // `settings.phone.contacts`, but checking the URL directly is unambiguous.)
   const suppliedContactsRaw =
     urlParam("handi-phone-contacts") ?? urlParam("phone-contacts");
   let selfIdentitySupplied = false;
-  let selfName = "";
-  let selfId = "";
   if (suppliedContactsRaw) {
     const supplied = parseWebrtcContactLines(suppliedContactsRaw);
     if (supplied.length) {
-      const me = supplied[0];
       selfIdentitySupplied = true;
-      selfName = me.name || "";
-      selfId = me.webrtcId || "";
+      const me = supplied[0];
       // Adopt the first identity as the owner: a human name + the WebRTC id.
-      if (selfName) setDisplayName(selfName);
-      if (selfId && selfId !== selfName) {
-        localStorage.setItem("webrtc_user_id_v2", selfId);
+      if (me.name) setDisplayName(me.name);
+      if (me.webrtcId && me.webrtcId !== me.name) {
+        localStorage.setItem("webrtc_user_id_v2", me.webrtcId);
       }
+      // Every following line is a callable contact. This is the source of
+      // truth, overriding whatever the settings cache had for this module.
+      contacts = supplied.slice(1);
     }
   }
 
@@ -166,22 +161,6 @@ export default async function initPhone(container) {
     return myUserId;
   }
 
-  // Drop the owner from the callable contact list so they can't ring
-  // themselves. Match against the adopted identity (myUserId) and/or the
-  // owner's display name, covering whatever field the contact ended up in.
-  if (selfIdentitySupplied && contacts.length) {
-    contacts = contacts.filter((c) => {
-      const webrtcId = c.webrtcId || "";
-      const number = c.number || "";
-      const name = c.name || "";
-      const matchesId =
-        (selfId && (webrtcId === selfId || number === selfId)) ||
-        webrtcId === myUserId ||
-        number === myUserId;
-      const matchesName = selfName && name === selfName;
-      return !matchesId && !matchesName;
-    });
-  }
 
   // ── Infobip WebRTC state ───────────────────────────────────────────────
   let infobipRTC = null;
