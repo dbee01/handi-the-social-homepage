@@ -42,7 +42,59 @@ export default async function initPhone(container) {
   if (parentItem) parentItem.dataset.module = "handi-phone";
 
   const settings = loadSettings();
-  const contacts = settings.phone?.contacts || [];
+  let contacts = settings.phone?.contacts || [];
+
+  // ── Self identity supplied by the page URL ────────────────────────────
+  // The builder-admin form lists contacts as "Name: WebRTC ID" lines. When a
+  // pack link carries `handi-phone-contacts` (or legacy `phone-contacts`), the
+  // FIRST line is the *owner's own* identity — adopt it here (handle + display
+  // name + WebRTC id) and remove it from the contact list so it isn't shown as
+  // a callee. Only prompt the user to claim a name when no id was supplied.
+  function urlParam(name) {
+    return new URLSearchParams(window.location.search).get(name);
+  }
+  function parseWebrtcContactLines(str) {
+    const out = [];
+    (str || "")
+      .split(/\r?\n/)
+      .forEach((line) => {
+        line = (line || "").trim();
+        if (!line) return;
+        const i = line.indexOf(":");
+        out.push(
+          i <= 0
+            ? { name: line, webrtcId: line }
+            : { name: line.slice(0, i).trim(), webrtcId: line.slice(i + 1).trim() },
+        );
+      });
+    return out;
+  }
+
+  // A self identity is present when the URL explicitly supplies at least one
+  // WebRTC contact line. (The pack may already have merged these into
+  // `settings.phone.contacts`, but checking the URL directly is unambiguous.)
+  const suppliedContactsRaw =
+    urlParam("handi-phone-contacts") ?? urlParam("phone-contacts");
+  let selfIdentitySupplied = false;
+  if (suppliedContactsRaw) {
+    const supplied = parseWebrtcContactLines(suppliedContactsRaw);
+    if (supplied.length) {
+      const me = supplied[0];
+      selfIdentitySupplied = true;
+      // Adopt the first identity as the owner: a human name + the WebRTC id.
+      if (me.name) setDisplayName(me.name);
+      if (me.webrtcId && me.webrtcId !== me.name) {
+        localStorage.setItem("webrtc_user_id_v2", me.webrtcId);
+      }
+      // Drop the owner from the list of callable contacts (the remaining
+      // lines are the people this person calls).
+      const meKey = me.webrtcId;
+      contacts = contacts.filter((c) => {
+        const id = c.webrtcId || c.number || c.name || "";
+        return id !== meKey;
+      });
+    }
+  }
 
   // Restore photos from separate storage
   try {
@@ -165,7 +217,9 @@ export default async function initPhone(container) {
 
     if (hasName) {
       html += ' <span style="opacity:.7">(' + escapeHtml(name) + ")</span>";
-    } else {
+    } else if (!selfIdentitySupplied) {
+      // Only prompt the user to claim a name when no identity was supplied
+      // in the page URL (builder-admin).
       // Inline styles guarantee a consistent look regardless of the global
       // button/input reset or theme override ordering.
       html +=
