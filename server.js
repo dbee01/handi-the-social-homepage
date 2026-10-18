@@ -96,12 +96,17 @@ function resetWebrtcIdentityData() {
   if (!force && fs.existsSync(WEBRTC_RESET_SENTINEL)) return;
 
   const dataDir = path.join(__dirname, "data");
-  const files = [
+
+  // Remove the identity files (including any stale `.bak` backups).
+  const globs = [
     path.join(dataDir, "webrtc-handles.json"),
     path.join(dataDir, "webrtc-presence.json"),
     path.join(dataDir, "webrtc-contacts.json"),
+    path.join(dataDir, "webrtc-handles.json.bak"),
+    path.join(dataDir, "webrtc-presence.json.bak"),
+    path.join(dataDir, "webrtc-contacts.json.bak"),
   ];
-  for (const file of files) {
+  for (const file of globs) {
     try {
       if (fs.existsSync(file)) {
         fs.unlinkSync(file);
@@ -121,6 +126,39 @@ function resetWebrtcIdentityData() {
   }
 }
 resetWebrtcIdentityData();
+
+// -----------------------------------------------------------------------------
+// CONTINUOUS IDENTITY NORMALIZATION
+// -----------------------------------------------------------------------------
+// Presence entries keyed by anything other than the new `handi_<8>` format
+// (e.g. devices still running old client JS that connect with a legacy
+// `handi_user_<uuid>`) are dropped so stale identities never linger in the
+// roster. This runs at startup and before every presence read.
+// -----------------------------------------------------------------------------
+const WEBRTC_IDENTITY_RE = /^handi_[a-z0-9]{8}$/i;
+
+function normalizeWebrtcPresence() {
+  const file = path.join(__dirname, "data", "webrtc-presence.json");
+  try {
+    if (!fs.existsSync(file)) return;
+    const raw = fs.readFileSync(file, "utf8");
+    if (!raw) return;
+    const all = JSON.parse(raw);
+    const cleaned = {};
+    for (const key in all) {
+      if (WEBRTC_IDENTITY_RE.test(key)) cleaned[key] = all[key];
+    }
+    if (Object.keys(cleaned).length !== Object.keys(all).length) {
+      fs.writeFileSync(file, JSON.stringify(cleaned, null, 2), "utf8");
+      console.log(
+        `   → Dropped ${Object.keys(all).length - Object.keys(cleaned).length} stale WebRTC presence entries.`,
+      );
+    }
+  } catch (e) {
+    /* best effort */
+  }
+}
+normalizeWebrtcPresence();
 
 app.use(cors());
 app.use(express.json());
@@ -881,6 +919,15 @@ app.post("/api/webrtc/presence", (req, res) => {
   const { userId, displayName, handle, online } = req.body || {};
   if (!userId) return res.status(400).json({ error: "Missing userId" });
 
+  // Only accept new `handi_<8>` identities. Stale clients sending a legacy
+  // `handi_user_<uuid>` id are ignored so old identities never re-enter the
+  // roster.
+  if (!WEBRTC_IDENTITY_RE.test(String(userId))) {
+    return res
+      .status(400)
+      .json({ error: "Invalid WebRTC identity (expected handi_<8-char>)" });
+  }
+
   const now = Date.now();
   const all = readWebrtcPresence();
   const prev = all[userId] || {};
@@ -917,6 +964,9 @@ function rosterWithStatus(all) {
 app.post("/api/webrtc/presence/offline", (req, res) => {
   const { userId } = req.body || {};
   if (!userId) return res.status(400).json({ error: "Missing userId" });
+  if (!WEBRTC_IDENTITY_RE.test(String(userId))) {
+    return res.json({ success: true });
+  }
   const all = readWebrtcPresence();
   if (all[userId]) {
     all[userId].online = false;
