@@ -2485,15 +2485,24 @@
                 }
                 const hpIdEl = document.getElementById("handiPhoneWebrtcId");
                 if (hpIdEl) {
-                    let id = localStorage.getItem("webrtc_user_id");
+                    let id = localStorage.getItem("webrtc_user_id_v2");
                     if (!id) {
-                        id =
-                            "handi_user_" +
-                            (window.crypto && crypto.randomUUID
-                                ? crypto.randomUUID()
-                                : Math.random().toString(36).slice(2) +
-                                  Date.now().toString(36));
-                        localStorage.setItem("webrtc_user_id", id);
+                        // Clear any legacy identity and generate a fresh
+                        // `handi_<8>` id, matching the handi-phone module.
+                        localStorage.removeItem("webrtc_user_id");
+                        const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
+                        let suffix = "";
+                        if (window.crypto && crypto.getRandomValues) {
+                            const bytes = new Uint8Array(8);
+                            crypto.getRandomValues(bytes);
+                            for (let i = 0; i < 8; i++)
+                                suffix += alphabet[bytes[i] % alphabet.length];
+                        } else {
+                            for (let i = 0; i < 8; i++)
+                                suffix += alphabet[Math.floor(Math.random() * alphabet.length)];
+                        }
+                        id = "handi_" + suffix;
+                        localStorage.setItem("webrtc_user_id_v2", id);
                     }
                     hpIdEl.textContent = id;
                 }
