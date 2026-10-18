@@ -210,6 +210,8 @@
                     __ogSet("name", "twitter:image", packLogo);
                 }
                 __ogSet("property", "og:url", window.location.href);
+                var canonical = document.querySelector('link[rel="canonical"]');
+                if (canonical) canonical.setAttribute("href", window.location.href);
             } catch (e) {}
         </script>
 
@@ -348,6 +350,9 @@
             </div>
             <div class="header-weather">
                 <span id="weather"><i class="fa-solid fa-sun"></i> --°C</span>
+            </div>
+            <div class="header-datetime" aria-label="Current date and time">
+                <span id="datetime"><i class="fa-regular fa-clock"></i> --:--</span>
             </div>
         </header>
         <script>
@@ -933,6 +938,23 @@
                 if (weatherElement) startWeatherUpdates();
             } catch (e) {
                 console.error("Weather init failed:", e);
+            }
+
+            // Initialize the header date/time clock (theme primary colour + header font)
+            try {
+                const datetimeEl = document.getElementById("datetime");
+                if (datetimeEl) {
+                    const updateDateTime = () => {
+                        const now = new Date();
+                        const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                        const date = now.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+                        datetimeEl.innerHTML = '<i class="fa-regular fa-clock"></i> ' + date + " · " + time;
+                    };
+                    updateDateTime();
+                    setInterval(updateDateTime, 30000);
+                }
+            } catch (e) {
+                console.error("DateTime init failed:", e);
             }
 
             initLayout();

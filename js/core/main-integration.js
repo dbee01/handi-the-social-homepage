@@ -9,6 +9,34 @@ let webrtcWidget = null;
 let webrtcClient = null;
 let isWebRTCReady = false;
 
+// Reuse the same stable WebRTC identity as the handi-phone / sim-phone
+// modules (versioned `webrtc_user_id_v2`, form `handi_<8-char alphanumeric>`),
+// falling back to a fresh stable value only if it was never created. The
+// versioned key intentionally ignores legacy `webrtc_user_id` values so all
+// devices start fresh.
+function ensureWebrtcIdentity() {
+    let userId = window.handiNs && window.handiNs.get("webrtc_user_id_v2");
+    if (!userId) {
+        // Clear any legacy identity so this device starts fresh.
+        if (window.handiNs) window.handiNs.remove("webrtc_user_id");
+
+        const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
+        let suffix = "";
+        if (window.crypto && crypto.getRandomValues) {
+            const bytes = new Uint8Array(8);
+            crypto.getRandomValues(bytes);
+            for (let i = 0; i < 8; i++) suffix += alphabet[bytes[i] % alphabet.length];
+        } else {
+            for (let i = 0; i < 8; i++) {
+                suffix += alphabet[Math.floor(Math.random() * alphabet.length)];
+            }
+        }
+        userId = "handi_" + suffix;
+        if (window.handiNs) window.handiNs.set("webrtc_user_id_v2", userId);
+    }
+    return userId;
+}
+
 class WebRTCWidget {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
@@ -55,12 +83,12 @@ class WebRTCWidget {
     
     async initWebRTCClient() {
         try {
-            // Get token from backend
-            const userId = USER_ACCESS.userId || window.handiNs.get('webrtc_user_id') || 'user_' + Date.now();
+            // Get token from backend using the shared `handi_<8>` identity.
+            const userId = ensureWebrtcIdentity();
             const response = await fetch('/api/webrtc/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, displayName: userId })
+                body: JSON.stringify({ identity: userId, displayName: userId })
             });
             const { token } = await response.json();
             
@@ -216,7 +244,7 @@ class WebRTCWidget {
     
     async loadContacts() {
         try {
-            const userId = USER_ACCESS.userId || window.handiNs.get('webrtc_user_id');
+            const userId = ensureWebrtcIdentity();
             const response = await fetch(`/api/webrtc/contacts/${userId}`);
             const data = await response.json();
             
@@ -258,7 +286,7 @@ class WebRTCWidget {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                userId: USER_ACCESS.userId,
+                userId: ensureWebrtcIdentity(),
                 name: name,
                 webrtcId: identifier
             })

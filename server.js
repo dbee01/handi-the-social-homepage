@@ -76,6 +76,52 @@ const FEED_RELAY_ENABLED = process.env.FEED_RELAY_ENABLED !== "true";
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// -----------------------------------------------------------------------------
+// ONE-TIME WEBRTC IDENTITY RESET
+// -----------------------------------------------------------------------------
+// Wipes the server-side identity files (handles, presence, contacts) exactly
+// once, on the first boot after this code ships, so all devices regenerate a
+// fresh `handi_<8>` WebRTC identity. A sentinel file marks the reset as done;
+// subsequent starts no-op. To force a future reset, delete the sentinel.
+// -----------------------------------------------------------------------------
+const WEBRTC_RESET_SENTINEL = path.join(
+  __dirname,
+  "data",
+  ".webrtc-identity-v2-reset",
+);
+
+function resetWebrtcIdentityData() {
+  // Explicit env override always wins and also (re)creates the sentinel.
+  const force = process.env.HANDI_RESET_WEBRTC_IDENTITIES === "true";
+  if (!force && fs.existsSync(WEBRTC_RESET_SENTINEL)) return;
+
+  const dataDir = path.join(__dirname, "data");
+  const files = [
+    path.join(dataDir, "webrtc-handles.json"),
+    path.join(dataDir, "webrtc-presence.json"),
+    path.join(dataDir, "webrtc-contacts.json"),
+  ];
+  for (const file of files) {
+    try {
+      if (fs.existsSync(file)) {
+        fs.unlinkSync(file);
+        console.log(`   → Reset WebRTC identity data: ${path.basename(file)}`);
+      }
+    } catch (e) {
+      console.warn(`   ⚠️ Could not reset ${path.basename(file)}:`, e.message);
+    }
+  }
+
+  try {
+    fs.mkdirSync(dataDir, { recursive: true });
+    fs.writeFileSync(WEBRTC_RESET_SENTINEL, String(Date.now()), "utf8");
+    console.log("   → WebRTC identity reset complete.");
+  } catch (e) {
+    console.warn("   ⚠️ Could not write WebRTC reset sentinel:", e.message);
+  }
+}
+resetWebrtcIdentityData();
+
 app.use(cors());
 app.use(express.json());
 

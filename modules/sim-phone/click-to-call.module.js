@@ -19,6 +19,34 @@ export default function initClickToCall(container) {
     };
   container.innerHTML = "";
 
+  // Reuse the same stable WebRTC identity as the handi-phone module.
+  // Maintained under the versioned `webrtc_user_id_v2` key (form:
+  // `handi_<8-char alphanumeric>`); a fresh value is generated here if none
+  // exists yet (e.g. sim-phone used alone). The versioned key intentionally
+  // ignores legacy `webrtc_user_id` values so all devices start fresh.
+  function ensureIdentity() {
+    let userId = localStorage.getItem("webrtc_user_id_v2");
+    if (!userId) {
+      // Clear any legacy identity so this device starts fresh.
+      localStorage.removeItem("webrtc_user_id");
+
+      const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
+      let suffix = "";
+      if (window.crypto && crypto.getRandomValues) {
+        const bytes = new Uint8Array(8);
+        crypto.getRandomValues(bytes);
+        for (let i = 0; i < 8; i++) suffix += alphabet[bytes[i] % alphabet.length];
+      } else {
+        for (let i = 0; i < 8; i++) {
+          suffix += alphabet[Math.floor(Math.random() * alphabet.length)];
+        }
+      }
+      userId = "handi_" + suffix;
+      localStorage.setItem("webrtc_user_id_v2", userId);
+    }
+    return userId;
+  }
+
   const localStreams = {};
 
   const style = document.createElement("style");
@@ -91,6 +119,10 @@ export default function initClickToCall(container) {
         background: #333;
         color: white;
     }
+    .call-controls .volume-btn {
+        background: #0047cc;
+        color: white;
+    }
 
     /* Audio-call floating bar */
     .audio-call-bar {
@@ -132,6 +164,11 @@ export default function initClickToCall(container) {
     }
     .audio-call-bar .acb-device {
         background: #333;
+        color: white;
+    }
+    .audio-call-bar .acb-volume-down,
+    .audio-call-bar .acb-volume-up {
+        background: #0047cc;
         color: white;
     }
     .audio-call-bar .acb-hangup {
@@ -329,6 +366,12 @@ export default function initClickToCall(container) {
         <button id="deviceSelectBtn" class="device-btn" title="Choose devices">
             <i class="fa-solid fa-gear"></i>
         </button>
+        <button id="volumeDownBtn" class="volume-btn" title="Volume down">
+            <i class="fa-solid fa-volume-low"></i>
+        </button>
+        <button id="volumeUpBtn" class="volume-btn" title="Volume up">
+            <i class="fa-solid fa-volume-high"></i>
+        </button>
         <button id="hangupBtn" class="hangup-btn" title="Hang up">
             <i class="fa-solid fa-phone-slash"></i>
         </button>
@@ -341,6 +384,8 @@ export default function initClickToCall(container) {
   const toggleMuteBtn = document.getElementById("toggleMuteBtn");
   const toggleVideoBtn = document.getElementById("toggleVideoBtn");
   const deviceSelectBtn = document.getElementById("deviceSelectBtn");
+  const volumeDownBtn = document.getElementById("volumeDownBtn");
+  const volumeUpBtn = document.getElementById("volumeUpBtn");
   const hangupBtn = document.getElementById("hangupBtn");
 
   // ── Audio-call floating bar ─────────────────────────────────────────────
@@ -355,6 +400,12 @@ export default function initClickToCall(container) {
     <button class="acb-device" id="acbDeviceBtn" title="Choose devices">
       <i class="fa-solid fa-gear"></i>
     </button>
+    <button class="acb-volume-down" id="acbVolumeDownBtn" title="Volume down">
+      <i class="fa-solid fa-volume-low"></i>
+    </button>
+    <button class="acb-volume-up" id="acbVolumeUpBtn" title="Volume up">
+      <i class="fa-solid fa-volume-high"></i>
+    </button>
     <button class="acb-hangup" id="acbHangupBtn" title="Hang up">
       <i class="fa-solid fa-phone-slash"></i>
     </button>
@@ -363,6 +414,8 @@ export default function initClickToCall(container) {
 
   const acbMuteBtn = document.getElementById("acbMuteBtn");
   const acbDeviceBtn = document.getElementById("acbDeviceBtn");
+  const acbVolumeDownBtn = document.getElementById("acbVolumeDownBtn");
+  const acbVolumeUpBtn = document.getElementById("acbVolumeUpBtn");
   const acbHangupBtn = document.getElementById("acbHangupBtn");
 
   // ── Device selector popup ───────────────────────────────────────────────
@@ -412,6 +465,105 @@ export default function initClickToCall(container) {
   let activeCallingBtn = null;
   let isAudioCall = false; // true = audio-only call (floating bar), false = video (full overlay)
   let muteCheckInterval = null;
+
+  // ── Centered call popup (matches the handi-phone call panel) ───────────
+  let callPopup = null;
+  let callPopupStatusEl = null;
+  let callPopupCallerEl = null;
+  let callPopupMuteBtn = null;
+
+  // ── Remote audio volume helpers ────────────────────────────────────────
+  function getRemoteAudio() {
+    return document.getElementById("remoteAudio");
+  }
+
+  // Adjust remote audio volume by `delta` (clamped 0..1). Returns the new volume.
+  function adjustRemoteVolume(delta) {
+    const remoteAudio = getRemoteAudio();
+    if (!remoteAudio) return 0;
+    let vol = remoteAudio.volume;
+    if (typeof vol !== "number" || isNaN(vol)) vol = 1;
+    vol = Math.min(1, Math.max(0, vol + delta));
+    remoteAudio.volume = vol;
+    if (vol > 0) remoteAudio.muted = false;
+    return vol;
+  }
+
+  function showCallPopup(caller) {
+    hideCallPopup();
+
+    callPopup = document.createElement("div");
+    callPopup.className = "ctc-call-popup";
+    callPopup.innerHTML =
+      '<div class="ctc-call-popup-inner">' +
+      '<div class="ctc-call-popup-caller" id="ctcCallPopupCaller"><i class="fa-solid fa-phone"></i> <strong>' + escapeHtml(caller) + "</strong></div>" +
+      '<div class="ctc-call-popup-status" id="ctcCallPopupStatus">' + escapeHtml(t("d_ringing", "Calling...")) + "</div>" +
+      '<div class="ctc-call-popup-actions">' +
+      '<button class="ctc-call-ctl" id="ctcCallPopupMute" title="' + escapeHtml(t("d_mute", "Mute")) + '"><i class="fa-solid fa-microphone"></i></button>' +
+      '<button class="ctc-call-ctl" id="ctcCallPopupVolumeDown" title="' + escapeHtml(t("d_volumeDown", "Volume down")) + '"><i class="fa-solid fa-volume-low"></i></button>' +
+      '<button class="ctc-call-ctl" id="ctcCallPopupVolumeUp" title="' + escapeHtml(t("d_volumeUp", "Volume up")) + '"><i class="fa-solid fa-volume-high"></i></button>' +
+      '<button class="ctc-call-ctl ctc-call-ctl-danger" id="ctcCallPopupHangup" title="' + escapeHtml(t("d_hangup", "Hang up")) + '"><i class="fa-solid fa-phone-slash"></i></button>' +
+      "</div></div>";
+    document.body.appendChild(callPopup);
+
+    if (!document.getElementById("ctc-call-popup-style")) {
+      const s = document.createElement("style");
+      s.id = "ctc-call-popup-style";
+      s.textContent =
+        ".ctc-call-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10001;font-family:inherit}" +
+        ".ctc-call-popup-inner{background:#fff;border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.3);padding:20px;width:300px;text-align:center}" +
+        ".ctc-call-popup-caller{font-size:1.1rem;margin-bottom:4px;word-break:break-word}" +
+        ".ctc-call-popup-status{color:#64748b;font-size:.85rem;margin-bottom:16px}" +
+        ".ctc-call-popup-actions{display:flex;justify-content:center;gap:14px}" +
+        ".ctc-call-ctl{width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;font-size:1.15rem;color:#fff;background:#334155}" +
+        ".ctc-call-ctl:active{opacity:.8}" +
+        ".ctc-call-ctl-danger{background:#dc2626}" +
+        ".ctc-call-ctl.muted{background:#d97706}";
+      document.head.appendChild(s);
+    }
+
+    callPopupCallerEl = callPopup.querySelector("#ctcCallPopupCaller");
+    callPopupStatusEl = callPopup.querySelector("#ctcCallPopupStatus");
+    callPopupMuteBtn = callPopup.querySelector("#ctcCallPopupMute");
+
+    callPopupMuteBtn.addEventListener("click", () => {
+      if (!currentCall || !currentCall.localStream) return;
+      const audioTracks = currentCall.localStream.getAudioTracks();
+      audioTracks.forEach((t) => {
+        t.enabled = isMicMuted;
+      });
+      isMicMuted = !isMicMuted;
+      callPopupMuteBtn.classList.toggle("muted", isMicMuted);
+      callPopupMuteBtn.querySelector("i").className = isMicMuted
+        ? "fa-solid fa-microphone-slash"
+        : "fa-solid fa-microphone";
+      updateMuteButtonUI();
+    });
+
+    callPopup.querySelector("#ctcCallPopupVolumeDown").addEventListener("click", () => {
+      adjustRemoteVolume(-0.1);
+    });
+
+    callPopup.querySelector("#ctcCallPopupVolumeUp").addEventListener("click", () => {
+      adjustRemoteVolume(0.1);
+    });
+
+    callPopup.querySelector("#ctcCallPopupHangup").addEventListener("click", endCall);
+  }
+
+  function hideCallPopup() {
+    if (callPopup) {
+      callPopup.remove();
+      callPopup = null;
+      callPopupStatusEl = null;
+      callPopupCallerEl = null;
+      callPopupMuteBtn = null;
+    }
+  }
+
+  function setCallPopupStatus(message) {
+    if (callPopupStatusEl) callPopupStatusEl.textContent = message;
+  }
 
   // ── Device helpers ──────────────────────────────────────────────────────
   async function populateDeviceSelects(showCamera) {
@@ -634,6 +786,10 @@ export default function initClickToCall(container) {
     try {
       showCallStatus("Calling...");
 
+      // Pop up the centered call panel (like the handi-phone module) as soon
+      // as the call is initiated.
+      showCallPopup(phoneNumber);
+
       const btn = document.querySelector(
         `.ctc-phone-btn[data-number="${phoneNumber}"]`,
       );
@@ -652,7 +808,7 @@ export default function initClickToCall(container) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          identity: "handi_user_" + Date.now(),
+          identity: ensureIdentity(),
           enableVideo: false,
         }),
       });
@@ -671,12 +827,14 @@ export default function initClickToCall(container) {
         currentCall.on("ringing", () => {
           console.log("Ringing...");
           showCallStatus(t("d_ringing", "Ringing..."));
+          setCallPopupStatus(t("d_ringing", "Ringing..."));
         });
 
         currentCall.on("established", (event) => {
           console.log("Audio call connected!");
           isAudioCall = true;
-          showAudioCallUI();
+          setCallPopupStatus(t("d_inCall", "In call"));
+          hideCallStatus();
           startMuteCheck();
           if (event && event.stream && event.stream instanceof MediaStream) {
             let remoteAudio = document.getElementById("remoteAudio");
@@ -699,6 +857,7 @@ export default function initClickToCall(container) {
       infobipRTC.connect();
     } catch (error) {
       console.error("Call error:", error);
+      hideCallPopup();
       showCallStatus("Call failed.");
       setTimeout(() => hideCallStatus(), 2000);
       resetCallingButton();
@@ -735,7 +894,7 @@ export default function initClickToCall(container) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          identity: "handi_user_" + Date.now(),
+          identity: ensureIdentity(),
           enableVideo: true,
         }),
       });
@@ -772,6 +931,7 @@ export default function initClickToCall(container) {
       infobipRTC.connect();
     } catch (error) {
       console.error("Video call error:", error);
+      hideCallPopup();
       showCallStatus("Video call failed.");
       setTimeout(() => hideCallStatus(), 2000);
       resetCallingButton();
@@ -783,6 +943,8 @@ export default function initClickToCall(container) {
     resetCallingButton();
     stopMuteCheck();
     isAudioCall = false;
+    hideCallPopup();
+    hideCallStatus();
 
     // Clean up remote audio
     const remoteAudio = document.getElementById("remoteAudio");
@@ -893,6 +1055,10 @@ export default function initClickToCall(container) {
   // Video overlay device selector
   deviceSelectBtn.addEventListener("click", () => showDeviceSelector(true));
 
+  // Video overlay volume up/down
+  volumeDownBtn.addEventListener("click", () => adjustRemoteVolume(-0.1));
+  volumeUpBtn.addEventListener("click", () => adjustRemoteVolume(0.1));
+
   // Video overlay hangup
   hangupBtn.addEventListener("click", endCall);
 
@@ -910,6 +1076,10 @@ export default function initClickToCall(container) {
 
   // Audio bar device selector
   acbDeviceBtn.addEventListener("click", () => showDeviceSelector(false));
+
+  // Audio bar volume up/down
+  acbVolumeDownBtn.addEventListener("click", () => adjustRemoteVolume(-0.1));
+  acbVolumeUpBtn.addEventListener("click", () => adjustRemoteVolume(0.1));
 
   // Audio bar hangup
   acbHangupBtn.addEventListener("click", endCall);

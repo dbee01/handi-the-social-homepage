@@ -118,6 +118,25 @@ header {
     border-radius: 48px !important;
 }
 
+.header-datetime {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    white-space: nowrap !important;
+    order: 3 !important;
+    padding: 8px 16px !important;
+    border-radius: 48px !important;
+    color: var(--primary, #0047cc) !important;
+    font-family: var(--header-font, inherit) !important;
+    font-weight: 600;
+}
+
+.header-datetime i {
+    color: var(--primary, #0047cc);
+}
+
 #weather {
     display: inline-flex !important;
     align-items: center !important;
@@ -142,6 +161,10 @@ header {
         width: 100% !important;
     }
     .header-weather {
+        justify-content: center !important;
+        width: auto !important;
+    }
+    .header-datetime {
         justify-content: center !important;
         width: auto !important;
     }

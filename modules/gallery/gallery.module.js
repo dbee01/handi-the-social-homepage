@@ -265,9 +265,17 @@ export default async function initGallery(container) {
     rightBtn.style.cssText = leftBtn.style.cssText;
     rightBtn.setAttribute("aria-label", t("d_scrollRight", "Next image"));
 
+    const fullscreenBtn = document.createElement("button");
+    fullscreenBtn.className = "gallery-scroll-btn gallery-fullscreen-btn";
+    fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+    fullscreenBtn.style.cssText = leftBtn.style.cssText;
+    fullscreenBtn.setAttribute("aria-label", t("d_fullscreen", "View full screen"));
+    fullscreenBtn.title = t("d_fullscreen", "View full screen");
+
     carousel.appendChild(leftBtn);
     carousel.appendChild(view);
     carousel.appendChild(rightBtn);
+    carousel.appendChild(fullscreenBtn);
 
     function renderItem() {
       const item = items[currentIndex];
@@ -303,6 +311,103 @@ export default async function initGallery(container) {
     rightBtn.addEventListener("click", function () {
       go(1);
     });
+
+    // ---------- Lightbox (full-screen viewer, 8s auto-rotation) ----------
+    let lightbox = null;
+    let lightboxIndex = 0;
+    let lightboxTimer = null;
+
+    function ensureLightbox() {
+      if (lightbox) return lightbox;
+
+      lightbox = document.createElement("div");
+      lightbox.className = "gallery-lightbox";
+      lightbox.setAttribute("role", "dialog");
+      lightbox.setAttribute("aria-modal", "true");
+      lightbox.innerHTML = `
+        <button class="gallery-lb-close" aria-label="${t("d_close", "Close")}"><i class="fa-solid fa-xmark"></i></button>
+        <button class="gallery-lb-nav gallery-lb-prev" aria-label="${t("d_scrollLeft", "Previous image")}"><i class="fa-solid fa-chevron-left"></i></button>
+        <figure class="gallery-lb-figure">
+          <img class="gallery-lb-img" alt="" />
+          <figcaption class="gallery-lb-caption"></figcaption>
+        </figure>
+        <button class="gallery-lb-nav gallery-lb-next" aria-label="${t("d_scrollRight", "Next image")}"><i class="fa-solid fa-chevron-right"></i></button>
+        <div class="gallery-lb-counter"></div>
+      `;
+      document.body.appendChild(lightbox);
+
+      // Inject lightbox styles once.
+      if (!document.getElementById("gallery-lightbox-style")) {
+        const s = document.createElement("style");
+        s.id = "gallery-lightbox-style";
+        s.textContent =
+          ".gallery-lightbox{position:fixed;inset:0;z-index:10010;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;}" +
+          ".gallery-lightbox.active{display:flex;}" +
+          ".gallery-lightbox img.gallery-lb-img{max-width:92vw;max-height:85vh;object-fit:contain;background:#000;}" +
+          ".gallery-lb-figure{margin:0;text-align:center;max-width:92vw;}" +
+          ".gallery-lb-caption{color:#fff;margin-top:12px;font-size:1rem;min-height:1.5em;}" +
+          ".gallery-lb-counter{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#cbd5e1;font-size:.85rem;}" +
+          ".gallery-lb-close{position:absolute;top:18px;right:18px;background:rgba(255,255,255,.15);border:none;color:#fff;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.4rem;}" +
+          ".gallery-lb-close:hover{background:rgba(255,255,255,.3);}" +
+          ".gallery-lb-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.15);border:none;color:#fff;width:48px;height:48px;border-radius:50%;cursor:pointer;font-size:1.4rem;}" +
+          ".gallery-lb-nav:hover{background:rgba(255,255,255,.3);}" +
+          ".gallery-lb-prev{left:18px;}" +
+          ".gallery-lb-next{right:18px;}";
+        document.head.appendChild(s);
+      }
+
+      lightbox.querySelector(".gallery-lb-close").addEventListener("click", closeLightbox);
+      lightbox.querySelector(".gallery-lb-prev").addEventListener("click", function () { showLightbox(lightboxIndex - 1); });
+      lightbox.querySelector(".gallery-lb-next").addEventListener("click", function () { showLightbox(lightboxIndex + 1); });
+      lightbox.addEventListener("click", function (e) {
+        if (e.target === lightbox) closeLightbox();
+      });
+
+      return lightbox;
+    }
+
+    function showLightbox(index) {
+      if (!items.length) return;
+      lightboxIndex = (index + items.length) % items.length;
+      currentIndex = lightboxIndex;
+      renderItem();
+
+      const item = items[lightboxIndex];
+      const img = ensureLightbox().querySelector(".gallery-lb-img");
+      img.src = item.img || "/images/noimage.svg";
+      img.onerror = function () { this.onerror = null; this.src = "/images/noimage.svg"; };
+      ensureLightbox().querySelector(".gallery-lb-caption").textContent =
+        item.caption || "";
+      ensureLightbox().querySelector(".gallery-lb-counter").textContent =
+        lightboxIndex + 1 + " / " + items.length;
+    }
+
+    function startLightboxRotation() {
+      stopLightboxRotation();
+      lightboxTimer = setInterval(function () {
+        showLightbox(lightboxIndex + 1);
+      }, 8000);
+    }
+
+    function stopLightboxRotation() {
+      if (lightboxTimer) {
+        clearInterval(lightboxTimer);
+        lightboxTimer = null;
+      }
+    }
+
+    function openLightbox() {
+      ensureLightbox().classList.add("active");
+      showLightbox(currentIndex);
+      startLightboxRotation();
+    }
+
+    function closeLightbox() {
+      stopLightboxRotation();
+      if (lightbox) lightbox.classList.remove("active");
+    }
+
+    fullscreenBtn.addEventListener("click", openLightbox);
 
     renderItem();
     return carousel;

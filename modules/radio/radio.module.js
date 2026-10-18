@@ -388,33 +388,6 @@ export default async function initRadio(container) {
     },
   ];
 
-  var flagToCountry = {
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#169b62'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ff883e'/></svg>": "Ireland",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#012169'/><path d='M0 0l30 20M30 0L0 20' stroke='#fff' stroke-width='4'/><path d='M0 0l30 20M30 0L0 20' stroke='#c8102e' stroke-width='2'/><line x1='15' y1='0' x2='15' y2='20' stroke='#fff' stroke-width='6'/><line x1='0' y1='10' x2='30' y2='10' stroke='#fff' stroke-width='6'/><line x1='15' y1='0' x2='15' y2='20' stroke='#c8102e' stroke-width='3'/><line x1='0' y1='10' x2='30' y2='10' stroke='#c8102e' stroke-width='3'/></svg>": "United Kingdom",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#002395'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ed2939'/></svg>": "France",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='6.67' fill='#000'/><rect y='6.67' width='30' height='6.67' fill='#d00'/><rect y='13.34' width='30' height='6.66' fill='#fc0'/></svg>": "Germany",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='5' fill='#c60b1e'/><rect y='5' width='30' height='10' fill='#ffc400'/><rect y='15' width='30' height='5' fill='#c60b1e'/></svg>": "Spain",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='10' height='20' fill='#009246'/><rect x='10' width='10' height='20' fill='#fff'/><rect x='20' width='10' height='20' fill='#ce2b37'/></svg>": "Italy",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='6.67' fill='#ae1c28'/><rect y='6.67' width='30' height='6.67' fill='#fff'/><rect y='13.34' width='30' height='6.66' fill='#21468b'/></svg>": "Netherlands",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='10' fill='#fff'/><rect y='10' width='30' height='10' fill='#dc143c'/></svg>": "Poland",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='12' height='20' fill='#006600'/><rect x='12' width='18' height='20' fill='#f00'/><circle cx='12' cy='10' r='4' fill='#fc0' stroke='#000' stroke-width='.5'/></svg>": "Portugal",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#006aa7'/><line x1='10' y1='0' x2='10' y2='20' stroke='#fecc00' stroke-width='4'/><line x1='0' y1='8' x2='30' y2='12' stroke='#fecc00' stroke-width='4'/></svg>": "Sweden",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#ef2b2d'/><line x1='8' y1='0' x2='8' y2='20' stroke='#fff' stroke-width='4'/><line x1='0' y1='8' x2='30' y2='12' stroke='#fff' stroke-width='4'/><line x1='10' y1='0' x2='10' y2='20' stroke='#002868' stroke-width='2'/><line x1='0' y1='9' x2='30' y2='11' stroke='#002868' stroke-width='2'/></svg>": "Norway",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='1.54' fill='#b22234'/><rect y='1.54' width='30' height='1.54' fill='#fff'/><rect y='3.08' width='30' height='1.54' fill='#b22234'/><rect y='4.62' width='30' height='1.54' fill='#fff'/><rect y='6.15' width='30' height='1.54' fill='#b22234'/><rect y='7.69' width='30' height='1.54' fill='#fff'/><rect y='9.23' width='30' height='1.54' fill='#b22234'/><rect y='10.77' width='30' height='1.54' fill='#fff'/><rect y='12.31' width='30' height='1.54' fill='#b22234'/><rect y='13.85' width='30' height='1.54' fill='#fff'/><rect y='15.38' width='30' height='1.54' fill='#b22234'/><rect y='16.92' width='30' height='1.54' fill='#fff'/><rect y='18.46' width='30' height='1.54' fill='#b22234'/><rect width='10' height='10.77' fill='#3c3b6e'/></svg>": "United States",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#f00'/><rect x='7.5' width='15' height='20' fill='#fff'/><path d='M15 3l1.5 4.5h5l-4 3 1.5 4.5-4-3-4 3 1.5-4.5-4-3h5z' fill='#f00'/></svg>": "Canada",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#00008b'/><circle cx='15' cy='10' r='4' fill='#fff'/><circle cx='13' cy='9' r='.8' fill='#00008b'/><circle cx='17' cy='9' r='.8' fill='#00008b'/><circle cx='15' cy='11' r='.6' fill='#00008b'/></svg>": "Australia",
-    "<svg viewBox='0 0 30 20' width='20' height='14'><rect width='30' height='20' fill='#00008b'/><circle cx='15' cy='10' r='4' fill='#fff'/><circle cx='13' cy='9' r='.8' fill='#00008b'/><circle cx='17' cy='9' r='.8' fill='#00008b'/><circle cx='15' cy='11' r='.6' fill='#00008b'/></svg>": "New Zealand",
-  };
-
-  var countries = [],
-    seen = {};
-  STATIONS.forEach(function (s) {
-    if (!seen[s.flag]) {
-      seen[s.flag] = true;
-      countries.push({ flag: s.flag, name: flagToCountry[s.flag] || s.flag });
-    }
-  });
-
   // Header
   const headerRow = document.createElement("div");
   headerRow.className = "radio-header-row";
@@ -456,15 +429,6 @@ export default async function initRadio(container) {
   var content = document.createElement("div");
   content.className = "radio-content";
   container.appendChild(content);
-
-  var storedFlag = "";
-  try {
-    var rs = loadSettings();
-    storedFlag =
-      (rs.radio && rs.radio.defaultCountry) ||
-      window.handiNs.get("handiRadioCountry") ||
-      "";
-  } catch (e) {}
 
   var streamUrl = "";
   try {
@@ -541,37 +505,6 @@ export default async function initRadio(container) {
     }
   }
 
-  var selectedFlag = storedFlag;
-  // If stored as country code, convert to SVG flag
-  if (storedFlag && storedFlag.length === 2 && storedFlag.indexOf("<") === -1) {
-    var codeToName = { ie: "Ireland", gb: "United Kingdom", fr: "France", de: "Germany", es: "Spain", it: "Italy", nl: "Netherlands", pl: "Poland", pt: "Portugal", se: "Sweden", no: "Norway", us: "United States", ca: "Canada", au: "Australia", nz: "New Zealand" };
-    var name = codeToName[storedFlag];
-    if (name) {
-      for (var f in flagToCountry) {
-        if (flagToCountry[f] === name) { selectedFlag = f; break; }
-      }
-    }
-  }
-
-  // Build country dropdown (pre-select saved value)
-  var countryOptions = '<option value="">' +
-    t("d_selectCountry", "— Select country —") +
-    "</option>" +
-    countries
-      .map(function (c) {
-        var sel = c.flag === storedFlag ? ' selected' : '';
-        return (
-          '<option value="' +
-          c.flag +
-          '"' + sel + '>' +
-          c.flag +
-          " " +
-          c.name +
-          "</option>"
-        );
-      })
-      .join("");
-
   // Feed info card (title, thumbnail, description, …) above the player.
   var radioInfoHtml = "";
   if (radioInfo && (radioInfo.title || radioInfo.image)) {
@@ -646,16 +579,10 @@ export default async function initRadio(container) {
   content.innerHTML =
     sourceBarHtml +
     radioInfoHtml +
-      '<div class="radio-country-list" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:8px;">' +
-      countries.map(function (c) {
-        var cls = c.flag === selectedFlag ? ' radio-country-item active' : 'radio-country-item';
-        return '<button class="' + cls + '" data-flag="' + c.flag + '" style="display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;border:1px solid #cbd5e1;cursor:pointer;background:none;font-size:0.85rem;">' + c.flag + '<span>' + c.name + '</span></button>';
-      }).join("") +
-      '</div><div class="radio-top-bar"><canvas id="radio-synth" class="radio-synth"></canvas></div><div class="radio-now-playing" id="now-playing">' +
+      '<div class="radio-top-bar"><canvas id="radio-synth" class="radio-synth"></canvas></div><div class="radio-now-playing" id="now-playing">' +
       t("d_noStation", "No station playing") +
       '</div><div class="radio-scroll-wrapper"><button id="radio-up" class="radio-scroll-btn">▲</button><div id="stations-list" class="radio-list"></div><button id="radio-down" class="radio-scroll-btn">▼</button></div><div class="radio-error" id="radio-error"></div>';
 
-    var countryBtns = content.querySelectorAll(".radio-country-item");
     var list = content.querySelector("#stations-list");
     var nowPlaying = content.querySelector("#now-playing"),
       error = content.querySelector("#radio-error");
@@ -698,21 +625,6 @@ export default async function initRadio(container) {
         }
       });
     }
-
-    countryBtns.forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        selectedFlag = this.getAttribute("data-flag");
-                // Store country code instead of SVG
-                var cName = flagToCountry[selectedFlag] || "";
-                var nameToCode = { Ireland: "ie", "United Kingdom": "gb", France: "fr", Germany: "de", Spain: "es", Italy: "it", Netherlands: "nl", Poland: "pl", Portugal: "pt", Sweden: "se", Norway: "no", "United States": "us", Canada: "ca", Australia: "au", "New Zealand": "nz" };
-                try { window.handiNs.set("handiRadioCountry", nameToCode[cName] || ""); } catch (e) {}
-        stopPlayback(true);
-        renderStations();
-        countryBtns.forEach(function (b) { b.classList.remove("active"); b.style.background = ""; });
-        this.classList.add("active");
-        if (window.refreshDashboardLayout) window.refreshDashboardLayout();
-      });
-    });
 
   var currentAudio = null,
     stopVisualiser = null,
@@ -762,21 +674,11 @@ export default async function initRadio(container) {
         );
       }
     }
-    if (!selectedFlag) {
-      if (!streamUrl) {
-        list.innerHTML =
-          '<div class="module-empty" style="padding:20px;text-align:center;"><i class="fa-solid fa-radio"></i><p>' +
-          t("d_browseStations", "Select a country above to browse stations") +
-          "</p></div>";
-        nowPlaying.innerText = t("d_noStation", "No station playing");
-      }
-      return;
+    if (!streamUrl) {
+      STATIONS.forEach(function (station) {
+        addStationRow(station.url, station.name, station.flag);
+      });
     }
-    STATIONS.filter(function (s) {
-      return s.flag === selectedFlag;
-    }).forEach(function (station) {
-      addStationRow(station.url, station.name, station.flag);
-    });
   }
   renderStations();
 

@@ -60,14 +60,34 @@ export default async function initPhone(container) {
   }
 
   // ── Stable identity + display name (anonymous, no login) ──────────────
+  // Generates (or reuses) a stable, shared WebRTC identity of the form
+  // `handi_<8-char alphanumeric>`. The same value is shared across the
+  // handi-phone and sim-phone modules via the versioned `webrtc_user_id_v2`
+  // storage key, so a user keeps one identity regardless of which module they
+  // use. The versioned key intentionally ignores legacy `webrtc_user_id` values
+  // so all devices regenerate a fresh identity on this scheme.
   function ensureIdentity() {
-    let userId = localStorage.getItem("webrtc_user_id");
+    let userId = localStorage.getItem("webrtc_user_id_v2");
+
     if (!userId) {
-      userId = "handi_user_" + (window.crypto && crypto.randomUUID
-        ? crypto.randomUUID()
-        : Math.random().toString(36).slice(2) + Date.now().toString(36));
-      localStorage.setItem("webrtc_user_id", userId);
+      // Clear any legacy identity so this device starts fresh.
+      localStorage.removeItem("webrtc_user_id");
+
+      const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
+      let suffix = "";
+      if (window.crypto && crypto.getRandomValues) {
+        const bytes = new Uint8Array(8);
+        crypto.getRandomValues(bytes);
+        for (let i = 0; i < 8; i++) suffix += alphabet[bytes[i] % alphabet.length];
+      } else {
+        for (let i = 0; i < 8; i++) {
+          suffix += alphabet[Math.floor(Math.random() * alphabet.length)];
+        }
+      }
+      userId = "handi_" + suffix;
+      localStorage.setItem("webrtc_user_id_v2", userId);
     }
+
     return userId;
   }
 
@@ -322,7 +342,11 @@ export default async function initPhone(container) {
         cleanupCall(null);
       });
 
-      incomingCall.accept();
+      // Accept the incoming call with video enabled. Passing options explicitly
+      // is required: the SDK defaults `video` to false, which would answer an
+      // incoming video call as audio-only (no camera published, no remote video
+      // via `remote-camera-video-added`).
+      incomingCall.accept(buildWebrtcCallOptions(true));
       hideIncomingCallUI();
       showCallPanel(callerIdentity);
     };
@@ -370,7 +394,8 @@ export default async function initPhone(container) {
       '<div class="fp-call-panel-status">' + escapeHtml(t("d_inCall", "In call")) + "</div>" +
       '<div class="fp-call-panel-actions">' +
       '<button class="fp-ctl" id="fpMuteBtn" title="' + escapeHtml(t("d_mute", "Mute")) + '"><i class="fa-solid fa-microphone"></i></button>' +
-      '<button class="fp-ctl" id="fpVolumeBtn" title="' + escapeHtml(t("d_volume", "Volume")) + '"><i class="fa-solid fa-volume-high"></i></button>' +
+      '<button class="fp-ctl" id="fpVolumeDownBtn" title="' + escapeHtml(t("d_volumeDown", "Volume down")) + '"><i class="fa-solid fa-volume-low"></i></button>' +
+      '<button class="fp-ctl" id="fpVolumeUpBtn" title="' + escapeHtml(t("d_volumeUp", "Volume up")) + '"><i class="fa-solid fa-volume-high"></i></button>' +
       '<button class="fp-ctl fp-ctl-danger" id="fpHangupBtn" title="' + escapeHtml(t("d_hangup", "Hang up")) + '"><i class="fa-solid fa-phone-slash"></i></button>' +
       "</div></div>";
     document.body.appendChild(callPanel);
@@ -404,16 +429,12 @@ export default async function initPhone(container) {
         callPanelMuted ? "fa-solid fa-microphone-slash" : "fa-solid fa-microphone";
     };
 
-    callPanel.querySelector("#fpVolumeBtn").onclick = function () {
-      // Toggle the remote audio output mute (volume on/off is the simplest
-      // reliable control across browsers without a full volume UI).
-      const a = document.getElementById("fpRemoteAudio");
-      if (a) a.muted = !a.muted;
-      const btn = callPanel.querySelector("#fpVolumeBtn");
-      const isMuted = a && a.muted;
-      btn.querySelector("i").className = isMuted
-        ? "fa-solid fa-volume-xmark"
-        : "fa-solid fa-volume-high";
+    callPanel.querySelector("#fpVolumeDownBtn").onclick = function () {
+      adjustPanelVolume(-0.1);
+    };
+
+    callPanel.querySelector("#fpVolumeUpBtn").onclick = function () {
+      adjustPanelVolume(0.1);
     };
 
     callPanel.querySelector("#fpHangupBtn").onclick = function () {
@@ -459,6 +480,16 @@ export default async function initPhone(container) {
     }
   }
 
+  // Build Infobip `WebrtcCallOptions` with video explicitly set. The SDK's
+  // `callWebrtc`/`accept` default `video` to false, so we must always set it.
+  function buildWebrtcCallOptions(video) {
+    video = !!video;
+    if (window.WebrtcCallOptions && window.WebrtcCallOptions.builder) {
+      return window.WebrtcCallOptions.builder().setVideo(video).build();
+    }
+    return { video: video, audio: true };
+  }
+
   function makeCall(webrtcId, video, label) {
     if (!webrtcId) {
       console.warn("[handi-phone] contact has no WebRTC identity");
@@ -474,15 +505,7 @@ export default async function initPhone(container) {
       .catch((err) => console.warn("Could not access media:", err))
       .finally(() => {
         try {
-          const opts = (window.WebrtcCallOptions
-            ? window.WebrtcCallOptions.builder()
-            : null);
-          let callOptions;
-          if (opts) {
-            callOptions = opts.setVideo(!!video).build();
-          } else {
-            callOptions = { video: !!video };
-          }
+          const callOptions = buildWebrtcCallOptions(video);
           currentCall = infobipRTC.callWebrtc(webrtcId, callOptions);
           // Pop up the same in-call menu for the outgoing caller as for an
           // incoming one, so mute / volume / hangup are always available.
@@ -526,6 +549,18 @@ export default async function initPhone(container) {
       document.body.appendChild(a);
     }
     a.srcObject = stream;
+  }
+
+  // Adjust remote audio volume by `delta` (clamped 0..1). Returns the new volume.
+  function adjustPanelVolume(delta) {
+    const a = document.getElementById("fpRemoteAudio");
+    if (!a) return 0;
+    let vol = a.volume;
+    if (typeof vol !== "number" || isNaN(vol)) vol = 1;
+    vol = Math.min(1, Math.max(0, vol + delta));
+    a.volume = vol;
+    if (vol > 0) a.muted = false;
+    return vol;
   }
 
   function attachRemoteVideoStream(stream) {
