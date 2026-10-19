@@ -246,7 +246,17 @@ app.get("/.well-known/assetlinks.json", (req, res) => {
 
 // index:false — let the app.get("/") route below handle / so it can inject
 // pack-specific social-graph tags; static middleware must not serve index.html.
-app.use(express.static(staticPath, { index: false }));
+app.use(express.static(staticPath, {
+  index: false,
+  // *.manifest.json must be served as application/manifest+json. Otherwise
+  // Express falls back to application/json for ".json", and browsers (notably
+  // Firefox) treat that as a download instead of parsing the PWA manifest.
+  setHeaders(res, filePath) {
+    if (filePath.endsWith(".manifest.json")) {
+      res.set("Content-Type", "application/manifest+json");
+    }
+  },
+}));
 
 // -----------------------------------------------------------------------------
 // DYNAMIC PWA MANIFEST FOR SENIOR PACKS
