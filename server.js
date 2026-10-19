@@ -244,6 +244,10 @@ app.get("/.well-known/assetlinks.json", (req, res) => {
   }
 });
 
+// Serve all *.manifest.json files with the correct type so installed PWAs don't
+// prompt to download manifest.json (browsers treat application/json as a download).
+express.static.mime.define({ "application/manifest+json": ["manifest"] });
+
 // index:false — let the app.get("/") route below handle / so it can inject
 // pack-specific social-graph tags; static middleware must not serve index.html.
 app.use(express.static(staticPath, { index: false }));
