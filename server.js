@@ -298,9 +298,11 @@ app.get("/manifest-senior.json", (req, res) => {
   const short = titleRaw.slice(0, 12) || "Handi";
   const origin = requestOrigin(req);
 
-  // start_url is the exact requested URL (query params included) so the
-  // installed PWA boots into this specific dashboard.
-  const startUrl = origin + req.originalUrl;
+  // start_url must be the actual dashboard page ("" + the pack's own query),
+  // NOT this manifest endpoint. Pointing start_url at manifest-senior.json
+  // makes Firefox treat the "app" as a JSON file and download it instead of
+  // installing. Build the page URL from the pack query alone.
+  const startUrl = origin + "/" + buildManifestQuery(req);
 
   const packLogo = q.logo && /^https?:\/\//i.test(String(q.logo))
     ? String(q.logo)
