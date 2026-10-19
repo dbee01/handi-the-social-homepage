@@ -21,7 +21,7 @@
   },
   "homepage": "https://codeberg/handi/ple#readme",
   "dependencies": {
-    "axios": "^1.19.0",
+    "axios": "^1.20.0",
     "cors": "^2.8.6",
     "csv-parser": "^3.2.1",
     "dotenv": "^17.4.2",
@@ -35,14 +35,13 @@
     "stripe": "^22.2.3",
     "vite": "^8.0.14"
   },
-  "devDependencies": {
-    "@bubblewrap/cli": "^1.25.0",
-    "nodemon": "^3.1.14"
-  },
+  "devDependencies": {},
   "overrides": {
     "glob": "^13.0.6",
     "body-parser": "^2.3.0",
-    "brace-expansion": "^5.0.9",
-    "qs": "6.16.0"
+    "brace-expansion": "^5.0.12",
+    "qs": "6.16.0",
+    "proxy-addr": "2.0.8",
+    "markdown-it": "14.3.1"
   }
 }
