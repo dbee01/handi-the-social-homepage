@@ -1,4 +1,4 @@
-const CACHE = "ple-v40";
+const CACHE = "ple-v41";
 
 // Manual bump per deploy (you deploy from your working copy, not git). Always
 // raise CACHE before deploying so browsers pick up a changed service worker.
@@ -369,7 +369,33 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // Images, fonts, manifest, etc. — cache-first, then network
+  // Manifests must never be served from a stale cache: their content-type
+  // (application/manifest+json) is what lets the browser install a PWA instead
+  // of downloading the file. Serve them network-first with a cache fallback,
+  // and only cache a successful manifest response.
+  if (
+    e.request.destination === "manifest" ||
+    /\.manifest(\.json)?(\?|$)/.test(e.request.url)
+  ) {
+    e.respondWith(
+      fetch(e.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE).then((cache) => cache.put(e.request, clone));
+          }
+          return response;
+        })
+        .catch(() =>
+          caches.match(e.request).then((cached) =>
+            cached || new Response("", { status: 408 }),
+          ),
+        ),
+    );
+    return;
+  }
+
+  // Images, fonts, etc. — cache-first, then network
   e.respondWith(
     caches.match(e.request).then((cached) => {
       if (cached) return cached;

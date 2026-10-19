@@ -284,7 +284,13 @@ app.get("/manifest-senior.json", (req, res) => {
     (q.logo && /^https?:\/\//i.test(String(q.logo)));
 
   if (!seniors || !hasPack) {
-    res.status(404).json({ error: "No installable senior pack" });
+    // Return the error with a manifest content-type (not application/json): if
+    // the manifest link ever loses its query params, a 404 as application/json
+    // makes Firefox download/manifest-senior.json instead of ignoring it.
+    res
+      .status(404)
+      .type("application/manifest+json")
+      .send(JSON.stringify({ error: "No installable senior pack" }));
     return;
   }
 
