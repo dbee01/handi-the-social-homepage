@@ -249,6 +249,74 @@ app.get("/.well-known/assetlinks.json", (req, res) => {
 app.use(express.static(staticPath, { index: false }));
 
 // -----------------------------------------------------------------------------
+// DYNAMIC PWA MANIFEST FOR SENIOR PACKS
+// -----------------------------------------------------------------------------
+// A "senior mode" pack (builder-admin.html with the senior checkbox ticked,
+// i.e. ?seniors=1) is allowed to be installed as a PWA. This endpoint builds a
+// manifest whose start_url boots straight into that pack's full URL, so the
+// installed app opens the dashboard directly. The manifest is keyed off the
+// pack's signed id when present, otherwise off the handi-pack title.
+app.get("/manifest-senior.json", (req, res) => {
+  const q = req.query;
+  const seniors = String(q.seniors || "") === "1";
+  const hasPack =
+    (q["handi-pack"] && String(q["handi-pack"]).trim()) ||
+    (q.description && String(q.description).trim()) ||
+    (q.logo && /^https?:\/\//i.test(String(q.logo)));
+
+  if (!seniors || !hasPack) {
+    res.status(404).json({ error: "No installable senior pack" });
+    return;
+  }
+
+  const titleRaw = q["handi-pack"] ? String(q["handi-pack"]).trim() : "";
+  const short = titleRaw.slice(0, 12) || "Handi";
+  const origin = requestOrigin(req);
+
+  // start_url is the exact requested URL (query params included) so the
+  // installed PWA boots into this specific dashboard.
+  const startUrl = origin + req.originalUrl;
+
+  const packLogo = q.logo && /^https?:\/\//i.test(String(q.logo))
+    ? String(q.logo)
+    : "/images/icons/handi/handi-512x512.png";
+  const themeColor = "#1471ff";
+
+  res.type("application/manifest+json").send(
+    JSON.stringify({
+      name: titleRaw || "Handi Homepage",
+      short_name: short,
+      description: q.description ? String(q.description).trim() : "",
+      id: startUrl,
+      scope: origin + "/",
+      start_url: startUrl,
+      display: "standalone",
+      display_override: ["standalone"],
+      background_color: "#f6f8fc",
+      theme_color: themeColor,
+      orientation: "portrait-primary",
+      icons: [
+        {
+          src: packLogo.startsWith("http") ? packLogo : "/images/icons/handi/handi-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "any maskable",
+        },
+        {
+          src: "/images/icons/handi/handi-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "any maskable",
+        },
+      ],
+      lang: q.lang ? String(q.lang) : "en",
+      dir: "ltr",
+      prefer_related_applications: false,
+    }),
+  );
+});
+
+// -----------------------------------------------------------------------------
 // SOCIAL GRAPH (Open Graph / Twitter) for handi-pack links
 // Share-preview crawlers don't execute the client-side pack import in
 // index.html, so pack-specific meta tags must already be in the served HTML.
@@ -297,6 +365,23 @@ function requestOrigin(req) {
       .trim() || req.protocol || "https";
   const host = req.get("host") || "";
   return proto + "://" + host;
+}
+
+// Rebuild a query string from req.query. Express collapses repeated keys into
+// arrays and decodes values, so this round-trips the query back to a URL-safe
+// string (used to point the manifest link at this exact pack URL).
+function buildManifestQuery(req) {
+  const params = new URLSearchParams();
+  for (const key of Object.keys(req.query)) {
+    const val = req.query[key];
+    if (Array.isArray(val)) {
+      for (const v of val) params.append(key, String(v));
+    } else {
+      params.append(key, String(val));
+    }
+  }
+  const qs = params.toString();
+  return qs ? "?" + qs : "";
 }
 
 const OG_DEFAULT_DESC =
@@ -531,11 +616,18 @@ app.get("/", (req, res) => {
       "/images/icons/cork/cork-32x32.png",
     );
   } else if (hasPack) {
-    // Other handi-packs: no installable app.
-    html = html.replace(
-      /<link\s+rel="manifest"\s+href="[^"]*"\s*\/?>/,
-      "",
-    );
+    // A senior-mode pack can still be installed as a PWA: point its manifest
+    // at the dynamic senior manifest (start_url = this exact pack URL). Every
+    // other handi-pack keeps no installable app.
+    if (req.query.seniors === "1") {
+      const manifestQuery = "manifest-senior.json" + buildManifestQuery(req);
+      html = setLinkHref(html, "manifest", "/" + manifestQuery);
+    } else {
+      html = html.replace(
+        /<link\s+rel="manifest"\s+href="[^"]*"\s*\/?>/,
+        "",
+      );
+    }
   }
 
   res.type("html").send(html);

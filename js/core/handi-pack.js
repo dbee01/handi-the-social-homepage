@@ -621,6 +621,13 @@
       if (qs.get("id")) localStorage.setItem("handiPackId", qs.get("id"));
       if (qs.get("logo")) localStorage.setItem("handiPackLogo", qs.get("logo"));
       if (qs.get("homepage")) localStorage.setItem("handiPackHomepage", qs.get("homepage"));
+      // Persist senior mode so the client-side manifest-adjust logic (and the
+      // elderly UI) can recognise the pack even after a clean-URL redirect.
+      if (qs.get("seniors") === "1") {
+        localStorage.setItem("handiPackSeniors", "1");
+      } else {
+        localStorage.removeItem("handiPackSeniors");
+      }
     } catch (e) {}
 
     // ---------------------------------------------------------------------

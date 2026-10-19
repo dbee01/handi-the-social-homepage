@@ -797,6 +797,19 @@
                         return false;
                     }
                 }
+                function isSeniors() {
+                    try {
+                        if (new URLSearchParams(window.location.search).get("seniors") === "1") {
+                            return true;
+                        }
+                        return (
+                            localStorage.getItem("handiSeniors") === "1" ||
+                            localStorage.getItem("handiPackSeniors") === "1"
+                        );
+                    } catch (e) {
+                        return false;
+                    }
+                }
 
                 function adjust() {
                     var link = document.querySelector('link[rel="manifest"]');
@@ -833,8 +846,13 @@
                             "/images/icons/cork/cork-32x32.png",
                         );
                     } else if (hasPack()) {
-                        // Another handi-pack: no installable app.
-                        link.parentNode.removeChild(link);
+                        // A senior-mode pack stays installable: the server has
+                        // already pointed the manifest at the dynamic senior
+                        // manifest, so keep the link intact. Other handi-packs
+                        // get no installable app.
+                        if (!isSeniors()) {
+                            link.parentNode.removeChild(link);
+                        }
                     }
                 }
 
