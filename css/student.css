@@ -141,6 +141,11 @@ header {
     letter-spacing: 1px;
 }
 
+/* Expanded (full-length) panel titles use the secondary colour. */
+.dashboard-item:not(.collapsed) .panel-title {
+    color: var(--secondary, #ffb347);
+}
+
 /* ---------- MODULE CONTROLS ---------- */
 .module-controls button {
     background: #222;
@@ -638,6 +643,9 @@ footer {
 }
 .footer-icon:hover {
     background: #222;
+}
+.footer-icon:active {
+    background: transparent;
 }
 
 /* ---------- CUSTOMIZE LINK ---------- */

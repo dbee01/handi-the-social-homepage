@@ -274,6 +274,11 @@ footer,
     letter-spacing: 1px;
 }
 
+/* Expanded panels use the secondary colour. */
+.dashboard-item:not(.collapsed) .panel-title {
+    color: var(--color-secondary) !important;
+}
+
 .panel-title i {
     color: var(--color-secondary) !important;
     margin-right: 8px;
@@ -1361,6 +1366,7 @@ footer {
 
 .footer-icon:active {
     transform: translateY(0px);
+    background: transparent !important;
 }
 
 /* ---------- CUSTOMIZE LINK ---------- */

@@ -904,6 +904,10 @@ header {
     border-bottom: 1px solid var(--border-light);
 }
 
+.dashboard-item:not(.collapsed) .panel-title {
+    color: var(--secondary);
+}
+
 /* =========================================================
    PIN BUTTON
 ========================================================= */

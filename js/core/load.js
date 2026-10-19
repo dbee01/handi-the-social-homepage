@@ -138,12 +138,14 @@ function applyModuleCollapse(item, collapsed) {
   if (!content) return;
   var body = content.children[1];
   if (collapsed) {
+    item.classList.add("collapsed");
     content.style.height = "auto";
     if (body) {
       body.style.height = "0";
       body.style.display = "none";
     }
   } else {
+    item.classList.remove("collapsed");
     content.style.height = "";
     if (body) {
       body.style.height = "";

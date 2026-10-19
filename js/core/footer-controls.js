@@ -126,9 +126,69 @@
   // --- Navigation buttons ---
   const settingsBtn = document.getElementById("footerSettingsBtn");
   if (settingsBtn) {
-    settingsBtn.addEventListener("click", () => {
+    const seniorsMode = (() => {
+      try {
+        if (new URLSearchParams(window.location.search).get("seniors") === "1") {
+          return true;
+        }
+        return (
+          localStorage.getItem("handiSeniors") === "1" ||
+          localStorage.getItem("handiPackSeniors") === "1"
+        );
+      } catch (e) {
+        return false;
+      }
+    })();
+
+    const openSettings = () => {
       window.location.href = "settings.html";
-    });
+    };
+
+    if (seniorsMode) {
+      // In seniors mode, require a 5-second press/touch before opening
+      // settings so it can't be triggered by mistake.
+      const HOLD_MS = 5000;
+      let holdTimer = null;
+      let holdStarted = null;
+
+      const cancelHold = () => {
+        if (holdTimer) {
+          clearTimeout(holdTimer);
+          holdTimer = null;
+        }
+        holdStarted = null;
+      };
+
+      const startHold = () => {
+        cancelHold();
+        holdStarted = Date.now();
+        holdTimer = setTimeout(() => {
+          holdTimer = null;
+          holdStarted = null;
+          openSettings();
+        }, HOLD_MS);
+      };
+
+      settingsBtn.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        startHold();
+      });
+      settingsBtn.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        startHold();
+      });
+      settingsBtn.addEventListener("touchend", cancelHold);
+      settingsBtn.addEventListener("touchcancel", cancelHold);
+      settingsBtn.addEventListener("mouseup", cancelHold);
+      settingsBtn.addEventListener("mouseleave", cancelHold);
+      settingsBtn.addEventListener("click", (e) => {
+        // A plain click (tap without holding) is ignored in seniors mode.
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    } else {
+      settingsBtn.addEventListener("click", openSettings);
+    }
   }
 
   const docsBtn = document.getElementById("footerDocsBtn");

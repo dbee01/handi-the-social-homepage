@@ -2444,15 +2444,6 @@ footer {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* =========================================================
-   TEMPORARY: hide the rotating message box only.
-   The install banner (.notice-box--info) stays visible.
-   Remove this block to restore the messages box.
-========================================================= */
-.notice-box:not(.notice-box--info) {
-    display: none;
-}
-
 .notice-box--info {
     --notice-bg: var(--notice-info-bg);
     --notice-accent: var(--notice-info-accent);

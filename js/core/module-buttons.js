@@ -203,7 +203,25 @@
       createMessageBox();
     }
   }
-  initMessageBox();
+
+  // Show the rotating header messages only in seniors mode. In normal
+  // mode they are suppressed so they don't clutter the dashboard.
+  const seniorsMode = (() => {
+    try {
+      if (new URLSearchParams(window.location.search).get("seniors") === "1") {
+        return true;
+      }
+      return (
+        localStorage.getItem("handiSeniors") === "1" ||
+        localStorage.getItem("handiPackSeniors") === "1"
+      );
+    } catch (e) {
+      return false;
+    }
+  })();
+  if (seniorsMode) {
+    initMessageBox();
+  }
 
   // ----- Pin logic (replaces pins.js) -----
   function moveItemToTop(panel, grid) {

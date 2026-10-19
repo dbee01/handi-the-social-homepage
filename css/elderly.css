@@ -93,6 +93,12 @@ header {
     color: #0047cc;
 }
 
+/* Expanded (full-length) panel titles use the secondary colour to show
+   the module body is open; collapsed titles stay primary. */
+.dashboard-item:not(.collapsed) .panel-title {
+    color: var(--secondary, #f59e0b);
+}
+
 /* ---------- MODULE CONTROLS ---------- */
 .module-controls button {
     background: #0047cc;
@@ -515,6 +521,9 @@ footer {
 }
 .footer-icon:hover {
     background: #eaf2ff;
+}
+.footer-icon:active {
+    background: transparent;
 }
 
 /* ---------- CUSTOMIZE LINK ---------- */
