@@ -58,7 +58,10 @@ export default async function initTask(container) {
   let tasks = loadTasks();
     let undoTask = null;
     let undoTimeout = null;
+    // Editing state — used to visually flag the active edit row and to
+    // scroll the edit form into view when the user taps the pencil icon.
     let editingIndex = null;
+    const EDITING_CLASS = "task-editing";
 
   // ── Undo toast ──────────────────────────────────────────────────────────
   function showUndo(task) {
@@ -190,11 +193,11 @@ export default async function initTask(container) {
     list.innerHTML = tasks.length === 0
       ? `<div class="module-empty"><i class="fa-solid fa-list-check"></i><p>${t("d_noTasks", "No tasks yet")}</p></div>`
       : tasks.map((task, i) => `
-        <div class="task-card ${task.done ? "task-done" : ""}">
+        <div class="task-card ${task.done ? "task-done" : ""} ${editingIndex === i ? EDITING_CLASS : ""}">
           <div class="task-card-header">
                       <input type="checkbox" class="task-checkbox" data-idx="${i}" ${task.done ? "checked" : ""}>
                       <div class="task-card-title">${escapeHtml(task.title)}</div>
-                      <button class="task-edit" data-idx="${i}" title="${t("d_edit", "Edit")}">✎</button>
+                      <button class="task-edit ${editingIndex === i ? "is-editing" : ""}" data-idx="${i}" title="${t("d_edit", "Edit")}">${editingIndex === i ? "✓" : "✎"}</button>
                       <button class="task-remove" data-idx="${i}" title="${t("d_delete", "Delete")}">✖</button>
                     </div>
           ${task.desc ? `<div class="task-card-desc">${escapeHtml(task.desc)}</div>` : ""}
@@ -234,6 +237,9 @@ export default async function initTask(container) {
       btn.addEventListener("click", () => {
         editingIndex = parseInt(btn.dataset.idx);
         renderTasks();
+        // Reveal the pre-filled edit form so the user can see what they are
+        // editing (the form lives below the task list).
+        scrollEditFormIntoView();
       });
     });
 
@@ -252,6 +258,19 @@ export default async function initTask(container) {
   function escapeHtml(str) {
     if (!str) return "";
     return str.replace(/[&<>]/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m]);
+  }
+
+  // Scroll the edit form (task-create) into view. The form sits below the
+  // task list, so when a task is being edited we bring it to the user's
+  // attention and scroll the page to it.
+  function scrollEditFormIntoView() {
+    const form = content.querySelector(".task-create");
+    if (!form) return;
+    // Focus the title field first so the on-screen keyboard / focus lands
+    // where editing happens, then bring the form into view.
+    const titleInput = content.querySelector("#taskTitle");
+    if (titleInput) titleInput.focus();
+    form.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   renderTasks();

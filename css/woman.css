@@ -601,12 +601,6 @@ footer {
 .footer-icon {
     color: #d63384;
 }
-.footer-icon:hover {
-    background: #fff0f4;
-}
-.footer-icon:active {
-    background: transparent;
-}
 
 /* ---------- CUSTOMIZE LINK ---------- */
 .customize-link a {

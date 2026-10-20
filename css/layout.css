@@ -459,14 +459,6 @@ header {
    automatically on small screens where media is scaled down too. */
 :root { --carousel-text-allowance: 370px; --carousel-arrow-top: 319px; }
 
-.dashboard-item[data-module="mastodon"],
-.dashboard-item[data-module="news"],
-.dashboard-item[data-module="events"],
-.dashboard-item[data-module="flip"],
-.dashboard-item[data-module="newsletter"] {
-    /* min-height: calc(var(--media-height) + var(--carousel-text-allowance)); */
-}
-
 /* 2 columns: wider panel wraps text onto fewer lines, so shrink the allowance. */
 @media (max-width: 1150px) {
     :root { --carousel-text-allowance: 320px; --carousel-arrow-top: 302px; }
@@ -1529,6 +1521,19 @@ button:hover,
     color: #3b82f6;
 }
 
+/* Active editing state: the pencil becomes a tick and stays highlighted so
+   the user can see which task is currently being edited. */
+.task-edit.is-editing {
+    background: #3b82f6;
+    color: #fff;
+    font-weight: 700;
+}
+
+.task-card.task-editing {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
 .task-remove {
     background: none;
     border: none;
@@ -2213,6 +2218,20 @@ footer {
     font-size: 1.8rem !important;
     min-width: 56px !important;
     min-height: 56px !important;
+}
+
+/* Footer icons signal their state with colour only: no border, no
+   background. Pressed / focused / hovered icons switch to the theme's
+   secondary colour and nothing else. */
+.footer-icon:active,
+.footer-icon:focus,
+.footer-icon:focus-visible,
+.footer-icon:hover {
+    color: var(--secondary, #f59e0b) !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 @media (max-width: 768px) {

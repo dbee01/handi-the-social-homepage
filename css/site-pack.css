@@ -218,8 +218,6 @@ header { background: var(--surface); border-bottom: 3px solid var(--primary); }
 /* ── FOOTER ──────────────────────────────────────────────────────── */
 footer { background: var(--surface); border-top: 2px solid var(--border); }
 .footer-icon { color: var(--primary); }
-.footer-icon:hover { background: var(--primary-soft); }
-.footer-icon:active { background: transparent; }
 
 /* ── CUSTOMIZE LINK ──────────────────────────────────────────────── */
 .customize-link a { background: var(--primary) !important; color: #fff !important; border-radius: var(--radius); }

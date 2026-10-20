@@ -418,12 +418,12 @@ var LANG = {
   h_unpin: "Dad-binio",
 
   // Negeseuon cylchdroi'r dangosfwrdd
-  d_msg_1: '💰 Oes problemau arian gennych? Cysylltwch ag asiantaeth y llywodraeth <a href="https://mabs.ie/">MABS</a> am gymorth.',
-  d_msg_2: '👬 Gall fod angen ffrind ar bob un ohonom rywbryd; siaradwch â <a href="https://www.alone.ie/">ALONE</a> os ydych yn teimlo angen estyn allan.',
-  d_msg_3: "🔒 Poriwch y We yn ddiogel gyda gwasanaeth enwog <a href='https://www.tkqlhce.com/click-101722909-13792632'> Proton VPN & Email</a>. <sup>(cysylltiol)</sup>",
-  d_msg_4: '🆘 Ychwanegwch eich gwybodaeth feddygol i’ch ffôn symudol nawr: Cliciwch Gosodiadau -> chwiliwch: "Emergency" -> diweddarwch gyda’ch manylion',
-  d_msg_5: "🚑 Angen help yn gyflym? Ffurfweddwch eich <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>ffôn Android</a> neu <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>ffôn ac oriawr Apple</a> i anfon rhybudd at y gwasanaethau brys gyda’ch lleoliad pan fyddwch yn pwyso botwm pŵer eich dyfais 5 gwaith neu fwy!",
-  d_msg_6: "📻 Diffoddwch bob sianel sain ar y dangosfwrdd hwn trwy wasgu’r eicon siaradwr (chwith troedyn y dudalen ar waelod eich sgrin).",
+  d_msg_1: '💰 Oes problemau arian gennych? Cysylltwch ag asiantaeth y llywodraeth <a href="https://mabs.ie/">MABS</a>.',
+  d_msg_2: '👬 Gall fod angen ffrind ar bob un ohonom rywbryd; siaradwch â <a href="https://www.alone.ie/">ALONE</a>.',
+  d_msg_3: "🔒 Poriwch y We yn ddiogel gyda <a href='https://proton.me'> Proton</a>",
+  d_msg_4: '🆘 Ychwanegwch eich gwybodaeth feddygol i’ch ffôn symudol nawr: Cliciwch Gosodiadau -> chwiliwch: "Emergency"',
+  d_msg_5: "🚑 Angen help yn gyflym? Ffurfweddwch eich <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>ffôn Android</a> neu <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>ffôn ac oriawr Apple</a> i rybuddio’r gwasanaethau brys.",
+  d_msg_6: "📻 Diffoddwch bob sianel sain ar y dangosfwrdd hwn trwy wasgu’r eicon siaradwr (yn nhroedyn y dudalen ar waelod eich sgrin).",
   d_msg_close: "Cau’r neges",
 
   // Search placeholder
