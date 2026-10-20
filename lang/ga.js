@@ -443,8 +443,8 @@ var LANG = {
   d_msg_2: '👬 Bheadh cara ag teastáil ó gach duine againn uaireanta; labhair le <a href="https://www.alone.ie/">ALONE</a>.',
   d_msg_3: "🔒 Brabhsáil an Gréasán go slán le <a href='https://proton.me'> Proton</a>",
   d_msg_4: '🆘 Cuir d’fhaisnéis leighis le do ghuthán póca anois: Cliceáil Socruithe -> cuardaigh: "Emergency"',
-  d_msg_5: "🚑 An bhfuil cabhair uait go tapa? Cumraigh do <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>ghuthán Android</a> nó <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>ghuthán agus uaireadóir Apple</a> chun foláireamh a thabhairt do na seirbhísí éigeandála.",
-  d_msg_6: "📻 Múch gach cainéal fuaime ar an deais seo trí bhrú a chur ar an deilbhín cainteora (i gcos an leathanaigh ag bun do scáileáin).",
+  d_msg_5: "🚑 An bhfuil cabhair uait go tapa? Cumraigh do ghléas <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android</a> nó <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple</a> chun foláireamh a thabhairt do na seirbhísí éigeandála.",
+  d_msg_6: "📻 Balbhaigh fuaim an leathanach baile seo trí chliceáil ar dheilbhín an chainteora sa bhuntásc.",
   d_msg_close: "Dún an teachtaireacht",
 
   // Search placeholder

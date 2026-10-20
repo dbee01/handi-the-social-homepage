@@ -349,9 +349,6 @@ button .radio-country-item {
     color: white;
     background: #c9a0b0;
 }
-.radio-play-btn.playing {
-    /* background: #d63384; */
-}
 .radio-country-item span {
     color: #3D2C3A;
 }

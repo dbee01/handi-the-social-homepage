@@ -422,8 +422,8 @@ var LANG = {
   d_msg_2: '👬 Gall fod angen ffrind ar bob un ohonom rywbryd; siaradwch â <a href="https://www.alone.ie/">ALONE</a>.',
   d_msg_3: "🔒 Poriwch y We yn ddiogel gyda <a href='https://proton.me'> Proton</a>",
   d_msg_4: '🆘 Ychwanegwch eich gwybodaeth feddygol i’ch ffôn symudol nawr: Cliciwch Gosodiadau -> chwiliwch: "Emergency"',
-  d_msg_5: "🚑 Angen help yn gyflym? Ffurfweddwch eich <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>ffôn Android</a> neu <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>ffôn ac oriawr Apple</a> i rybuddio’r gwasanaethau brys.",
-  d_msg_6: "📻 Diffoddwch bob sianel sain ar y dangosfwrdd hwn trwy wasgu’r eicon siaradwr (yn nhroedyn y dudalen ar waelod eich sgrin).",
+  d_msg_5: "🚑 Angen help yn gyflym? Gosodwch eich dyfais <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android</a> neu <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple</a> i rybuddio’r gwasanaethau brys.",
+  d_msg_6: "📻 Teiwch sain y dudalen gartref hon trwy glicio eicon y siaradwr yn y droednodyn.",
   d_msg_close: "Cau’r neges",
 
   // Search placeholder

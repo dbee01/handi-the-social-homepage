@@ -549,8 +549,8 @@ var LANG = {
   d_msg_2: '👬 We all could do with a friend sometime; talk to <a href="https://www.alone.ie/">ALONE</a>.',
   d_msg_3: "🔒 Surf the Web securely with <a href='https://proton.me'> Proton</a>",
   d_msg_4: '🆘 Add your medical information to your mobile phone now: Click Settings -> search: "Emergency"',
-  d_msg_5: "🚑 Need help quick? Configure your <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android phone</a> or <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple phone and watch</a> to alert emergency services.",
-  d_msg_6: "📻 Turn off all audio channels on this dashboard by pressing the speaker icon (footer at the bottom of your screen).",
+  d_msg_5: "🚑 Need help quick? Set your <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android</a> or <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple</a> device to alert emergency services.",
+  d_msg_6: "📻 Mute the audio on this homepage by clicking the speaker icon in the footer.",
   d_msg_close: "Dismiss message",
 
   // Footer

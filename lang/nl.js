@@ -423,8 +423,8 @@ var LANG = {
   d_msg_2: '👬 We kunnen allemaal wel eens een vriend gebruiken; praat met <a href="https://www.alone.ie/">ALONE</a>.',
   d_msg_3: "🔒 Surf veilig op het web met <a href='https://proton.me'> Proton</a>",
   d_msg_4: '🆘 Voeg nu uw medische gegevens toe aan uw mobiele telefoon: klik op Instellingen -> zoek: "Noodgevallen"',
-  d_msg_5: "🚑 Snel hulp nodig? Configureer uw <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android-telefoon</a> of <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple-telefoon en -horloge</a> om de hulpdiensten te alarmeren.",
-  d_msg_6: "📻 Zet alle audiokanalen van dit dashboard uit door het luidsprekerpictogram in te drukken (in de paginafooter onderaan uw scherm).",
+  d_msg_5: "🚑 Snel hulp nodig? Stel uw <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android</a>- of <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple</a>-apparaat in om de hulpdiensten te alarmeren.",
+  d_msg_6: "📻 Demp het geluid van deze homepage door op het luidsprekerpictogram in de footer te klikken.",
   d_msg_close: "Bericht sluiten",
 
   // Search placeholder

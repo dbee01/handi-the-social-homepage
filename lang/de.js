@@ -429,8 +429,8 @@ var LANG = {
   d_msg_2: '👬 Wir könnten alle ab und zu einen Freund gebrauchen; sprechen Sie mit <a href="https://www.alone.ie/">ALONE</a>.',
   d_msg_3: "🔒 Surfen Sie sicher im Internet mit <a href='https://proton.me'> Proton</a>",
   d_msg_4: '🆘 Fügen Sie jetzt Ihre medizinischen Informationen zu Ihrem Mobiltelefon hinzu: Klicken Sie auf Einstellungen -> suchen: "Notfall"',
-  d_msg_5: "🚑 Schnell Hilfe nötig? Richten Sie Ihr <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android-Telefon</a> oder <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple-Telefon und -Uhr</a> so ein, dass es die Notdienste alarmiert.",
-  d_msg_6: "📻 Schalten Sie alle Audiokanäle auf diesem Dashboard aus, indem Sie das Lautsprechersymbol drücken (in der Fußzeile am unteren Bildschirmrand).",
+  d_msg_5: "🚑 Schnell Hilfe nötig? Richten Sie Ihr <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android</a>- oder <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple</a>-Gerät so ein, dass es die Notdienste alarmiert.",
+  d_msg_6: "📻 Schalten Sie den Ton dieser Startseite stumm, indem Sie das Lautsprechersymbol in der Fußzeile anklicken.",
   d_msg_close: "Nachricht schließen",
 
   // Search placeholder

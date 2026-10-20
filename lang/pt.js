@@ -422,8 +422,8 @@ var LANG = {
   d_msg_2: '👬 Todos nós precisamos de um amigo de vez em quando; fale com a <a href="https://www.alone.ie/">ALONE</a>.',
   d_msg_3: "🔒 Navegue na Web com segurança com a <a href='https://proton.me'> Proton</a>",
   d_msg_4: '🆘 Adicione agora as suas informações médicas ao seu telemóvel: clique em Definições -> procure: "Emergência"',
-  d_msg_5: "🚑 Precisa de ajuda rápida? Configure o seu <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>telemóvel Android</a> ou <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>iPhone e Apple Watch</a> para alertar os serviços de emergência.",
-  d_msg_6: "📻 Desligue todos os canais de áudio deste painel premindo o ícone do altifalante (no rodapé da página, na parte inferior do ecrã).",
+  d_msg_5: "🚑 Precisa de ajuda rápida? Configure o seu dispositivo <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>Android</a> ou <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>Apple</a> para alertar os serviços de emergência.",
+  d_msg_6: "📻 Silencie o áudio desta página inicial clicando no ícone do altifalante no rodapé.",
   d_msg_close: "Fechar mensagem",
 
   // Search placeholder

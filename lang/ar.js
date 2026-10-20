@@ -421,8 +421,8 @@ var LANG = {
   d_msg_2: '👬 قد نحتاج جميعاً إلى صديق في وقت ما؛ تحدث إلى <a href="https://www.alone.ie/">ALONE</a>.',
   d_msg_3: "🔒 تصفح الإنترنت بأمان مع <a href='https://proton.me'> Proton</a>",
   d_msg_4: '🆘 أضف معلوماتك الطبية إلى هاتفك المحمول الآن: انقر الإعدادات -> ابحث: "الطوارئ"',
-  d_msg_5: "🚑 هل تحتاج إلى مساعدة سريعة؟ اضبط <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>هاتف أندرويد</a> أو <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>هاتف وساعة آبل</a> لتنبيه خدمات الطوارئ.",
-  d_msg_6: "📻 قم بإيقاف تشغيل جميع القنوات الصوتية في لوحة التحكم هذه بالضغط على أيقونة مكبر الصوت (في تذييل الصفحة أسفل شاشتك).",
+  d_msg_5: "🚑 هل تحتاج إلى مساعدة سريعة؟ اضبط جهاز <a href='https://support.google.com/android/answer/9319337?hl=en-GB'>أندرويد</a> أو <a href='https://support.apple.com/en-gb/guide/personal-safety/ips4f0cd709b/web'>آبل</a> لتنبيه خدمات الطوارئ.",
+  d_msg_6: "📻 اكتم صوت هذه الصفحة الرئيسية بالنقر على أيقونة مكبر الصوت في التذييل.",
   d_msg_close: "إغلاق الرسالة",
 
   // Search placeholder
