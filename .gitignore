@@ -17,4 +17,5 @@ pwa/
 .zed/
 
 # Pitch materials (generated leave-behind PDF + source)
-pitch/
+pitch/*
+!pitch/handi-homepage-leave-behind.pdf
