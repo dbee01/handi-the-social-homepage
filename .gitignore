@@ -15,3 +15,6 @@ pwa/
 
 # Zed editor local settings
 .zed/
+
+# Pitch materials (generated leave-behind PDF + source)
+pitch/
