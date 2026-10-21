@@ -161,6 +161,16 @@ export default async function initPhone(container) {
     return myUserId;
   }
 
+  // A person cannot call themselves: drop the owner's own contact from the
+  // list so the homepage user never sees "contact 1" pointing back at them.
+  // The owner is recognised by their own WebRTC identity (webrtc_user_id_v2),
+  // which matches the `webrtcId` (or legacy `number`) of the self record.
+  function isSelfContact(c) {
+    if (!c) return false;
+    const id = c.webrtcId || c.number;
+    return !!id && id === myUserId;
+  }
+  contacts = contacts.filter((c) => !isSelfContact(c));
 
   // ── Infobip WebRTC state ───────────────────────────────────────────────
   let infobipRTC = null;
