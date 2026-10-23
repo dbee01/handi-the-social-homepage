@@ -330,6 +330,15 @@
       ensure("radio").streamName = v;
     }
 
+    // Country filter for the built-in station list. Accepts an ISO country
+    // code ("ie", "gb", …) and narrows the Radio module's station list to that
+    // country's stations when no explicit stream/feed URL is set.
+    if ((v = qs.get("radio-country"))) {
+      v = v.trim().toLowerCase();
+      ensure("radio").defaultCountry = v;
+      try { window.handiNs.set("handiRadioCountry", v); } catch (e) {}
+    }
+
     // Sports — live football. Value is a comma-separated league selection:
     // API-Football league ids ("sports=357,358") or friendly slugs
     // ("sports=loi,premier-league"). A bare "sports=1" / "sports=" just
