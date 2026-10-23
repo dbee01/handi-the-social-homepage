@@ -148,6 +148,36 @@
   window.addEventListener("handiRingingStart", ring);
   window.addEventListener("handiRingingStop", stop);
 
+  // --- Sound lock ---
+  // While a phone call is ringing or in progress, other audio modules (radio,
+  // music, cast) pause themselves. This is a shared source of truth keyed off
+  // the same decoupled events the phone modules already use for ringing. The
+  // phone modules dispatch `handiCallStarted` the moment a call starts ringing
+  // (outgoing dial or incoming ring) and `handiCallEnded` when it hangs up; a
+  // counter handles overlapping phones so the lock only drops when the last
+  // call ends.
+  var soundLockCount = 0;
+  function setSoundLock(locked) {
+    // Normalise to a boolean so callers can rely on `detail.locked`.
+    window.dispatchEvent(
+      new CustomEvent("handiSoundLockChange", { detail: { locked: !!locked } }),
+    );
+  }
+  window.addEventListener("handiCallStarted", function () {
+    soundLockCount++;
+    if (soundLockCount === 1) setSoundLock(true);
+  });
+  window.addEventListener("handiCallEnded", function () {
+    if (soundLockCount > 0) soundLockCount--;
+    if (soundLockCount === 0) setSoundLock(false);
+  });
+
+  // Exposed API so modules could query or force the lock without events.
+  window.handiSoundLock = {
+    lock: function () { setSoundLock(true); },
+    unlock: function () { setSoundLock(false); },
+  };
+
   // Unlock/resume the audio context on the first user interaction so the
   // beep is audible when an incoming call arrives (browsers block autoplay
   // until after a gesture).

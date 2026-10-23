@@ -388,6 +388,67 @@ export default async function initRadio(container) {
     },
   ];
 
+  // Map each built-in station to its ISO country code so a country filter can
+  // narrow the list. Kept separate from the inline flag SVG above so the
+  // country chips and the (optional) radio-country pack filter share a source.
+  const STATION_COUNTRIES = {
+    "RTÉ Radio 1": "ie",
+    "Today FM": "ie",
+    "Newstalk": "ie",
+    "RTÉ Lyric FM": "ie",
+    "RTÉ 2FM": "ie",
+    "Cork 96FM": "ie",
+    "Heart UK": "gb",
+    "Smooth Radio UK": "gb",
+    "LBC UK": "gb",
+    "Capital FM London": "gb",
+    "France Inter": "fr",
+    "France Info": "fr",
+    "FIP": "fr",
+    "NRJ": "fr",
+    "Deutschlandfunk": "de",
+    "WDR 2": "de",
+    "Radio Eins": "de",
+    "Bayern 1": "de",
+    "RNE Radio 1": "es",
+    "Cadena SER": "es",
+    "Los 40 Principales": "es",
+    "Rai Radio 1": "it",
+    "Rai Radio 2": "it",
+    "Radio Deejay": "it",
+    "Radio 105": "it",
+    "NPO Radio 1": "nl",
+    "NPO Radio 2": "nl",
+    "NPO 3FM": "nl",
+    "Radio 538": "nl",
+    "RMF24": "pl",
+    "Meloradio": "pl",
+    "RMF FM": "pl",
+    "Radio Zet": "pl",
+    "Observador": "pt",
+    "M80 Rádio": "pt",
+    "RFM": "pt",
+    "Sveriges Radio P1": "se",
+    "Sveriges Radio P3": "se",
+    "Sveriges Radio P2": "se",
+    "Sveriges Radio P4 Stockholm": "se",
+    "NRK P1": "no",
+    "NRK P3": "no",
+    "Radio Norge": "no",
+    "NPR 24": "us",
+    "KEXP Seattle": "us",
+    "WNYC New York": "us",
+    "NewsTalk 1010 Toronto": "ca",
+    "CKUA Edmonton": "ca",
+    "CJAD 800 Montréal": "ca",
+    "ABC Radio Sydney": "au",
+    "triple j": "au",
+    "ABC Classic": "au",
+    "RNZ National": "nz",
+    "RNZ Concert": "nz",
+    "RNZ Pacific": "nz",
+  };
+
   // Header
   const headerRow = document.createElement("div");
   headerRow.className = "radio-header-row";
@@ -675,7 +736,17 @@ export default async function initRadio(container) {
       }
     }
     if (!streamUrl) {
+      var countryFilter = "";
+      try {
+        countryFilter = (window.handiNs.get("handiRadioCountry") || "").trim();
+      } catch (e) {}
       STATIONS.forEach(function (station) {
+        if (
+          countryFilter &&
+          (STATION_COUNTRIES[station.name] || "") !== countryFilter
+        ) {
+          return;
+        }
         addStationRow(station.url, station.name, station.flag);
       });
     }
@@ -689,6 +760,48 @@ export default async function initRadio(container) {
     applyGlobalMute(e.detail.muted);
   });
   applyGlobalMute(window.handiNs.get("globalMute") === "true");
+
+  // Pause radio while a call is ringing/in progress; resume on hangup.
+  var radioWasPlayingForCall = false;
+  window.addEventListener("handiSoundLockChange", function (e) {
+    if (e.detail.locked) {
+      radioWasPlayingForCall = !!(
+        currentAudio && !currentAudio.paused && !currentAudio.muted
+      );
+      if (radioWasPlayingForCall) {
+        try { currentAudio.pause(); } catch (err) {}
+        stopVisualiserAndClear();
+        nowPlaying.innerText =
+          "⏸ " + t("d_paused", "Paused:") + " " + (activeStationName || "");
+        if (activeStationItem) {
+          var pb = activeStationItem.querySelector(".radio-play-btn");
+          if (pb) {
+            pb.innerHTML = '<i class="fa-solid fa-play"></i>';
+            pb.classList.remove("playing");
+          }
+        }
+      }
+    } else if (radioWasPlayingForCall && !isLocked) {
+      radioWasPlayingForCall = false;
+      if (currentAudio) {
+        var pp = currentAudio.play();
+        if (pp !== undefined) {
+          pp.then(function () {
+            nowPlaying.innerText =
+              "▶ " + t("d_nowPlaying", "Now playing:") + " " + (activeStationName || "");
+            if (activeStationItem) {
+              var pb2 = activeStationItem.querySelector(".radio-play-btn");
+              if (pb2) {
+                pb2.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                pb2.classList.add("playing");
+              }
+            }
+            stopVisualiser = startFakeVisualiser(synthCanvas);
+          }).catch(function () {});
+        }
+      }
+    }
+  });
 
   function startFakeVisualiser(canvas) {
     if (!canvas) return null;

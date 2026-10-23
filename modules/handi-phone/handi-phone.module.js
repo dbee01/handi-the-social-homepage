@@ -355,6 +355,8 @@ export default async function initPhone(container) {
       : "Unknown";
     // Trigger the red flashing + audible ring (standalone ring-alert).
     try { window.dispatchEvent(new Event("handiRingingStart")); } catch (e) {}
+    // Pause other audio while this call rings / is in progress.
+    try { window.dispatchEvent(new Event("handiCallStarted")); } catch (e) {}
     showIncomingCallUI(callerIdentity, incomingCall);
   }
 
@@ -570,6 +572,8 @@ export default async function initPhone(container) {
         try {
           const callOptions = buildWebrtcCallOptions(video);
           currentCall = infobipRTC.callWebrtc(webrtcId, callOptions);
+          // Pause other audio from the moment the call starts ringing.
+          try { window.dispatchEvent(new Event("handiCallStarted")); } catch (e) {}
           // Pop up the same in-call menu for the outgoing caller as for an
           // incoming one, so mute / volume / hangup are always available.
           showCallPanel(callerLabel);

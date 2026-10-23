@@ -828,6 +828,7 @@ export default function initClickToCall(container) {
           console.log("Ringing...");
           showCallStatus(t("d_ringing", "Ringing..."));
           setCallPopupStatus(t("d_ringing", "Ringing..."));
+          try { window.dispatchEvent(new Event("handiCallStarted")); } catch (e) {}
         });
 
         currentCall.on("established", (event) => {
@@ -913,6 +914,7 @@ export default function initClickToCall(container) {
         currentCall.on("ringing", () => {
           console.log("Ringing...");
           showCallStatus(t("d_ringing", "Ringing..."));
+          try { window.dispatchEvent(new Event("handiCallStarted")); } catch (e) {}
         });
 
         currentCall.on("established", (stream) => {

@@ -236,6 +236,7 @@ export default async function initMusic(container) {
     		stallCheck = null,
     		loadToken = 0,
     		loadingIndex = -1;
+	var musicWasPlayingForCall = false;
 
 	  function readSession() {
 	    try {
@@ -281,6 +282,34 @@ export default async function initMusic(container) {
 	    applyGlobalMute(e.detail.muted);
 	  });
 	  applyGlobalMute(window.handiNs.get("globalMute") === "true");
+
+	  // Pause music while a call is ringing/in progress; resume on hangup.
+	  window.addEventListener("handiSoundLockChange", function (e) {
+	    if (e.detail.locked) {
+	      musicWasPlayingForCall = !!isPlaying;
+	      if (musicWasPlayingForCall && currentAudio) {
+	        currentAudio.pause();
+	        isPlaying = false;
+	        playPauseBtn.innerHTML = "▶";
+	        stateSpan.innerText = " | " + t("d_paused", "...paused");
+	        updateTrackIconsAndActive();
+	        stopVisualiserAndClear();
+	      }
+	    } else if (musicWasPlayingForCall && !isLocked && currentAudio) {
+	      musicWasPlayingForCall = false;
+	      var pp = currentAudio.play();
+	      if (pp !== undefined) {
+	        pp.then(function () {
+	          isPlaying = true;
+	          playPauseBtn.innerHTML = "⏸";
+	          stateSpan.innerText = " | " + t("d_playing", "...playing");
+	          updateTrackIconsAndActive();
+	          ensureVisualiserRunning();
+	          saveSession(true);
+	        }).catch(function () {});
+	      }
+	    }
+	  });
 
   content.innerHTML =
     '<div class="music-now-playing"><canvas id="music-synth" class="music-synth"></canvas><div id="music-status" class="music-status"><span id="music-track-title">—</span><span class="music-state-text">' +

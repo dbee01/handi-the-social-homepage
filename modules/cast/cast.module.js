@@ -301,6 +301,7 @@ export default async function initCast(container) {
     currentIndex = -1,
     isPlaying = false,
     stopVisualiser = null;
+  var castWasPlayingForCall = false;
 
   function applyGlobalMute(muted) {
     if (currentAudio) currentAudio.muted = muted;
@@ -309,6 +310,33 @@ export default async function initCast(container) {
     applyGlobalMute(e.detail.muted);
   });
   applyGlobalMute(window.handiNs.get("globalMute") === "true");
+
+  // Pause cast/podcasts while a call is ringing/in progress; resume on hangup.
+  window.addEventListener("handiSoundLockChange", function (e) {
+    if (e.detail.locked) {
+      castWasPlayingForCall = !!isPlaying;
+      if (castWasPlayingForCall && currentAudio) {
+        currentAudio.pause();
+        isPlaying = false;
+        playPauseBtn.innerHTML = "▶";
+        stateSpan.innerText = " | " + t("d_paused", "...paused");
+        updateTrackIconsAndActive();
+        stopVisualiserAndClear();
+      }
+    } else if (castWasPlayingForCall && !isLocked && currentAudio) {
+      castWasPlayingForCall = false;
+      var pp = currentAudio.play();
+      if (pp !== undefined) {
+        pp.then(function () {
+          isPlaying = true;
+          playPauseBtn.innerHTML = "⏸";
+          stateSpan.innerText = " | " + t("d_playing", "...playing");
+          updateTrackIconsAndActive();
+          ensureVisualiserRunning();
+        }).catch(function () {});
+      }
+    }
+  });
 
   // Podcast info card (title, thumbnail, description, …) above the player.
   var infoHtml = "";
