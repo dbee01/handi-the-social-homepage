@@ -266,7 +266,7 @@ var LANG = {
 
   // Bus
   d_noBusRoutes: "No bus routes configured.",
-  d_departure: "Deptarture",
+  d_departure: "Departure",
   d_return: "Return",
   d_changeDirection: "Change Direction",
   d_noUpcoming: "No upcoming",

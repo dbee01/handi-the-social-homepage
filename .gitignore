@@ -13,6 +13,9 @@ twa/*.keystore
 # TWA build artifacts (keystore, APK/AAB) — deployed via rsync only
 pwa/
 
+# Android WebView wrapper for the Cork homepage
+cork-webview/
+
 # Zed editor local settings
 .zed/
 
