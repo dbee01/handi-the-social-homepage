@@ -88,6 +88,7 @@ live() {
       --exclude='.gtfs-cache' \
       --exclude='data' \
       --exclude='pwa' \
+      --exclude='cork-webview' \
       "$src" \
       "u247564401@82.29.191.118:${path}"
     ssh -p 65002 u247564401@82.29.191.118 "pkill -f '[l]snode:.*${site}' 2>/dev/null; sleep 3; echo Restarted
